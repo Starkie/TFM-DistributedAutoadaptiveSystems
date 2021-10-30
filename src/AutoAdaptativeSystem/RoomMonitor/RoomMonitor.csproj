@@ -5,7 +5,29 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="ApiClient\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="ApiClient\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="ApiClient\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="ApiClient\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="ApiClient\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="ApiClient\obj\project.packagespec.json" />
+      <_ContentIncludedByDefault Remove="ApiClient\obj\RoomMonitor.ApiClient.csproj.nuget.dgspec.json" />
     </ItemGroup>
 
 </Project>
