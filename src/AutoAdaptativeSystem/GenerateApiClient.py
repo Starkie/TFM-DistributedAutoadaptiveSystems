@@ -43,10 +43,10 @@ def download_codegen_jar():
 
     return absolute_path
 
-def generate_api_client(codegen_path, openapi_path, output_path):
+def generate_api_client(codegen_path, openapi_path, project_name, output_path):
     print(f"Generating API Client from '{openapi_path}' in '{output_path}'...")
 
-    os.system(f"java -jar {codegen_path} generate -i {openapi_path} -o {output_path} -g csharp-netcore --library httpclient")
+    os.system(f"java -jar {codegen_path} generate -i {openapi_path} -o {output_path} -g csharp-netcore --library httpclient --additional-properties=packageName={project_name}.ApiClient,netCoreProjectFile=true,targetFramework=net5.0")
 
 project_list = [
     { "path": "./RoomMonitor/RoomMonitor.csproj", "name": "RoomMonitor", "api_name": "v1", "output_path": "./RoomMonitor/ApiClient" },
@@ -58,4 +58,4 @@ codegen_path = download_codegen_jar()
 for project in project_list:
     openapi_spec_path = generate_api_spec(project["name"], project["path"], project["api_name"])
 
-    generate_api_client(codegen_path, openapi_spec_path, project["output_path"])
+    generate_api_client(codegen_path, openapi_spec_path, project["name"], project["output_path"])
