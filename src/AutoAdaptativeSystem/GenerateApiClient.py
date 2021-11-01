@@ -15,14 +15,16 @@ def generate_api_spec(project_name, project_path, api_name):
     if result != 0:
         return False
 
-    openapi_spec = f"{project_name}.json"
-
     print(f"Generating OpenApi spec of '{project_path}'...")
 
-    dll_path = Path(project_path).parent.joinpath(f"bin/Release/net5.0/{project_name}.dll")
-    result = os.system(f"swagger tofile --output {openapi_spec} \"{dll_path}\" \"{api_name}\"")
+    parent_folder = Path(project_path).parent
+    dll_path = parent_folder.joinpath(f"bin/Release/net5.0/{project_name}.dll")
 
-    openapi_spec_path = Path(openapi_spec).absolute()
+    openapi_spec_path = f"{project_name}-OpenAPISpec.json"
+    openapi_spec_path = parent_folder.joinpath(openapi_spec_path).absolute()
+
+    result = os.system(f"swagger tofile --output {openapi_spec_path} \"{dll_path}\" \"{api_name}\"")
+
     print(f"Generated '{openapi_spec_path}'")
     
     return openapi_spec_path
@@ -46,7 +48,7 @@ def download_codegen_jar():
 def generate_api_client(codegen_path, openapi_path, project_name, output_path):
     print(f"Generating API Client from '{openapi_path}' in '{output_path}'...")
 
-    os.system(f"java -jar {codegen_path} generate -i {openapi_path} -o {output_path} -g csharp-netcore --library httpclient --additional-properties=packageName={project_name}.ApiClient,netCoreProjectFile=true,targetFramework=net5.0")
+    os.system(f"java -jar {codegen_path} generate -i {openapi_path} -o {output_path} -g csharp-netcore --library httpclient --additional-properties=packageName={project_name}.ApiClient,netCoreProjectFile=true,targetFramework=net5.0,sourceFolder=\"\"")
 
 project_list = [
     { "path": "./RoomMonitor/RoomMonitor.csproj", "name": "RoomMonitor", "api_name": "v1", "output_path": "./RoomMonitor/ApiClient" },
