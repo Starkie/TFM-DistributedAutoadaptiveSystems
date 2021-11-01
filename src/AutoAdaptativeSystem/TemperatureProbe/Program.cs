@@ -18,7 +18,7 @@ namespace TemperatureProbe
 
             while (true)
             {
-                measurementApi.MeasurementTemperaturePost(new TemperatureMeasurementDTO(random.NextDouble() * 35, TemperatureUnit.NUMBER_1));
+                measurementApi.MeasurementTemperaturePost(new TemperatureMeasurementDTO(random.NextDouble() * 35, TemperatureUnit.CELSIUS));
 
                 Thread.Sleep(TimeSpan.FromSeconds(5));
             }

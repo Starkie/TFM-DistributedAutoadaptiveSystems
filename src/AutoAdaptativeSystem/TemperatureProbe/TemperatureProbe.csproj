@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RoomMonitor\ApiClient\RoomMonitor.ApiClient.csproj" />
+      <ProjectReference Include="..\RoomMonitor\ApiClient\RoomMonitor.ApiClient\RoomMonitor.ApiClient.csproj" />
     </ItemGroup>
 
     <ItemGroup>
