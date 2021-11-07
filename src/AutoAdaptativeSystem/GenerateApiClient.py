@@ -52,7 +52,8 @@ def generate_api_client(codegen_path, openapi_path, project_name, output_path):
 
 project_list = [
     { "path": "./RoomMonitor/RoomMonitor.csproj", "name": "RoomMonitor", "api_name": "v1", "output_path": "./RoomMonitor/ApiClient" },
-    { "path": "./MonitoringModule/MonitoringModule.csproj", "name": "MonitoringModule", "api_name": "v1", "output_path": "./MonitoringModule/ApiClient" }
+    { "path": "./MonitoringModule/MonitoringModule.csproj", "name": "MonitoringModule", "api_name": "v1", "output_path": "./MonitoringModule/ApiClient" },
+    { "path": "./KnowledgeService/KnowledgeService.csproj", "name": "KnowledgeService", "api_name": "v1", "output_path": "./KnowledgeService/ApiClient" },
 ]
 
 codegen_path = download_codegen_jar()
