@@ -74,6 +74,8 @@ namespace KnowledgeService.Controllers
                 return BadRequest();
             }
 
+            _logger.LogInformation("[{Action}] - Set property '{PropertyName}' with value '{PropertyValue}'.", nameof(SetProperty), propertyName, value.Value);
+
             _properties.AddOrUpdate(propertyName, value.Value, (_, _) => value.Value);
 
             return NoContent();
