@@ -4,6 +4,7 @@ from io import FileIO
 from pathlib import Path
 import os
 import requests
+import shutil
 
 codegen_library_version = "5.3.0"
 codegen_library_name = "openapi-generator-cli-5.3.0.jar" 
@@ -51,14 +52,20 @@ def generate_api_client(codegen_path, openapi_path, project_name, output_path):
     os.system(f"java -jar {codegen_path} generate -i {openapi_path} -o {output_path} -g csharp-netcore --library httpclient --additional-properties=packageName={project_name}.ApiClient,netCoreProjectFile=true,targetFramework=net5.0,sourceFolder=\"\"")
 
 project_list = [
-    { "path": "./RoomMonitor/RoomMonitor.csproj", "name": "RoomMonitor", "api_name": "v1", "output_path": "./RoomMonitor/ApiClient" },
-    { "path": "./MonitoringModule/MonitoringModule.csproj", "name": "MonitoringModule", "api_name": "v1", "output_path": "./MonitoringModule/ApiClient" },
-    { "path": "./KnowledgeService/KnowledgeService.csproj", "name": "KnowledgeService", "api_name": "v1", "output_path": "./KnowledgeService/ApiClient" },
+    { "path": "./KnowledgeService/KnowledgeService.csproj", "name": "KnowledgeService", "api_name": "v1", "output_path": "./KnowledgeService/ApiClient", "remove_existing_files": True },
+    { "path": "./MonitoringModule/MonitoringModule.csproj", "name": "MonitoringModule", "api_name": "v1", "output_path": "./MonitoringModule/ApiClient", "remove_existing_files": True },
+    { "path": "./RoomMonitor/RoomMonitor.csproj", "name": "RoomMonitor", "api_name": "v1", "output_path": "./RoomMonitor/ApiClient", "remove_existing_files": True },
 ]
 
 codegen_path = download_codegen_jar()
 
 for project in project_list:
     openapi_spec_path = generate_api_spec(project["name"], project["path"], project["api_name"])
+
+    outputPath = Path(project["output_path"]).absolute()
+
+    if project["remove_existing_files"]:
+        print(f"Removing API Client existing files: '{outputPath}'")
+        shutil.rmtree(outputPath, ignore_errors= True)
 
     generate_api_client(codegen_path, openapi_spec_path, project["name"], project["output_path"])
