@@ -1,5 +1,6 @@
 namespace KnowledgeService.Controllers
 {
+    using System;
     using System.Collections.Concurrent;
     using KnowledgeService.DTOs;
     using Microsoft.AspNetCore.Http;
@@ -10,15 +11,13 @@ namespace KnowledgeService.Controllers
     [Route("[controller]")]
     public class PropertyController : ControllerBase
     {
-        private readonly ILogger<PropertyController> _logger;
+        private static ConcurrentDictionary<string, PropertyDTO> properties = new();
 
-        private readonly ConcurrentDictionary<string, string> _properties;
+        private readonly ILogger<PropertyController> _logger;
 
         public PropertyController(ILogger<PropertyController> logger)
         {
             _logger = logger;
-
-            _properties = new ConcurrentDictionary<string, string>();
         }
 
         /// <summary>
@@ -30,7 +29,7 @@ namespace KnowledgeService.Controllers
         /// <response code="404"> The property was not found. </response>
         /// <response code="400"> There was an error with the provided arguments. </response>
         [HttpGet("{propertyName}")]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PropertyDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetProperty([FromRoute]string propertyName)
@@ -42,7 +41,7 @@ namespace KnowledgeService.Controllers
 
             _logger.LogInformation("[{Action}] - Get property '{PropertyName}'.", nameof(GetProperty), propertyName);
 
-            bool foundProperty = _properties.TryGetValue(propertyName, out string value);
+            bool foundProperty = properties.TryGetValue(propertyName, out PropertyDTO property);
 
             if (!foundProperty)
             {
@@ -51,32 +50,38 @@ namespace KnowledgeService.Controllers
                 return NotFound();
             }
 
-            _logger.LogInformation("[{Action}] - Property '{PropertyName}' found. Value: '{PropertyValue}'", nameof(GetProperty), propertyName, value);
+            _logger.LogInformation("[{Action}] - Property '{PropertyName}' found. Value: '{PropertyValue}'", nameof(GetProperty), propertyName, property.Value);
 
-            return Ok(value);
+            return Ok(property);
         }
 
         /// <summary>
         ///    Sets value of a given property. If the property does not exist, it will be created.
         /// </summary>
         /// <param name="propertyName"> The name of the property to set. </param>
-        /// <param name="value"> The DTO containing the value to set. </param>
+        /// <param name="setPropertyDto"> The DTO containing the value to set. </param>
         /// <returns> An IActionResult with result of the command. </returns>
         /// <response code="204"> The property was updated or created successfully. </response>
         /// <response code="400"> There was an error with the provided arguments. </response>
         [HttpPut("{propertyName}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult SetProperty([FromRoute]string propertyName, [FromBody]SetPropertyDTO value)
+        public IActionResult SetProperty([FromRoute]string propertyName, [FromBody]SetPropertyDTO setPropertyDto)
         {
-            if (string.IsNullOrEmpty(propertyName) || string.IsNullOrEmpty(value?.Value))
+            if (string.IsNullOrEmpty(propertyName) || string.IsNullOrEmpty(setPropertyDto?.Value))
             {
                 return BadRequest();
             }
 
-            _logger.LogInformation("[{Action}] - Set property '{PropertyName}' with value '{PropertyValue}'.", nameof(SetProperty), propertyName, value.Value);
+            _logger.LogInformation("[{Action}] - Set property '{PropertyName}' with value '{PropertyValue}'.", nameof(SetProperty), propertyName, setPropertyDto.Value);
 
-            _properties.AddOrUpdate(propertyName, value.Value, (_, _) => value.Value);
+            PropertyDTO newValue = new()
+            {
+                Value = setPropertyDto.Value,
+                LastModification = DateTime.UtcNow,
+            };
+
+            properties.AddOrUpdate(propertyName, newValue, (_, _) => newValue);
 
             return NoContent();
         }
