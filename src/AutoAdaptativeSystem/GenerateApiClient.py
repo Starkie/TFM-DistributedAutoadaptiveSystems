@@ -7,6 +7,8 @@ import requests
 import shutil
 
 netCoreVersion = "net6.0"
+codegen_library_version = "6.0.0-SNAPSHOT"
+codegen_library_name = F"openapi-generator-cli-{codegen_library_version}.jar" 
 
 def generate_api_spec(project_name, project_path, api_name):
     print(f"Building '{project_path}'...")
