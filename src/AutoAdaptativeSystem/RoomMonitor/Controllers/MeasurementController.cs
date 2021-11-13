@@ -21,13 +21,13 @@ namespace RoomMonitor.Controllers
 
         private readonly ILogger<MeasurementController> _logger;
 
-        private readonly MonitorApi _monitorApi;
+        private readonly IMonitorApi _monitorApi;
 
-        private readonly PropertyApi _propertyApi;
+        private readonly IPropertyApi _propertyApi;
 
         private readonly Guid _monitorId = new Guid("92bb183c-c94f-41b4-b1b8-916fec3e5db8");
 
-        public MeasurementController(ILogger<MeasurementController> logger, MonitorApi monitorApi, PropertyApi propertyApi)
+        public MeasurementController(ILogger<MeasurementController> logger, IMonitorApi monitorApi, IPropertyApi propertyApi)
         {
             _logger = logger;
             _monitorApi = monitorApi;

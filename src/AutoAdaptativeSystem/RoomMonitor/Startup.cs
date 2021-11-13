@@ -1,20 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace RoomMonitor
 {
+    using System.IO;
     using System.Text.Json.Serialization;
+    using MonitoringModule.ApiClient.Api;
+    using RoomMonitor.Configurations;
 
     public class Startup
     {
@@ -35,6 +34,27 @@ namespace RoomMonitor
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "RoomMonitor", Version = "v1" });
+
+                // Set the comments path for the Swagger JSON and UI.
+                // Obtained from https://github.com/domaindrivendev/Swashbuckle.WebApi/issues/93#issuecomment-458690098.
+                List<string> xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, "*.xml", SearchOption.TopDirectoryOnly)
+                    .ToList();
+
+                xmlFiles.ForEach(xmlFile => c.IncludeXmlComments(xmlFile));
+            });
+
+            services.AddScoped<IPropertyApi, PropertyApi>(_ =>
+            {
+                MonitoringServiceConfiguration configuration = GetMonitoringServiceConfiguration(Configuration);
+
+                return new PropertyApi(configuration.ServiceUri);
+            });
+
+            services.AddScoped<IMonitorApi, MonitorApi>(_ =>
+            {
+                MonitoringServiceConfiguration configuration = GetMonitoringServiceConfiguration(Configuration);
+
+                return new MonitorApi(configuration.ServiceUri);
             });
         }
 
@@ -56,6 +76,15 @@ namespace RoomMonitor
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private static MonitoringServiceConfiguration GetMonitoringServiceConfiguration(IConfiguration configuration)
+        {
+            MonitoringServiceConfiguration serviceConfiguration =
+                configuration.GetSection(MonitoringServiceConfiguration.ConfigurationPath)
+                    .Get<MonitoringServiceConfiguration>();
+
+            return serviceConfiguration;
         }
     }
 }
