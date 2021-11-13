@@ -18,7 +18,12 @@ namespace TemperatureProbe
 
             while (true)
             {
-                measurementApi.MeasurementTemperaturePost(new TemperatureMeasurementDTO(random.NextDouble() * 35, TemperatureUnit.CELSIUS));
+                double temperature = random.NextDouble() * 35;
+                string formatedTemperature = temperature.ToString("F2");
+
+                Console.WriteLine($"[Temperature] - Reporting {formatedTemperature}ºC");
+
+                measurementApi.MeasurementTemperaturePost(new TemperatureMeasurementDTO(temperature, TemperatureUnit.CELSIUS));
 
                 Thread.Sleep(TimeSpan.FromSeconds(5));
             }
