@@ -32,8 +32,8 @@ namespace KnowledgeService.ApiClient.Api
         /// </summary>
         /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyName">The name of the property to find.</param>
-        /// <returns>string</returns>
-        string PropertyPropertyNameGet(string propertyName);
+        /// <returns>PropertyDTO</returns>
+        PropertyDTO PropertyPropertyNameGet(string propertyName);
 
         /// <summary>
         /// Gets a property given its name.
@@ -43,8 +43,8 @@ namespace KnowledgeService.ApiClient.Api
         /// </remarks>
         /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyName">The name of the property to find.</param>
-        /// <returns>ApiResponse of string</returns>
-        ApiResponse<string> PropertyPropertyNameGetWithHttpInfo(string propertyName);
+        /// <returns>ApiResponse of PropertyDTO</returns>
+        ApiResponse<PropertyDTO> PropertyPropertyNameGetWithHttpInfo(string propertyName);
         /// <summary>
         /// Sets value of a given property. If the property does not exist, it will be created.
         /// </summary>
@@ -83,8 +83,8 @@ namespace KnowledgeService.ApiClient.Api
         /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyName">The name of the property to find.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of string</returns>
-        System.Threading.Tasks.Task<string> PropertyPropertyNameGetAsync(string propertyName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <returns>Task of PropertyDTO</returns>
+        System.Threading.Tasks.Task<PropertyDTO> PropertyPropertyNameGetAsync(string propertyName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <summary>
         /// Gets a property given its name.
@@ -95,8 +95,8 @@ namespace KnowledgeService.ApiClient.Api
         /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyName">The name of the property to find.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (string)</returns>
-        System.Threading.Tasks.Task<ApiResponse<string>> PropertyPropertyNameGetWithHttpInfoAsync(string propertyName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <returns>Task of ApiResponse (PropertyDTO)</returns>
+        System.Threading.Tasks.Task<ApiResponse<PropertyDTO>> PropertyPropertyNameGetWithHttpInfoAsync(string propertyName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
         /// <summary>
         /// Sets value of a given property. If the property does not exist, it will be created.
         /// </summary>
@@ -340,10 +340,10 @@ namespace KnowledgeService.ApiClient.Api
         /// </summary>
         /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyName">The name of the property to find.</param>
-        /// <returns>string</returns>
-        public string PropertyPropertyNameGet(string propertyName)
+        /// <returns>PropertyDTO</returns>
+        public PropertyDTO PropertyPropertyNameGet(string propertyName)
         {
-            KnowledgeService.ApiClient.Client.ApiResponse<string> localVarResponse = PropertyPropertyNameGetWithHttpInfo(propertyName);
+            KnowledgeService.ApiClient.Client.ApiResponse<PropertyDTO> localVarResponse = PropertyPropertyNameGetWithHttpInfo(propertyName);
             return localVarResponse.Data;
         }
 
@@ -352,8 +352,8 @@ namespace KnowledgeService.ApiClient.Api
         /// </summary>
         /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyName">The name of the property to find.</param>
-        /// <returns>ApiResponse of string</returns>
-        public KnowledgeService.ApiClient.Client.ApiResponse<string> PropertyPropertyNameGetWithHttpInfo(string propertyName)
+        /// <returns>ApiResponse of PropertyDTO</returns>
+        public KnowledgeService.ApiClient.Client.ApiResponse<PropertyDTO> PropertyPropertyNameGetWithHttpInfo(string propertyName)
         {
             // verify the required parameter 'propertyName' is set
             if (propertyName == null)
@@ -381,7 +381,7 @@ namespace KnowledgeService.ApiClient.Api
 
 
             // make the HTTP request
-            var localVarResponse = this.Client.Get<string>("/Property/{propertyName}", localVarRequestOptions, this.Configuration);
+            var localVarResponse = this.Client.Get<PropertyDTO>("/Property/{propertyName}", localVarRequestOptions, this.Configuration);
 
             if (this.ExceptionFactory != null)
             {
@@ -398,10 +398,10 @@ namespace KnowledgeService.ApiClient.Api
         /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyName">The name of the property to find.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of string</returns>
-        public async System.Threading.Tasks.Task<string> PropertyPropertyNameGetAsync(string propertyName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <returns>Task of PropertyDTO</returns>
+        public async System.Threading.Tasks.Task<PropertyDTO> PropertyPropertyNameGetAsync(string propertyName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            KnowledgeService.ApiClient.Client.ApiResponse<string> localVarResponse = await PropertyPropertyNameGetWithHttpInfoAsync(propertyName, cancellationToken).ConfigureAwait(false);
+            KnowledgeService.ApiClient.Client.ApiResponse<PropertyDTO> localVarResponse = await PropertyPropertyNameGetWithHttpInfoAsync(propertyName, cancellationToken).ConfigureAwait(false);
             return localVarResponse.Data;
         }
 
@@ -411,8 +411,8 @@ namespace KnowledgeService.ApiClient.Api
         /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyName">The name of the property to find.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (string)</returns>
-        public async System.Threading.Tasks.Task<KnowledgeService.ApiClient.Client.ApiResponse<string>> PropertyPropertyNameGetWithHttpInfoAsync(string propertyName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <returns>Task of ApiResponse (PropertyDTO)</returns>
+        public async System.Threading.Tasks.Task<KnowledgeService.ApiClient.Client.ApiResponse<PropertyDTO>> PropertyPropertyNameGetWithHttpInfoAsync(string propertyName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             // verify the required parameter 'propertyName' is set
             if (propertyName == null)
@@ -443,7 +443,7 @@ namespace KnowledgeService.ApiClient.Api
 
             // make the HTTP request
 
-            var localVarResponse = await this.AsynchronousClient.GetAsync<string>("/Property/{propertyName}", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+            var localVarResponse = await this.AsynchronousClient.GetAsync<PropertyDTO>("/Property/{propertyName}", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
 
             if (this.ExceptionFactory != null)
             {

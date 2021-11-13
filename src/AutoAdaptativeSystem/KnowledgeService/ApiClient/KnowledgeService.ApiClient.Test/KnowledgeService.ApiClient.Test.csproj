@@ -3,7 +3,7 @@
   <PropertyGroup>
     <AssemblyName>KnowledgeService.ApiClient.Test</AssemblyName>
     <RootNamespace>KnowledgeService.ApiClient.Test</RootNamespace>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 

@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 VisualStudioVersion = 12.0.0.0
 MinimumVisualStudioVersion = 10.0.0.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnowledgeService.ApiClient", "src\KnowledgeService.ApiClient\KnowledgeService.ApiClient.csproj", "{77E8E07D-EE0F-46FC-B45F-48C197911C84}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnowledgeService.ApiClient", "src\KnowledgeService.ApiClient\KnowledgeService.ApiClient.csproj", "{04F9B3EB-D46D-419A-9EEB-E9255382C882}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnowledgeService.ApiClient.Test", "src\KnowledgeService.ApiClient.Test\KnowledgeService.ApiClient.Test.csproj", "{19F1DEBC-DE5E-4517-8062-F000CD499087}"
 EndProject
@@ -12,10 +12,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{77E8E07D-EE0F-46FC-B45F-48C197911C84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{77E8E07D-EE0F-46FC-B45F-48C197911C84}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{77E8E07D-EE0F-46FC-B45F-48C197911C84}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{77E8E07D-EE0F-46FC-B45F-48C197911C84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04F9B3EB-D46D-419A-9EEB-E9255382C882}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04F9B3EB-D46D-419A-9EEB-E9255382C882}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04F9B3EB-D46D-419A-9EEB-E9255382C882}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04F9B3EB-D46D-419A-9EEB-E9255382C882}.Release|Any CPU.Build.0 = Release|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Release|Any CPU.ActiveCfg = Release|Any CPU

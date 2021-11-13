@@ -139,6 +139,7 @@ All URIs are relative to *http://localhost*
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *MonitorApi* | [**MonitorMonitorIdMeasurementPost**](docs/MonitorApi.md#monitormonitoridmeasurementpost) | **POST** /Monitor/{monitorId}/measurement | Registers a measurement from a monitor.
+*PropertyApi* | [**PropertyPropertyNameGet**](docs/PropertyApi.md#propertypropertynameget) | **GET** /Property/{propertyName} | Looks for the Knowledge property with the given name.
 
 
 <a name="documentation-for-models"></a>
@@ -147,6 +148,7 @@ Class | Method | HTTP request | Description
  - [Model.MeasurementDTO](docs/MeasurementDTO.md)
  - [Model.ProblemDetails](docs/ProblemDetails.md)
  - [Model.Property](docs/Property.md)
+ - [Model.PropertyDTO](docs/PropertyDTO.md)
 
 
 <a name="documentation-for-authorization"></a>

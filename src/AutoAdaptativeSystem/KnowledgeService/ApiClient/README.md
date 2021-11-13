@@ -116,7 +116,7 @@ namespace Example
             try
             {
                 // Gets a property given its name.
-                string result = apiInstance.PropertyPropertyNameGet(propertyName);
+                PropertyDTO result = apiInstance.PropertyPropertyNameGet(propertyName);
                 Debug.WriteLine(result);
             }
             catch (ApiException e)
@@ -146,6 +146,7 @@ Class | Method | HTTP request | Description
 ## Documentation for Models
 
  - [Model.ProblemDetails](docs/ProblemDetails.md)
+ - [Model.PropertyDTO](docs/PropertyDTO.md)
  - [Model.SetPropertyDTO](docs/SetPropertyDTO.md)
 
 

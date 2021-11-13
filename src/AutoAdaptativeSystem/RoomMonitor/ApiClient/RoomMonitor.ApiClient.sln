@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 VisualStudioVersion = 12.0.0.0
 MinimumVisualStudioVersion = 10.0.0.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoomMonitor.ApiClient", "src\RoomMonitor.ApiClient\RoomMonitor.ApiClient.csproj", "{D9DC9D39-62FA-4619-8BF5-FDFC4C8CF900}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoomMonitor.ApiClient", "src\RoomMonitor.ApiClient\RoomMonitor.ApiClient.csproj", "{88EE7BE0-F828-4D56-8F1A-761D9F3C29CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoomMonitor.ApiClient.Test", "src\RoomMonitor.ApiClient.Test\RoomMonitor.ApiClient.Test.csproj", "{19F1DEBC-DE5E-4517-8062-F000CD499087}"
 EndProject
@@ -12,10 +12,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D9DC9D39-62FA-4619-8BF5-FDFC4C8CF900}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D9DC9D39-62FA-4619-8BF5-FDFC4C8CF900}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D9DC9D39-62FA-4619-8BF5-FDFC4C8CF900}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D9DC9D39-62FA-4619-8BF5-FDFC4C8CF900}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88EE7BE0-F828-4D56-8F1A-761D9F3C29CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88EE7BE0-F828-4D56-8F1A-761D9F3C29CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88EE7BE0-F828-4D56-8F1A-761D9F3C29CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88EE7BE0-F828-4D56-8F1A-761D9F3C29CA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Release|Any CPU.ActiveCfg = Release|Any CPU

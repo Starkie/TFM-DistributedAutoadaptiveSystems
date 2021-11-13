@@ -29,17 +29,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/PropertyDTO"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/PropertyDTO"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/PropertyDTO"
                 }
               }
             }
@@ -178,6 +178,20 @@
           }
         },
         "additionalProperties": { }
+      },
+      "PropertyDTO": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastModification": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
       },
       "SetPropertyDTO": {
         "type": "object",

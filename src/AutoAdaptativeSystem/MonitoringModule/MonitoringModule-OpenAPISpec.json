@@ -69,6 +69,67 @@
           }
         }
       }
+    },
+    "/Property/{propertyName}": {
+      "get": {
+        "tags": [
+          "Property"
+        ],
+        "summary": "Looks for the Knowledge property with the given name.",
+        "parameters": [
+          {
+            "name": "propertyName",
+            "in": "path",
+            "description": "The name of the property to look for.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The property was found. Returns the property's value.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No property with that name was found.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -126,6 +187,23 @@
           }
         },
         "additionalProperties": false
+      },
+      "PropertyDTO": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "Gets or Sets Value",
+            "nullable": true
+          },
+          "lastModification": {
+            "type": "string",
+            "description": "Gets or Sets LastModification",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "PropertyDTO"
       }
     }
   }

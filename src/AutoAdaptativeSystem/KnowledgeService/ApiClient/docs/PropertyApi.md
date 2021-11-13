@@ -10,7 +10,7 @@ Method | HTTP request | Description
 
 <a name="propertypropertynameget"></a>
 # **PropertyPropertyNameGet**
-> string PropertyPropertyNameGet (string propertyName)
+> PropertyDTO PropertyPropertyNameGet (string propertyName)
 
 Gets a property given its name.
 
@@ -40,7 +40,7 @@ namespace Example
             try
             {
                 // Gets a property given its name.
-                string result = apiInstance.PropertyPropertyNameGet(propertyName);
+                PropertyDTO result = apiInstance.PropertyPropertyNameGet(propertyName);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -62,7 +62,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-**string**
+[**PropertyDTO**](PropertyDTO.md)
 
 ### Authorization
 
