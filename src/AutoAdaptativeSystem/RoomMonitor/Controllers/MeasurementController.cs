@@ -9,6 +9,7 @@ namespace RoomMonitor.Controllers
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using MonitoringModule.ApiClient.Api;
+    using MonitoringModule.ApiClient.Client;
     using MonitoringModule.ApiClient.Model;
     using RoomMonitor.DTOS;
     using PropertyDTO = MonitoringModule.ApiClient.Model.PropertyDTO;
@@ -41,7 +42,16 @@ namespace RoomMonitor.Controllers
         {
             _logger.LogInformation("[Temperature] - Received Measurement: {Value} {Unit}", temperatureMeasurementDto.Value, temperatureMeasurementDto.Unit);
 
-            PropertyDTO propertyValue = await _propertyApi.PropertyPropertyNameGetAsync(Temperature);
+            PropertyDTO propertyValue = null;
+
+            try
+            {
+                propertyValue = await _propertyApi.PropertyPropertyNameGetAsync(Temperature);
+            }
+            catch (ApiException exception)
+            {
+                _logger.LogWarning(exception.ToString());
+            }
 
             if (propertyValue is not null)
             {

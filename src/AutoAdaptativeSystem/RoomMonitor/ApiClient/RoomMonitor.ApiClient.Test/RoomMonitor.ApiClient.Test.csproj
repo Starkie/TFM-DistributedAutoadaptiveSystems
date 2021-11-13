@@ -3,7 +3,7 @@
   <PropertyGroup>
     <AssemblyName>RoomMonitor.ApiClient.Test</AssemblyName>
     <RootNamespace>RoomMonitor.ApiClient.Test</RootNamespace>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
