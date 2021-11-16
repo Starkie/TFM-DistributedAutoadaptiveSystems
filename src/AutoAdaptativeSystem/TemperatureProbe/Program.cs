@@ -23,7 +23,14 @@ namespace TemperatureProbe
 
                 Console.WriteLine($"[Temperature] - Reporting {formatedTemperature}ºC");
 
-                measurementApi.MeasurementTemperaturePost(new TemperatureMeasurementDTO(temperature, TemperatureUnit.CELSIUS));
+                try
+                {
+                    measurementApi.MeasurementTemperaturePost(new TemperatureMeasurementDTO(temperature, TemperatureUnit.CELSIUS));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
 
                 Thread.Sleep(TimeSpan.FromSeconds(5));
             }
