@@ -11,6 +11,7 @@ namespace RoomMonitor.Controllers
     using MonitoringModule.ApiClient.Api;
     using MonitoringModule.ApiClient.Client;
     using MonitoringModule.ApiClient.Model;
+    using Newtonsoft.Json;
     using RoomMonitor.DTOS;
     using PropertyDTO = MonitoringModule.ApiClient.Model.PropertyDTO;
 
@@ -42,29 +43,24 @@ namespace RoomMonitor.Controllers
         {
             _logger.LogInformation("[Temperature] - Received Measurement: {Value} {Unit}", temperatureMeasurementDto.Value, temperatureMeasurementDto.Unit);
 
-            PropertyDTO propertyValue = null;
 
-            try
-            {
-                propertyValue = await _propertyApi.PropertyPropertyNameGetAsync(Temperature);
-            }
-            catch (ApiException exception)
-            {
-                _logger.LogWarning(exception.ToString());
-            }
+            TemperatureMeasurementDTO previousMeasurement = await GetPreviousMeasurement();
 
-            if (propertyValue is not null)
+            if (previousMeasurement is not null)
             {
-                _logger.LogInformation("[Temperature] - The previous value was: {PropertyValue}, Last modified in: {LastModificationDate}", propertyValue.Value, propertyValue.LastModification);
+                _logger.LogInformation(
+                    "[Temperature] - The previous value was: {TemperatureValue} {TemperatureUnit}",
+                    previousMeasurement.Value,
+                    previousMeasurement.Unit);
             }
 
-            await _monitorApi.MonitorMonitorIdMeasurementPostAsync( _monitorId,  new MeasurementDTO()
+            await _monitorApi.MonitorMonitorIdMeasurementPostAsync(_monitorId,  new MeasurementDTO()
             {
                 ProbeId = Guid.NewGuid(),
                 Property = new Property
                 {
                     Key = Temperature,
-                    Value = temperatureMeasurementDto.Value.ToString(CultureInfo.InvariantCulture),
+                    Value = JsonConvert.SerializeObject(temperatureMeasurementDto),
                 },
             }).ConfigureAwait(false);
 
@@ -81,5 +77,28 @@ namespace RoomMonitor.Controllers
             // TODO: Implement Logic.
             return Ok();
         }
+
+        private async Task<TemperatureMeasurementDTO> GetPreviousMeasurement()
+        {
+            TemperatureMeasurementDTO previousMeasurement = null;
+
+            try
+            {
+                PropertyDTO propertyValue = await _propertyApi.PropertyPropertyNameGetAsync(Temperature);
+
+                previousMeasurement = JsonConvert.DeserializeObject<TemperatureMeasurementDTO>(propertyValue.Value);
+            }
+            catch (ApiException exception)
+            {
+                _logger.LogWarning("API Exception: Returned HTTP code: {Code}", exception.ErrorCode);
+            }
+            catch (JsonSerializationException exception)
+            {
+                _logger.LogWarning("Serialization error: Could not deserialize as '{Type}'", nameof(TemperatureMeasurementDTO));
+            }
+
+            return previousMeasurement;
+        }
+
     }
 }
