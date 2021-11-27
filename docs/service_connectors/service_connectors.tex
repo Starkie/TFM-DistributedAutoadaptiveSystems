@@ -1,5 +1,25 @@
 \chapter{Service Connectors}
 
-\paragraph{} Según \cite{SoftwareArchitectureFoundations}, la {\bf arquitectura de un sistema \textit{software}} son todas aquellas decisiones de diseño importantes que se toman durante la vida del sistema. No solo durante su concepción, si no también durante su desarrollo y mantenimiento. Esta arquitectura sienta las bases del sistema y está presente en todos sus aspectos: afecta a su estructura, a la funcionalidad, a su implementación... \textcolor{red}{Por tanto, es vital dedicar tiempo a idear un buen diseño.} 
+Según \cite{SoftwareArchitectureFoundations}, la {\bf arquitectura de un sistema \textit{software}} es el conjunto de todas las decisiones de diseño principales que se toman durante la vida del sistema. No solo durante su concepción, si no también durante su desarrollo y posterior evolución. Son decisiones principales o importantes porque sientan las bases del desarrollo posterior. Serían el equivalente a los planos de construcción de un edificio.
 
-\paragraph{} Durante el diseño, para lidiar con la complejidad que puediera alcanzar el sistema, solemos recurrir a descomponerlos usando diseños modulares: sistemas compuestos por unidades de funcionalidad que tienen una función específica[1]. Estos elementos funcionales son llamados componentes. Dependiendo de las características de nuestro sistema, pueden tomar distintas formas: módulos dentro un mismo proceso, servicios distribuidos, etc. 
+La arquitectura afecta en todos los apartados del sistema: su estructura, la funcionalidad, la implementación... \textcolor{red}{Por tanto, es vital dedicar tiempo a idear un buen diseño.}
+
+Estas decisiones normalmente se resumen en comparativas entre distintas alternativas, cada una de ellas con sus ventajas e inconvenientes. Con el paso del tiempo, y con el avance del desarrollo, estas decisiones comienzan a asentarse, y se vuelven más dificiles de cambiar o rectificar.
+
+Pueden tomarse en base a distintos criterios. Entre ellos podemos destacar:
+
+    \begin{itemize}
+        \item \textbf{Requisitos del sistema:} a partir del dominio podemos deducir la funcionalidad a implementar, las restricciones que debemos respetar y otras propiedades que debe poseer el sistema.
+        \item \textbf{Arquitectura actual:} las decisiones tomadas previamente también condicionan las decisiones para la evolución futura. Cuanto más avanza el desarrollo, más se asientan las decisiones previas, y más dificil es cambiar el rumbo.
+        \item \textbf{Experiencia previa:} del desarrollo de otros sistemas en el pasado.
+    \end{itemize} 
+
+La {\bf arquitectura de un sistema \textit{software}} responde a tres preguntas fundamentales: el \textit{qué}, el \textit{cómo} y el \textit{por qué} define los elementos clave que lo componen y sus relaciones. Estas relaciones pueden ser entre los elementos o con el entorno de operación del sistema. La arquitectura también incluye la motivación por la cual se han tomado ciertas decisiones. \cite{perryFoundationsStudySoftware1992}
+
+La arquitectura de un sistema puede contar con diferentes vistas, según aquel aspecto que deseemos resaltar. Por ejemplo, puede interesarnos más la interacción entre los componentes. O cosas por el estilo.
+
+Durante el diseño, para lidiar con la complejidad que pudiera alcanzar el sistema, solemos recurrir a descomponerlos usando diseños modulares: sistemas compuestos por unidades de funcionalidad que tienen una función específica[1]. Estos elementos funcionales son los componentes. Dependiendo de las características de nuestro sistema, pueden tomar distintas formas: módulos dentro un mismo proceso, servicios distribuidos, etc.
+
+Un componente de forma aislada no aporta mucho valor. Los componentes pueden llegar a trabajar conjuntamente para realizar tareas más complejas. Por tanto, un aspecto clave es la integración y la interacción entre ellos. \cite{mehtaTaxonomySoftwareConnectors2000}
+
+Para diseñar los mecanismos de interacción entre componentes, podemos recurrir a los service connectors (conectores de servicio). Sirven para diseñar y razonar sobre la comunicación entre un cliente y un servicio. Abstraen al cliente de la lógica para establecer la conexión, el protocolo de comunicación, formato de los mensajes, etc. 
