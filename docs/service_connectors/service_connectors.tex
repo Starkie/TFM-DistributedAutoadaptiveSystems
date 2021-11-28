@@ -30,3 +30,20 @@ Durante el diseño, para lidiar con la complejidad que pudiera alcanzar el siste
 Un componente de forma aislada no aporta mucho valor. Los componentes pueden llegar a trabajar conjuntamente para realizar tareas más complejas. Por tanto, un aspecto clave es la integración y la interacción entre ellos. \cite{mehtaTaxonomySoftwareConnectors2000}
 
 Para diseñar los mecanismos de interacción entre componentes, podemos recurrir a los service connectors (conectores de servicio). Sirven para diseñar y razonar sobre la comunicación entre un cliente y un servicio. Abstraen al cliente de la lógica para establecer la conexión, el protocolo de comunicación, formato de los mensajes, etc. 
+
+Existe una gran variedad de conectores posibles: comunicación interproceso, comunicación a través de la red, etc.
+
+Proxy o RMI
+
+\section{Open API}
+
+Para el desarrollo de este trabajo, hemos optado por utilizar conectores basados en APIs REST. Nos permitía utilizar mecanismos ya presentes en los microservicios que queríamos desarrollar, y que fueran más homogéneos. 
+Para facilitar la compatibilidad de los microservicios, y facilitar el desarrollo de nuevos microservicios, hemos decidido usar la especificación OpenAPI\footnote{Open API specification: \url{https://spec.openapis.org/oas/latest.html}}. Se trata de un estándar para describir APIs implementadas sobre el protocolo HTTP. 
+
+La principal ventaja que nos ofrecía OpenAPI era la posibilidad de generar código a partir de la especificación. Permite generar código tanto del cliente como del servidor. De esta forma, podíamos implementar nuestra API genérica en un lenguaje . En este caso, se decidió utilizar conjuntamente el lenguaje C\# junto con el framework ASP.NET Core, para implementar los microservicios iniciales.
+
+A partir de estos microservicios, podemos exportar la especificación de OpenAPI, haciendo uso de los endpoints, atributos y comentarios. Por ejemplo, en este endpoint del servicio de monitorización, vemos cómo obtiene una propiedad del servicio de conocimiento.
+
+Podemos observar cómo el método está decorado con atributos que describen el tipo de respuesta que produce, según el código de respuesta HTTP. Estos comentarios se utilizan en la generación de la especificación para obtener mejor implementación
+
+Después, haciendo uso de las librerías de generación de código de OpenAP.
