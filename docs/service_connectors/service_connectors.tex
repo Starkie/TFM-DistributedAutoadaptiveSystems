@@ -12,9 +12,16 @@ Pueden tomarse en base a distintos criterios. Entre ellos podemos destacar:
         \item \textbf{Requisitos del sistema:} a partir del dominio podemos deducir la funcionalidad a implementar, las restricciones que debemos respetar y otras propiedades que debe poseer el sistema.
         \item \textbf{Arquitectura actual:} las decisiones tomadas previamente también condicionan las decisiones para la evolución futura. Cuanto más avanza el desarrollo, más se asientan las decisiones previas, y más dificil es cambiar el rumbo.
         \item \textbf{Experiencia previa:} del desarrollo de otros sistemas en el pasado.
-    \end{itemize} 
+    \end{itemize}
 
-La {\bf arquitectura de un sistema \textit{software}} responde a tres preguntas fundamentales: el \textit{qué}, el \textit{cómo} y el \textit{por qué} define los elementos clave que lo componen y sus relaciones. Estas relaciones pueden ser entre los elementos o con el entorno de operación del sistema. La arquitectura también incluye la motivación por la cual se han tomado ciertas decisiones. \cite{perryFoundationsStudySoftware1992}
+Según el estándar IEEE 42010-2011 \cite{ieeeStandard420102011Systems2011}, la arquitectura de un sistema es "\textit{un conjunto de conceptos o propiedades fundamentales, personificadas por sus elementos, sus relaciones, y los principios que guían su diseño y evolución}". Por tanto, podemos modelarla usando tres elementos: \cite{perryFoundationsStudySoftware1992} 
+    \begin{itemize}
+        \item \textbf{Elementos:} Son las piezas o conceptos fundamentales que componen el sistema. Describen \textit{qué} partes conforma el sistema.
+        
+        \item \textbf{Forma:} El conjunto de propiedades y relaciones entre los elementos o el entorno de operación. Describe \textit{cómo} está organizado el sistema. 
+        
+        \item \textbf{Justificación:} Razonamiento o motivación de las decisiones que se han tomado. Responden al \textit{por qué} algo se hace de determinada forma. Normalmente no pueden deducirse a partir de los elementos y la forma, por lo que es necesario describirlos.
+    \end{itemize}
 
 La arquitectura de un sistema puede contar con diferentes vistas, según aquel aspecto que deseemos resaltar. Por ejemplo, puede interesarnos más la interacción entre los componentes. O cosas por el estilo.
 
