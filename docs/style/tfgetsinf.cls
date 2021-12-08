@@ -22,7 +22,7 @@
 \LoadClass{book}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Codificacio dels caracteres 
+% Codificacio dels caracteres
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \RequirePackage[T1]{fontenc}
 
@@ -116,7 +116,7 @@
      \renewcommand{\quadrename}{Quadre}
      \renewcommand{\listquadrename}{\'Index de quadres}
      \renewcommand{\appendicesname}{Ap\`endixs}}
-     
+
 
 \addto\captionsspanish{%
      \renewcommand{\titulacioname}{Grado en Ingenier\'\i a Inform\'atica}
@@ -132,7 +132,7 @@
      \renewcommand{\quadrename}{Cuadro}
      \renewcommand{\listquadrename}{\'Indice de cuadros}
      \renewcommand{\appendicesname}{Ap\'endices}}
-     
+
 \addto\captionsenglish{%
      \renewcommand{\titulacioname}{Degree in Computer Engineering}
      \renewcommand{\tfgname}{Degree final work}
@@ -143,13 +143,13 @@
      \renewcommand{\algorithmname}{Algorithm}
      \renewcommand{\listalgorithmname}{List of algorithms}
      \renewcommand{\appendicesname}{Appendices}}
-     
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Nous tipus d'objectes flotants
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Formato de los caption de tablas, figuras, etc.
-% Líneas centrados, tamaño "small" para etiqueta y texto, 
+% Líneas centrados, tamaño "small" para etiqueta y texto,
 % y la etiqueta en negrita
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -161,11 +161,11 @@
 \DeclareFloatingEnvironment[fileext=loa,
      listname=\listalgorithmname,name=\algorithmname]{algorithm}
      \DeclareCaptionFormat{ruled}{\hrulefill\par#1#2#3\vspace{-.5\baselineskip}\hrulefill}
-\captionsetup[algorithm]{justification=raggedright,singlelinecheck=off,position=below,format=ruled}  
-   
+\captionsetup[algorithm]{justification=raggedright,singlelinecheck=off,position=below,format=ruled}
+
 \DeclareFloatingEnvironment[fileext=loq,
-     listname=\listquadrename,name=\quadrename]{quadre}     
-  
+     listname=\listquadrename,name=\quadrename]{quadre}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Para escribir código y que quede bien
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -179,7 +179,7 @@
 	numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
 	stepnumber=1,                   % the step between two line-numbers. If it is 1 each line will be numbered
 	numbersep=5pt,                  % how far the line-numbers are from the code
-	backgroundcolor=\color{white},	% choose the background color. 
+	backgroundcolor=\color{white},	% choose the background color.
 	numberstyle=\tiny\color{gray},	% choose the color of the numbers
 	keywordstyle=\color{blue},		% choose the color of the keywords
 	commentstyle=\color{dkgreen},	% choose the color of the comments
@@ -196,7 +196,7 @@
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Aspecto los títulos para \chapter y \section, así como 
+% Aspecto los títulos para \chapter y \section, así como
 % añadir un punto después de la numeración de las secciones
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -206,7 +206,7 @@
 
 \titleformat{\chapter}[display]
 {\normalfont\Large\filleft\sffamily\bfseries}  % FORMAT
-{\titlerule[1pt]                                  
+{\titlerule[1pt]
  \vspace{1pt}
  \titlerule
  \vspace{1pc}
@@ -241,7 +241,7 @@
 
 \lhead[\bfseries\thepage]{\sffamily\rightmark}
 \rhead[\sffamily\leftmark]{\bfseries\thepage}
-\cfoot{} 
+\cfoot{}
 \lfoot{}
 \rfoot{}
 
@@ -255,7 +255,7 @@
 %%%%%%%%%%%%%
 
 \RequirePackage[colorlinks]{hyperref}
-\hypersetup{ 
+\hypersetup{
      colorlinks=true,
      linkcolor=blue,
      urlcolor=blue,
@@ -271,9 +271,9 @@
 \setlength{\parskip}{1ex}
 
 \newcommand{\foreign}[2]{\foreignlanguage{#1}{\textit{#2}}}
-     
-\newenvironment{Foreign}[1]{\begin{quote}\itshape\selectlanguage{#1}}{\end{quote}}     
-      
+
+\newenvironment{Foreign}[1]{\begin{quote}\itshape\selectlanguage{#1}}{\end{quote}}
+
 %%%%%%%%
 % Resums
 %%%%%%%%
@@ -315,14 +315,14 @@
 
 \newcommand{\APPENDIX}{\appendix
              \phantomsection
-             \addtocontents{toc}{\protect\noindent\protect\hrulefill\protect\par}             
+             \addtocontents{toc}{\protect\noindent\protect\hrulefill\protect\par}
              \ifnum\value{appendix}=1 \addtocontents{toc}{\protect\appendixname\protect\par}
                     \else\addtocontents{toc}{\protect\appendicesname\protect\par}\fi}
 
 \newcommand{\m@ketitle}{%
 \begin{titlepage}
 \AddToShipoutPicture*{\AtPageUpperLeft{%
-    % Marges: dalt=esquerra=dreta=2cm 
+    % Marges: dalt=esquerra=dreta=2cm
     \raisebox{-4cm}{\hspace{2cm}\includegraphics[height=2cm]{\relativepath/logo-upv}% grand� ria 116mmx37mm escalada a 62.7mmx20mm
     \hspace{5.54cm}% 21cm-(2+6.27+5.19+2)cm
                     \includegraphics[height=2cm]{\relativepath/logo-etsinf}% grand� ria 109mmx42mm escalada a 51.9mmx20mm
@@ -347,7 +347,7 @@ Universitat Polit\`ecnica de Val\`encia
 \vspace{\stretch{2}}
 
 % Autor, tutor y fecha
-\begin{flushright} 
+\begin{flushright}
 \begin{tabular}{l}
    \textit{\authorname:} \begin{tabular}[t]{l}\@author\end{tabular}\\[0.2cm]
    \textit{\tutorname:} \begin{tabular}[t]{l}\t@tor\end{tabular}
@@ -369,7 +369,7 @@ Universitat Polit\`ecnica de Val\`encia
 
 \newcounter{appendix}
 \AtEndDocument{%
-    \ifnum\value{chapter}=1 
+    \ifnum\value{chapter}=1
            \immediate\write\@auxout{\unexpanded{\setcounter{appendix}{1}}}
-    \else 
+    \else
            \immediate\write\@auxout{\unexpanded{\setcounter{appendix}{2}}} \fi}
