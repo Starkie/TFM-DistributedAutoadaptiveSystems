@@ -33,27 +33,24 @@ Como hemos comentado antes, un sistema está conformado por \textbf{componentes}
 
 Para que dos o más componentes puedan interactuar, necesitamos definir un mecanismo de comunicación. Para ello, recurrimos a los \textbf{conectores}. Se trata de elementos arquitectónicos que nos ayudan a diseñar y razonar sobre la comunicación entre componentes. Concretamente, representan la transferencia de datos y de control entre componentes. De esta forma, podemos estudiar la arquitectura y elegir los mecanismos adecuados para cada interacción del sistema. \cite{taylorSoftwareArchitectureFoundations2009}
 
-Los conectores cuentan con uno o más \textbf{conductos} o canales de comunicación. Estos conductos conectan los componentes asociados al conector. Clasificamos los conectores según la complejidad de los canales que utilizan \cite{mehtaTaxonomySoftwareConnectors2000}:
+\begin{figure}[h]
+  \centering
+  \includegraphics{service_connectors/images/conector}
+  \caption{Ejemplo de comunicación de dos componentes a través de un conector.}
+  \label{fig:componentesEjemplo}
+\end{figure}
+
+En la figura \ref{fig:componentesEjemplo} tenemos un ejemplo de cómo se comunicarían dos componentes a través de un conector. De momento no hemos especificado nada excepto que ambos componentes deben comunicarse. No hemos definido detalles del medio que usarán, la dirección de la comunicación, etc. Se trata de un primer boceto de la arquitectura que utilizaremos para elegir el conector más adecuado.
+
+Los conectores cuentan con uno o más \textbf{conductos} o canales de comunicación. Estos conductos conectan los componentes asociados al conector. Existe una gran variedad de conectores posibles: comunicación interproceso, comunicación a través de la red, etc. Clasificamos los conectores según la complejidad de los canales que utilizan \cite{mehtaTaxonomySoftwareConnectors2000}:
 
 \begin{itemize}
-    \item \textbf{Conectores simples}: solo cuentan con un conducto, sin lógica asociada. Son conectores sencillos. Suelen venir implementados en los lenguajes de programación. Por ejemplo: una llamada a función o entrada y salida al sistema de ficheros.
+    \item \textbf{Conectores simples}: solo cuentan con un conducto, sin lógica asociada. Son conectores sencillos. Suelen venir implementados en los lenguajes de programación. Por ejemplo: una llamada a función en un programa o el sistema de entrada / salida de ficheros.
 
-    \item \textbf{Conectores complejos}: cuentan con uno o más conductos. Los aumenta con funcionalidad que permiten manejar el flujo de datos y/o control. Suelen utilizarse como parte de frameworks o librerias. Por ejemplo: un balanceador de carga que redirige peticiones a los nodos en base a peticiones anteriores.
+    \item \textbf{Conectores complejos}: cuentan con uno o más conductos. Pueden definirse por composición a partir de múltiples conectores simples. Además, suelen contar con funcionalidad para manejar el flujo de datos y/o control. Suelen utilizarse como parte de frameworks o librerias. Por ejemplo: un balanceador de carga que redirige peticiones a los nodos en base a peticiones anteriores.
 \end{itemize}
 
- Por ejemplo, si es una llamada a un método dentro de un programa.
-
-En cambio, un conector compuesto, está compuesto de distintos conectores simples, que le dotan de mayor funcionalidad. Estos conectores compuestos está conformados por varios conectores simples, que le permiten tener mayor funcionalidad. Por ejemplo, un mecanismo de cliente y servidor.
-
-donde intervienen distintos mecanismos de comunicación, entonces se trata de
-
-Los conectores están compuestos por tres elementos: los conductos (o \textit{duct}). Se
-
-Los componentes pueden ser simples o compuestos según el número de cosas que
-
 Abstraen al cliente de la lógica para establecer la conexión, el protocolo de comunicación, formato de los mensajes, etc.
-
-Existe una gran variedad de conectores posibles: comunicación interproceso, comunicación a través de la red, etc.
 
 Proxy o RMI
 
