@@ -255,7 +255,13 @@
 %%%%%%%%%%%%%
 
 \RequirePackage[colorlinks]{hyperref}
-\hypersetup{colorlinks=true,linkcolor=blue, linktocpage}
+\hypersetup{ 
+     colorlinks=true,
+     linkcolor=blue,
+     urlcolor=blue,
+     citecolor=black,
+     linktocpage
+}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
