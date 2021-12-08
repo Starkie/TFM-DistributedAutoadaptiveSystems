@@ -1,35 +1,57 @@
 \chapter{Service Connectors}
 
-Según \cite{taylorSoftwareArchitectureFoundations2009}, la {\bf arquitectura de un sistema \textit{software}} es el conjunto de todas las decisiones de diseño principales que se toman durante la vida del sistema. No solo durante su concepción, si no también durante su desarrollo y posterior evolución. Son decisiones principales o importantes porque sientan las bases del desarrollo posterior. Serían el equivalente a los planos de construcción de un edificio.
+Según \cite{taylorSoftwareArchitectureFoundations2009}, la {\bf arquitectura de un sistema \textit{software}} es el conjunto de todas las decisiones de diseño principales que se toman durante la vida del sistema. No solo durante su concepción, si no también durante su desarrollo y posterior evolución. Son decisiones principales o importantes porque sientan las bases del desarrollo. \textcolor{red}{Serían el equivalente a los planos de construcción de un edificio.}
 
-La arquitectura afecta en todos los apartados del sistema: su estructura, la funcionalidad, la implementación... \textcolor{red}{Por tanto, es vital dedicar tiempo a idear un buen diseño.}
+La arquitectura afecta en todos los apartados del sistema: su estructura, la funcionalidad, la implementación... \textcolor{red}{Por tanto, es vital dedicar tiempo para definir la arquitectura en base a las necesidades de nuestro sistema.}
 
-Estas decisiones normalmente se resumen en comparativas entre distintas alternativas, cada una de ellas con sus ventajas e inconvenientes. Con el paso del tiempo, y con el avance del desarrollo, estas decisiones comienzan a asentarse, y se vuelven más dificiles de cambiar o rectificar.
+Estas decisiones normalmente se resumen en comparativas entre distintas alternativas, cada una de ellas con sus ventajas e inconvenientes. Con el paso del tiempo, y con el avance del desarrollo, estas elecciones comienzan a asentarse, y se vuelven más dificiles de cambiar o rectificar.
 
-Pueden tomarse en base a distintos criterios. Entre ellos podemos destacar:
+Pueden tomarse en base a distintos criterios. Entre ellos podemos destacar: [Citation needed]
 
     \begin{itemize}
-        \item \textbf{Requisitos del sistema:} a partir del dominio podemos deducir la funcionalidad a implementar, las restricciones que debemos respetar y otras propiedades que debe poseer el sistema.
-        \item \textbf{Arquitectura actual:} las decisiones tomadas previamente también condicionan las decisiones para la evolución futura. Cuanto más avanza el desarrollo, más se asientan las decisiones previas, y más dificil es cambiar el rumbo.
-        \item \textbf{Experiencia previa:} del desarrollo de otros sistemas en el pasado.
+        \item \textbf{Requisitos del sistema:} a partir del dominio y las necesidades de nuestros usuarios, podemos deducir: la funcionalidad a implementar, las restricciones que debemos respetar y otras propiedades que debe poseer el sistema.
+        \item \textbf{Arquitectura actual:} las decisiones tomadas previamente también condicionan las elecciones que se tomen más adelante. Cuanto más avanza el desarrollo, más se asientan las decisiones previas, y más dificil es rectificarlas.
+        \item \textbf{Experiencia previa:} del desarrollo de este u otros sistemas. Podemos obtener métricas del funcionamiento y uso de nuestro sistema para informar decisiones futuras. \textcolor{red}{[Cita devops]}
     \end{itemize}
 
-Según el estándar IEEE 42010-2011 \cite{ieeeStandard420102011Systems2011}, la arquitectura de un sistema es "\textit{un conjunto de conceptos o propiedades fundamentales, personificadas por sus elementos, sus relaciones, y los principios que guían su diseño y evolución}". Por tanto, podemos modelarla usando tres elementos: \cite{perryFoundationsStudySoftware1992} 
+Según el estándar IEEE 42010-2011 \cite{ieeeStandard420102011Systems2011}, la arquitectura de un sistema es "\textit{un conjunto de conceptos o propiedades fundamentales, personificadas por sus elementos, sus relaciones, y los principios que guían su diseño y evolución}". Por tanto, podemos describirla usando tres conceptos: \cite{perryFoundationsStudySoftware1992}
+
     \begin{itemize}
-        \item \textbf{Elementos:} Son las piezas o conceptos fundamentales que componen el sistema. Describen \textit{qué} partes conforma el sistema.
-        
-        \item \textbf{Forma:} El conjunto de propiedades y relaciones entre los elementos o el entorno de operación. Describe \textit{cómo} está organizado el sistema. 
-        
+        \item \textbf{Componentes:} Son las piezas fundamentales que componen el sistema. Implementan la funcionalidad de la aplicación. Se utilizan para describir \textit{qué} partes conforman el sistema. Por ejemplo: un módulo, un servicio web...
+
+        \item \textbf{Forma:} El conjunto de propiedades y relaciones entre los elementos o el entorno de operación. Describe \textit{cómo} está organizado el sistema. Por ejemplo: un servicio contacta con otro a través de una API.
+
         \item \textbf{Justificación:} Razonamiento o motivación de las decisiones que se han tomado. Responden al \textit{por qué} algo se hace de determinada forma. Normalmente no pueden deducirse a partir de los elementos y la forma, por lo que es necesario describirlos.
+
     \end{itemize}
 
-La arquitectura de un sistema puede contar con diferentes vistas, según aquel aspecto que deseemos resaltar. Por ejemplo, puede interesarnos más la interacción entre los componentes. O cosas por el estilo.
+\textcolor{red}{La arquitectura de un sistema puede contar con diferentes vistas, según aquel aspecto que deseemos resaltar. Por ejemplo, puede interesarnos más la interacción entre los componentes. O cosas por el estilo.}
 
-Durante el diseño, para lidiar con la complejidad que pudiera alcanzar el sistema, solemos recurrir a descomponerlos usando diseños modulares: sistemas compuestos por unidades de funcionalidad que tienen una función específica[1]. Estos elementos funcionales son los componentes. Dependiendo de las características de nuestro sistema, pueden tomar distintas formas: módulos dentro un mismo proceso, servicios distribuidos, etc.
+Durante el diseño, para lidiar con la complejidad que pudiera alcanzar el sistema, solemos recurrir a descomponerlos usando diseños modulares: sistemas compuestos por unidades de funcionalidad que tienen una función específica. \cite{taylorSoftwareArchitectureFoundations2009} Estos elementos funcionales son los componentes. Dependiendo de las características de nuestro sistema, pueden tomar distintas formas: módulos dentro un mismo proceso, servicios distribuidos, etc.
 
-Un componente de forma aislada no aporta mucho valor. Los componentes pueden llegar a trabajar conjuntamente para realizar tareas más complejas. Por tanto, un aspecto clave es la integración y la interacción entre ellos. \cite{mehtaTaxonomySoftwareConnectors2000}
+Como hemos comentado antes, un sistema está conformado por \textbf{componentes} que implementan la funcionalidad de la aplicación. No suelen trabajar de forma aislada, si no que trabajan conjuntamente para realizar tareas más complejas. Por tanto, un aspecto clave es la integración y la interacción entre ellos. \cite{mehtaTaxonomySoftwareConnectors2000}
 
-Para diseñar los mecanismos de interacción entre componentes, podemos recurrir a los service connectors (conectores de servicio). Sirven para diseñar y razonar sobre la comunicación entre un cliente y un servicio. Abstraen al cliente de la lógica para establecer la conexión, el protocolo de comunicación, formato de los mensajes, etc. 
+Para que dos o más componentes puedan interactuar, necesitamos definir un mecanismo de comunicación. Para ello, recurrimos a los \textbf{conectores}. Se trata de elementos arquitectónicos que nos ayudan a diseñar y razonar sobre la comunicación entre componentes. Concretamente, representan la transferencia de datos y de control entre componentes. De esta forma, podemos estudiar la arquitectura y elegir los mecanismos adecuados para cada interacción del sistema. \cite{taylorSoftwareArchitectureFoundations2009}
+
+Los conectores cuentan con uno o más \textbf{conductos} o canales de comunicación. Estos conductos conectan los componentes asociados al conector. Clasificamos los conectores según la complejidad de los canales que utilizan \cite{mehtaTaxonomySoftwareConnectors2000}:
+
+\begin{itemize}
+    \item \textbf{Conectores simples}: solo cuentan con un conducto, sin lógica asociada. Son conectores sencillos. Suelen venir implementados en los lenguajes de programación. Por ejemplo: una llamada a función o entrada y salida al sistema de ficheros.
+
+    \item \textbf{Conectores complejos}: cuentan con uno o más conductos. Los aumenta con funcionalidad que permiten manejar el flujo de datos y/o control. Suelen utilizarse como parte de frameworks o librerias. Por ejemplo: un balanceador de carga que redirige peticiones a los nodos en base a peticiones anteriores.
+\end{itemize}
+
+ Por ejemplo, si es una llamada a un método dentro de un programa.
+
+En cambio, un conector compuesto, está compuesto de distintos conectores simples, que le dotan de mayor funcionalidad. Estos conectores compuestos está conformados por varios conectores simples, que le permiten tener mayor funcionalidad. Por ejemplo, un mecanismo de cliente y servidor.
+
+donde intervienen distintos mecanismos de comunicación, entonces se trata de
+
+Los conectores están compuestos por tres elementos: los conductos (o \textit{duct}). Se
+
+Los componentes pueden ser simples o compuestos según el número de cosas que
+
+Abstraen al cliente de la lógica para establecer la conexión, el protocolo de comunicación, formato de los mensajes, etc.
 
 Existe una gran variedad de conectores posibles: comunicación interproceso, comunicación a través de la red, etc.
 
@@ -37,8 +59,8 @@ Proxy o RMI
 
 \section{Open API}
 
-Para el desarrollo de este trabajo, hemos optado por utilizar conectores basados en APIs REST. Nos permitía utilizar mecanismos ya presentes en los microservicios que queríamos desarrollar, y que fueran más homogéneos. 
-Para facilitar la compatibilidad de los microservicios, y facilitar el desarrollo de nuevos microservicios, hemos decidido usar la especificación OpenAPI\footnote{Open API specification: \url{https://spec.openapis.org/oas/latest.html}}. Se trata de un estándar para describir APIs implementadas sobre el protocolo HTTP. 
+Para el desarrollo de este trabajo, hemos optado por utilizar conectores basados en APIs REST. Nos permitía utilizar mecanismos ya presentes en los microservicios que queríamos desarrollar, y que fueran más homogéneos.
+Para facilitar la compatibilidad de los microservicios, y facilitar el desarrollo de nuevos microservicios, hemos decidido usar la especificación OpenAPI\footnote{Open API specification: \url{https://spec.openapis.org/oas/latest.html}}. Se trata de un estándar para describir APIs implementadas sobre el protocolo HTTP.
 
 La principal ventaja que nos ofrecía OpenAPI era la posibilidad de generar código a partir de la especificación. Permite generar código tanto del cliente como del servidor. De esta forma, podíamos implementar nuestra API genérica en un lenguaje . En este caso, se decidió utilizar conjuntamente el lenguaje C\# junto con el framework ASP.NET Core, para implementar los microservicios iniciales.
 
