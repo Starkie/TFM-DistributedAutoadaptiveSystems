@@ -1,4 +1,4 @@
-\chapter{Service Connectors}
+\chapter{Arquitecturas de \textit{software}}
 
 Según \cite{taylorSoftwareArchitectureFoundations2009}, la {\bf arquitectura de un sistema \textit{software}} es el conjunto de todas las decisiones de diseño principales que se toman durante la vida del sistema, aquellas que sientan las bases del desarrollo. \textcolor{red}{Se podría establecer un simil con los planos de construcción de un edificio.} Estas decisiones no solo se toman durante su concepción, si no también durante su desarrollo y posterior evolución.
 
@@ -43,7 +43,7 @@ Para que dos o más componentes puedan interactuar, necesitamos definir un mecan
 
 \begin{figure}[h]
   \centering
-  \includegraphics{service_connectors/images/conector}
+  \includegraphics{02_arquitectura/images/conector}
   \caption{Ejemplo de comunicación de dos componentes a través de un conector.}
   \label{fig:componentesEjemplo}
 \end{figure}
@@ -58,15 +58,17 @@ Los conectores cuentan con uno o más \textbf{conductos} o canales de comunicaci
     \item \textbf{Conectores complejos}: cuentan con uno o más conductos. Pueden definirse por composición a partir de múltiples conectores simples. Además, suelen contar con funcionalidad para manejar el flujo de datos y/o control. Suelen utilizarse como parte de frameworks o librerias. Por ejemplo: un balanceador de carga que redirige peticiones a los nodos en base a peticiones anteriores.
 \end{itemize}
 
-Abstraen al cliente de la lógica para establecer la conexión, el protocolo de comunicación, formato de los mensajes, etc.
+Por tanto, una vez hemos decidido que dos componentes deben comunicarse, es momento de evaluar cuál es el mecanismo de comunicación más adecuado. Para ello, podemos consultar la taxonomía de conectores de \cite{mehtaTaxonomySoftwareConnectors2000}. Basándonos en nuestros requisitos, la arquitectura ya definida, y los mecanismos de despliegue que queremos usar, elegimos el conector más adecuado.
 
 Proxy o RMI
 
-\section{Open API}
+Abstraen al cliente de la lógica para establecer la conexión, el protocolo de comunicación, formato de los mensajes, etc
+
+\subsection{Open API}
 
 \begin{wrapfigure}{r}{0.35\linewidth}
   \vspace{15pt}
-  \includegraphics[scale=0.34]{service_connectors/images/openapi-logo}
+  \includegraphics[scale=0.34]{02_arquitectura/images/openapi-logo}
   \centering
   \vspace{15pt}
 \end{wrapfigure}
