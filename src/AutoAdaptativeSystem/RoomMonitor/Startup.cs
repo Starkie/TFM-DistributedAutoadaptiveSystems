@@ -1,18 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-
 namespace RoomMonitor
 {
+    using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Text.Json.Serialization;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.OpenApi.Models;
     using MonitoringModule.ApiClient.Api;
+    using OpenTelemetry.Trace;
+    using OpenTelemetry.Resources;
     using RoomMonitor.Configurations;
 
     public class Startup
@@ -55,6 +56,17 @@ namespace RoomMonitor
                 MonitoringServiceConfiguration configuration = GetMonitoringServiceConfiguration(Configuration);
 
                 return new MonitorApi(configuration.ServiceUri);
+            });
+
+            services.AddOpenTelemetryTracing(builder =>
+            {
+                builder.SetResourceBuilder(ResourceBuilder
+                        .CreateDefault()
+                        .AddService(RoomMonitorConstants.AppName, serviceVersion: "ver1.0"))
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    // .AddSource("RoomMonitorModule")
+                    .AddJaegerExporter();
             });
         }
 
