@@ -58,21 +58,83 @@ Para que dos o más componentes puedan interactuar, necesitamos definir un mecan
 
 Por tanto, una vez hemos decidido que dos componentes deben comunicarse, es momento de evaluar cuál es el mecanismo de comunicación más adecuado. Para ello, podemos consultar la taxonomía de conectores de \cite{mehtaTaxonomySoftwareConnectors2000}. Basándonos en nuestros requisitos, la arquitectura ya definida, y los mecanismos de despliegue que queremos usar, elegimos el conector más adecuado.
 
-Proxy o RMI
+\section{Arquitectura de la solución}
 
-Abstraen al cliente de la lógica para establecer la conexión, el protocolo de comunicación, formato de los mensajes, etc
+Como comentamos en el \autoref{chap:introduccion}: \nameref{chap:introduccion}, el objetivo del trabajo es adaptar un servicio monolítico para que funcione como un sistema distribuido basado en microservicios. Se trata de un cambio arquitectonico importante. Por ello, queremos diseñar una solución ingenieril teniendo en cuenta las particularidades del sistema.
+
+Este servicio implementa un \textbf{bucle de control}, útil para dotar a un sistema con capacidades de computación autonoma. Especificamente, sigue la arquitectura del bucle MAPE-K\cite{ArchitecturalBlueprintAutonomic2006,fonsServiciosAdaptivereadyPara2021}, que mostramos en la figura \ref{fig:bucle-mapek2}. El objetivo de partida fue separar cada uno de los componentes del bucle en microservicios independientes.  \textcolor{red}{AÑADIR IMAGEN EJEMPLO DEL BUCLE DESCOMPUESTO EN MICROSERVICIOS. BUSCAR REFERENCIAS DE LIBROS SOBRE DIVIDIR MONOLITOS.}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.6]{01_introduccion/images/bucle-mape-k.png}
+  \caption[Arquitectura de un Bucle MAPE-K.]{Arquitectura de un Bucle MAPE-K.\footnotemark}
+  \label{fig:bucle-mapek2}
+\end{figure}
+
+% TODO: Cambiar por otra imagen sin typos.
+\footnotetext{Obtenido de: \url{https://wwwvs.cs.hs-rm.de/vs-wiki/index.php/(WS12-01)_Cloud/Dokumentation}}
+
+\textcolor{red}{Combinar con párrafo anterior: Actualmente, el sistema es un servicio monolitico que está muy acoplado a la solución. Queremos desacoplarlo para que pueda usarse la misma infraestructura para varios sistemas (\textit{multi-tennancy})}.
+
+\subsection{Distribución de los componentes}
+
+Por suerte, partimos de un sistema existente, con una arquitectura bien definida y documentada. Conociamos el rol de los componentes del servicio y sus requisitos. Asi que, el primer problema al que nos enfrentamos estaba relacionado con la distribución de los servicios. ¿Cómo definimos las fronteras entre cada uno de ellos?
+
+Una vez determinadas las "fronteras" entre los microservicios, hemos definido los componentes de nuestro sistema. Asi que, el primer problema al que nos enfrentamos estaba relacionado con la comunicación: si separamos las distintas etapas del bucle en microservicios, ¿cómo hacemos para que se comuniquen? Hay que tener en cuenta que estos pueden estar desplegados y replicados en distintas máquinas.
+
+Por la descripción de ambos componentes, vemos que existe una clara división de dominios y responsabilidades. Esto nos ayuda a determinar que ambos componentes pueden desplegarse por separado. \textcolor{red}{REFERENCIA 'Building Microservices' Sam Newman}
+
+\textcolor{red}{AMPLIAR}
+
+\subsection{Comunicación entre componentes}
+
+Una vez determinadas las "fronteras" entre los microservicios, hemos definido los componentes de nuestro sistema. Asi que, el primer problema al que nos enfrentamos estaba relacionado con la comunicación: si separamos las distintas etapas del bucle en microservicios, ¿cómo hacemos para que se comuniquen? Hay que tener en cuenta que estos pueden estar desplegados y replicados en distintas máquinas.
+
+Se convierte entonces en la búsqueda de los conectores más apropiados para cada par de componentes. Seguimos la estrategia descrita en \cite{taylorSoftwareArchitectureFoundations2009}. \textcolor{red}{AMPLIAR} Comenzamos eligiendo qué dos componentes queremos conectar.
+
+Tomemos por ejemplo la comunicación entre el servicio de monitorización (\textit{monitoring service}) y el servicio de conocimiento (\textit{knowledge service}). Los monitores deben ser capaces de consultar la base de conocimiento para leer y actualizar las propiedades de adaptación. De momento, en la figura \ref{fig:monitor-knowledge-initial}, representamos únicamente ambos componentes y un conector. Sin especificar qué tipo de conector será.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics{02_arquitectura/images/Monitor-Knowledge-Initial-Connector}
+  \caption{Boceto inicial: queremos conectar el servicio de monitorización con la base de conocimiento para poder leer propiedades de adaptación.}
+  \label{fig:monitor-knowledge-initial}
+\end{figure}
+
+Sabiendo que hemos optado por una arquitectura distribuida, la elección de conectores se simplifica. Podemos descartar los conectores como las llamadas a función o comunicación interproceso. Dado que los servicios pueden estar desplegados en máquinas distintas, sabemos también que el paso de mensajes será a través de la red.
+
+Por tanto, podemos elegir entre una comunicación dirigida por eventos o una comunicación directa cliente-servidor.
+
+En este caso, hemos optado por esta segunda opción. Nos parecía más razonable que el monitor exponga directamente una API HTTP pública. De esta forma, podríamos explotar el uso de OpenAPI, un DSL para describir APIs que explicaremos a continuación.
+
+Ya tenemos la parte de la API, expuesta por el servidor. Ahora nos queda la parte del cliente. ¿Cómo contactamos desde el monitor con la API? Implementamos las llamadas directamente con un cliente HTTP? Esto será muy costoso de mantener, y no será resiliente a los cambios. Será muy complicado.
+
+Por suerte, a partir de la especificación OpenAPI, podemos generar un componente que haga de cliente de la solución. Este cliente hace de Proxy y nos abstraen de la lógica para establecer la conexión, el protocolo de comunicación, formato de los mensajes, etc.
+
+%% TODO: Justificar división del dominio del bucle de control. Hay que hacer un diagrama que explique cómo queremos separar el dominio (probe y monitor) del propio bucle de control.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.75]{02_arquitectura/images/Monitor-Knowledge-Connector}
+  \caption{Diseño del conector usando implementación Cliente - Servidor}
+  \label{fig:monitor-knowledge-connector}
+\end{figure}
+
+\pagebreak
 
 \subsection{Open API}
 
 \begin{wrapfigure}{r}{0.35\linewidth}
-  \vspace{15pt}
+  % \vspace{15pt}
   \includegraphics[scale=0.34]{02_arquitectura/images/openapi-logo}
   \centering
-  \vspace{15pt}
+  % \vspace{15pt}
 \end{wrapfigure}
 
+OpenAPI\footnote{Open API specification: \url{https://spec.openapis.org/oas/latest.html}} es un lenguaje estándar para describir APIs implementadas sobre el protocolo HTTP. Es un \textit{domain specific language} que podemos utilizar para describir APIs de nuestras aplicaciones
+
 Para el desarrollo de este trabajo, hemos optado por utilizar conectores basados en APIs REST. Nos permitía utilizar mecanismos ya presentes en los microservicios que queríamos desarrollar, y que fueran más homogéneos.
-Para facilitar la compatibilidad de los microservicios, y facilitar el desarrollo de nuevos microservicios, hemos decidido usar la especificación OpenAPI\footnote{Open API specification: \url{https://spec.openapis.org/oas/latest.html}}. Se trata de un estándar para describir APIs implementadas sobre el protocolo HTTP.
+Para facilitar la compatibilidad de los microservicios, y facilitar el desarrollo de nuevos microservicios, hemos decidido usar la especificación OpenAPI.
 
 La principal ventaja que nos ofrecía OpenAPI era la posibilidad de generar código a partir de la especificación. Permite generar código tanto del cliente como del servidor. De esta forma, podíamos implementar nuestra API genérica en un lenguaje . En este caso, se decidió utilizar conjuntamente el lenguaje C\# junto con el framework ASP.NET Core, para implementar los microservicios iniciales.
 
@@ -80,4 +142,4 @@ A partir de estos microservicios, podemos exportar la especificación de OpenAPI
 
 Podemos observar cómo el método está decorado con atributos que describen el tipo de respuesta que produce, según el código de respuesta HTTP. Estos comentarios se utilizan en la generación de la especificación para obtener mejor implementación
 
-Después, haciendo uso de las librerías de generación de código de OpenAP.
+Después, haciendo uso de las librerías de generación de código de OpenAPI.
