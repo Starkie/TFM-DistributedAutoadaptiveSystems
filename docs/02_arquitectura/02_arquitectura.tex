@@ -39,23 +39,21 @@ Durante el diseño, para lidiar con la complejidad que pudiera alcanzar el siste
 
 Como hemos comentado antes, un sistema está conformado por \textbf{componentes} que implementan la funcionalidad de la aplicación. No suelen trabajar de forma aislada, si no que trabajan conjuntamente para realizar tareas más complejas. Por tanto, un aspecto clave es la integración y la interacción entre ellos. \cite{mehtaTaxonomySoftwareConnectors2000}
 
-Para que dos o más componentes puedan interactuar, necesitamos definir un mecanismo de comunicación. Para ello, recurrimos a los \textbf{conectores}. Se trata de elementos arquitectónicos que nos ayudan a diseñar y razonar sobre la comunicación entre componentes. Concretamente, representan la transferencia de datos y de control entre componentes. De esta forma, podemos estudiar la arquitectura y elegir los mecanismos adecuados para cada interacción del sistema. \cite{taylorSoftwareArchitectureFoundations2009}
+Para que dos o más componentes puedan interactuar, necesitamos definir un mecanismo de comunicación. Para ello, recurrimos a los \textbf{conectores}: se trata de elementos arquitectónicos que nos ayudan a diseñar y razonar sobre la comunicación entre componentes. Representan la transferencia de datos y de control entre componentes. En la figura \ref{fig:componentesEjemplo} mostramos una representación de la necesidad de comunicación entre dos componentes a través de un conector. No se ha especificado todavía ningún detalle sobre cómo se implementará. De esta forma, podemos estudiar la arquitectura y elegir los mecanismos adecuados para cada interacción del sistema. \cite{taylorSoftwareArchitectureFoundations2009}.
 
-\begin{figure}[h]
+\begin{figure}[h!]
   \centering
-  \includegraphics{02_arquitectura/images/conector}
+  \includegraphics[scale=0.78]{02_arquitectura/images/conector}
   \caption{Ejemplo de comunicación de dos componentes a través de un conector.}
   \label{fig:componentesEjemplo}
 \end{figure}
 
-En la figura \ref{fig:componentesEjemplo} tenemos un ejemplo de cómo se comunicarían dos componentes a través de un conector. De momento no hemos especificado nada excepto que ambos componentes deben comunicarse. No hemos definido detalles del medio que usarán, la dirección de la comunicación, etc. Se trata de un primer boceto de la arquitectura que utilizaremos para elegir el conector más adecuado.
-
-Los conectores cuentan con uno o más \textbf{conductos} o canales de comunicación. Estos conductos conectan los componentes asociados al conector. Existe una gran variedad de conectores posibles: comunicación interproceso, comunicación a través de la red, etc. Clasificamos los conectores según la complejidad de los canales que utilizan \cite{mehtaTaxonomySoftwareConnectors2000}:
+\textcolor{red}{A nivel de ¿diseño?}, los conectores están compuestos por uno o más \textbf{conductos} o canales de comunicación. A través de estos se lleva a cabo la comunicación entre los componentes. Hay una gran variedad de conductos posibles: comunicación interproceso, a través de la red, etc. Clasificamos los conectores según la complejidad de los canales que utilizan \cite{mehtaTaxonomySoftwareConnectors2000}:
 
 \begin{itemize}
-    \item \textbf{Conectores simples}: solo cuentan con un conducto, sin lógica asociada. Son conectores sencillos. Suelen venir implementados en los lenguajes de programación. Por ejemplo: una llamada a función en un programa o el sistema de entrada / salida de ficheros.
+    \item \textbf{Conectores simples}: solo cuentan con un conducto, sin lógica asociada. Son conectores sencillos. Suelen estar ya implementados en los lenguajes de programación. Por ejemplo: una llamada a función en un programa o el sistema de entrada / salida de ficheros.
 
-    \item \textbf{Conectores complejos}: cuentan con uno o más conductos. Pueden definirse por composición a partir de múltiples conectores simples. Además, suelen contar con funcionalidad para manejar el flujo de datos y/o control. Suelen utilizarse como parte de frameworks o librerias. Por ejemplo: un balanceador de carga que redirige peticiones a los nodos en base a peticiones anteriores.
+    \item \textbf{Conectores complejos}: cuentan con uno o más conductos. Se definen por composición a partir de múltiples conectores simples. Además, pueden contar con funcionalidad para manejar el flujo de datos y/o control. Suelen utilizarse importando \textit{frameworks} o librerias. Por ejemplo: un balanceador de carga que redirige peticiones a los nodos.
 \end{itemize}
 
 Por tanto, una vez hemos decidido que dos componentes deben comunicarse, es momento de evaluar cuál es el mecanismo de comunicación más adecuado. Para ello, podemos consultar la taxonomía de conectores de \cite{mehtaTaxonomySoftwareConnectors2000}. Basándonos en nuestros requisitos, la arquitectura ya definida, y los mecanismos de despliegue que queremos usar, elegimos el conector más adecuado.
