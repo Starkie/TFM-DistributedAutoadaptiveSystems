@@ -14,6 +14,8 @@ namespace TemperatureProbe
         {
             MeasurementApi measurementApi = new MeasurementApi("http://localhost:5000");
 
+            Guid probeId = new Guid("c02234d3-329c-4b4d-aee0-d220dc25276b");
+
             Random random = new Random();
 
             while (true)
@@ -25,7 +27,7 @@ namespace TemperatureProbe
 
                 try
                 {
-                    measurementApi.MeasurementTemperaturePost(new TemperatureMeasurementDTO(temperature, TemperatureUnit.CELSIUS));
+                    measurementApi.MeasurementTemperaturePost(new TemperatureMeasurementDTO(temperature, TemperatureUnit.CELSIUS, probeId, DateTime.UtcNow));
                 }
                 catch (Exception e)
                 {
