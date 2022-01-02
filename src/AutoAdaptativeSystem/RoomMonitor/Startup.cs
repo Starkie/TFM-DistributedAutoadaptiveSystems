@@ -5,6 +5,7 @@ namespace RoomMonitor
     using System.IO;
     using System.Linq;
     using System.Text.Json.Serialization;
+    using MediatR;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -65,9 +66,13 @@ namespace RoomMonitor
                         .AddService(RoomMonitorConstants.AppName, serviceVersion: "ver1.0"))
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
-                    // .AddSource("RoomMonitorModule")
+                    .AddSource(RoomMonitorConstants.AppName)
                     .AddJaegerExporter();
             });
+
+            services.AddSingleton<RoomMonitorDiagnostics>();
+
+            services.AddMediatR(typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

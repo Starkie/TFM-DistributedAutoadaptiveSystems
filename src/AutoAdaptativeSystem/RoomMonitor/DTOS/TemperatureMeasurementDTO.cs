@@ -1,6 +1,9 @@
 namespace RoomMonitor.DTOS
 {
-    public class TemperatureMeasurementDTO
+    using System;
+    using MediatR;
+
+    public class TemperatureMeasurementDTO : IRequest
     {
         /// <summary>
         ///     The value of the temperature measurement.
@@ -8,6 +11,10 @@ namespace RoomMonitor.DTOS
         public double Value { get; set; }
 
         public TemperatureUnit Unit { get; set; }
+
+        public Guid ProbeId { get; set; }
+
+        public DateTime DateTime { get; set; }
     }
 
     public enum TemperatureUnit

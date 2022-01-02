@@ -167,6 +167,14 @@
           },
           "unit": {
             "$ref": "#/components/schemas/TemperatureUnit"
+          },
+          "probeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dateTime": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false
