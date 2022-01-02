@@ -41,6 +41,9 @@ Como hemos comentado antes, un sistema está conformado por \textbf{componentes}
 
 Para que dos o más componentes puedan interactuar, necesitamos definir un mecanismo de comunicación. Para ello, recurrimos a los \textbf{conectores}: se trata de elementos arquitectónicos que nos ayudan a diseñar y razonar sobre la comunicación entre componentes. Representan la transferencia de datos y de control entre componentes. En la figura \ref{fig:componentesEjemplo} mostramos una representación de la necesidad de comunicación entre dos componentes a través de un conector. No se ha especificado todavía ningún detalle sobre cómo se implementará. De esta forma, podemos estudiar la arquitectura y elegir los mecanismos adecuados para cada interacción del sistema. \cite{taylorSoftwareArchitectureFoundations2009}.
 
+%% TODO: Los conectores son application-independent. No dependen de la funcionalidad de la aplicación.
+%% TODO: Hablar de la cardinalidad de los conectores.
+
 \begin{figure}[h!]
   \centering
   \includegraphics[scale=0.78]{02_arquitectura/images/conector}
@@ -84,15 +87,24 @@ Una vez determinadas las "fronteras" entre los microservicios, hemos definido lo
 
 Por la descripción de ambos componentes, vemos que existe una clara división de dominios y responsabilidades. Esto nos ayuda a determinar que ambos componentes pueden desplegarse por separado. \textcolor{red}{REFERENCIA 'Building Microservices' Sam Newman}
 
+\textcolor{red}{TODO: Layered architecture. Dos capas: Distinguimos entre los microservicios clientes (monitores / sensores, reglas especifícas, etc) (círculo externo) y los microservicios de nuestro bucle MAPE-K (monitoring service, knowledge service...) (círculo interno). De esta forma podemos distinguir las responsabilidades de cada capa y como ocurre la comunicación entre ellas. Restringir la dirección de la comunicación por niveles. Comandos hacia arriba, notificaciones hacia abajo. Por ej: Podría ocurrir que cuando la información viene del dominio ''hacia dentro'', la comunicación sea a través de APIs REST y clientes autogenerados con OpenAPI. Pero, cuando la información fluye del bucle ''hacia fuera'', por ej del Analyser a las reglas, se hace mediante brokers de mensajería -> Menos acoplamiento.}
+
 \textcolor{red}{AMPLIAR}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.3]{02_arquitectura/images/mape-k-microservices}
+  \caption{Diagrama con los componentes que forman nuestra arquitectura distribuida}
+  \label{fig:mape-k-microservices}
+\end{figure}
 
 \subsection{Comunicación entre componentes}
 
-Una vez determinadas las "fronteras" entre los microservicios, hemos definido los componentes de nuestro sistema. Asi que, el primer problema al que nos enfrentamos estaba relacionado con la comunicación: si separamos las distintas etapas del bucle en microservicios, ¿cómo hacemos para que se comuniquen? Hay que tener en cuenta que estos pueden estar desplegados y replicados en distintas máquinas.
+Una vez determinadas las ''fronteras'' entre los microservicios, hemos definido los componentes de nuestro sistema. El siguiente problema al que nos enfrentamos fue la comunicación: si separamos las distintas etapas del bucle en microservicios, ¿cómo hacemos para que se comuniquen? Debemos tener en cuenta que estos pueden estar desplegados en máquinas distintas.
 
-Se convierte entonces en la búsqueda de los conectores más apropiados para cada par de componentes. Seguimos la estrategia descrita en \cite{taylorSoftwareArchitectureFoundations2009}. \textcolor{red}{AMPLIAR} Comenzamos eligiendo qué dos componentes queremos conectar.
+Comenzamos entonces la búsqueda de los conectores más apropiados para cada par de componentes. Seguimos la estrategia descrita en \cite{taylorSoftwareArchitectureFoundations2009} y consultando patrones de comunicación en sistemas distribuidos descritos en \cite{newmanBuildingMicroservicesDesigning2021}. \textcolor{red}{AMPLIAR} Comenzamos eligiendo qué dos componentes queremos conectar.
 
-Tomemos por ejemplo la comunicación entre el servicio de monitorización (\textit{monitoring service}) y el servicio de conocimiento (\textit{knowledge service}). Los monitores deben ser capaces de consultar la base de conocimiento para leer y actualizar las propiedades de adaptación. De momento, en la figura \ref{fig:monitor-knowledge-initial}, representamos únicamente ambos componentes y un conector. Sin especificar qué tipo de conector será.
+Tomemos por ejemplo la comunicación entre el servicio de monitorización (\textit{monitoring service}) y el servicio de conocimiento (\textit{knowledge service}). Recordemos que el servicio de conocimiento almacena todas las propiedades de adaptación. El resto de servicios necesitan consultar y actualizarlas durante su funcionamiento. En la figura \ref{fig:monitor-knowledge-initial} representamos inicialmente ambos componentes y un conector, sin especificar de qué tipo será.
 
 \begin{figure}[h]
   \centering
@@ -101,11 +113,98 @@ Tomemos por ejemplo la comunicación entre el servicio de monitorización (\text
   \label{fig:monitor-knowledge-initial}
 \end{figure}
 
-Sabiendo que hemos optado por una arquitectura distribuida, la elección de conectores se simplifica. Podemos descartar los conectores como las llamadas a función o comunicación interproceso. Dado que los servicios pueden estar desplegados en máquinas distintas, sabemos también que el paso de mensajes será a través de la red.
+El siguiente paso es identificar qué interacciones debe existir entre ambos componentes. En este caso, el servicio de monitorización debe contactar con el servicio de conocimiento para leer y actualizar el valor de las propiedades. Por tanto, existen operaciones de lectura y escritura de los datos.
 
-Por tanto, podemos elegir entre una comunicación dirigida por eventos o una comunicación directa cliente-servidor.
+Ahora, debemos identificar qué \textbf{tipos de conector} serían adecuados para nuestros componentes. Sabiendo que hemos optado por una arquitectura distribuida, la elección se simplifica: los servicios pueden estar desplegados en máquinas distintas, por tanto el paso de mensajes será a través de la red.
 
-En este caso, hemos optado por esta segunda opción. Nos parecía más razonable que el monitor exponga directamente una API HTTP pública. De esta forma, podríamos explotar el uso de OpenAPI, un DSL para describir APIs que explicaremos a continuación.
+Sabiendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonomySoftwareConnectors2000}, optamos por consultar las estrategias de comunicación habituales para sistemas distribuidos descritas en \cite{newmanBuildingMicroservicesDesigning2021}. Se trata de cuatro mecanismos distintos: Invocación a métodos remotos (\textit{Remote Procedure Call}), APIs REST, consultas con GraphQL o \textit{brokers} de mensajería. Tuvimos que evaluarlos mediante un análisis de \textit{trade-offs} para determinar las ventajas y desventajas de cada uno.
+
+\begin{itemize}
+  \item \textbf{Invocación de métodos remotos} o (\textit{\textbf{Remote Procedure Call}}): Se trata de un paradigma de objetos distribuidos. \cite{taylorSoftwareArchitectureFoundations2009} Nuestro programa interactúa con objetos que se encuentran en servidores remotos. \textcolor{red}{Suele implementarse con objetos que actúan como un \textit{proxy}: ofrecen una interfaz para que el cliente invoque sus funciones localmente. Estas funciones internamente realizan una llamada al servicio remoto, donde se encuentre este objeto.} El servidor remoto procesa la petición y nos devolverá un resultado. Así, abstraen al cliente de todo este proceso de comunicación.
+
+  Estos \textit{proxies} suelen generarse a partir de un contrato, que define que operaciones ofrecen estos objetos.
+  Existen varios protocolos que implementan este mecanismo, como Java RMI, gRPC o SOAP.
+
+  \begin{itemize}
+    \item \textbf{Ventajas}:
+    \begin{itemize}
+      \item Permite la distribución del procesamiento del sistema.
+
+      \item Abstrae al cliente de esta interacción a un servidor remoto. No tenemos que implementar la interacción con el servidor.
+
+      \item Al haber un contrato definido, podemos generar los \textit{proxies} o clientes basados en este contrato. Por ejemplo: SOAP con WDSL o gRPC.
+    \end{itemize}
+
+    \item \textbf{Desventajas}:
+    \begin{itemize}
+      \item No se puede abstraer completamente al cliente de las llamadas a través de la red. Pueden darse errores que no ocurrirían durante una invocación de un método sobre un objeto local. Por ejemplo, que el servidor no esté disponible. \cite{jausovecFallaciesDistributedSystems2020}
+
+      \item Si adoptamos sistemas como Java RMI, nuestro sistema se acopla a esa tecnología concreta. \cite{newmanBuildingMicroservicesDesigning2021}. Nos resta flexibilidad en cuanto a qué otras tecnologías podemos utilizar en nuestra arquitectura.
+
+      \item El cliente debe actualizarse y recompilarse con cada cambio en el esquema del servidor. Esto puede ser problemático para casos donde tenemos que desplegar una actualización para que nuestros clientes puedan continuar utilizando la aplicación.
+    \end{itemize}
+  \end{itemize}
+
+  \item \textbf{\textit{Representational State Transfer} (REST)}: Se trata de un estilo arquitectónico basado en el estilo cliente - servidor, pero con ciertas restricciones adicionales. \cite{taylorSoftwareArchitectureFoundations2009} Su concepto principal son los \textbf{recursos}: cualquier elemento que pueda tener asociado un identificador (una URI). \cite{richardsonRESTfulWebServices2007} Sobre los recursos podemos ejecutar una serie de acciones definidas por el protocolo de comunicación. Normalmente, el protocolo es HTTP.
+
+  \begin{itemize}
+    \item \textbf{Ventajas}:
+
+    \begin{itemize}
+      \item \textbf{Escalable}:
+
+      \item \textbf{\textit{Stateless}}: El servidor no mantiene el estado de la operación.
+
+      \item \textbf{Interoperabilidad}: Ampliamente utilizado en servicios de Internet. Es ideal para que clientes externos contacten con nuestro sistema mediante peticiones síncronas. \cite{newmanBuildingMicroservicesDesigning2021}
+    \end{itemize}
+  \end{itemize}
+
+  \begin{itemize}
+    \item \textbf{Desventajas}:
+
+    \begin{itemize}
+      \item \textbf{Rendimiento}: El rendimiento es peor comparado con cualquier mecanismo RPC binario. La información serializada en XML o JSON es mayor que si estuviera en un formato binario.
+
+      \item \textbf{Rendimiento}: El rendimiento es peor comparado con cualquier mecanismo RPC binario. La información serializada en XML o JSON es mayor que si estuviera en un formato binario.
+    \end{itemize}
+  \end{itemize}
+
+  \item \textbf{GraphQL}\footnote{Página oficial: \url{https://graphql.org/}}: Se trata de un protocolo para que un cliente pueda hacer consultas personalizadas sobre los datos de un servidor. No necesitan que haya sido implementado con lógica asociada. De esta forma, se puede reducir la cantidad de peticiones a través de la red que se necesita ejecutar para obtener la misma información.
+
+  \begin{itemize}
+    \item \textbf{Ventajas}:
+
+    \begin{itemize}
+      \item \textbf{Ideal para móviles}: Gracias a que reduce la cantidad de llamadas, es ideal para entornos donde queremos optimizar el uso de datos.
+
+      \item \textbf{Rendimiento}: Ofrece un mayor rendimiento comparado con otras alternativas que no ofrezcan un endpoint ya implementado. Y debamos obtener la misma información por composición, haciendo varias llamadas.
+    \end{itemize}
+  \end{itemize}
+
+  \begin{itemize}
+    \item \textbf{Desventajas}:
+
+    \begin{itemize}
+      \item \textbf{Exponemos datos a la red}:
+
+      \item \textbf{Problemas de rendimiento}: El cliente puede hacer consultas muy pesadas que penalicen el rendimiento de la base de datos sobre la que opera nuestro servicio.
+    \end{itemize}
+  \end{itemize}
+
+  \item \textbf{\textit{Brokers} de mensajería}:
+\end{itemize}
+
+\textcolor{red}{De estas cuatro opciones, podemos descartar inmediatamente la opción de GraphQL. Se trata de un conector más orientado a las consultas de datos. Nosotros necesitamos ejecutar escrituras de los valores de las propiedades. Aunque podría implementarse para el servicio de las lecturas, no preveemos que las consultas de las propiedades requieran de agregación de datos. Simplemente se obtiene el valor de una propiedad.}
+
+\textcolor{red}{Por otro lado, una de nuestras prioridades es la interoperabilidad, para que cualquier microservicio que implemente esta API peuda comunicarse con nuestro servicio. Finalmente, queríamos que la comunicación fuese síncrona a la hora de solicitar propiedades, por lo que nos terminamos decantando por REST sobre HTTP.}
+
+Aun así, queríamos aprovechar algunas de las ventajas que ofrece RPC para simplificar la integración de nuestra API con las librerias clientes.
+
+\textdagger{\textcolor{red}{A continuación, debemos identificar qué \textbf{rol} debe jugar este conector. Se trata de cubrir la \textbf{comunicación} entre dos componentes: necesitamos enviar y recibir datos del servicio de persistencia. También detectamos que es necesaria la \textbf{coordinación} entre los componentes. Por ejemplo, para la lectura de propiedades debemos contactar con otro servicio, y esperar su respuesta. Hay por tanto una transferencia de control entre ellos. Respecto al resto de roles, de momento no hemos detectado necesidad de conversión o facilitación.}}
+
+En este caso, hemos optado por una mezcla de RPC implementado sobre HTTP. No se trata de una implementación del todo rest. Pero de esta forma, podíamos evitar acoplarnos a una tecnología concreta, como describe el libro. Nos parecía más razonable que el monitor exponga directamente una API HTTP pública. De esta forma, podríamos explotar el uso de OpenAPI, un DSL para describir APIs que explicaremos a continuación.
+
+Así, mejoramos la compatibilidad con cualquier cliente, y nos daba más flexibilidad.
 
 Ya tenemos la parte de la API, expuesta por el servidor. Ahora nos queda la parte del cliente. ¿Cómo contactamos desde el monitor con la API? Implementamos las llamadas directamente con un cliente HTTP? Esto será muy costoso de mantener, y no será resiliente a los cambios. Será muy complicado.
 
