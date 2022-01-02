@@ -2,22 +2,22 @@ namespace KnowledgeService.Controllers
 {
     using System;
     using System.Collections.Concurrent;
+    using KnowledgeService.Diagnostics;
     using KnowledgeService.DTOs;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
 
     [ApiController]
     [Route("[controller]")]
     public class PropertyController : ControllerBase
     {
+        private readonly KnowledgeServiceDiagnostics _diagnostics;
+
         private static ConcurrentDictionary<string, PropertyDTO> properties = new();
 
-        private readonly ILogger<PropertyController> _logger;
-
-        public PropertyController(ILogger<PropertyController> logger)
+        public PropertyController(KnowledgeServiceDiagnostics diagnostics)
         {
-            _logger = logger;
+            _diagnostics = diagnostics;
         }
 
         /// <summary>
@@ -39,18 +39,18 @@ namespace KnowledgeService.Controllers
                 return BadRequest();
             }
 
-            _logger.LogInformation("[{Action}] - Get property '{PropertyName}'.", nameof(GetProperty), propertyName);
+            using var activity = _diagnostics.LogGetProperty(propertyName);
 
             bool foundProperty = properties.TryGetValue(propertyName, out PropertyDTO property);
 
             if (!foundProperty)
             {
-                _logger.LogInformation("[{Action}] - Property '{PropertyName}' not found.", nameof(GetProperty), propertyName);
+                _diagnostics.LogPropertyNotFound(propertyName);
 
                 return NotFound();
             }
 
-            _logger.LogInformation("[{Action}] - Property '{PropertyName}' found. Value: '{PropertyValue}'", nameof(GetProperty), propertyName, property.Value);
+            _diagnostics.LogPropertyFound(propertyName, property);
 
             return Ok(property);
         }
@@ -73,7 +73,7 @@ namespace KnowledgeService.Controllers
                 return BadRequest();
             }
 
-            _logger.LogInformation("[{Action}] - Set property '{PropertyName}' with value '{PropertyValue}'.", nameof(SetProperty), propertyName, setPropertyDto.Value);
+            using var activity = _diagnostics.LogSetProperty(propertyName, setPropertyDto);
 
             PropertyDTO newValue = new()
             {
@@ -82,6 +82,39 @@ namespace KnowledgeService.Controllers
             };
 
             properties.AddOrUpdate(propertyName, newValue, (_, _) => newValue);
+
+            return NoContent();
+        }
+
+        /// <summary>
+        ///    Deletes the value of a given property.
+        /// </summary>
+        /// <param name="propertyName"> The name of the property to delete. </param>
+        /// <returns> An IActionResult with result of the command. </returns>
+        /// <response code="204"> The property was deleted successfully. </response>
+        /// <response code="400"> There was an error with the provided arguments. </response>
+        /// <response code="404"> The property was not found. </response>
+        [HttpDelete("{propertyName}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult DeleteProperty([FromRoute]string propertyName)
+        {
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                return BadRequest();
+            }
+
+            using var activity = _diagnostics.LogDeleteProperty(propertyName);
+
+            properties.TryRemove(propertyName, out var value);
+
+            if (value is null)
+            {
+                _diagnostics.LogPropertyNotFound(propertyName);
+
+                return NotFound();
+            }
 
             return NoContent();
         }

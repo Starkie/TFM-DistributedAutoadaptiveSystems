@@ -15,6 +15,9 @@ using Microsoft.OpenApi.Models;
 namespace KnowledgeService
 {
     using System.IO;
+    using KnowledgeService.Diagnostics;
+    using OpenTelemetry.Resources;
+    using OpenTelemetry.Trace;
 
     public class Startup
     {
@@ -45,6 +48,19 @@ namespace KnowledgeService
 
                 xmlFiles.ForEach(xmlFile => c.IncludeXmlComments(xmlFile));
             });
+
+            services.AddOpenTelemetryTracing(builder =>
+            {
+                builder.SetResourceBuilder(ResourceBuilder
+                        .CreateDefault()
+                        .AddService(KnowledgeServiceConstants.AppName, serviceVersion: "ver1.0"))
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddSource(KnowledgeServiceConstants.AppName)
+                    .AddJaegerExporter();
+            });
+
+            services.AddSingleton<KnowledgeServiceDiagnostics>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
