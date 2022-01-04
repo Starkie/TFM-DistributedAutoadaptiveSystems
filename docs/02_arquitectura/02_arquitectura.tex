@@ -79,7 +79,7 @@ Este servicio implementa un \textbf{bucle de control}, útil para dotar a un sis
 
 \textcolor{red}{Combinar con párrafo anterior: Actualmente, el sistema es un servicio monolitico que está muy acoplado a la solución. Queremos desacoplarlo para que pueda usarse la misma infraestructura para varios sistemas (\textit{multi-tennancy})}.
 
-\subsection{Distribución de los componentes}
+\subsection{Distribución de los componentes \textcolor{red}{TODO: MUY INCOMPLETO}}
 
 Por suerte, partimos de un sistema existente, con una arquitectura bien definida y documentada. Conociamos el rol de los componentes del servicio y sus requisitos. Asi que, el primer problema al que nos enfrentamos estaba relacionado con la distribución de los servicios. ¿Cómo definimos las fronteras entre cada uno de ellos?
 
@@ -87,16 +87,83 @@ Una vez determinadas las "fronteras" entre los microservicios, hemos definido lo
 
 Por la descripción de ambos componentes, vemos que existe una clara división de dominios y responsabilidades. Esto nos ayuda a determinar que ambos componentes pueden desplegarse por separado. \textcolor{red}{REFERENCIA 'Building Microservices' Sam Newman}
 
-\textcolor{red}{TODO: Layered architecture. Dos capas: Distinguimos entre los microservicios clientes (monitores / sensores, reglas especifícas, etc) (círculo externo) y los microservicios de nuestro bucle MAPE-K (monitoring service, knowledge service...) (círculo interno). De esta forma podemos distinguir las responsabilidades de cada capa y como ocurre la comunicación entre ellas. Restringir la dirección de la comunicación por niveles. Comandos hacia arriba, notificaciones hacia abajo. Por ej: Podría ocurrir que cuando la información viene del dominio ''hacia dentro'', la comunicación sea a través de APIs REST y clientes autogenerados con OpenAPI. Pero, cuando la información fluye del bucle ''hacia fuera'', por ej del Analyser a las reglas, se hace mediante brokers de mensajería -> Menos acoplamiento.}
-
-\textcolor{red}{AMPLIAR}
-
 \begin{figure}[h]
   \centering
   \includegraphics[scale=0.3]{02_arquitectura/images/mape-k-microservices}
   \caption{Diagrama con los componentes que forman nuestra arquitectura distribuida}
   \label{fig:mape-k-microservices}
 \end{figure}
+
+\textcolor{red}{En este caso, ponian como ejemplo un estilo arquitectónico que se llama C2 (components and connectors, creo) . La idea era tener capas o niveles de microservicios. Un microservicio en una capa concreta solo pueden contactar con sus vecinos (inmediatamente superior e inmediatamente inferior). Dentro del mismo nivel no pueden contactar entre ellos. Según la dirección de la comunicación, se utilizan mecanismos distintos:}
+
+\begin{itemize}
+  \item \textbf{Peticiones}: Un microservicio de más abajo en la jerarquía (o más externo), se comunica con un vecino que está más arriba. Por ejemplo, sería el caso de cuando el servicio de monitorización escribe una propiedad en el servicio de conocimiento.
+
+  \item \textbf{Notificaciones}: Un microservicio de más arriba en la jerarquía (o mas interno), se comunica con un vecino que está por debajo de él. Por ejemplo, cuando el servicio de conocimiento notifica al servicio de análisis que ha cambiado una propiedad.
+\end{itemize}
+
+He encontrado una imagen que lo describe más o menos:
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.45]{02_arquitectura/images/c2SampleArch}
+  \caption{Ejemplo del estilo arquitectónico C2 (\textit{Components and Connectors}). \cite{UCISoftwareArchitecture}}
+  \label{fig:C2-arch-example}
+\end{figure}
+
+Mi propuesta entonces sería inspirarnos un poco en esta aproximación. Asi aprovechamos para dividir los microservicios en niveles y elegir los mecanismos para cada tipo de comunicación.
+
+Yo distinguiría entre 4 niveles, desde más externo a más interno:
+
+\begin{itemize}
+  \item \textbf{Más externo}: Sondas y Efectores. Son los elementos que ya tienen más contacto con el sistema gestionado por el bucle. Cuanto menos esté acoplado el bucle a ellos mejor.
+
+  \item \textbf{Nivel de solución}: En esta capa se encuentran los microservicios específicos a una solución concreta. En el ejemplo que te mostré el otro día, sería el servicio de Room Monitor, que monitoriza la temperatura de una habitación
+
+  \item \textbf{Nivel del bucle}: Aquí se encuentran los servicios del propio bucle: servicio de monitorización, análisis, planificación y ejecución. Esta capa no debería tener dependencias con los microservicios de la solución. Es justo lo queríamos abordar en este trabajo.
+
+  \begin{itemize}
+    \item También se aprecia algo que implementé en mi solución: el servicio de monitorizacion hace de intermediario entre los monitores de la solución y el conocimiento. No se accede directamente a estas propiedades.
+  \end{itemize}
+
+  \item \textbf{Conocimiento}: Es la capa más interna y la base de la arquitectura. Todos los microservicios de la capa del bucle dependen de ella para funcionar.
+
+\end{itemize}
+
+Me he basado en el diagrama típico de Clean Architecture para representar un poco la idea:
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.45]{02_arquitectura/images/clean-arch-2-MAPEK-style}
+  \caption[Representación de nuestra propuesta arquitectónica. Inspirado en Arquitectura Limpia (\textit{Clean Architecture}).]{Representación de nuestra propuesta arquitectónica. Inspirado en Arquitectura Limpia (\textit{Clean Architecture}). \footnotemark }
+  \label{fig:clean-mapek-architecture}
+\end{figure}
+
+\footnotetext{Imagen original de arquitectura limpia obtenida de: \url{https://threedots.tech/post/ddd-cqrs-clean-architecture-combined/}}
+
+
+En el dibujo, las flechas de "fuera hacia adentro" representarían las Peticiones (o requests). Las notificaciones irían en sentido contrario.
+
+Mi idea entonces es definir dos tipos de conectores:
+
+\begin{itemize}
+  \item \textbf{Peticiones}: Utilizamos la estrategia que ya definimos en el hito anterior. Los servicios ofrecen APIs REST con una serie de operaciones. Las peticiones fluyen de microservicios más externos a los más internos, mediante llamadas HTTP.
+
+  \begin{itemize}
+    \item Por ejemplo, en el hito anterior: Probe -> Monitor -> Monitoring Service -> Knowledge
+
+    \item Utilizamos OpenAPI para autogenerar clientes, así facilitamos la implementación de los clientes en cualquier lenguaje
+  \end{itemize}
+
+  \item \textbf{Notificaciones}: En este caso optaría por usar brokers de mensajería (o algo parecido), de forma que los microservicios de capas más internos notifican a las más externas, sin necesidad de acoplarse directamente. Cada capa estaría suscrita a los eventos de la que esté por debajo de ella. Por ejemplo: Analysis Service se suscribe a Knowledge, las Reglas de Adaptación se suscriben al Analysis Service, etc.
+
+  \begin{itemize}
+    \item Seguiría un poco la filosofía que comentamos hace un tiempo para independizar el módulo de análisis del de monitorización.
+
+    \item Podríamos investigar la idea que has comentado, de un conector que abstraiga al cliente de esta suscripción a una cola de mensajería. A esto no le he dado muchas vueltas aun.
+  \end{itemize}
+
+\end{itemize}
 
 \subsection{Comunicación entre componentes}
 
