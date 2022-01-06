@@ -1,14 +1,22 @@
-\chapter{Arquitecturas de \textit{software}}
+\chapter{Arquitectura de la solución}
 
-Según \cite{taylorSoftwareArchitectureFoundations2009}, la {\bf arquitectura de un sistema \textit{software}} es el conjunto de todas las decisiones de diseño principales que se toman durante la vida del sistema, aquellas que sientan las bases del desarrollo. \textcolor{red}{Se podría establecer un simil con los planos de construcción de un edificio.} Estas decisiones no solo se toman durante su concepción, si no también durante su desarrollo y posterior evolución.
+\textcolor{red}{En este capítulo vamos a describir los fundamentos de la arquitectura que hemos diseñado para este sistema. Comenzaremos dando una definición de las arquitecturas de \textit{software} y sus elementos. Después describiremos la arquitectura de la solución.}
 
-La arquitectura afecta a todos los apartados del sistema: su estructura, funcionalidad, la implementación\dots Por ejemplo, una decisión de diseño principal que se suele tomar en las fases tempranas del desarrollo es la elección de la topología para la solución. Optar por desarrollar un servicio monolítico o una arquitectura basada en microservicios va a condicionar prácticamente todo el desarrollo. Desde el diseño, la implementación, el testeo, y sobre todo, el despliegue y operación. \textcolor{red}{Por tanto, es vital dedicar tiempo para definir la arquitectura en base a las necesidades de nuestro sistema.}
+\section{Arquitecturas de \textit{software}}
 
-\section{Decisiones principales de diseño}
+Según \cite{taylorSoftwareArchitectureFoundations2009}, la {\bf arquitectura de un sistema \textit{software}} es el conjunto de todas las \textbf{decisiones principales de diseño} que se toman durante su ciclo de vida; aquellas que sientan las bases del sistema. Estas afectan a todos sus apartados: la funcionalidad que debe ofrecer, la tecnología para su implementación, cómo se desplegará, etc. En conjunto, definen una pauta que guía (y a la vez refleja) el diseño, la implementación, la operación y la evolución del sistema.
 
-Las decisiones principales de diseño normalmente se resumen en comparativas entre distintas alternativas, cada una de ellas con sus ventajas e inconvenientes. Con el paso del tiempo, y con el avance del desarrollo, estas elecciones comienzan a asentarse, y se vuelven más dificiles de cambiar o rectificar.
+\textcolor{red}{Podemos utilizarla de referencia para conocer detalles su estructura, su implementación\dots Se podría establecer un símil con los planos de construcción de un edificio. Nos provee de un marco de referencia común, de decisiones que nos nos provee con un vocabulario común, que nos permite describir sistemas}
 
-Pueden tomarse en base a distintos criterios. Entre ellos podemos destacar: [Citation needed]
+La principal función de una buena arquitectura es dotar de estructura a nuestro sistema. \cite{martinCleanArchitectureCraftsman2018} Una buena arquitectura nos ofrece una serie de ventajas, como facilitar su desarrollo, mayor extensibilidad. Por tanto, es vital dedicar tiempo para definirla atendiendo a las necesidades de nuestro sistema.
+
+\subsection{Decisiones principales de diseño}
+
+Las decisiones principales de diseño son todas aquellas decisiones importantes que afectan a los fundamentos de nuestro sistema. Tienen gran importancia porque con el paso del tiempo, y con el avance del desarrollo, estas elecciones comienzan a asentarse, y se vuelven más difíciles de cambiar o rectificar. \cite{taylorSoftwareArchitectureFoundations2009} Estas no solo se toman durante la concepción del sistema, si no que también pueden surgir durante el desarrollo y posterior evolución.
+
+Por ejemplo, una decisión de diseño principal que se suele tomar en las fases tempranas del desarrollo es la elección de la topología para la solución. Optar entre desarrollar un servicio monolítico, o un sistema formado por microservicios, va a condicionar prácticamente todo el desarrollo.
+
+\textcolor{red}{Las decisiones principales de diseño normalmente se resumen en comparativas entre distintas alternativas, cada una de ellas con sus ventajas e inconvenientes.} Pueden tomarse en base a distintos criterios. Entre ellos podemos destacar: \textcolor{red}{[Citation needed]}
 
     \begin{itemize}
         \item \textbf{Requisitos del sistema:} a partir del dominio y las necesidades de nuestros usuarios, podemos deducir: la funcionalidad a implementar, las restricciones que debemos respetar y otras propiedades que debe poseer el sistema.
@@ -18,9 +26,13 @@ Pueden tomarse en base a distintos criterios. Entre ellos podemos destacar: [Cit
         \item \textbf{Experiencia previa:} del desarrollo de este u otros sistemas. Podemos obtener métricas del funcionamiento y uso de nuestro sistema para informar decisiones futuras. \textcolor{red}{[Cita devops]}
     \end{itemize}
 
-\section{Componentes de una arquitectura}
+\subsection{Estilos arquitectónicos}
 
-Según el estándar IEEE 42010-2011 \cite{ieeeStandard420102011Systems2011}, la arquitectura de un sistema es "\textit{un conjunto de conceptos o propiedades fundamentales, personificados por sus elementos, sus relaciones, y los principios que guían su diseño y evolución}". Nos provee de un marco de referencia común, de decisiones que nos nos provee con un vocabulario común, que nos permite describir sistemas
+\textcolor{red}{Este conjunto de decisiones principales Una decisión de diseño principal que se suele tomar en las fases tempranas del desarrollo es la elección de un \textbf{estilo arquitectónico} para la solución. Se trata de una serie de decisiones de diseño prinEstos imponen una serie de restricciones en cuanto a la implementación del sistema, pero a su vez nos aporta una serie de beneficios... Optar por desarrollar un servicio monolítico o una arquitectura basada en microservicios va a condicionar prácticamente todo el desarrollo. Desde el diseño, la implementación, el testeo, y sobre todo, el despliegue y operación.}
+
+\subsection{Componentes de una arquitectura}
+
+Otra posible definición de arquitectura la encontramos en el estándar IEEE 42010-2011 \cite{ieeeStandard420102011Systems2011}: es "\textit{un conjunto de conceptos o propiedades fundamentales, personificados por sus elementos, sus relaciones, y los principios que guían su diseño y evolución}".
 
 Por tanto, podemos describirla usando tres conceptos: \cite{perryFoundationsStudySoftware1992}
 
@@ -35,9 +47,9 @@ Por tanto, podemos describirla usando tres conceptos: \cite{perryFoundationsStud
 
 \textcolor{red}{La arquitectura de un sistema puede contar con diferentes vistas, según aquel aspecto que deseemos resaltar. Por ejemplo, puede interesarnos más la interacción entre los componentes. O cosas por el estilo.}
 
-Durante el diseño, para lidiar con la complejidad que pudiera alcanzar el sistema, solemos recurrir a descomponerlos usando diseños modulares: sistemas compuestos por unidades de funcionalidad que tienen una función específica. \cite{taylorSoftwareArchitectureFoundations2009} Estos elementos funcionales son los componentes. Dependiendo de las características de nuestro sistema, pueden tomar distintas formas: módulos dentro un mismo proceso, servicios distribuidos, etc.
+Durante el diseño, para lidiar con la complejidad que pudiera alcanzar el sistema, recurrimos a dos mecanismos: la abstracción y la separación de responsabilidades. \cite{martinCleanArchitectureCraftsman2018} Con ellas, podemos identificar distintas unidades de funcionalidad con una responsabilidad. \cite{taylorSoftwareArchitectureFoundations2009} Estos elementos son los \textbf{componentes}. Dependiendo de las características de nuestro sistema, pueden tomar distintas formas: módulos dentro un mismo proceso, servicios distribuidos, etc.
 
-Como hemos comentado antes, un sistema está conformado por \textbf{componentes} que implementan la funcionalidad de la aplicación. No suelen trabajar de forma aislada, si no que trabajan conjuntamente para realizar tareas más complejas. Por tanto, un aspecto clave es la integración y la interacción entre ellos. \cite{mehtaTaxonomySoftwareConnectors2000}
+Por si solos, estos componentes independientes no aportan mucho valor. \textcolor{red}{Utilizando diseños modulares, podemos agregarlos junto con otros para que trabajen conjuntamente para realizar tareas más complejas.} Por tanto, un aspecto clave es la integración y la interacción entre ellos. \cite{mehtaTaxonomySoftwareConnectors2000}
 
 Para que dos o más componentes puedan interactuar, necesitamos definir un mecanismo de comunicación. Para ello, recurrimos a los \textbf{conectores}: se trata de elementos arquitectónicos que nos ayudan a diseñar y razonar sobre la comunicación entre componentes. Representan la transferencia de datos y de control entre componentes. En la figura \ref{fig:componentesEjemplo} mostramos una representación de la necesidad de comunicación entre dos componentes a través de un conector. No se ha especificado todavía ningún detalle sobre cómo se implementará. De esta forma, podemos estudiar la arquitectura y elegir los mecanismos adecuados para cada interacción del sistema. \cite{taylorSoftwareArchitectureFoundations2009}.
 
