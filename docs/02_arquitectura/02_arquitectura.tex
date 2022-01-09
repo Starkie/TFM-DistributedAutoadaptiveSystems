@@ -49,11 +49,23 @@ Podemos describirlas usando tres conceptos: \cite{perryFoundationsStudySoftware1
 
 \textcolor{red}{La arquitectura de un sistema puede contar con diferentes vistas, según aquel aspecto que deseemos resaltar. Por ejemplo, puede interesarnos más la interacción entre los componentes. O cosas por el estilo.}
 
-Durante el diseño, para lidiar con la complejidad que pudiera alcanzar el sistema, recurrimos a dos mecanismos: la abstracción y la separación de responsabilidades. \cite{martinCleanArchitectureCraftsman2018} Con ellas, podemos identificar distintas unidades de funcionalidad con una responsabilidad. \cite{taylorSoftwareArchitectureFoundations2009} Estos elementos son los \textbf{componentes}. Dependiendo de las características de nuestro sistema, pueden tomar distintas formas: módulos dentro un mismo proceso, servicios distribuidos, etc.
+Durante el diseño del sistema, para lidiar con la complejidad que pudiera alcanzar, recurrimos a dos \textcolor{red}{mecanismos}: la abstracción y la separación de responsabilidades. \cite{martinCleanArchitectureCraftsman2018} Aplicándolas repetidamente sobre los requisitos pueden sernos de gran ayuda para identificar distintas unidades de funcionalidad. Se trata de los componentes.
 
-Por si solos, estos componentes independientes no aportan mucho valor. \textcolor{red}{Utilizando diseños modulares, podemos agregarlos junto con otros para que trabajen conjuntamente para realizar tareas más complejas.} Por tanto, un aspecto clave es la integración y la interacción entre ellos. \cite{mehtaTaxonomySoftwareConnectors2000}
+Según \cite{taylorSoftwareArchitectureFoundations2009}, los \textbf{componentes} son ``elementos arquitectónicos que encapsulan un subconjunto de la funcionalidad y/o de los datos del sistema``.
+Dependiendo de las características de nuestro sistema (y del nivel de abstracción que usemos) pueden tomar distintas formas: módulos dentro un mismo proceso, servicios distribuidos, etc.
 
-Para que dos o más componentes puedan interactuar, necesitamos definir un mecanismo de comunicación. Para ello, recurrimos a los \textbf{conectores}: se trata de elementos arquitectónicos que nos ayudan a diseñar y razonar sobre la comunicación entre componentes. Representan la transferencia de datos y de control entre componentes. En la figura \ref{fig:componentesEjemplo} mostramos una representación de la necesidad de comunicación entre dos componentes a través de un conector. No se ha especificado todavía ningún detalle sobre cómo se implementará. De esta forma, podemos estudiar la arquitectura y elegir los mecanismos adecuados para cada interacción del sistema. \cite{taylorSoftwareArchitectureFoundations2009}.
+\begin{wrapfigure}{r}{0.40\linewidth}
+  \centering
+  \includegraphics[scale=0.8]{02_arquitectura/images/componente-ejemplo}
+  \caption{El servicio de monitorización representado como un componente. Ofrece una interfaz (\textit{IMonitoringService}) y requiere de otra para funcionar (\textit{IKnowledgeService}).}
+  \label{fig:componenteEjemplo}
+\end{wrapfigure}
+
+Los componentes exponen una interfaz que permite acceso a esa funcionalidad o datos que encapsulan. A su vez, también declaran una serie de requisitos con otras interfaces de las que dependen para operar. En la figura \ref{fig:componenteEjemplo} tenemos un ejemplo.
+
+Por si solos, estos componentes independientes no aportan mucho valor. Son la unidad básica de composición: podemos conectar distintos componentes para que trabajen conjuntamente y realicen tareas más complejas. De esta forma podemos componer sistemas. Por ello, un aspecto clave es la integración y la interacción entre componentes. \cite{mehtaTaxonomySoftwareConnectors2000}
+
+Para que dos o más componentes puedan interactuar, necesitamos definir un mecanismo de comunicación. Recurrimos entonces a los \textbf{conectores}: se trata de elementos arquitectónicos que nos ayudan a definir y razonar sobre la comunicación entre componentes. Representan la transferencia de datos y de control entre componentes. En la figura \ref{fig:componentesYConectorEjemplo} mostramos una representación de la necesidad de comunicación entre dos componentes a través de un conector. No se ha especificado todavía ningún detalle sobre cómo se implementará. De esta forma, podemos estudiar la arquitectura y elegir los mecanismos adecuados para cada interacción del sistema. \cite{taylorSoftwareArchitectureFoundations2009}.
 
 %% TODO: Los conectores son application-independent. No dependen de la funcionalidad de la aplicación.
 %% TODO: Hablar de la cardinalidad de los conectores.
@@ -62,7 +74,7 @@ Para que dos o más componentes puedan interactuar, necesitamos definir un mecan
   \centering
   \includegraphics[scale=0.78]{02_arquitectura/images/conector}
   \caption{Ejemplo de comunicación de dos componentes a través de un conector.}
-  \label{fig:componentesEjemplo}
+  \label{fig:componentesYConectorEjemplo}
 \end{figure}
 
 \textcolor{red}{A nivel de ¿diseño?}, los conectores están compuestos por uno o más \textbf{conductos} o canales de comunicación. A través de estos se lleva a cabo la comunicación entre los componentes. Hay una gran variedad de conductos posibles: comunicación interproceso, a través de la red, etc. Clasificamos los conectores según la complejidad de los canales que utilizan \cite{mehtaTaxonomySoftwareConnectors2000}:
