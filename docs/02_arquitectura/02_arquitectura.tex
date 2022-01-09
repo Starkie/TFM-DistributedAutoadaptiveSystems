@@ -258,17 +258,23 @@ Sabiendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonom
     \end{itemize}
   \end{itemize}
 
-  \item \textbf{\textit{Representational State Transfer} (REST)}: Se trata de un estilo arquitectónico basado en el estilo cliente - servidor, pero con ciertas restricciones adicionales. \cite{taylorSoftwareArchitectureFoundations2009} Su concepto principal son los \textbf{recursos}: cualquier elemento que pueda tener asociado un identificador (una URI). \cite{richardsonRESTfulWebServices2007} Sobre los recursos podemos ejecutar una serie de acciones definidas por el protocolo de comunicación. Normalmente, el protocolo es HTTP.
+  \item \textbf{\textit{Representational State Transfer} (REST)}: Se basa también en el estilo arquitectónico cliente-servidor, pero con ciertas restricciones adicionales. \cite{taylorSoftwareArchitectureFoundations2009} Su concepto principal son los \textbf{recursos}: cualquier elemento del cual la API puede ofrecernos información y que pueda tener asociado un identificador único (una URI). \cite{richardsonRESTfulWebServices2007} Por ejemplo, podrían ser las entidades del dominio que gestiona nuestro servicio: Clientes, Temperaturas\dots
+
+  Las acciones que podemos ejecutar sobre los recursos las define el protocolo de comunicación sobre el que se implemente: leer, crear, actualizar, etc. Gracias a esto, la API que ofrecen todos los servicios es común. Solo cambia el ``esquema de los datos``, los tipos de recursos que ofrecen. Esto facilita enormemente la integración con otros servicios. \cite{nallyRESTVsRPC2018} La implementación más común de REST es sobre el protocolo HTTP.
 
   \begin{itemize}
     \item \textbf{Ventajas}:
 
     \begin{itemize}
-      \item \textbf{Escalable}:
+      \item \textbf{\textit{Stateless}}: El servidor no mantiene el estado de la sesión. Esto permite que cada petición sea independiente de las demás.
 
-      \item \textbf{\textit{Stateless}}: El servidor no mantiene el estado de la operación.
+      \item \textbf{Escalable}: Como las sesiones deben ser \textit{stateless}, podremos replicar nuestro servicio y que distintas instancias puedan atender las peticiones que surjan durante la sesión.
+
+      \item \textbf{API Sencilla}: Solo hay que implementar unos pocos métodos estándar para interactuar con la API.
 
       \item \textbf{Interoperabilidad}: Ampliamente utilizado en servicios de Internet. Es ideal para que clientes externos contacten con nuestro sistema mediante peticiones síncronas. \cite{newmanBuildingMicroservicesDesigning2021}
+
+      \item \textbf{Generación de clientes}: Para facilitar la comunicación con APIs REST, podemos generar librerias cliente utilizando el estándar OpenAPI. Lo explicaremos con maś detalle en la sección \ref{chap:OpenAPI}.
     \end{itemize}
   \end{itemize}
 
@@ -276,9 +282,9 @@ Sabiendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonom
     \item \textbf{Desventajas}:
 
     \begin{itemize}
-      \item \textbf{Rendimiento}: El rendimiento es peor comparado con cualquier mecanismo RPC binario. La información serializada en XML o JSON es mayor que si estuviera en un formato binario.
+      \item \textbf{Rendimiento}: El rendimiento es peor comparado con mecanismos RPC. El tamaño de un mensaje HTTP serializado en XML o JSON es mayor que si estuviera en un formato binario.
 
-      \item \textbf{Rendimiento}: El rendimiento es peor comparado con cualquier mecanismo RPC binario. La información serializada en XML o JSON es mayor que si estuviera en un formato binario.
+      \item \textbf{API Sencilla}: También es una desventaja. Hay operaciones complejas que es difícil representar con los métodos ofrecidos por el protocolo de comunicación. Pueden requerir más tiempo de diseño, o incluso ser implementados siguiendo RPC.
     \end{itemize}
   \end{itemize}
 
@@ -335,6 +341,7 @@ Por suerte, a partir de la especificación OpenAPI, podemos generar un component
 \pagebreak
 
 \subsection{Open API}
+\label{chap:OpenAPI}
 
 \begin{wrapfigure}{r}{0.35\linewidth}
   % \vspace{15pt}
