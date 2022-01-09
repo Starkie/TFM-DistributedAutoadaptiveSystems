@@ -211,24 +211,34 @@ Ahora, debemos identificar qué \textbf{tipos de conector} serían adecuados par
 Sabiendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonomySoftwareConnectors2000}, optamos por consultar las estrategias de comunicación habituales para sistemas distribuidos descritas en \cite{newmanBuildingMicroservicesDesigning2021}. Se trata de cuatro mecanismos distintos: Invocación a métodos remotos (\textit{Remote Procedure Call}), APIs REST, consultas con GraphQL o \textit{brokers} de mensajería. Tuvimos que evaluarlos mediante un análisis de \textit{trade-offs} para determinar las ventajas y desventajas de cada uno.
 
 \begin{itemize}
-  \item \textbf{Invocación de métodos remotos} o (\textit{\textbf{Remote Procedure Call}}): Se trata de un paradigma de objetos distribuidos. \cite{taylorSoftwareArchitectureFoundations2009} Nuestro programa interactúa con objetos que se encuentran en servidores remotos. \textcolor{red}{Suele implementarse con objetos que actúan como un \textit{proxy}: ofrecen una interfaz para que el cliente invoque sus funciones localmente. Estas funciones internamente realizan una llamada al servicio remoto, donde se encuentre este objeto.} El servidor remoto procesa la petición y nos devolverá un resultado. Así, abstraen al cliente de todo este proceso de comunicación.
+  \item \textbf{Invocación de métodos remotos} o (\textit{\textbf{Remote Procedure Call}}): Esta aproximación se basa en el estilo cliente-servidor. En ella, un servidor expone una serie de funciones que el cliente puede invocar mediante peticiones a través de la red. Estas peticiones incluyen el nombre de la función a ejecutar y sus parámetros. Al finalizar la ejecución, el servidor es capaz de devolver su resultado, si lo hubiera. Existen varios protocolos que implementan este mecanismo como gRPC o SOAP.
 
-  Estos \textit{proxies} suelen generarse a partir de un contrato, que define que operaciones ofrecen estos objetos.
-  Existen varios protocolos que implementan este mecanismo, como Java RMI, gRPC o SOAP.
+  Una evolución de RPC suele emplearse en la programación orientada a objetos: el paradigma de objetos distribuidos. \cite{tanenbaumChapter10Distributed2007} En este caso, el programa cliente interactúa con objetos que se encuentran en servidores remotos. Esta interacción se realiza a través de objetos que actúan como \textit{proxies}, abstrayendo de la llamada al servidor.
+
+  Los \textit{proxies} ofrecen una interfaz para que el cliente invoque sus métodos localmente. Internamente, estos métodos realizan una llamada al servicio remoto donde se encuentra el objeto realmente. El servidor remoto procesa la petición y nos devolverá un resultado. Así, abstraen al cliente de todo este proceso de comunicación. En la figura \ref{fig:rpc-distributedobjects} tenemos un esquema de este mecanismo.
+
+  \begin{figure}[h]
+    \centering
+    \includegraphics[scale=1.5]{02_arquitectura/images/rpc-distributedobjects}
+    \caption[Funcionamiento del sistema de objetos distribuidos]{Funcionamiento del sistema de objetos distribuidos. \cite{tanenbaumChapter10Distributed2007}}
+    \label{fig:rpc-distributedobjects}
+  \end{figure}
 
   \begin{itemize}
     \item \textbf{Ventajas}:
     \begin{itemize}
       \item Permite la distribución del procesamiento del sistema.
 
-      \item Abstrae al cliente de esta interacción a un servidor remoto. No tenemos que implementar la interacción con el servidor.
+      \item Abstrae al cliente de esta interacción con un servidor remoto. Para el cliente es prácticamente indistinguible de un objeto local.
 
-      \item Al haber un contrato definido, podemos generar los \textit{proxies} o clientes basados en este contrato. Por ejemplo: SOAP con WDSL o gRPC.
+      \item Los \textit{proxies} o (\textit{stubs} en la terminología de RPC) suelen generarse a partir de un contrato que define qué operaciones ofrecen estos objetos. Por ejemplo: SOAP con WDSL, gRPC; o en el caso de objetos distribuidos, Java RMI.
     \end{itemize}
 
     \item \textbf{Desventajas}:
     \begin{itemize}
       \item No se puede abstraer completamente al cliente de las llamadas a través de la red. Pueden darse errores que no ocurrirían durante una invocación de un método sobre un objeto local. Por ejemplo, que el servidor no esté disponible. \cite{jausovecFallaciesDistributedSystems2020}
+
+      \item Dificulta la integración. Cada servicio ofrece sus propias funciones distintas.
 
       \item Si adoptamos sistemas como Java RMI, nuestro sistema se acopla a esa tecnología concreta. \cite{newmanBuildingMicroservicesDesigning2021}. Nos resta flexibilidad en cuanto a qué otras tecnologías podemos utilizar en nuestra arquitectura.
 
