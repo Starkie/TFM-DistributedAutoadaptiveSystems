@@ -310,7 +310,44 @@ Sabiendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonom
     \end{itemize}
   \end{itemize}
 
-  \item \textbf{\textit{Brokers} de mensajería}:
+  \item \textbf{\textit{Brokers} de mensajería}: Es un mecanismo de \textbf{comunicación asíncrona} muy popular. Sobre todo en arquitecturas basadas en eventos. Contamos con un servicio que actúa como intermediario, el \textit{broker}. Este gestiona la comunicación entre los servicios del sistema. \cite{newmanBuildingMicroservicesDesigning2021} Hay varias estrategias de comunicación posibles: punto a punto, \textit{publish-suscribe}, híbrida\dots
+
+  Tomemos por ejemplo \textit{publish-suscribe}: es una estrategia para implementar comunicación \textit{multicast}. Se basa en el uso de \textbf{temas} o \textbf{\textit{topics}}, categorías de mensajes que pueden resultar de interés. Un servicio (el productor) envía un mensaje al \textit{broker}, indicando que pertenece a un tema determinado. El \textit{broker} recibe el mensaje y se encarga de reenviarlo a todos los servicios subscritos a este tema en cuanto sea posible. \cite{rabbitmqPublishSubscribeDocumentation} En la figura \ref{fig:publish-subscribe} tenemos un ejemplo de esta estrategia.
+
+  \pagebreak
+
+  \begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{02_arquitectura/images/publish_subscribe}
+    \caption[Estrategia \textit{publish/suscribe}: el \textit{broker} actúa como intermediario en la comunicación \textit{multicast}.]{Estrategia \textit{publish/suscribe}: el \textit{broker} actúa como intermediario en la comunicación \textit{multicast}. Imagen obtenida de \footnotemark}
+    \label{fig:publish-subscribe}
+  \end{figure}
+
+  \footnotetext{Java Messaging Service: \url{https://docs.oracle.com/cd/E19509-01/820-5892/ref_jms/index.html}}
+
+  La mayor ventaja de este estilo de comunicación es el \textbf{desacoplamiento} entre los servicios. \cite{korabUnderstandingMessageBrokers2017}
+  Ninguno de ellos necesita conocer detalles sobre cómo están desplegado los otros: su dirección, el número de instancias, si están activos en este momento, etc. Solo necesitan conocer la dirección del \textit{broker} para enviar o recibir mensajes.
+
+  \begin{itemize}
+    \item \textbf{Ventajas}:
+
+    \begin{itemize}
+      \item \textbf{Comunicación asíncrona}: El servicio no necesita quedarse a la espera de una respuesta del servidor. Puede procesar otras operaciones hasta que se le notifique del resultado, si lo hubiera.
+
+      \item \textbf{Desacoplamiento de los servicios}: Ni los productores ni los consumidores necesitan conocer el origen o destino de sus mensajes.
+
+      \item \textbf{Envío garantizado de mensajes}: El \textit{broker} garantiza que el mensaje será entregado \textit{al menos} una vez.
+
+    \end{itemize}
+
+    \item \textbf{Desventajas}:
+
+    \begin{itemize}
+      \item \textbf{Requisitos de infraestructura}: Utilizar un \textit{broker} de mensajería implica tener ciertas consideraciones a la hora de diseñar nuestro plan de despliegue. Estos sistemas requieren de replicación para alcanzar la alta disponibilidad necesaria para que sea fiable. \cite{newmanBuildingMicroservicesDesigning2021} Por tanto, aumenta la complejidad de operar el sistema.
+
+      \item \textbf{Envío garantizado de mensajes}: Para poder garantizar el envío de un mensaje, el \textit{broker} puede recurrir a reenviarlo. Debemos diseñar nuestros sistemas de forma que estos mensajes duplicados, si ya han sido procesados, deben ser descartados.
+    \end{itemize}
+  \end{itemize}
 \end{itemize}
 
 \textcolor{red}{De estas cuatro opciones, podemos descartar inmediatamente la opción de GraphQL. Se trata de un conector más orientado a las consultas de datos. Nosotros necesitamos ejecutar escrituras de los valores de las propiedades. Aunque podría implementarse para el servicio de las lecturas, no preveemos que las consultas de las propiedades requieran de agregación de datos. Simplemente se obtiene el valor de una propiedad.}
