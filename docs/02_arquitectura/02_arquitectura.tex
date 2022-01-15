@@ -350,29 +350,71 @@ Sabiendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonom
   \end{itemize}
 \end{itemize}
 
-\textcolor{red}{De estas cuatro opciones, podemos descartar inmediatamente la opción de GraphQL. Se trata de un conector más orientado a las consultas de datos. Nosotros necesitamos ejecutar escrituras de los valores de las propiedades. Aunque podría implementarse para el servicio de las lecturas, no preveemos que las consultas de las propiedades requieran de agregación de datos. Simplemente se obtiene el valor de una propiedad.}
+De estas cuatro opciones, podemos descartar inmediatamente la opción de GraphQL. Se trata de un conector más orientado a las consultas de datos. En nuestro caso, necesitamos ejecutar también escrituras de los valores de las propiedades. Siguiendo también este razonamiento nos llevó a descartar el \textit{broker} de mensajería. Para obtener propiedades del conocimiento, resultaba más sencillo de implementar mediante comunicación síncrona.
 
-\textcolor{red}{Por otro lado, una de nuestras prioridades es la interoperabilidad, para que cualquier microservicio que implemente esta API peuda comunicarse con nuestro servicio. Finalmente, queríamos que la comunicación fuese síncrona a la hora de solicitar propiedades, por lo que nos terminamos decantando por REST sobre HTTP.}
+Finalmente, hay que tener en cuenta que una de nuestras prioridades es la \textbf{interoperabilidad}: es una API expuesta ''hacia fuera'', hacia una capa más externa; prima por tanto la compatibilidad con cualquier tipo de cliente. Descartamos entonces RPC, dado que nos acoplaría a una tecnología concreta y a APIs no estándares.
 
-Aun así, queríamos aprovechar algunas de las ventajas que ofrece RPC para simplificar la integración de nuestra API con las librerias clientes.
+Terminamos por tanto decantándonos por implementar la comunicación utilizando un conector REST sobre HTTP. Implementamos ambas funciones mediante \textit{endpoints} HTTP:
 
-\textdagger{\textcolor{red}{A continuación, debemos identificar qué \textbf{rol} debe jugar este conector. Se trata de cubrir la \textbf{comunicación} entre dos componentes: necesitamos enviar y recibir datos del servicio de persistencia. También detectamos que es necesaria la \textbf{coordinación} entre los componentes. Por ejemplo, para la lectura de propiedades debemos contactar con otro servicio, y esperar su respuesta. Hay por tanto una transferencia de control entre ellos. Respecto al resto de roles, de momento no hemos detectado necesidad de conversión o facilitación.}}
+\begin{itemize}
+  \item \textbf{GET} property/\{\textit{propertyName}\}: Devuelve el valor de la propiedad, si existe.  Devuelve un DTO que contiene el valor de la propiedad, serializado en JSON, y la fecha y hora de la última modificación.
 
-En este caso, hemos optado por una mezcla de RPC implementado sobre HTTP. No se trata de una implementación del todo rest. Pero de esta forma, podíamos evitar acoplarnos a una tecnología concreta, como describe el libro. Nos parecía más razonable que el monitor exponga directamente una API HTTP pública. De esta forma, podríamos explotar el uso de OpenAPI, un DSL para describir APIs que explicaremos a continuación.
+  \begin{verbatim}
+PropertyDTO {
+  value	string,
+  lastModification	string($date-time)
+}
+  \end{verbatim}
 
-Así, mejoramos la compatibilidad con cualquier cliente, y nos daba más flexibilidad.
+  \item \textbf{PUT} property/\{\textit{propertyName}\}: Actualiza (o crea, si no existe) el valor de la propiedad con el nombre dado.
 
-Ya tenemos la parte de la API, expuesta por el servidor. Ahora nos queda la parte del cliente. ¿Cómo contactamos desde el monitor con la API? Implementamos las llamadas directamente con un cliente HTTP? Esto será muy costoso de mantener, y no será resiliente a los cambios. Será muy complicado.
+  \textbf{Parámetros}:
+  \begin{itemize}
+    \item \textit{PropertyName}: El nombre de la propiedad que deseamos actualizar o crear. Se lee a partir de la ruta de la petición.
+    \item \textit{SetPropertyDTO}: Un DTO que contiene el valor a asignar en la propiedad serializado en JSON. El DTO se encuentra en el cuerpo de la petición y tiene el siguiente esquema:
+    \begin{verbatim}
+SetPropertyDTO {
+  value	string
+}
+    \end{verbatim}
+  \end{itemize}
 
-Por suerte, a partir de la especificación OpenAPI, podemos generar un componente que haga de cliente de la solución. Este cliente hace de Proxy y nos abstraen de la lógica para establecer la conexión, el protocolo de comunicación, formato de los mensajes, etc.
+  \textbf{Respuestas posibles}:
 
-%% TODO: Justificar división del dominio del bucle de control. Hay que hacer un diagrama que explique cómo queremos separar el dominio (probe y monitor) del propio bucle de control.
+  \begin{itemize}
+    \item \textbf{Código 204 (No content)}: La propiedad se ha creado o actualizado correctamente. No incluye \textit{payload} en el cuerpo de la respuesta.
+
+    \item \textbf{Código 400 (Bad request)}: La petición está mal formada, no es acuerdo al contrato.
+  \end{itemize}
+
+  \textbf{Ejemplo} Petición para actualizar la propiedad \textit{currentTemperature} con una medición de un termómetro:
+
+  \begin{verbatim}
+HTTP PUT property/currentTemperature
+
+{
+  value: {
+    "Value":16.79,
+    "Unit": 1, // Celsius
+    "ProbeId":"c02234d3-329c-4b4d-aee0-d220dc25276b",
+    "DateTime":"2022-01-15T18:19:38.5231231Z"
+  }
+}
+  \end{verbatim}
+\end{itemize}
+
+Una vez definida la interfaz que expondrá el servicio de conocimiento, nos queda definir cómo se contactará desde el servicio de monitorización. ¿Implementamos las llamadas manualmente con un cliente HTTP? Aunque no sería muy complicado, tendríamos que mantenerlo manualmente cuando evolucione el sistema. Asi que optamos por una alternativa: el estándar OpenAPI. Se trata un lenguaje específico de dominio para describir APIs. En la siguiente sección, \ref{chap:OpenAPI}, lo describiremos con más detalle.
+
+A partir de la especificación de una API en este lenguaje, existen una serie de generadores de código\footnote{\url{https://github.com/OpenAPITools/openapi-generator}} que son capaces de generar clientes y servidores. Ofrecen soporte a una gran variedad de lenguajes: Java, C\#, JavaScript\dots En el caso de cliente, actúa como un proxy y nos abstraen de la lógica para establecer la conexión, el protocolo de comunicación, formato de los mensajes, etc. Similar a lo descrito el apartado de RPC.
+
+La arquitectura del conector resultante se muestra en la figura \ref{fig:monitor-knowledge-connector-architecture}. El conector está compuesto por dos elementos: una API REST y un cliente. El primer componente se ubica en el proceso del servidor, y el segundo en el cliente.
+
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.75]{02_arquitectura/images/Monitor-Knowledge-Connector}
+  \includegraphics[scale=0.65]{02_arquitectura/images/Monitor-Knowledge-Connector}
   \caption{Diseño del conector usando implementación Cliente - Servidor}
-  \label{fig:monitor-knowledge-connector}
+  \label{fig:monitor-knowledge-connector-architecture}
 \end{figure}
 
 \pagebreak
