@@ -258,9 +258,9 @@ Sabiendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonom
     \end{itemize}
   \end{itemize}
 
-  \item \textbf{\textit{Representational State Transfer} (REST)}: Se basa también en el estilo arquitectónico cliente-servidor, pero con ciertas restricciones adicionales. \cite{taylorSoftwareArchitectureFoundations2009} Su concepto principal son los \textbf{recursos}: cualquier elemento del cual la API puede ofrecernos información y que pueda tener asociado un identificador único (una URI). \cite{richardsonRESTfulWebServices2007} Por ejemplo, podrían ser las entidades del dominio que gestiona nuestro servicio: Clientes, Temperaturas\dots
+  \item \textbf{\textit{Representational State Transfer} (REST)}: Se basa también en el estilo arquitectónico cliente-servidor, pero con ciertas restricciones adicionales. \cite{taylorSoftwareArchitectureFoundations2009} Su concepto principal son los \textbf{recursos}: cualquier elemento del cual la API puede ofrecernos información y que pueda tener asociado un identificador único (una URI). \cite{richardsonRESTfulWebServices2007} Por ejemplo, podrían ser las entidades del dominio que gestiona nuestro servicio: Usuarios, Temperaturas\dots
 
-  Las acciones que podemos ejecutar sobre los recursos las define el protocolo de comunicación sobre el que se implemente: leer, crear, actualizar, etc. Gracias a esto, la API que ofrecen todos los servicios es común. Solo cambia el ``esquema de los datos``, los tipos de recursos que ofrecen. Esto facilita enormemente la integración con otros servicios. \cite{nallyRESTVsRPC2018} La implementación más común de REST es sobre el protocolo HTTP.
+  Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \dots) las define el protocolo de comunicación sobre el que se implemente. Gracias a esto, la API que pueden ofrecer los servicios REST es común. Solo cambia el ``esquema de los datos``, los tipos de recursos que ofrecen. Esto facilita enormemente la integración con otros servicios. \cite{nallyRESTVsRPC2018} La implementación más común de REST es sobre el protocolo HTTP.
 
   \begin{itemize}
     \item \textbf{Ventajas}:
@@ -272,13 +272,13 @@ Sabiendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonom
 
       \item \textbf{API Sencilla}: Solo hay que implementar unos pocos métodos estándar para interactuar con la API.
 
+      \item \textbf{Comunicación síncrona}: Es el mecanismo ideal para comunicaciones síncronas, donde el cliente requiere la respuesta del servicio para poder continuar con su procesamiento. También podemos dar soporte a para comunicaciones \textit{fire and forget}, donde el cliente envía un mensaje y no espera ninguna respuesta a su petición.
+
       \item \textbf{Interoperabilidad}: Ampliamente utilizado en servicios de Internet. Es ideal para que clientes externos contacten con nuestro sistema mediante peticiones síncronas. \cite{newmanBuildingMicroservicesDesigning2021}
 
       \item \textbf{Generación de clientes}: Para facilitar la comunicación con APIs REST, podemos generar librerias cliente utilizando el estándar OpenAPI. Lo explicaremos con maś detalle en la sección \ref{chap:OpenAPI}.
     \end{itemize}
-  \end{itemize}
 
-  \begin{itemize}
     \item \textbf{Desventajas}:
 
     \begin{itemize}
@@ -288,7 +288,7 @@ Sabiendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonom
     \end{itemize}
   \end{itemize}
 
-  \item \textbf{GraphQL}\footnote{Página oficial: \url{https://graphql.org/}}: Se trata de un protocolo para que un cliente pueda hacer consultas personalizadas sobre los datos de un servidor. No necesitan que haya sido implementado con lógica asociada. De esta forma, se puede reducir la cantidad de peticiones a través de la red que se necesita ejecutar para obtener la misma información.
+  \item \textbf{GraphQL}\footnote{Página oficial: \url{https://graphql.org/}} \textcolor{red}{AMPLIAR}: Se trata de un protocolo para que un cliente pueda hacer consultas personalizadas sobre los datos de un servidor. No necesitan que haya sido implementado con lógica asociada. De esta forma, se puede reducir la cantidad de peticiones a través de la red que se necesita ejecutar para obtener la misma información.
 
   \begin{itemize}
     \item \textbf{Ventajas}:
@@ -298,9 +298,7 @@ Sabiendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonom
 
       \item \textbf{Rendimiento}: Ofrece un mayor rendimiento comparado con otras alternativas que no ofrezcan un endpoint ya implementado. Y debamos obtener la misma información por composición, haciendo varias llamadas.
     \end{itemize}
-  \end{itemize}
 
-  \begin{itemize}
     \item \textbf{Desventajas}:
 
     \begin{itemize}
