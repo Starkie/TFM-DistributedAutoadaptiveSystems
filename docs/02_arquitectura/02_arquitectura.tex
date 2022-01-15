@@ -355,12 +355,45 @@ Finalmente, hay que tener en cuenta que una de nuestras prioridades es la \textb
 Terminamos por tanto decantándonos por implementar la comunicación utilizando un conector REST sobre HTTP. Implementamos ambas funciones mediante \textit{endpoints} HTTP:
 
 \begin{itemize}
-  \item \textbf{GET} property/\{\textit{propertyName}\}: Devuelve el valor de la propiedad, si existe.  Devuelve un DTO que contiene el valor de la propiedad, serializado en JSON, y la fecha y hora de la última modificación.
+  \item \textbf{GET} property/\{\textit{propertyName}\}: Devuelve el valor de la propiedad, si existe.
+
+  \textbf{Parámetros}:
+
+  \begin{itemize}
+    \item \textit{PropertyName}: El nombre de la propiedad que deseamos obtener. Se lee a partir de la ruta de la petición.
+  \end{itemize}
+
+  \textbf{Respuestas posibles}:
+
+  \begin{itemize}
+    \item \textbf{Código 200 (Ok)}: La propiedad se ha encontrado. Incluye un \textit{payload} con el siguiente esquema: Value valor serializado en JSON, lastModification fecha y hora de la última modificación de esta propiedad.
 
   \begin{verbatim}
 PropertyDTO {
   value	string,
   lastModification	string($date-time)
+}
+      \end{verbatim}
+
+    \item \textbf{Código 400 (Bad request)}: La petición está mal formada, no es acuerdo al contrato.
+
+    \item \textbf{Código 404 (Not found)}: No se ha encontrado ninguna propiedad con el nombre proporcionado.
+  \end{itemize}
+
+  \textbf{Ejemplo} Petición para obtener la propiedad \textit{currentTemperature}:
+
+  \begin{verbatim}
+HTTP GET property/currentTemperature
+
+Response: 200 Ok
+{
+  value: {
+    "Value":16.79,
+    "Unit": 1, // Celsius
+    "ProbeId":"c02234d3-329c-4b4d-aee0-d220dc25276b",
+    "DateTime":"2022-01-15T18:19:38.5231231Z"
+  },
+  lastModification: "2022-01-15T18:19:39.123213Z"
 }
   \end{verbatim}
 
