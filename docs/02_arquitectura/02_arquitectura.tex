@@ -352,37 +352,13 @@ De estas cuatro opciones, podemos descartar inmediatamente la opción de GraphQL
 
 Finalmente, hay que tener en cuenta que una de nuestras prioridades es la \textbf{interoperabilidad}: es una API expuesta ''hacia fuera'', hacia una capa más externa; prima por tanto la compatibilidad con cualquier tipo de cliente. Descartamos entonces RPC, dado que nos acoplaría a una tecnología concreta y a APIs no estándares.
 
-Terminamos por tanto decantándonos por implementar la comunicación utilizando un conector REST sobre HTTP. Implementamos ambas funciones mediante \textit{endpoints} HTTP:
+Terminamos por tanto decantándonos por implementar la comunicación utilizando un conector REST sobre HTTP. Implementamos ambas funciones mediante \textit{endpoints} HTTP. Su especificación se detalla a continuación en las tablas \ref{tab:especificacion-get-property} y \ref{tab:especificacion-put-property}.
 
-\begin{itemize}
-  \item \textbf{GET} property/\{\textit{propertyName}\}: Devuelve el valor de la propiedad, si existe.
-
-  \textbf{Parámetros}:
-
-  \begin{itemize}
-    \item \textit{PropertyName}: El nombre de la propiedad que deseamos obtener. Se lee a partir de la ruta de la petición.
-  \end{itemize}
-
-  \textbf{Respuestas posibles}:
-
-  \begin{itemize}
-    \item \textbf{Código 200 (Ok)}: La propiedad se ha encontrado. Incluye un \textit{payload} con el siguiente esquema: Value valor serializado en JSON, lastModification fecha y hora de la última modificación de esta propiedad.
-
+\newsavebox\getpropertyrequestbox
+\begin{lrbox}{\getpropertyrequestbox}
+  \begin{minipage}[t]{1in}
   \begin{verbatim}
-PropertyDTO {
-  value	string,
-  lastModification	string($date-time)
-}
-      \end{verbatim}
-
-    \item \textbf{Código 400 (Bad request)}: La petición está mal formada, no es acuerdo al contrato.
-
-    \item \textbf{Código 404 (Not found)}: No se ha encontrado ninguna propiedad con el nombre proporcionado.
-  \end{itemize}
-
-  \textbf{Ejemplo} Petición para obtener la propiedad \textit{currentTemperature}:
-
-  \begin{verbatim}
+Request:
 HTTP GET property/currentTemperature
 
 Response: 200 Ok
@@ -396,31 +372,56 @@ Response: 200 Ok
   lastModification: "2022-01-15T18:19:39.123213Z"
 }
   \end{verbatim}
+  \end{minipage}
+\end{lrbox}
 
-  \item \textbf{PUT} property/\{\textit{propertyName}\}: Actualiza (o crea, si no existe) el valor de la propiedad con el nombre dado.
+\begin{table}[htb]
+  \centering
 
-  \textbf{Parámetros}:
+  \begin{tabular}{|m{3.4cm}|p{2.5cm}|p{1cm}|p{3cm}|}
+      \hline
+
+      \textbf{Operación HTTP} & GET & \textbf{Ruta} & property/\{\textit{propertyName}\} \\
+      \hline
+
+      \textbf{Descripción} & \multicolumn{3}{|l|}{Devuelve el valor de la propiedad, si existe.} \\
+      \hline
+
+      \textbf{Parámetros} & \textit{propertyName} & \multicolumn{2}{|m{0.55\linewidth}|}{El nombre de la propiedad que deseamos obtener. Se lee a partir de la ruta de la petición.}\\
+      \hline
+
+      \multirow{3}*{\textbf{Respuestas posibles}}
+            & \textbf{Código 200 (Ok)} & \multicolumn{2}{|m{0.55\linewidth}|}{La propiedad se ha encontrado. Incluye un \textit{payload} con el siguiente esquema:
+
   \begin{itemize}
-    \item \textit{PropertyName}: El nombre de la propiedad que deseamos actualizar o crear. Se lee a partir de la ruta de la petición.
-    \item \textit{SetPropertyDTO}: Un DTO que contiene el valor a asignar en la propiedad serializado en JSON. El DTO se encuentra en el cuerpo de la petición y tiene el siguiente esquema:
-    \begin{verbatim}
-SetPropertyDTO {
-  value	string
-}
-    \end{verbatim}
-  \end{itemize}
+              \item \textit{Value}: Valor de la propiedad serializado en JSON.
+              \item \textit{LastModification}: Fecha y hora de la última modificación de esta propiedad.
+            \end{itemize}}\\
 
-  \textbf{Respuestas posibles}:
+            \cline{2-4}
 
-  \begin{itemize}
-    \item \textbf{Código 204 (No content)}: La propiedad se ha creado o actualizado correctamente. No incluye \textit{payload} en el cuerpo de la respuesta.
+            & \textbf{Código 400 (Bad request)} & \multicolumn{2}{|m{0.55\linewidth}|}{La petición está mal formada, no es acuerdo al contrato.}\\
 
-    \item \textbf{Código 400 (Bad request)}: La petición está mal formada, no es acuerdo al contrato.
-  \end{itemize}
+            \cline{2-4}
 
-  \textbf{Ejemplo} Petición para actualizar la propiedad \textit{currentTemperature} con una medición de un termómetro:
+            & \textbf{Código 404 (Not found)} & \multicolumn{2}{|m{0.55\linewidth}|}{No se ha encontrado ninguna propiedad con el nombre proporcionado.}\\
+      \hline
 
+      \textbf{Ejemplo} & \multicolumn{3}{|b{0.7\linewidth}|}{Petición para obtener la propiedad \textit{currentTemperature}:
+      \usebox\getpropertyrequestbox} \\
+
+      \hline
+  \end{tabular}
+
+  \caption{Especificación de la operación para obtener una propiedad del servicio de conocimiento.}
+  \label{tab:especificacion-get-property}
+\end{table}
+
+\newsavebox\putpropertyrequestbox
+\begin{lrbox}{\putpropertyrequestbox}
+  \begin{minipage}[t]{2in}
   \begin{verbatim}
+Request:
 HTTP PUT property/currentTemperature
 
 {
@@ -431,24 +432,62 @@ HTTP PUT property/currentTemperature
     "DateTime":"2022-01-15T18:19:38.5231231Z"
   }
 }
+
+Response: 204 (No content)
   \end{verbatim}
-\end{itemize}
+  \end{minipage}
+\end{lrbox}
+
+\begin{table}[htb]
+  \centering
+
+  \begin{tabular}{|m{3.4cm}|m{2.5cm}|b{1cm}|b{3cm}|}
+      \hline
+
+      \textbf{Operación HTTP} & PUT & \textbf{Ruta} & property/\{\textit{propertyName}\} \\
+      \hline
+
+      \textbf{Descripción} & \multicolumn{3}{|b{0.7\linewidth}|}{ Actualiza (o crea, si no existe) el valor de la propiedad con el nombre dado.} \\
+      \hline
+
+      \multirow{2}*{\textbf{Parámetros}}
+            & \textit{propertyName} & \multicolumn{2}{|b{0.55\linewidth}|}{El nombre de la propiedad que deseamos crear o actualizar. Se lee a partir de la ruta de la petición.}\\
+
+            \cline{2-4}
+
+            & \textit{SetPropertyDTO} & \multicolumn{2}{|b{0.55\linewidth}|}{ Un DTO que contiene el valor a asignar en la propiedad serializado en JSON. El DTO se encuentra en el cuerpo de la petición.} \\
+      \hline
+
+      \multirow{2}*{\textbf{Respuestas posibles}}
+            & \textbf{Código 204 (No content)} & \multicolumn{2}{|b{0.55\linewidth}|}{La propiedad se ha creado o actualizado correctamente. No incluye \textit{payload} en el cuerpo de la respuesta.}\\
+
+            \cline{2-4}
+
+            & \textbf{Código 400 (Bad request)} & \multicolumn{2}{|b{0.55\linewidth}|}{La petición está mal formada, no es acuerdo al contrato.}\\
+      \hline
+
+      \textbf{Ejemplo} & \multicolumn{3}{|b{0.7\linewidth}|}{Petición para actualizar la propiedad \textit{currentTemperature} con una medición de un termómetro:
+      \usebox\putpropertyrequestbox} \\
+
+      \hline
+  \end{tabular}
+
+  \caption{Especificación de la operación para actualizar o crear una propiedad del servicio de conocimiento.}
+  \label{tab:especificacion-put-property}
+\end{table}
 
 Una vez definida la interfaz que expondrá el servicio de conocimiento, nos queda definir cómo se contactará desde el servicio de monitorización. ¿Implementamos las llamadas manualmente con un cliente HTTP? Aunque no sería muy complicado, tendríamos que mantenerlo manualmente cuando evolucione el sistema. Asi que optamos por una alternativa: el estándar OpenAPI. Se trata un lenguaje específico de dominio para describir APIs. En la siguiente sección, \ref{chap:OpenAPI}, lo describiremos con más detalle.
 
 A partir de la especificación de una API en este lenguaje, existen una serie de generadores de código\footnote{\url{https://github.com/OpenAPITools/openapi-generator}} que son capaces de generar clientes y servidores. Ofrecen soporte a una gran variedad de lenguajes: Java, C\#, JavaScript\dots En el caso de cliente, actúa como un proxy y nos abstraen de la lógica para establecer la conexión, el protocolo de comunicación, formato de los mensajes, etc. Similar a lo descrito el apartado de RPC.
 
-La arquitectura del conector resultante se muestra en la figura \ref{fig:monitor-knowledge-connector-architecture}. El conector está compuesto por dos elementos: una API REST y un cliente. El primer componente se ubica en el proceso del servidor, y el segundo en el cliente.
+La arquitectura del conector resultante se muestra en la figura \ref{fig:monitor-knowledge-connector-architecture}. El conector, delimitado por una línea discontinua roja, está compuesto por dos elementos: una API REST y un cliente. Los otros dos grandes elementos representan el proceso del servicio de monitorización y el proceso del servicio de conocimiento. La figura muestra como la API se ubica en el proceso del servidor, y el API CLient en el cliente.
 
-
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
-  \includegraphics[scale=0.65]{02_arquitectura/images/Monitor-Knowledge-Connector}
+  \includegraphics[scale=0.8]{02_arquitectura/images/Monitor-Knowledge-Connector}
   \caption{Diseño del conector usando implementación Cliente - Servidor}
   \label{fig:monitor-knowledge-connector-architecture}
 \end{figure}
-
-\pagebreak
 
 \subsection{Open API}
 \label{chap:OpenAPI}

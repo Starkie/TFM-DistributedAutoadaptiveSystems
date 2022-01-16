@@ -166,10 +166,18 @@
 \DeclareFloatingEnvironment[fileext=loq,
      listname=\listquadrename,name=\quadrename]{quadre}
 
+\RequirePackage{multirow}
+
+\RequirePackage{tabularx}
+
+\RequirePackage{fancyvrb}
+\usepackage{float}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Para escribir código y que quede bien
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\RequirePackage{fancyvrb}
 \RequirePackage{listings}
 
 \lstset{ %
