@@ -505,11 +505,11 @@ Para el desarrollo de este trabajo, nos interesaba especialmente debido a las di
 
 \subsubsection{Ejemplo de uso}
 
-A continuación vamos a demostrar cómo utilizamos OpenAPI para documentar nuestra API y generar la especificación y el cliente a partir de esta. Para ello, continuaremos con el ejemplo del servicio de conocimiento que hemos descrito a lo largo de este capítulo. Vamos a centrarnos en la implementación de la operación para obtener una propiedad del conocimiento, que describimos en la tabla \ref{tab:especificacion-get-property}.
+A continuación explicaremos brevemente cómo utilizamos OpenAPI para documentar nuestras APIs y generar la especificación estas. Para ello, continuaremos con el ejemplo del servicio de conocimiento que hemos descrito a lo largo de este capítulo. Vamos a centrarnos en la implementación de la operación para obtener una propiedad del conocimiento, que describimos en la tabla \ref{tab:especificacion-get-property}.
 
 En el \textcolor{red}{fragmento} \ref{ls:csharp-get}, podemos observar que se trata de un método C\# llamado \textit{GetProperty}. Su implementación es sencilla: busca en un diccionario la propiedad cuyo nombre se le pasa por parámetro. En caso de encontrarla, devuelve su valor con un código 200 OK. En caso contrario, devuelve un código de error que describe qué ha ocurrido exactamente (llamada incorrecta o no se ha encontrado la propiedad).
 
-Aparte de la implementación, podemos comprobar que el método se ha decorado con una serie de comentarios (líneas 1-8) y atributos (10-12). Esta documentación describe qué hace el método, sus entradas y posibles respuestas. OpenAPI es capaz de utilizar estos elementos para generar una especificación más completa. Por tanto, resulta muy recomendable utilizarlos.
+Aparte de la implementación, podemos comprobar que el método se ha decorado con una serie de comentarios (líneas 1-8) y atributos (10-12). Esta documentación describe qué hace el método, sus entradas y posibles respuestas. OpenAPI es capaz de utilizar estos elementos opcionales para generar una especificación más completa. Por tanto, resulta muy recomendable utilizarlos.
 
 \begin{lstlisting}[language=C++,caption={Implementación del método GetProperty decorado para generar la especificación OpenAPI.},captionpos=b, label=ls:csharp-get]
 /// <summary>
@@ -542,7 +542,7 @@ public IActionResult GetProperty([FromRoute]string propertyName)
 }
 \end{lstlisting}
 
-Después, haciendo uso de las librerías de OpenAPI, generamos la especificación a partir del servicio de conocimiento. En el \textcolor{red}{fragmento} \ref{ls:openapi-get}, podemos ver cómo se describe la operación. Encontramos grandes similitudes con la presentada en la tabla \ref{tab:especificacion-get-property}.
+Haciendo uso de las librerías de OpenAPI, generamos la especificación a partir del servicio de conocimiento. En el \textcolor{red}{fragmento} \ref{ls:openapi-get}, podemos ver cómo se describe la operación en este estándar:
 
 \begin{lstlisting}[language=python,caption={Especificación OpenAPI del método para obtener una propiedad del conocimiento (\lstinline{GetProperty}).},captionpos=b, label=ls:openapi-get]
 "paths": {
@@ -585,8 +585,13 @@ Después, haciendo uso de las librerías de OpenAPI, generamos la especificació
   }
 \end{lstlisting}
 
-La arquitectura del conector resultante se muestra en la figura \ref{fig:monitor-knowledge-connector-architecture}. El conector, delimitado por una línea discontinua roja, está compuesto por dos elementos: una API REST y un cliente. Los otros dos grandes elementos representan el proceso del servicio de monitorización y el proceso del servicio de conocimiento. La figura muestra como la API se ubica en el proceso del servidor, y el API CLient en el cliente.
+Podemos apreciar que en la ruta (\textit{/Property/\{propertyName\}}) está disponible una operación de tipo \textit{get} y que acepta determinados parámetros y ofrece unas posibles respuestas. Aparece una referencia a otro esquema (línea 25), que representa la estructura de la respuesta en ese caso concreto. También aparecen los comentarios opcionales que indicamos en el \textcolor{red}{fragmento} \ref{ls:csharp-get}. Encontramos grandes similitudes con la especificación presentada en la tabla \ref{tab:especificacion-get-property}.
 
+Finalmente, la arquitectura del conector que emplearemos para implementar las peticiones aparece en la figura \ref{fig:monitor-knowledge-connector-architecture}. La figura muestra como el servicio de monitorización contacta al de conocimiento para asignarle un valor a la propiedad \textit{Temp}.
+
+El conector, delimitado por una línea discontinua roja, está compuesto por dos elementos: una API REST y un cliente. Los otros dos grupos de elementos representan los procesos de los servicios de monitorización y conocimiento. El servicio de monitorización se comunica a con la API través del API Client, que está en su proceso actuando como \textit{proxy}.
+
+%%% TODO: Actualizar la imagen para que aparezca PUT en vez de POST.
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=0.8]{02_arquitectura/images/Monitor-Knowledge-Connector}
