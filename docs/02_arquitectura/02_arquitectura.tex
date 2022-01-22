@@ -1,20 +1,26 @@
 \chapter{Arquitectura de la solución}
 
-\textcolor{red}{En este capítulo vamos a describir los fundamentos de la arquitectura que hemos diseñado para este sistema. Comenzaremos dando una definición de las arquitecturas de \textit{software} y sus elementos. Después describiremos la arquitectura de la solución.}
+En este capítulo vamos a describir la arquitectura que hemos diseñado para distribuir el bucle MAPE-K. Como partimos de un sistema existente, del cual ya conocemos sus componentes, el principal foco de este capítulo son los \textbf{conectores de \textit{software}}. Tenemos que determinar qué estrategias de comunicación utilizaremos para comunicarlos.
+
+Comenzaremos dando una breve introducción a las arquitecturas de \textit{software} y los elementos que las componen. Después, describiremos la arquitectura de nuestra solución y el proceso que hemos seguido para llegar hasta ella.
 
 \section{Arquitecturas de \textit{software}}
 
-Según \cite{taylorSoftwareArchitectureFoundations2009}, la {\bf arquitectura de un sistema \textit{software}} es el conjunto de todas las \textbf{decisiones principales de diseño} que se toman durante su ciclo de vida; aquellas que sientan las bases del sistema. Estas afectan a todos sus apartados: la funcionalidad que debe ofrecer, la tecnología para su implementación, cómo se desplegará, etc. En conjunto, definen una pauta que guía (y a la vez refleja) el diseño, la implementación, la operación y la evolución del sistema.
+Según \cite{taylorSoftwareArchitectureFoundations2009}, la \textbf{arquitectura de un sistema \textit{software}} es el conjunto de todas las \textbf{decisiones principales de diseño} que se toman durante su ciclo de vida; aquellas que sientan las bases del sistema. Estas afectan a todos sus apartados: la funcionalidad que debe ofrecer, la tecnología para su implementación, cómo se desplegará, etc. En conjunto, definen una pauta que guía (y a la vez refleja) el diseño, la implementación, la operación y la evolución del sistema.
 
-\textcolor{red}{Podemos utilizarla de referencia para conocer detalles su estructura, su implementación\dots Se podría establecer un símil con los planos de construcción de un edificio. Nos provee de un marco de referencia común, de decisiones que nos nos provee con un vocabulario común, que nos permite describir sistemas}
+Conocer la arquitectura de un sistema nos permite conocerlo en profundidad. Nos permite descubrir qué \textbf{componentes} la conforman, cómo están \textbf{relacionados} y el por qué de esta composición. \cite{perryFoundationsStudySoftware1992} \textcolor{red}{Además, nos provee de un vocabulario común para que los \textit{stakeholders} o interesados puedan comunicarse: ayuda a los clientes a articular sus necesidades; a los diseñadores a capturar los requisitos y definir el sistema; a los desarrolladores a comprender mejor cómo implementarlo\dots}
 
-La principal función de una buena arquitectura es dotar de estructura a nuestro sistema. \cite{martinCleanArchitectureCraftsman2018} Una buena arquitectura nos ofrece una serie de ventajas, como facilitar su desarrollo, mayor extensibilidad. Por tanto, es vital dedicar tiempo para definirla atendiendo a las necesidades de nuestro sistema.
+Todos los sistemas \textit{software} cuentan con una arquitectura. La diferencia radica en si esta ha sido diseñada explícitamente o ha quedado implícita en su implementación. \cite{taylorSoftwareArchitectureFoundations2009} En caso de no haber sido diseñada, es probable que con el paso del tiempo el sistema vaya perdiendo su estructura, se desvirtuen las intenciones iniciales, y sea dificil de mantener. Se convierte en una ''gran bola de barro''. [CITATION NEEDED]
+
+Por ello, la principal función de una buena arquitectura es dotar de estructura a nuestro sistema. \cite{martinCleanArchitectureCraftsman2018} Una buena arquitectura nos ofrece una serie de ventajas, como facilitar su desarrollo, mayor extensibilidad. Por tanto, es vital dedicar tiempo para definirla atendiendo a las necesidades de nuestro sistema.
 
 \subsection{Decisiones principales de diseño}
 
-Las decisiones principales de diseño son todas aquellas decisiones importantes que afectan a los fundamentos de nuestro sistema. Tienen gran importancia porque con el paso del tiempo, y con el avance del desarrollo, estas elecciones comienzan a asentarse, y se vuelven más difíciles de cambiar o rectificar. \cite{taylorSoftwareArchitectureFoundations2009} Estas no solo se toman durante la concepción del sistema, si no que también pueden surgir durante el desarrollo y posterior evolución.
+Las \textbf{decisiones principales de diseño} son todas aquellas decisiones importantes que afectan a los fundamentos de nuestro sistema. Tienen gran importancia porque con el paso del tiempo, y con el avance del desarrollo, estas elecciones comienzan a asentarse, y se vuelven más difíciles de cambiar o rectificar. \cite{taylorSoftwareArchitectureFoundations2009} Estas no solo se toman durante la concepción del sistema, si no que también pueden surgir durante el desarrollo y posterior evolución.
 
 Por ejemplo, una decisión de diseño principal que se suele tomar en las fases tempranas del desarrollo es la elección de la topología para la solución. Optar entre desarrollar un servicio monolítico, o un sistema formado por microservicios, va a condicionar prácticamente todo el desarrollo.
+
+Aun así, no todas las decisiones de diseño tienen por qué ser consideradas como principales. Hay detalles de implementación que pueden dejarse ambiguos a nivel de la arquitectura. Se concretarán durante en el momento en que se desarrolle.
 
 \textcolor{red}{Las decisiones principales de diseño normalmente se resumen en comparativas entre distintas alternativas, cada una de ellas con sus ventajas e inconvenientes.} Pueden tomarse en base a distintos criterios. Entre ellos podemos destacar: \textcolor{red}{[Citation needed]}
 
@@ -25,10 +31,6 @@ Por ejemplo, una decisión de diseño principal que se suele tomar en las fases 
 
         \item \textbf{Experiencia previa:} del desarrollo de este u otros sistemas. Podemos obtener métricas del funcionamiento y uso de nuestro sistema para informar decisiones futuras. \textcolor{red}{[Cita devops]}
     \end{itemize}
-
-\subsection{Estilos arquitectónicos}
-
-\textcolor{red}{Este conjunto de decisiones principales Una decisión de diseño principal que se suele tomar en las fases tempranas del desarrollo es la elección de un \textbf{estilo arquitectónico} para la solución. Se trata de una serie de decisiones de diseño prinEstos imponen una serie de restricciones en cuanto a la implementación del sistema, pero a su vez nos aporta una serie de beneficios... Optar por desarrollar un servicio monolítico o una arquitectura basada en microservicios va a condicionar prácticamente todo el desarrollo. Desde el diseño, la implementación, el testeo, y sobre todo, el despliegue y operación.}
 
 \subsection{Componentes de una arquitectura}
 
@@ -46,8 +48,6 @@ Podemos describirlas usando tres conceptos: \cite{perryFoundationsStudySoftware1
     \end{itemize}
 
 \subsubsection{Elementos}
-
-\textcolor{red}{La arquitectura de un sistema puede contar con diferentes vistas, según aquel aspecto que deseemos resaltar. Por ejemplo, puede interesarnos más la interacción entre los componentes. O cosas por el estilo.}
 
 Durante el diseño del sistema, para lidiar con la complejidad que pudiera alcanzar, recurrimos a dos \textcolor{red}{mecanismos}: la abstracción y la separación de responsabilidades. \cite{martinCleanArchitectureCraftsman2018} Aplicándolas repetidamente sobre los requisitos pueden sernos de gran ayuda para identificar distintas unidades de funcionalidad. Se trata de los componentes.
 
@@ -96,6 +96,10 @@ Por tanto, una vez hemos decidido que dos componentes deben comunicarse, es mome
 Una vez definidos los componentes y los conectores, tendremos una representación del sistema. Pero se trata de una imagen incompleta. No cuenta con ciertos detalles que nos ayudan a entenderlo mejor, como las alternativas que se consideraron en el diseño y por qué se descartaron en favor de la elegida, entre otros. Tampoco cuenta con detalles minuciosos que pueden guiar a la implementación.
 
 Es decir, necesitamos de un concepto adicional en nuestra arquitectura para describirlos. Se trata de la \textbf{justificación}. \cite{perryFoundationsStudySoftware1992} Nos aporta detalles más precisos sobre la arquitectura.
+
+\subsection{Estilos arquitectónicos}
+
+\textcolor{red}{Este conjunto de decisiones principales Una decisión de diseño principal que se suele tomar en las fases tempranas del desarrollo es la elección de un \textbf{estilo arquitectónico} para la solución. Se trata de una serie de decisiones de diseño prinEstos imponen una serie de restricciones en cuanto a la implementación del sistema, pero a su vez nos aporta una serie de beneficios... Optar por desarrollar un servicio monolítico o una arquitectura basada en microservicios va a condicionar prácticamente todo el desarrollo. Desde el diseño, la implementación, el testeo, y sobre todo, el despliegue y operación.}
 
 \section{Arquitectura de la solución}
 
@@ -312,8 +316,6 @@ Sabiendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonom
   \item \textbf{\textit{Brokers} de mensajería}: Es un mecanismo de \textbf{comunicación asíncrona} muy popular. Sobre todo en arquitecturas basadas en eventos. Contamos con un servicio que actúa como intermediario, el \textit{broker}. Este gestiona la comunicación entre los servicios del sistema. \cite{newmanBuildingMicroservicesDesigning2021} Hay varias estrategias de comunicación posibles: punto a punto, \textit{publish-suscribe}, híbrida\dots
 
   Tomemos por ejemplo \textit{publish-suscribe}: es una estrategia para implementar comunicación \textit{multicast}. Se basa en el uso de \textbf{temas} o \textbf{\textit{topics}}, categorías de mensajes que pueden resultar de interés. Un servicio (el productor) envía un mensaje al \textit{broker}, indicando que pertenece a un tema determinado. El \textit{broker} recibe el mensaje y se encarga de reenviarlo a todos los servicios subscritos a este tema en cuanto sea posible. \cite{rabbitmqPublishSubscribeDocumentation} En la figura \ref{fig:publish-subscribe} tenemos un ejemplo de esta estrategia.
-
-  \pagebreak
 
   \begin{figure}[htb]
     \centering
