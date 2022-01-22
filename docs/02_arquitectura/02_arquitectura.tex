@@ -103,7 +103,7 @@ Como comentamos en el \autoref{chap:introduccion}: \nameref{chap:introduccion}, 
 
 Este servicio implementa un \textbf{bucle de control}, útil para dotar a un sistema con capacidades de computación autonoma. Especificamente, sigue la arquitectura del bucle MAPE-K\cite{ArchitecturalBlueprintAutonomic2006,fonsServiciosAdaptivereadyPara2021}, que mostramos en la figura \ref{fig:bucle-mapek2}. El objetivo de partida fue separar cada uno de los componentes del bucle en microservicios independientes.  \textcolor{red}{AÑADIR IMAGEN EJEMPLO DEL BUCLE DESCOMPUESTO EN MICROSERVICIOS. BUSCAR REFERENCIAS DE LIBROS SOBRE DIVIDIR MONOLITOS.}
 
-\begin{figure}[h]
+\begin{figure}[htb]
   \centering
   \includegraphics[scale=0.6]{01_introduccion/images/bucle-mape-k.png}
   \caption[Arquitectura de un Bucle MAPE-K.]{Arquitectura de un Bucle MAPE-K.\footnotemark}
@@ -123,7 +123,7 @@ Una vez determinadas las "fronteras" entre los microservicios, hemos definido lo
 
 Por la descripción de ambos componentes, vemos que existe una clara división de dominios y responsabilidades. Esto nos ayuda a determinar que ambos componentes pueden desplegarse por separado. \textcolor{red}{REFERENCIA 'Building Microservices' Sam Newman}
 
-\begin{figure}[h]
+\begin{figure}[htb]
   \centering
   \includegraphics[scale=0.3]{02_arquitectura/images/mape-k-microservices}
   \caption{Diagrama con los componentes que forman nuestra arquitectura distribuida}
@@ -140,7 +140,7 @@ Por la descripción de ambos componentes, vemos que existe una clara división d
 
 He encontrado una imagen que lo describe más o menos:
 
-\begin{figure}[h]
+\begin{figure}[htb]
   \centering
   \includegraphics[scale=0.45]{02_arquitectura/images/c2SampleArch}
   \caption{Ejemplo del estilo arquitectónico C2 (\textit{Components and Connectors}). \cite{UCISoftwareArchitecture}}
@@ -168,7 +168,7 @@ Yo distinguiría entre 4 niveles, desde más externo a más interno:
 
 Me he basado en el diagrama típico de Clean Architecture para representar un poco la idea:
 
-\begin{figure}[h]
+\begin{figure}[htb]
   \centering
   \includegraphics[scale=0.45]{02_arquitectura/images/clean-arch-2-MAPEK-style}
   \caption[Representación de nuestra propuesta arquitectónica. Inspirado en Arquitectura Limpia (\textit{Clean Architecture}).]{Representación de nuestra propuesta arquitectónica. Inspirado en Arquitectura Limpia (\textit{Clean Architecture}). \footnotemark }
@@ -209,7 +209,8 @@ Comenzamos entonces la búsqueda de los conectores más apropiados para cada par
 
 Tomemos por ejemplo la comunicación entre el servicio de monitorización (\textit{monitoring service}) y el servicio de conocimiento (\textit{knowledge service}). Recordemos que el servicio de conocimiento almacena todas las propiedades de adaptación. El resto de servicios necesitan consultar y actualizarlas durante su funcionamiento. En la figura \ref{fig:monitor-knowledge-initial} representamos inicialmente ambos componentes y un conector, sin especificar de qué tipo será.
 
-\begin{figure}[h]
+% TODO: Cambiar por imagen de componentes, que ofrezcan y requieran interfaces.
+\begin{figure}[htb]
   \centering
   \includegraphics{02_arquitectura/images/Monitor-Knowledge-Initial-Connector}
   \caption{Boceto inicial: queremos conectar el servicio de monitorización con la base de conocimiento para poder leer propiedades de adaptación.}
@@ -229,7 +230,7 @@ Sabiendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonom
 
   Los \textit{proxies} ofrecen una interfaz para que el cliente invoque sus métodos localmente. Internamente, estos métodos realizan una llamada al servicio remoto donde se encuentra el objeto realmente. El servidor remoto procesa la petición y nos devolverá un resultado. Así, abstraen al cliente de todo este proceso de comunicación. En la figura \ref{fig:rpc-distributedobjects} tenemos un esquema de este mecanismo.
 
-  \begin{figure}[h]
+  \begin{figure}[htb]
     \centering
     \includegraphics[scale=1.5]{02_arquitectura/images/rpc-distributedobjects}
     \caption[Funcionamiento del sistema de objetos distribuidos]{Funcionamiento del sistema de objetos distribuidos. \cite{tanenbaumChapter10Distributed2007}}
@@ -314,7 +315,7 @@ Sabiendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonom
 
   \pagebreak
 
-  \begin{figure}[h]
+  \begin{figure}[htb]
     \centering
     \includegraphics[scale=0.5]{02_arquitectura/images/publish_subscribe}
     \caption[Estrategia \textit{publish/suscribe}: el \textit{broker} actúa como intermediario en la comunicación \textit{multicast}.]{Estrategia \textit{publish/suscribe}: el \textit{broker} actúa como intermediario en la comunicación \textit{multicast}. Imagen obtenida de \footnotemark}
