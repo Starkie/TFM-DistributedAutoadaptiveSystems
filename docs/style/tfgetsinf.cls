@@ -119,7 +119,7 @@
 
 
 \addto\captionsspanish{%
-     \renewcommand{\titulacioname}{Grado en Ingenier\'\i a Inform\'atica}
+     \renewcommand{\titulacioname}{Máster Universitario en Ingeniería y Tecnología de Sistemas Software}
      \renewcommand{\tfgname}{Trabajo fin de grado}
      \renewcommand{\authorname}{Autor}
      \renewcommand{\tutorname}{Tutor}
@@ -340,7 +340,7 @@
 \vspace*{2cm}
 \begin{color}{grisfosc}
 \large
-Escola T\`ecnica Superior d'Enginyeria Inform\`atica
+Departamento de Sistemas Informáticos y Computación
 
 Universitat Polit\`ecnica de Val\`encia
 \end{color}
