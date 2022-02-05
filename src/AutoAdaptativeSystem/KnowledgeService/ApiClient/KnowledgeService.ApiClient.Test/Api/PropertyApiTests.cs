@@ -54,6 +54,17 @@ namespace KnowledgeService.ApiClient.Test.Api
         }
 
         /// <summary>
+        /// Test PropertyPropertyNameDelete
+        /// </summary>
+        [Fact]
+        public void PropertyPropertyNameDeleteTest()
+        {
+            // TODO uncomment below to test the method and replace null with proper value
+            //string propertyName = null;
+            //instance.PropertyPropertyNameDelete(propertyName);
+        }
+
+        /// <summary>
         /// Test PropertyPropertyNameGet
         /// </summary>
         [Fact]

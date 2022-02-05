@@ -61,7 +61,7 @@ namespace KnowledgeService.ApiClient.Model
         /// <returns>String presentation of the object</returns>
         public override string ToString()
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.Append("class PropertyDTO {\n");
             sb.Append("  Value: ").Append(Value).Append("\n");
             sb.Append("  LastModification: ").Append(LastModification).Append("\n");
@@ -96,8 +96,9 @@ namespace KnowledgeService.ApiClient.Model
         public bool Equals(PropertyDTO input)
         {
             if (input == null)
+            {
                 return false;
-
+            }
             return 
                 (
                     this.Value == input.Value ||
@@ -121,9 +122,13 @@ namespace KnowledgeService.ApiClient.Model
             {
                 int hashCode = 41;
                 if (this.Value != null)
-                    hashCode = hashCode * 59 + this.Value.GetHashCode();
+                {
+                    hashCode = (hashCode * 59) + this.Value.GetHashCode();
+                }
                 if (this.LastModification != null)
-                    hashCode = hashCode * 59 + this.LastModification.GetHashCode();
+                {
+                    hashCode = (hashCode * 59) + this.LastModification.GetHashCode();
+                }
                 return hashCode;
             }
         }

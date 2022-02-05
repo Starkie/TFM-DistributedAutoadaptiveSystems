@@ -28,6 +28,24 @@ namespace KnowledgeService.ApiClient.Api
     {
         #region Synchronous Operations
         /// <summary>
+        /// Deletes the value of a given property.
+        /// </summary>
+        /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="propertyName">The name of the property to delete.</param>
+        /// <returns></returns>
+        void PropertyPropertyNameDelete(string propertyName);
+
+        /// <summary>
+        /// Deletes the value of a given property.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="propertyName">The name of the property to delete.</param>
+        /// <returns>ApiResponse of Object(void)</returns>
+        ApiResponse<Object> PropertyPropertyNameDeleteWithHttpInfo(string propertyName);
+        /// <summary>
         /// Gets a property given its name.
         /// </summary>
         /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
@@ -74,6 +92,29 @@ namespace KnowledgeService.ApiClient.Api
     public interface IPropertyApiAsync : IApiAccessor
     {
         #region Asynchronous Operations
+        /// <summary>
+        /// Deletes the value of a given property.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="propertyName">The name of the property to delete.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of void</returns>
+        System.Threading.Tasks.Task PropertyPropertyNameDeleteAsync(string propertyName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <summary>
+        /// Deletes the value of a given property.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="propertyName">The name of the property to delete.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse</returns>
+        System.Threading.Tasks.Task<ApiResponse<Object>> PropertyPropertyNameDeleteWithHttpInfoAsync(string propertyName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
         /// <summary>
         /// Gets a property given its name.
         /// </summary>
@@ -333,6 +374,123 @@ namespace KnowledgeService.ApiClient.Api
                 return _exceptionFactory;
             }
             set { _exceptionFactory = value; }
+        }
+
+        /// <summary>
+        /// Deletes the value of a given property. 
+        /// </summary>
+        /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="propertyName">The name of the property to delete.</param>
+        /// <returns></returns>
+        public void PropertyPropertyNameDelete(string propertyName)
+        {
+            PropertyPropertyNameDeleteWithHttpInfo(propertyName);
+        }
+
+        /// <summary>
+        /// Deletes the value of a given property. 
+        /// </summary>
+        /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="propertyName">The name of the property to delete.</param>
+        /// <returns>ApiResponse of Object(void)</returns>
+        public KnowledgeService.ApiClient.Client.ApiResponse<Object> PropertyPropertyNameDeleteWithHttpInfo(string propertyName)
+        {
+            // verify the required parameter 'propertyName' is set
+            if (propertyName == null)
+                throw new KnowledgeService.ApiClient.Client.ApiException(400, "Missing required parameter 'propertyName' when calling PropertyApi->PropertyPropertyNameDelete");
+
+            KnowledgeService.ApiClient.Client.RequestOptions localVarRequestOptions = new KnowledgeService.ApiClient.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "text/plain",
+                "application/json",
+                "text/json"
+            };
+
+            var localVarContentType = KnowledgeService.ApiClient.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null) localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+
+            var localVarAccept = KnowledgeService.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+
+            localVarRequestOptions.PathParameters.Add("propertyName", KnowledgeService.ApiClient.Client.ClientUtils.ParameterToString(propertyName)); // path parameter
+
+
+            // make the HTTP request
+            var localVarResponse = this.Client.Delete<Object>("/Property/{propertyName}", localVarRequestOptions, this.Configuration);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("PropertyPropertyNameDelete", localVarResponse);
+                if (_exception != null) throw _exception;
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Deletes the value of a given property. 
+        /// </summary>
+        /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="propertyName">The name of the property to delete.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of void</returns>
+        public async System.Threading.Tasks.Task PropertyPropertyNameDeleteAsync(string propertyName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            await PropertyPropertyNameDeleteWithHttpInfoAsync(propertyName, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Deletes the value of a given property. 
+        /// </summary>
+        /// <exception cref="KnowledgeService.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="propertyName">The name of the property to delete.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse</returns>
+        public async System.Threading.Tasks.Task<KnowledgeService.ApiClient.Client.ApiResponse<Object>> PropertyPropertyNameDeleteWithHttpInfoAsync(string propertyName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            // verify the required parameter 'propertyName' is set
+            if (propertyName == null)
+                throw new KnowledgeService.ApiClient.Client.ApiException(400, "Missing required parameter 'propertyName' when calling PropertyApi->PropertyPropertyNameDelete");
+
+
+            KnowledgeService.ApiClient.Client.RequestOptions localVarRequestOptions = new KnowledgeService.ApiClient.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "text/plain",
+                "application/json",
+                "text/json"
+            };
+
+
+            var localVarContentType = KnowledgeService.ApiClient.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null) localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+
+            var localVarAccept = KnowledgeService.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+
+            localVarRequestOptions.PathParameters.Add("propertyName", KnowledgeService.ApiClient.Client.ClientUtils.ParameterToString(propertyName)); // path parameter
+
+
+            // make the HTTP request
+
+            var localVarResponse = await this.AsynchronousClient.DeleteAsync<Object>("/Property/{propertyName}", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("PropertyPropertyNameDelete", localVarResponse);
+                if (_exception != null) throw _exception;
+            }
+
+            return localVarResponse;
         }
 
         /// <summary>

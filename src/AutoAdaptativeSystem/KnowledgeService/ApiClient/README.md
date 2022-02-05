@@ -111,17 +111,16 @@ namespace Example
             HttpClient httpClient = new HttpClient();
             HttpClientHandler httpClientHandler = new HttpClientHandler();
             var apiInstance = new PropertyApi(httpClient, config, httpClientHandler);
-            var propertyName = propertyName_example;  // string | The name of the property to find.
+            var propertyName = "propertyName_example";  // string | The name of the property to delete.
 
             try
             {
-                // Gets a property given its name.
-                PropertyDTO result = apiInstance.PropertyPropertyNameGet(propertyName);
-                Debug.WriteLine(result);
+                // Deletes the value of a given property.
+                apiInstance.PropertyPropertyNameDelete(propertyName);
             }
             catch (ApiException e)
             {
-                Debug.Print("Exception when calling PropertyApi.PropertyPropertyNameGet: " + e.Message );
+                Debug.Print("Exception when calling PropertyApi.PropertyPropertyNameDelete: " + e.Message );
                 Debug.Print("Status Code: "+ e.ErrorCode);
                 Debug.Print(e.StackTrace);
             }
@@ -138,6 +137,7 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*PropertyApi* | [**PropertyPropertyNameDelete**](docs/PropertyApi.md#propertypropertynamedelete) | **DELETE** /Property/{propertyName} | Deletes the value of a given property.
 *PropertyApi* | [**PropertyPropertyNameGet**](docs/PropertyApi.md#propertypropertynameget) | **GET** /Property/{propertyName} | Gets a property given its name.
 *PropertyApi* | [**PropertyPropertyNamePut**](docs/PropertyApi.md#propertypropertynameput) | **PUT** /Property/{propertyName} | Sets value of a given property. If the property does not exist, it will be created.
 

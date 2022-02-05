@@ -4,9 +4,84 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**PropertyPropertyNameDelete**](PropertyApi.md#propertypropertynamedelete) | **DELETE** /Property/{propertyName} | Deletes the value of a given property.
 [**PropertyPropertyNameGet**](PropertyApi.md#propertypropertynameget) | **GET** /Property/{propertyName} | Gets a property given its name.
 [**PropertyPropertyNamePut**](PropertyApi.md#propertypropertynameput) | **PUT** /Property/{propertyName} | Sets value of a given property. If the property does not exist, it will be created.
 
+
+<a name="propertypropertynamedelete"></a>
+# **PropertyPropertyNameDelete**
+> void PropertyPropertyNameDelete (string propertyName)
+
+Deletes the value of a given property.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net.Http;
+using KnowledgeService.ApiClient.Api;
+using KnowledgeService.ApiClient.Client;
+using KnowledgeService.ApiClient.Model;
+
+namespace Example
+{
+    public class PropertyPropertyNameDeleteExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "http://localhost";
+            // create instances of HttpClient, HttpClientHandler to be reused later with different Api classes
+            HttpClient httpClient = new HttpClient();
+            HttpClientHandler httpClientHandler = new HttpClientHandler();
+            var apiInstance = new PropertyApi(httpClient, config, httpClientHandler);
+            var propertyName = "propertyName_example";  // string | The name of the property to delete.
+
+            try
+            {
+                // Deletes the value of a given property.
+                apiInstance.PropertyPropertyNameDelete(propertyName);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling PropertyApi.PropertyPropertyNameDelete: " + e.Message );
+                Debug.Print("Status Code: "+ e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **propertyName** | **string**| The name of the property to delete. | 
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: text/plain, application/json, text/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **204** | The property was deleted successfully. |  -  |
+| **400** | There was an error with the provided arguments. |  -  |
+| **404** | The property was not found. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 <a name="propertypropertynameget"></a>
 # **PropertyPropertyNameGet**
@@ -35,7 +110,7 @@ namespace Example
             HttpClient httpClient = new HttpClient();
             HttpClientHandler httpClientHandler = new HttpClientHandler();
             var apiInstance = new PropertyApi(httpClient, config, httpClientHandler);
-            var propertyName = propertyName_example;  // string | The name of the property to find.
+            var propertyName = "propertyName_example";  // string | The name of the property to find.
 
             try
             {
@@ -110,7 +185,7 @@ namespace Example
             HttpClient httpClient = new HttpClient();
             HttpClientHandler httpClientHandler = new HttpClientHandler();
             var apiInstance = new PropertyApi(httpClient, config, httpClientHandler);
-            var propertyName = propertyName_example;  // string | The name of the property to set.
+            var propertyName = "propertyName_example";  // string | The name of the property to set.
             var setPropertyDTO = new SetPropertyDTO(); // SetPropertyDTO | The DTO containing the value to set. (optional) 
 
             try
