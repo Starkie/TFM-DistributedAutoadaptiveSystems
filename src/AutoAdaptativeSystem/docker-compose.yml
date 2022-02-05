@@ -45,6 +45,14 @@ services:
     networks:
       - adaption-loop-network
 
+  temperatureprobe:
+    build:
+      context: ./temperatureprobe
+      args:
+        ROOMMONITOR_SERVICEURI: "http://roommonitor:80"
+    networks:
+      - adaption-loop-network
+
   loki:
     image: "grafana/loki:latest"
     ports:

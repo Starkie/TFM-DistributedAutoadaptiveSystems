@@ -6,11 +6,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Core\Core.csproj" />
       <ProjectReference Include="..\RoomMonitor\ApiClient\RoomMonitor.ApiClient\RoomMonitor.ApiClient.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="FubarCoder.RestSharp.Portable.HttpClient" Version="4.0.8" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.0" />
     </ItemGroup>
 
 </Project>

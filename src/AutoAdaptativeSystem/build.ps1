@@ -23,6 +23,10 @@ $Projects = @(
     @{
         Name = "roommonitor"
         Path = "RoomMonitor"
+    },
+    @{
+        Name = "temperatureprobe"
+        Path = "TemperatureProbe"
     }
 )
 
