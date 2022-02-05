@@ -2,6 +2,7 @@ namespace MonitoringService.Controllers;
 
 using System.Threading.Tasks;
 using KnowledgeService.ApiClient.Api;
+using KnowledgeService.ApiClient.Client;
 using KnowledgeService.ApiClient.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +36,19 @@ public class PropertyController : ControllerBase
     {
         var activity = _diagnostics.LogGetProperty(propertyName);
 
-        PropertyDTO property = await _propertyApi.PropertyPropertyNameGetAsync(propertyName);
+        PropertyDTO property = null;
+
+        try
+        {
+            property = await _propertyApi.PropertyPropertyNameGetAsync(propertyName);
+        }
+        catch (ApiException exception)
+        {
+            if (exception.ErrorCode != StatusCodes.Status404NotFound)
+            {
+                throw;
+            }
+        }
 
         if (property is null)
         {
