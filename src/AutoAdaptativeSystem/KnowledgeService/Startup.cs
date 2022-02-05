@@ -26,7 +26,7 @@ public class Startup
             "Demonstrates all the existing operations to access and manage Knowledge properties.",
             "v1");
 
-        services.AddTracing(KnowledgeServiceConstants.AppName, "v1.0");
+        services.AddTracing(Configuration, KnowledgeServiceConstants.AppName, "v1.0");
 
         services.AddSingleton<KnowledgeServiceDiagnostics>();
     }

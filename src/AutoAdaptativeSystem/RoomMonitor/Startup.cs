@@ -29,7 +29,7 @@ public class Startup
 
         services.AddSwagger("RoomMonitor", String.Empty, "v1");
 
-        services.AddTracing(RoomMonitorConstants.AppName, "ver1.0");
+        services.AddTracing(Configuration, RoomMonitorConstants.AppName, "ver1.0");
 
         services.AddScoped<IPropertyApi, PropertyApi>(_ =>
         {
