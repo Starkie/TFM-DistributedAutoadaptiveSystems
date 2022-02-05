@@ -7,8 +7,8 @@ import requests
 import shutil
 
 netCoreVersion = "net6.0"
-codegen_library_version = "6.0.0-SNAPSHOT"
-codegen_library_name = F"openapi-generator-cli-{codegen_library_version}.jar" 
+codegen_library_version = "6.0.0-20220205.074732-39"
+codegen_library_name = F"openapi-generator-cli-{codegen_library_version}.jar"
 
 def generate_api_spec(project_name, project_path, api_name):
     print(f"Building '{project_path}'...")
@@ -28,7 +28,7 @@ def generate_api_spec(project_name, project_path, api_name):
     result = os.system(f"swagger tofile --output {openapi_spec_path} \"{dll_path}\" \"{api_name}\"")
 
     print(f"Generated '{openapi_spec_path}'")
-    
+
     return openapi_spec_path
 
 def download_codegen_jar():
@@ -36,9 +36,9 @@ def download_codegen_jar():
 
     if Path(codegen_library_name).exists():
         return Path(codegen_library_name).absolute()
-    
-    codegen_jar_descriptor = requests.get(f"https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/{codegen_library_version}/{codegen_library_name}")
-    
+
+    codegen_jar_descriptor = requests.get(f"https://oss.sonatype.org/content/repositories/snapshots/org/openapitools/openapi-generator-cli/6.0.0-SNAPSHOT/{codegen_library_name}")
+
     fd = os.open(codegen_library_name, os.O_WRONLY | os.O_CREAT)
     os.write(fd, codegen_jar_descriptor.content)
 
@@ -54,7 +54,7 @@ def generate_api_client(codegen_path, openapi_path, project_name, output_path):
 
 project_list = [
     { "path": "./KnowledgeService/KnowledgeService.csproj", "name": "KnowledgeService", "api_name": "v1", "output_path": "./KnowledgeService/ApiClient", "remove_existing_files": True },
-    { "path": "./MonitoringModule/MonitoringModule.csproj", "name": "MonitoringModule", "api_name": "v1", "output_path": "./MonitoringModule/ApiClient", "remove_existing_files": True },
+    { "path": "./MonitoringService/MonitoringService.csproj", "name": "MonitoringService", "api_name": "v1", "output_path": "./MonitoringService/ApiClient", "remove_existing_files": True },
     { "path": "./RoomMonitor/RoomMonitor.csproj", "name": "RoomMonitor", "api_name": "v1", "output_path": "./RoomMonitor/ApiClient", "remove_existing_files": True },
 ]
 
