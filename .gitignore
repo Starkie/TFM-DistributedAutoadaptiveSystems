@@ -379,3 +379,5 @@ MigrationBackup/
 *.synctex.gz
 *.fdb_latexmk
 *.fls
+
+*.jar
