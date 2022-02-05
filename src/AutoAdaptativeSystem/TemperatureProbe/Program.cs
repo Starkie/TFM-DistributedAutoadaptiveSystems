@@ -1,41 +1,37 @@
-﻿using System;
+﻿namespace TemperatureProbe;
 
-namespace TemperatureProbe
+using System;
+using System.Threading;
+using RoomMonitor.ApiClient.Api;
+using RoomMonitor.ApiClient.Model;
+
+class Program
 {
-    using System.Net.Http;
-    using System.Threading;
-    using RoomMonitor.ApiClient.Api;
-    using RoomMonitor.ApiClient.Client;
-    using RoomMonitor.ApiClient.Model;
-
-    class Program
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
+        MeasurementApi measurementApi = new MeasurementApi("http://localhost:5000");
+
+        Guid probeId = new Guid("c02234d3-329c-4b4d-aee0-d220dc25276b");
+
+        Random random = new Random();
+
+        while (true)
         {
-            MeasurementApi measurementApi = new MeasurementApi("http://localhost:5000");
+            double temperature = random.NextDouble() * 35;
+            string formatedTemperature = temperature.ToString("F2");
 
-            Guid probeId = new Guid("c02234d3-329c-4b4d-aee0-d220dc25276b");
+            Console.WriteLine($"[Temperature] - Reporting {formatedTemperature}ºC");
 
-            Random random = new Random();
-
-            while (true)
+            try
             {
-                double temperature = random.NextDouble() * 35;
-                string formatedTemperature = temperature.ToString("F2");
-
-                Console.WriteLine($"[Temperature] - Reporting {formatedTemperature}ºC");
-
-                try
-                {
-                    measurementApi.MeasurementTemperaturePost(new TemperatureMeasurementDTO(temperature, TemperatureUnit.CELSIUS, probeId, DateTime.UtcNow));
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-
-                Thread.Sleep(TimeSpan.FromSeconds(5));
+                measurementApi.MeasurementTemperaturePost(new TemperatureMeasurementDTO(temperature, TemperatureUnit.CELSIUS, probeId, DateTime.UtcNow));
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            Thread.Sleep(TimeSpan.FromSeconds(5));
         }
     }
 }
