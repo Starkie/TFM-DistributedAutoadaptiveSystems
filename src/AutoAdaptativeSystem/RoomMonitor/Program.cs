@@ -55,7 +55,8 @@ public class Program
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddEnvironmentVariables();
 
-        return builder.Build();
+        return builder.Build()
+            .ReplaceVariable("GRAFANA_LOKI_URI");
     }
 
     private static IHostBuilder CreateHostBuilder(string[] args) =>
