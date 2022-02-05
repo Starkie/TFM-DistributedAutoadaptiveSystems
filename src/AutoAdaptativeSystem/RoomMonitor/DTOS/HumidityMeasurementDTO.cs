@@ -1,15 +1,14 @@
-namespace RoomMonitor.DTOS
+namespace RoomMonitor.DTOS;
+
+public class HumidityMeasurementDTO
 {
-    public class HumidityMeasurementDTO
-    {
-        public double Value { get; set; }
+    public double Value { get; set; }
 
-        public HumidityUnit Unit { get; set; }
-    }
+    public HumidityUnit Unit { get; set; }
+}
 
-    public enum HumidityUnit
-    {
-        RELATIVE = 0,
-        ABSOLUTE = 1,
-    }
+public enum HumidityUnit
+{
+    RELATIVE = 0,
+    ABSOLUTE = 1,
 }

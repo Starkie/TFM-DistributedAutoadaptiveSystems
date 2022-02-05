@@ -1,26 +1,25 @@
-namespace RoomMonitor.DTOS
+namespace RoomMonitor.DTOS;
+
+using System;
+using MediatR;
+
+public class TemperatureMeasurementDTO : IRequest
 {
-    using System;
-    using MediatR;
+    /// <summary>
+    ///     The value of the temperature measurement.
+    /// </summary>
+    public double Value { get; set; }
 
-    public class TemperatureMeasurementDTO : IRequest
-    {
-        /// <summary>
-        ///     The value of the temperature measurement.
-        /// </summary>
-        public double Value { get; set; }
+    public TemperatureUnit Unit { get; set; }
 
-        public TemperatureUnit Unit { get; set; }
+    public Guid ProbeId { get; set; }
 
-        public Guid ProbeId { get; set; }
+    public DateTime DateTime { get; set; }
+}
 
-        public DateTime DateTime { get; set; }
-    }
-
-    public enum TemperatureUnit
-    {
-        KELVIN = 0,
-        CELSIUS = 1,
-        FAHRENHEIT = 2,
-    }
+public enum TemperatureUnit
+{
+    KELVIN = 0,
+    CELSIUS = 1,
+    FAHRENHEIT = 2,
 }

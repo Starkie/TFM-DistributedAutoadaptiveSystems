@@ -38,6 +38,6 @@
     <_ContentIncludedByDefault Remove="ApiClient\obj\RoomMonitor.ApiClient.csproj.nuget.dgspec.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MonitoringModule\ApiClient\MonitoringModule.ApiClient\MonitoringModule.ApiClient.csproj" />
+    <ProjectReference Include="..\MonitoringService\ApiClient\MonitoringService.ApiClient\MonitoringService.ApiClient.csproj" />
   </ItemGroup>
 </Project>

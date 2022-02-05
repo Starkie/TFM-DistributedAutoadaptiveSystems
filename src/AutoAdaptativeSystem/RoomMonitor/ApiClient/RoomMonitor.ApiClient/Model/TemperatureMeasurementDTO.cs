@@ -43,10 +43,14 @@ namespace RoomMonitor.ApiClient.Model
         /// </summary>
         /// <param name="value">The value of the temperature measurement..</param>
         /// <param name="unit">unit.</param>
-        public TemperatureMeasurementDTO(double value = default(double), TemperatureUnit? unit = default(TemperatureUnit?))
+        /// <param name="probeId">probeId.</param>
+        /// <param name="dateTime">dateTime.</param>
+        public TemperatureMeasurementDTO(double value = default(double), TemperatureUnit? unit = default(TemperatureUnit?), Guid probeId = default(Guid), DateTime dateTime = default(DateTime))
         {
             this.Value = value;
             this.Unit = unit;
+            this.ProbeId = probeId;
+            this.DateTime = dateTime;
         }
 
         /// <summary>
@@ -57,15 +61,29 @@ namespace RoomMonitor.ApiClient.Model
         public double Value { get; set; }
 
         /// <summary>
+        /// Gets or Sets ProbeId
+        /// </summary>
+        [DataMember(Name = "probeId", EmitDefaultValue = false)]
+        public Guid ProbeId { get; set; }
+
+        /// <summary>
+        /// Gets or Sets DateTime
+        /// </summary>
+        [DataMember(Name = "dateTime", EmitDefaultValue = false)]
+        public DateTime DateTime { get; set; }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
         public override string ToString()
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.Append("class TemperatureMeasurementDTO {\n");
             sb.Append("  Value: ").Append(Value).Append("\n");
             sb.Append("  Unit: ").Append(Unit).Append("\n");
+            sb.Append("  ProbeId: ").Append(ProbeId).Append("\n");
+            sb.Append("  DateTime: ").Append(DateTime).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -97,8 +115,9 @@ namespace RoomMonitor.ApiClient.Model
         public bool Equals(TemperatureMeasurementDTO input)
         {
             if (input == null)
+            {
                 return false;
-
+            }
             return 
                 (
                     this.Value == input.Value ||
@@ -107,6 +126,16 @@ namespace RoomMonitor.ApiClient.Model
                 (
                     this.Unit == input.Unit ||
                     this.Unit.Equals(input.Unit)
+                ) && 
+                (
+                    this.ProbeId == input.ProbeId ||
+                    (this.ProbeId != null &&
+                    this.ProbeId.Equals(input.ProbeId))
+                ) && 
+                (
+                    this.DateTime == input.DateTime ||
+                    (this.DateTime != null &&
+                    this.DateTime.Equals(input.DateTime))
                 );
         }
 
@@ -119,8 +148,16 @@ namespace RoomMonitor.ApiClient.Model
             unchecked // Overflow is fine, just wrap
             {
                 int hashCode = 41;
-                hashCode = hashCode * 59 + this.Value.GetHashCode();
-                hashCode = hashCode * 59 + this.Unit.GetHashCode();
+                hashCode = (hashCode * 59) + this.Value.GetHashCode();
+                hashCode = (hashCode * 59) + this.Unit.GetHashCode();
+                if (this.ProbeId != null)
+                {
+                    hashCode = (hashCode * 59) + this.ProbeId.GetHashCode();
+                }
+                if (this.DateTime != null)
+                {
+                    hashCode = (hashCode * 59) + this.DateTime.GetHashCode();
+                }
                 return hashCode;
             }
         }

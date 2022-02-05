@@ -1,101 +1,100 @@
-namespace RoomMonitor.Commands.Temperature
+namespace RoomMonitor.Commands.Temperature;
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
+using MonitoringService.ApiClient.Api;
+using MonitoringService.ApiClient.Client;
+using MonitoringService.ApiClient.Model;
+using Newtonsoft.Json;
+using RoomMonitor.DTOS;
+
+public class RegisterTemperatureCommandHandler : IRequestHandler<TemperatureMeasurementDTO>
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using MediatR;
-    using MonitoringModule.ApiClient.Api;
-    using MonitoringModule.ApiClient.Client;
-    using MonitoringModule.ApiClient.Model;
-    using Newtonsoft.Json;
-    using RoomMonitor.DTOS;
 
-    public class RegisterTemperatureCommandHandler : IRequestHandler<TemperatureMeasurementDTO>
+    private readonly IMonitorApi _monitorApi;
+
+    private readonly IPropertyApi _propertyApi;
+
+    private readonly RoomMonitorDiagnostics _roomMonitorDiagnostics;
+    private string TemperaturePropertyName = "Temperature";
+
+    public RegisterTemperatureCommandHandler(IMonitorApi monitorApi, IPropertyApi propertyApi, RoomMonitorDiagnostics roomMonitorDiagnostics)
     {
+        _monitorApi = monitorApi;
+        _propertyApi = propertyApi;
+        _roomMonitorDiagnostics = roomMonitorDiagnostics;
+    }
 
-        private readonly IMonitorApi _monitorApi;
-
-        private readonly IPropertyApi _propertyApi;
-
-        private readonly RoomMonitorDiagnostics _roomMonitorDiagnostics;
-        private string TemperaturePropertyName = "Temperature";
-
-        public RegisterTemperatureCommandHandler(IMonitorApi monitorApi, IPropertyApi propertyApi, RoomMonitorDiagnostics roomMonitorDiagnostics)
+    public async Task<Unit> Handle(TemperatureMeasurementDTO request, CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
         {
-            _monitorApi = monitorApi;
-            _propertyApi = propertyApi;
-            _roomMonitorDiagnostics = roomMonitorDiagnostics;
+            return Unit.Value;
         }
 
-        public async Task<Unit> Handle(TemperatureMeasurementDTO request, CancellationToken cancellationToken)
+        using var activity = _roomMonitorDiagnostics.RegisterTemperatureMeasurement(request);
+
+        var previousMeasurement = await GetPreviousMeasurement();
+
+        if (previousMeasurement is not null && !IsValidReading(request, previousMeasurement))
         {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return Unit.Value;
-            }
-
-            using var activity = _roomMonitorDiagnostics.RegisterTemperatureMeasurement(request);
-
-            var previousMeasurement = await GetPreviousMeasurement();
-
-            if (previousMeasurement is not null && !IsValidReading(request, previousMeasurement))
-            {
-                _roomMonitorDiagnostics.ProbeReadingNotWithinSafeMargins(request);
-
-                return Unit.Value;
-            }
-
-            await RegisterNewTemperatureMeasurement(request);
+            _roomMonitorDiagnostics.ProbeReadingNotWithinSafeMargins(request);
 
             return Unit.Value;
         }
 
-        private static bool IsValidReading(TemperatureMeasurementDTO request, TemperatureMeasurementDTO previousMeasurement)
+        await RegisterNewTemperatureMeasurement(request);
+
+        return Unit.Value;
+    }
+
+    private static bool IsValidReading(TemperatureMeasurementDTO request, TemperatureMeasurementDTO previousMeasurement)
+    {
+        TimeSpan differenceTimings = request.DateTime - previousMeasurement.DateTime;
+
+        var readingsWithinFiveMinutes = differenceTimings <= TimeSpan.FromMinutes(5);
+
+        var isWithinErrorMargin = Math.Abs(request.Value - previousMeasurement.Value) <= 2.0;
+
+        return readingsWithinFiveMinutes && isWithinErrorMargin;
+    }
+
+    private async Task<TemperatureMeasurementDTO> GetPreviousMeasurement()
+    {
+        TemperatureMeasurementDTO previousMeasurement = null;
+
+        using var activity = _roomMonitorDiagnostics.LogGetPreviousMeasurement();
+
+        try
         {
-            TimeSpan differenceTimings = request.DateTime - previousMeasurement.DateTime;
+            PropertyDTO propertyValue = await _propertyApi.PropertyPropertyNameGetAsync(TemperaturePropertyName);
 
-            var readingsWithinFiveMinutes = differenceTimings <= TimeSpan.FromMinutes(5);
-
-            var isWithinErrorMargin = Math.Abs(request.Value - previousMeasurement.Value) <= 2.0;
-
-            return readingsWithinFiveMinutes && isWithinErrorMargin;
+            previousMeasurement = JsonConvert.DeserializeObject<TemperatureMeasurementDTO>(propertyValue.Value);
+        }
+        catch (ApiException exception)
+        {
+            // _logger.LogWarning("API Exception: Returned HTTP code: {Code}", exception.ErrorCode);
+        }
+        catch (JsonSerializationException exception)
+        {
+            // _logger.LogWarning("Serialization error: Could not deserialize as '{Type}'", nameof(TemperatureMeasurementDTO));
         }
 
-        private async Task<TemperatureMeasurementDTO> GetPreviousMeasurement()
+        return previousMeasurement;
+    }
+
+    private async Task RegisterNewTemperatureMeasurement(TemperatureMeasurementDTO temperatureMeasurement)
+    {
+        await _monitorApi.MonitorMonitorIdMeasurementPostAsync(RoomMonitorConstants.MonitorId, new MeasurementDTO()
         {
-            TemperatureMeasurementDTO previousMeasurement = null;
-
-            using var activity = _roomMonitorDiagnostics.LogGetPreviousMeasurement();
-
-            try
+            ProbeId = Guid.NewGuid(),
+            Property = new Property
             {
-                PropertyDTO propertyValue = await _propertyApi.PropertyPropertyNameGetAsync(TemperaturePropertyName);
-
-                previousMeasurement = JsonConvert.DeserializeObject<TemperatureMeasurementDTO>(propertyValue.Value);
-            }
-            catch (ApiException exception)
-            {
-                // _logger.LogWarning("API Exception: Returned HTTP code: {Code}", exception.ErrorCode);
-            }
-            catch (JsonSerializationException exception)
-            {
-                // _logger.LogWarning("Serialization error: Could not deserialize as '{Type}'", nameof(TemperatureMeasurementDTO));
-            }
-
-            return previousMeasurement;
-        }
-
-        private async Task RegisterNewTemperatureMeasurement(TemperatureMeasurementDTO temperatureMeasurement)
-        {
-            await _monitorApi.MonitorMonitorIdMeasurementPostAsync(RoomMonitorConstants.MonitorId, new MeasurementDTO()
-            {
-                ProbeId = Guid.NewGuid(),
-                    Property = new Property
-                    {
-                        Key = TemperaturePropertyName,
-                            Value = JsonConvert.SerializeObject(temperatureMeasurement),
-                    },
-            }).ConfigureAwait(false);
-        }
+                Key = TemperaturePropertyName,
+                Value = JsonConvert.SerializeObject(temperatureMeasurement),
+            },
+        }).ConfigureAwait(false);
     }
 }

@@ -72,6 +72,22 @@ namespace RoomMonitor.ApiClient.Test.Model
         {
             // TODO unit test for the property 'Unit'
         }
+        /// <summary>
+        /// Test the property 'ProbeId'
+        /// </summary>
+        [Fact]
+        public void ProbeIdTest()
+        {
+            // TODO unit test for the property 'ProbeId'
+        }
+        /// <summary>
+        /// Test the property 'DateTime'
+        /// </summary>
+        [Fact]
+        public void DateTimeTest()
+        {
+            // TODO unit test for the property 'DateTime'
+        }
 
     }
 

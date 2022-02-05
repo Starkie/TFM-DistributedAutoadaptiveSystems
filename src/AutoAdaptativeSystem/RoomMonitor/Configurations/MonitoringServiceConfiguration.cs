@@ -1,11 +1,10 @@
-namespace RoomMonitor.Configurations
-{
-    using System;
+namespace RoomMonitor.Configurations;
 
-    public class MonitoringServiceConfiguration
-    {
-        public const string ConfigurationPath = "MonitoringService";
+using System;
+
+public class MonitoringServiceConfiguration
+{
+    public const string ConfigurationPath = "MonitoringService";
         
-        public string ServiceUri { get; set; }
-    }
+    public string ServiceUri { get; set; }
 }
