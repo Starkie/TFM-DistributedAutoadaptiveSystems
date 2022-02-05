@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MonitoringService.Configurations;
+using MonitoringService.Diagnostics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -57,12 +58,14 @@ public class Startup
         {
             builder.SetResourceBuilder(ResourceBuilder
                     .CreateDefault()
-                    .AddService("MonitoringService", serviceVersion: "ver1.0"))
+                    .AddService(MonitoringServiceConstants.AppName, serviceVersion: "ver1.0"))
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
-                // .AddSource("RoomMonitorModule")
+                .AddSource(MonitoringServiceConstants.AppName)
                 .AddJaegerExporter();
         });
+
+        services.AddSingleton<MonitoringServiceDiagnostics>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

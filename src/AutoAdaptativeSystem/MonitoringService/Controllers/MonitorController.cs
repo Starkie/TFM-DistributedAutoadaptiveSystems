@@ -1,27 +1,26 @@
 ﻿namespace MonitoringService.Controllers;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using KnowledgeService.ApiClient.Api;
 using KnowledgeService.ApiClient.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
+using MonitoringService.Diagnostics;
 using MonitoringService.DTOS;
 
 [ApiController]
 [Route("[controller]")]
 public class MonitorController : ControllerBase
 {
-    private readonly ILogger<MonitorController> _logger;
+    private readonly MonitoringServiceDiagnostics _diagnostics;
 
     private readonly IPropertyApi _propertyApi;
 
-    public MonitorController(ILogger<MonitorController> logger, IPropertyApi propertyApi)
+    public MonitorController(MonitoringServiceDiagnostics diagnostics, IPropertyApi propertyApi)
     {
-        _logger = logger;
+        _diagnostics = diagnostics;
         _propertyApi = propertyApi;
     }
 
@@ -43,13 +42,7 @@ public class MonitorController : ControllerBase
             return this.BadRequest();
         }
 
-        this._logger.LogInformation(
-            "[{methodName}] - Reported Property Change: MonitorId = {monitorId}, ProbeId = {probeId}, Property: Key {propertyName} Value: {propertyValue}",
-            nameof(ReportMeasurementAsync),
-            monitorId,
-            measurementDto.ProbeId,
-            measurementDto.Property.Key,
-            measurementDto.Property.Value);
+        _diagnostics.LogReportedMeasurement(measurementDto.Property.Key, measurementDto);
 
         await _propertyApi.PropertyPropertyNamePutAsync(
             measurementDto.Property.Key,

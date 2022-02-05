@@ -5,19 +5,19 @@ using KnowledgeService.ApiClient.Api;
 using KnowledgeService.ApiClient.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using MonitoringService.Diagnostics;
 
 [ApiController]
 [Route("[controller]")]
 public class PropertyController : ControllerBase
 {
-    private readonly ILogger<PropertyController> _logger;
+    private readonly MonitoringServiceDiagnostics _diagnostics;
 
     private readonly IPropertyApi _propertyApi;
 
-    public PropertyController(ILogger<PropertyController> logger, IPropertyApi propertyApi)
+    public PropertyController(MonitoringServiceDiagnostics diagnostics, IPropertyApi propertyApi)
     {
-        _logger = logger;
+        _diagnostics = diagnostics;
         _propertyApi = propertyApi;
     }
 
@@ -33,18 +33,18 @@ public class PropertyController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAsync([FromRoute]string propertyName)
     {
-        _logger.LogInformation("[{ActionName}] - Requested property '{PropertyName}'", nameof(GetAsync), propertyName);
+        var activity = _diagnostics.LogGetProperty(propertyName);
 
         PropertyDTO property = await _propertyApi.PropertyPropertyNameGetAsync(propertyName);
 
         if (property is null)
         {
-            _logger.LogInformation("[{ActionName}] - Property '{PropertyName}' not found", nameof(GetAsync), propertyName);
+            _diagnostics.LogPropertyNotFound(propertyName);
 
             return NotFound();
         }
 
-        _logger.LogInformation("[{ActionName}] - Property '{PropertyName}' found with value: '{PropertyValue}'", nameof(GetAsync), propertyName, property.Value);
+        _diagnostics.LogPropertyFound(propertyName, property);
 
         return Ok(property);
     }
