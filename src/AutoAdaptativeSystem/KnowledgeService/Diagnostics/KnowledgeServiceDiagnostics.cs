@@ -1,90 +1,89 @@
-namespace KnowledgeService.Diagnostics
+namespace KnowledgeService.Diagnostics;
+
+using System;
+using System.Diagnostics;
+using KnowledgeService.DTOs;
+using Microsoft.Extensions.Logging;
+
+public class KnowledgeServiceDiagnostics
 {
-    using System;
-    using System.Diagnostics;
-    using KnowledgeService.DTOs;
-    using Microsoft.Extensions.Logging;
+    private static readonly Action<ILogger, string, Exception> LogGetPropertyMessage = LoggerMessage.Define<string>(
+        LogLevel.Information,
+        KnowledgeServiceEventIds.GetPropertyEventId,
+        "Get property value request: {propertyName}");
 
-    public class KnowledgeServiceDiagnostics
+    private static readonly Action<ILogger, string, Exception> LogPropertyNotFoundMessage = LoggerMessage.Define<string>(
+        LogLevel.Information,
+        KnowledgeServiceEventIds.PropertyNotFoundEventId,
+        "Property '{PropertyName}' not found.");
+
+    private static readonly Action<ILogger, string, PropertyDTO, Exception> LogPropertyFoundMessage = LoggerMessage.Define<string, PropertyDTO>(
+        LogLevel.Information,
+        KnowledgeServiceEventIds.PropertyFoundEventId,
+        "Property '{PropertyName}' found. Value: '{@PropertyValue}'");
+
+    private static readonly Action<ILogger, string, SetPropertyDTO, Exception> LogSetPropertyMessage = LoggerMessage.Define<string, SetPropertyDTO>(
+        LogLevel.Information,
+        KnowledgeServiceEventIds.SetPropertyId,
+        "Set property '{propertyName}' with value '{@setPropertyValue} ");
+
+    private static readonly Action<ILogger, string, Exception> LogDeletePropertyMessage = LoggerMessage.Define<string>(
+        LogLevel.Information,
+        KnowledgeServiceEventIds.DeletePropertyId,
+        "Delete property request: {propertyName}");
+
+    private readonly ActivitySource _activitySource;
+
+    private readonly ILogger _logger;
+
+    public KnowledgeServiceDiagnostics(ILoggerProvider loggerProvider)
     {
-        private static readonly Action<ILogger, string, Exception> LogGetPropertyMessage = LoggerMessage.Define<string>(
-            LogLevel.Information,
-            KnowledgeServiceEventIds.GetPropertyEventId,
-            "Get property value request: {propertyName}");
+        _logger = loggerProvider.CreateLogger(KnowledgeServiceConstants.AppName);
 
-        private static readonly Action<ILogger, string, Exception> LogPropertyNotFoundMessage = LoggerMessage.Define<string>(
-            LogLevel.Information,
-            KnowledgeServiceEventIds.PropertyNotFoundEventId,
-            "Property '{PropertyName}' not found.");
+        _activitySource = new ActivitySource(KnowledgeServiceConstants.AppName);
+    }
 
-        private static readonly Action<ILogger, string, PropertyDTO, Exception> LogPropertyFoundMessage = LoggerMessage.Define<string, PropertyDTO>(
-            LogLevel.Information,
-            KnowledgeServiceEventIds.PropertyFoundEventId,
-            "Property '{PropertyName}' found. Value: '{@PropertyValue}'");
+    public Activity LogGetProperty(string propertyName)
+    {
+        LogGetPropertyMessage(_logger, propertyName, null);
 
-        private static readonly Action<ILogger, string, SetPropertyDTO, Exception> LogSetPropertyMessage = LoggerMessage.Define<string, SetPropertyDTO>(
-            LogLevel.Information,
-            KnowledgeServiceEventIds.SetPropertyId,
-            "Set property '{propertyName}' with value '{@setPropertyValue} ");
+        return _activitySource.StartActivity("Get Property's Value");
+    }
 
-        private static readonly Action<ILogger, string, Exception> LogDeletePropertyMessage = LoggerMessage.Define<string>(
-            LogLevel.Information,
-            KnowledgeServiceEventIds.DeletePropertyId,
-            "Delete property request: {propertyName}");
+    public Activity LogSetProperty(string propertyName, SetPropertyDTO setPropertyDto)
+    {
+        LogSetPropertyMessage(_logger, propertyName, setPropertyDto, null);
 
-        private readonly ActivitySource _activitySource;
+        return _activitySource.StartActivity("Set Property's Value");
+    }
 
-        private readonly ILogger _logger;
+    public Activity LogDeleteProperty(string propertyName)
+    {
+        LogDeletePropertyMessage(_logger, propertyName, null);
 
-        public KnowledgeServiceDiagnostics(ILoggerProvider loggerProvider)
-        {
-            _logger = loggerProvider.CreateLogger(KnowledgeServiceConstants.AppName);
+        return _activitySource.StartActivity("Delete Property");
+    }
 
-            _activitySource = new ActivitySource(KnowledgeServiceConstants.AppName);
-        }
+    public void LogPropertyNotFound(string propertyName)
+    {
+        LogPropertyNotFoundMessage(_logger, propertyName, null);
+    }
 
-        public Activity LogGetProperty(string propertyName)
-        {
-            LogGetPropertyMessage(_logger, propertyName, null);
+    public void LogPropertyFound(string propertyName, PropertyDTO value)
+    {
+        LogPropertyFoundMessage(_logger, propertyName, value, null);
+    }
 
-            return _activitySource.StartActivity("Get Property's Value");
-        }
+    internal class KnowledgeServiceEventIds
+    {
+        public static EventId GetPropertyEventId = new EventId(200, nameof(GetPropertyEventId));
 
-        public Activity LogSetProperty(string propertyName, SetPropertyDTO setPropertyDto)
-        {
-            LogSetPropertyMessage(_logger, propertyName, setPropertyDto, null);
+        public static EventId PropertyNotFoundEventId = new EventId(300, nameof(PropertyNotFoundEventId));
 
-            return _activitySource.StartActivity("Set Property's Value");
-        }
+        public static EventId PropertyFoundEventId = new EventId(400, nameof(PropertyFoundEventId));
 
-        public Activity LogDeleteProperty(string propertyName)
-        {
-            LogDeletePropertyMessage(_logger, propertyName, null);
+        public static EventId SetPropertyId = new EventId(500, nameof(SetPropertyId));
 
-            return _activitySource.StartActivity("Delete Property");
-        }
-
-        public void LogPropertyNotFound(string propertyName)
-        {
-            LogPropertyNotFoundMessage(_logger, propertyName, null);
-        }
-
-        public void LogPropertyFound(string propertyName, PropertyDTO value)
-        {
-            LogPropertyFoundMessage(_logger, propertyName, value, null);
-        }
-
-        internal class KnowledgeServiceEventIds
-        {
-            public static EventId GetPropertyEventId = new EventId(200, nameof(GetPropertyEventId));
-
-            public static EventId PropertyNotFoundEventId = new EventId(300, nameof(PropertyNotFoundEventId));
-
-            public static EventId PropertyFoundEventId = new EventId(400, nameof(PropertyFoundEventId));
-
-            public static EventId SetPropertyId = new EventId(500, nameof(SetPropertyId));
-
-            public static EventId DeletePropertyId = new EventId(600, nameof(DeletePropertyId));
-        }
+        public static EventId DeletePropertyId = new EventId(600, nameof(DeletePropertyId));
     }
 }

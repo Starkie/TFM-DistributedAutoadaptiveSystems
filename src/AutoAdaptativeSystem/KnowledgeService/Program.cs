@@ -7,69 +7,68 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace KnowledgeService
+namespace KnowledgeService;
+
+using System.IO;
+using Serilog;
+
+public class Program
 {
-    using System.IO;
-    using Serilog;
-
-    public class Program
+    public static int Main(string[] args)
     {
-        public static int Main(string[] args)
+        var configuration = GetConfiguration();
+
+        Serilog.Log.Logger = CreateSerilogLogger(configuration);
+
+        try
         {
-            var configuration = GetConfiguration();
+            Log.Information("Starting host");
 
-            Serilog.Log.Logger = CreateSerilogLogger(configuration);
+            CreateHostBuilder(args)
+                .Build()
+                .Run();
 
-            try
-            {
-                Log.Information("Starting host");
-
-                CreateHostBuilder(args)
-                    .Build()
-                    .Run();
-
-                return 0;
-            }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex, "Host terminated unexpectedly");
-
-                return 1;
-            }
-            finally
-            {
-                Log.CloseAndFlush();
-            }
+            return 0;
         }
-
-        private static Serilog.ILogger CreateSerilogLogger(IConfiguration configuration)
+        catch (Exception ex)
         {
-            return new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
-                .Enrich.WithProperty("source", KnowledgeServiceConstants.AppName)
-                .CreateLogger();
-        }
+            Log.Fatal(ex, "Host terminated unexpectedly");
 
-        private static IConfiguration GetConfiguration()
+            return 1;
+        }
+        finally
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddEnvironmentVariables();
-
-            return builder.Build();
+            Log.CloseAndFlush();
         }
-
-        private static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(builder =>
-                {
-                    builder.ClearProviders();
-                    builder.AddSerilog();
-                })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
     }
+
+    private static Serilog.ILogger CreateSerilogLogger(IConfiguration configuration)
+    {
+        return new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .Enrich.WithProperty("source", KnowledgeServiceConstants.AppName)
+            .CreateLogger();
+    }
+
+    private static IConfiguration GetConfiguration()
+    {
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddEnvironmentVariables();
+
+        return builder.Build();
+    }
+
+    private static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureLogging(builder =>
+            {
+                builder.ClearProviders();
+                builder.AddSerilog();
+            })
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
 }

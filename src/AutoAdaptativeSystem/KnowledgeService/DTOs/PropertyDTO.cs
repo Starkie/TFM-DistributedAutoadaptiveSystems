@@ -1,11 +1,10 @@
-namespace KnowledgeService.DTOs
+namespace KnowledgeService.DTOs;
+
+using System;
+
+public class PropertyDTO
 {
-    using System;
+    public string Value { get; set; }
 
-    public class PropertyDTO
-    {
-        public string Value { get; set; }
-
-        public DateTime LastModification { get; set; }
-    }
+    public DateTime LastModification { get; set; }
 }
