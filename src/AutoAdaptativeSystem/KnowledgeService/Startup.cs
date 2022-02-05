@@ -1,19 +1,11 @@
 namespace KnowledgeService;
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using KnowledgeService.Diagnostics;
-using KnowledgeService.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 
 public class Startup
 {
@@ -29,39 +21,12 @@ public class Startup
     {
         services.AddControllers();
 
-        services.AddSwaggerGen(c =>
-        {
-            c.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Title = "Knowledge Service",
-                Description = "Demonstrates all the existing operations to access and manage Knowledge properties.",
-                Version = "v1",
-            });
+        services.AddSwagger(
+            "Knowledge Service",
+            "Demonstrates all the existing operations to access and manage Knowledge properties.",
+            "v1");
 
-            // Set the comments path for the Swagger JSON and UI.
-            // Obtained from https://github.com/domaindrivendev/Swashbuckle.WebApi/issues/93#issuecomment-458690098.
-            List<string> xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, "*.xml", SearchOption.TopDirectoryOnly)
-                .ToList();
-
-            xmlFiles.ForEach(xmlFile => c.IncludeXmlComments(xmlFile));
-        });
-
-        services.AddOpenTelemetryTracing(builder =>
-        {
-            builder.SetResourceBuilder(ResourceBuilder
-                    .CreateDefault()
-                    .AddService(KnowledgeServiceConstants.AppName, serviceVersion: "ver1.0"))
-                .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation()
-                .AddSource(KnowledgeServiceConstants.AppName)
-                .AddJaegerExporter(configure =>
-                {
-                    var jaegerOptions = Configuration.BindOptions<JaegerOptions>(JaegerOptions.ConfigurationPath);
-
-                    configure.AgentHost = jaegerOptions.Host;
-                    configure.AgentPort = jaegerOptions.Port;
-                });
-        });
+        services.AddTracing(KnowledgeServiceConstants.AppName, "v1.0");
 
         services.AddSingleton<KnowledgeServiceDiagnostics>();
     }
