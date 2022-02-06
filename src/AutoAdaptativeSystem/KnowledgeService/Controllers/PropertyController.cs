@@ -2,6 +2,8 @@ namespace KnowledgeService.Controllers;
 
 using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using KnowledgeService.Controllers.IntegrationEvents;
 using KnowledgeService.Diagnostics;
 using KnowledgeService.DTOs;
 using Microsoft.AspNetCore.Http;
@@ -13,11 +15,14 @@ public class PropertyController : ControllerBase
 {
     private readonly KnowledgeServiceDiagnostics _diagnostics;
 
+    private readonly PropertyChangedIntegrationEventPublisher _propertyChangedIntegrationEventPublisher;
+
     private static ConcurrentDictionary<string, PropertyDTO> properties = new();
 
-    public PropertyController(KnowledgeServiceDiagnostics diagnostics)
+    public PropertyController(KnowledgeServiceDiagnostics diagnostics, PropertyChangedIntegrationEventPublisher propertyChangedIntegrationEventPublisher)
     {
         _diagnostics = diagnostics;
+        _propertyChangedIntegrationEventPublisher = propertyChangedIntegrationEventPublisher;
     }
 
     /// <summary>
@@ -66,7 +71,7 @@ public class PropertyController : ControllerBase
     [HttpPut("{propertyName}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult SetProperty([FromRoute]string propertyName, [FromBody]SetPropertyDTO setPropertyDto)
+    public async Task<IActionResult> SetPropertyAsync([FromRoute]string propertyName, [FromBody]SetPropertyDTO setPropertyDto)
     {
         if (string.IsNullOrEmpty(propertyName) || string.IsNullOrEmpty(setPropertyDto?.Value))
         {
@@ -82,6 +87,10 @@ public class PropertyController : ControllerBase
         };
 
         properties.AddOrUpdate(propertyName, newValue, (_, _) => newValue);
+
+        // TODO: Investigar persistencia de mensajes:
+        // https://stackoverflow.com/questions/6148381/rabbitmq-persistent-message-with-topic-exchange
+        await _propertyChangedIntegrationEventPublisher.PublishAsync(new PropertyChangedIntegrationEvent(propertyName));
 
         return NoContent();
     }
