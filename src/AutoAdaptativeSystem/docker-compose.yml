@@ -5,6 +5,8 @@ services:
     build:
       context: ./knowledge
       args:
+        # BUSCONFIGURATION_SERVICEURI: "amqp://user:password@rabbitmq"
+        BUSCONFIGURATION_SERVICEURI: "amqp://user:password@some-rabbit"
         GRAFANA_LOKI_URI: "http://loki:3100"
         JAEGER_HOST: "jaeger"
         JAEGER_PORT: "6831"
@@ -13,7 +15,18 @@ services:
     ports:
       - "5001:80"
     networks:
-      - adaption-loop-network
+      - knowledge-network
+
+  ## rabbitmq:
+  ##   image: rabbitmq:3-management
+  ##   environment:
+  ##     - RABBITMQ_DEFAULT_USER=user
+  ##     - RABBITMQ_DEFAULT_PASS=password
+  ##   ports:
+  ##     - "5672:5672"
+  ##     - "15672:15672"
+  ##   networks:
+  ##     - knowledge-network
 
   monitoring:
     build:
@@ -29,6 +42,7 @@ services:
       - "6001:80"
     networks:
       - adaption-loop-network
+      - knowledge-network
 
   roommonitor:
     build:
@@ -58,6 +72,7 @@ services:
     ports:
       - "3100:3100"
     networks:
+      - knowledge-network
       - adaption-loop-network
       - monitoring-network
 
@@ -78,10 +93,16 @@ services:
     environment:
       COLLECTOR_ZIPKIN_HOST_PORT: 9411
     networks:
+      - knowledge-network
       - adaption-loop-network
       - monitoring-network
 
 networks:
+  # knowledge-network:
+  #   driver: bridge
+  knowledge-network:
+    external:
+      name: knowledge-network
   adaption-loop-network:
     driver: bridge
   monitoring-network:
