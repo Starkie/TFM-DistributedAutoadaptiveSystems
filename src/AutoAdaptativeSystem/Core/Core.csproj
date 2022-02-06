@@ -14,7 +14,11 @@
       <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc7" />
       <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc7" />
       <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc7" />
+      <PackageReference Include="Rebus.OpenTelemetry" Version="0.0.4" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+      <!-- TODO: Remove these references. Added to be able to build the solution with the ASP.NET Core dependencies. -->
+      <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+      <PackageReference Include="System.Runtime.Handles" Version="4.3.0" />
     </ItemGroup>
 
     <ItemGroup>
