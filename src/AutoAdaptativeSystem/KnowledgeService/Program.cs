@@ -1,15 +1,13 @@
+
+namespace KnowledgeService;
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-
-namespace KnowledgeService;
-
 using System.IO;
+using Rebus.Config;
 using Serilog;
 
 public class Program
@@ -46,6 +44,7 @@ public class Program
     {
         return new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
+            .Enrich.WithRebusCorrelationId("CorrelationId")
             .Enrich.WithProperty("source", KnowledgeServiceConstants.AppName)
             .CreateLogger();
     }
