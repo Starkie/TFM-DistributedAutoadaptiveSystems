@@ -27,7 +27,7 @@ public class Startup
             .AddJsonOptions(options =>
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-        services.AddSwagger("RoomMonitor", String.Empty, "v1");
+        services.AddSwagger("Room Monitor Service", string.Empty, "v1");
 
         services.AddTracing(Configuration, RoomMonitorConstants.AppName, "ver1.0");
 

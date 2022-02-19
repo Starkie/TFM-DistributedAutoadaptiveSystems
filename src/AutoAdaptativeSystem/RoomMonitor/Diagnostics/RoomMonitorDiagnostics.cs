@@ -26,6 +26,7 @@ public class RoomMonitorDiagnostics
         "Probe reading not within safe margins: {@Measurement}");
 
     private readonly ActivitySource _activitySource;
+
     private readonly ILogger _logger;
 
     public RoomMonitorDiagnostics(ILoggerProvider loggerProvider)
@@ -54,12 +55,12 @@ public class RoomMonitorDiagnostics
         return _activitySource.StartActivity("Register Temperature Measurement");
     }
 
-    internal class RoomMonitorEventIds
+    private static class RoomMonitorEventIds
     {
-
         public static EventId GetPreviousMeasurementEventId = new EventId(200, nameof(GetPreviousMeasurementEventId));
 
         public static EventId ProbeReadingNotWithinSafeMarginsId = new EventId(500, nameof(ProbeReadingNotWithinSafeMarginsId));
+
         public static EventId RegisterTemperatureMeasurementEventId = new EventId(100, nameof(RegisterTemperatureMeasurementEventId));
     }
 }
