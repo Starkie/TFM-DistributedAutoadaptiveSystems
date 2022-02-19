@@ -1,12 +1,11 @@
-version: "3.3"
+version: "3.8"
 
 services:
   knowledge:
     build:
       context: ./knowledge
       args:
-        # BUSCONFIGURATION_SERVICEURI: "amqp://user:password@rabbitmq"
-        BUSCONFIGURATION_SERVICEURI: "amqp://user:password@some-rabbit"
+        BUSCONFIGURATION_SERVICEURI: "amqp://user:password@rabbitmq"
         GRAFANA_LOKI_URI: "http://loki:3100"
         JAEGER_HOST: "jaeger"
         JAEGER_PORT: "6831"
@@ -16,17 +15,22 @@ services:
       - "5001:80"
     networks:
       - knowledge-network
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 20s
+        max_attempts: 5
 
-  ## rabbitmq:
-  ##   image: rabbitmq:3-management
-  ##   environment:
-  ##     - RABBITMQ_DEFAULT_USER=user
-  ##     - RABBITMQ_DEFAULT_PASS=password
-  ##   ports:
-  ##     - "5672:5672"
-  ##     - "15672:15672"
-  ##   networks:
-  ##     - knowledge-network
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - knowledge-network
 
   monitoring:
     build:
