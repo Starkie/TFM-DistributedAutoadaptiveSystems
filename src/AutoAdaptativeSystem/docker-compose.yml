@@ -71,6 +71,27 @@ services:
     networks:
       - adaption-loop-network
 
+  analysis:
+    build:
+      context: ./analysis
+      args:
+        KNOWLEDGESERVICE_SERVICEURI: "http://knowledge:80"
+        BUSCONFIGURATION_SERVICEURI: "amqp://user:password@rabbitmq"
+        GRAFANA_LOKI_URI: "http://loki:3100"
+        JAEGER_HOST: "jaeger"
+        JAEGER_PORT: "6831"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+    ports:
+      - "8001:80"
+    networks:
+      - knowledge-network
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 20s
+        max_attempts: 5
+
   loki:
     image: "grafana/loki:latest"
     ports:
@@ -102,11 +123,8 @@ services:
       - monitoring-network
 
 networks:
-  # knowledge-network:
-  #   driver: bridge
   knowledge-network:
-    external:
-      name: knowledge-network
+    driver: bridge
   adaption-loop-network:
     driver: bridge
   monitoring-network:

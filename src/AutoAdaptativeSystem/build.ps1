@@ -27,6 +27,10 @@ $Projects = @(
     @{
         Name = "temperatureprobe"
         Path = "TemperatureProbe"
+    },
+    @{
+        Name = "analysis"
+        Path = "AnalysisService"
     }
 )
 
