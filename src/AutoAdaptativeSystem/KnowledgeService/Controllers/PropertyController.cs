@@ -3,6 +3,7 @@ namespace KnowledgeService.Controllers;
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using Knowledge.Contracts.Controllers.IntegrationEvents;
 using KnowledgeService.Controllers.IntegrationEvents;
 using KnowledgeService.Diagnostics;
 using KnowledgeService.DTOs;

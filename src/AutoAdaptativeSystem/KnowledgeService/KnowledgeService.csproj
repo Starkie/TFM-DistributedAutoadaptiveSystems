@@ -34,6 +34,7 @@
       <ProjectReference Include="..\Core\Core.Bus\Core.Bus.csproj" />
       <ProjectReference Include="..\Core\Core.csproj" />
       <ProjectReference Include="..\Core\Core.DependencyInjection\Core.DependencyInjection.csproj" />
+      <ProjectReference Include="..\Knowledge.Contracts\Knowledge.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

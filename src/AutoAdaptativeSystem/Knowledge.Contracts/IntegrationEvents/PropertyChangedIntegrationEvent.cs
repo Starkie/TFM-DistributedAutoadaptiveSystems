@@ -1,9 +1,8 @@
-namespace KnowledgeService.Controllers.IntegrationEvents;
+namespace Knowledge.Contracts.Controllers.IntegrationEvents;
 
 using Core.Bus.Events;
-using KnowledgeService.DTOs;
 
-public class PropertyChangedIntegrationEvent: IIntegrationEvent
+public class PropertyChangedIntegrationEvent : IIntegrationEvent
 {
     public string PropertyName { get; }
 
