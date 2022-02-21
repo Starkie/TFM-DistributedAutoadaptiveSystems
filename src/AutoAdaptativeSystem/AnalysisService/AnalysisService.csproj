@@ -16,18 +16,22 @@
 
     <ItemGroup>
       <Compile Remove="ApiClient\**" />
+      <Compile Remove="Contracts\**" />
     </ItemGroup>
 
     <ItemGroup>
       <EmbeddedResource Remove="ApiClient\**" />
+      <EmbeddedResource Remove="Contracts\**" />
     </ItemGroup>
 
     <ItemGroup>
       <None Remove="ApiClient\**" />
+      <None Remove="Contracts\**" />
     </ItemGroup>
 
     <ItemGroup>
       <Content Remove="ApiClient\**" />
+      <Content Remove="Contracts\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -36,6 +40,14 @@
       <ProjectReference Include="..\Core\Core.DependencyInjection\Core.DependencyInjection.csproj" />
       <ProjectReference Include="..\Knowledge.Contracts\Knowledge.Contracts.csproj" />
       <ProjectReference Include="..\KnowledgeService\ApiClient\KnowledgeService.ApiClient\KnowledgeService.ApiClient.csproj" />
+      <ProjectReference Include="Contracts\AnalysisService.Contracts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Contracts\obj\Contracts.csproj.nuget.dgspec.json" />
+      <_ContentIncludedByDefault Remove="Contracts\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="Contracts\obj\project.packagespec.json" />
+      <_ContentIncludedByDefault Remove="Contracts\obj\AnalysisService.Contracts.csproj.nuget.dgspec.json" />
     </ItemGroup>
   
   </Project>

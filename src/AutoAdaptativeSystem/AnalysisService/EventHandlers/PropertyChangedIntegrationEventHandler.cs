@@ -4,21 +4,27 @@ using System.Threading.Tasks;
 using AnalysisService.Diagnostics;
 using Core.Bus.Handlers;
 using Knowledge.Contracts.Controllers.IntegrationEvents;
-using Microsoft.Extensions.Logging;
+using Rebus.Bus;
 
 public class PropertyChangedIntegrationEventHandler : IntegrationEventHandler<PropertyChangedIntegrationEvent>
 {
     private readonly AnalysisServiceDiagnostics _analysisServiceDiagnostics;
 
-    public PropertyChangedIntegrationEventHandler(AnalysisServiceDiagnostics analysisServiceDiagnostics)
+    private readonly IBus _bus;
+
+    public PropertyChangedIntegrationEventHandler(AnalysisServiceDiagnostics analysisServiceDiagnostics, IBus bus)
     {
         _analysisServiceDiagnostics = analysisServiceDiagnostics;
+
+        _bus = bus;
     }
 
-    public override Task Handle(PropertyChangedIntegrationEvent message)
+    public override async Task Handle(PropertyChangedIntegrationEvent message)
     {
         _analysisServiceDiagnostics.PropertyChangeEventReceived(message);
 
-        return Task.CompletedTask;
+        await _bus.Advanced.Topics.Publish(
+            message.PropertyName,
+            new AnalysisService.Contracts.IntegrationEvents.PropertyChangedIntegrationEvent(message.PropertyName));
     }
 }
