@@ -6,7 +6,7 @@ function Build-Project([psobject]$Project, [string]$PublishPath)
 
     Write-Host $PublishDirectory
 
-    dotnet publish "$($Project.Path)/$($Project.Path).csproj" -c Release -r linux-x64 --no-self-contained -o "$PublishDirectory/app" -v m /p:clp=Summary -m
+    dotnet publish "$($Project.Path)/$($Project.ProjectName).csproj" -c Release -r linux-x64 --no-self-contained -o "$PublishDirectory/app" -v m /p:clp=Summary -m
 
     cp (Join-Path $Project.Path "Dockerfile") "$PublishDirectory/Dockerfile"
 }
@@ -15,22 +15,32 @@ $Projects = @(
     @{
         Name = "knowledge"
         Path = "KnowledgeService"
+        ProjectName = "KnowledgeService"
     },
     @{
         Name = "monitoring"
         Path = "MonitoringService"
+        ProjectName = "MonitoringService"
     },
     @{
         Name = "roommonitor"
         Path = "RoomMonitor"
+        ProjectName = "RoomMonitor"
     },
     @{
         Name = "temperatureprobe"
         Path = "TemperatureProbe"
+        ProjectName = "TemperatureProbe"
     },
     @{
         Name = "analysis"
         Path = "AnalysisService"
+        ProjectName = "AnalysisService"
+    },
+    @{
+        Name = "climatisation_rules"
+        Path = "Climatisation/Rules"
+        ProjectName = "Climatisation.Rules"
     }
 )
 
