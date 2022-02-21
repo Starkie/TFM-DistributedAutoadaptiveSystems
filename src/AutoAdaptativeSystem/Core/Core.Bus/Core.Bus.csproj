@@ -17,6 +17,19 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Core.DependencyInjection\Core.DependencyInjection.csproj" />
+      <ProjectReference Include="Contracts\Core.Bus.Contracts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Contracts\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Contracts\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Contracts\**" />
     </ItemGroup>
 
 </Project>

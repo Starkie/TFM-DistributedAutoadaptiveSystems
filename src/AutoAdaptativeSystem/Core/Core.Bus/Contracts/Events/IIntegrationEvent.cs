@@ -1,4 +1,4 @@
-namespace Core.Bus.Events;
+namespace Core.Bus.Contracts.Events;
 
 public interface IIntegrationEvent
 {

@@ -1,6 +1,6 @@
-namespace Core.Bus.Publisher;
+namespace Core.Bus.Contracts.Publisher;
 
-using Core.Bus.Events;
+using Core.Bus.Contracts.Events;
 
 public interface IIntegrationEventPublisher<TIntegrationEvent> where TIntegrationEvent : IIntegrationEvent
 {

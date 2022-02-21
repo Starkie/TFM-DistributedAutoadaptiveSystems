@@ -2,17 +2,14 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 using System.Reflection;
 using Core.Bus.Configuration;
-using Core.Bus.Publisher;
+using Core.Bus.Contracts.Publisher;
 using Microsoft.Extensions.Configuration;
 using Rebus.Bus;
 using Rebus.Config;
 using Rebus.Handlers;
-using Rebus.Routing;
 
 public static class ServiceCollectionExtensions
 {
-    // TODO: Use a convention registry of the publishers and handlers.
-    // TODO: Defer the connection to the bus with a background service.
     public static IServiceCollection AddBus(
         this IServiceCollection services,
         IConfiguration configuration,
@@ -29,7 +26,6 @@ public static class ServiceCollectionExtensions
                 .Options(o => o.EnableDiagnosticSources())
                 .Transport(t =>
                 {
-
                     if (!canReceiveMessages)
                     {
                         t.UseRabbitMqAsOneWayClient(busOptions.ServiceUri);
