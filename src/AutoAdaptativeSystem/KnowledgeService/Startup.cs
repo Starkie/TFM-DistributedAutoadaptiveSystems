@@ -30,9 +30,7 @@ public class Startup
             "Demonstrates all the existing operations to access and manage Knowledge properties.",
             "v1");
 
-        services.AddBus(Configuration, this.GetType().Assembly, r =>
-            r.TypeBased()
-            .Map<PropertyChangedIntegrationEvent>(KnowledgeQueues.PropertyChanged));
+        services.AddBus(Configuration, this.GetType().Assembly);
 
         services.AddTracing(Configuration, KnowledgeServiceConstants.AppName, "v1.0");
 

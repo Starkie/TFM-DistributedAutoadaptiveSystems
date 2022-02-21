@@ -1,6 +1,6 @@
 namespace Knowledge.Contracts.Controllers.IntegrationEvents;
 
-using Core.Bus.Events;
+using Core.Bus.Contracts.Events;
 
 public class PropertyChangedIntegrationEvent : IIntegrationEvent
 {
