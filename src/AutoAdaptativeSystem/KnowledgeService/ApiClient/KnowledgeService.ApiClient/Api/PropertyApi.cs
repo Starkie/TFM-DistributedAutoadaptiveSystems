@@ -70,7 +70,7 @@ namespace KnowledgeService.ApiClient.Api
         /// <param name="propertyName">The name of the property to set.</param>
         /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
         /// <returns></returns>
-        void PropertyPropertyNamePut(string propertyName, SetPropertyDTO setPropertyDTO = default(SetPropertyDTO));
+        void PropertyPropertyNamePut(string propertyName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?));
 
         /// <summary>
         /// Sets value of a given property. If the property does not exist, it will be created.
@@ -82,7 +82,7 @@ namespace KnowledgeService.ApiClient.Api
         /// <param name="propertyName">The name of the property to set.</param>
         /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        ApiResponse<Object> PropertyPropertyNamePutWithHttpInfo(string propertyName, SetPropertyDTO setPropertyDTO = default(SetPropertyDTO));
+        ApiResponse<Object> PropertyPropertyNamePutWithHttpInfo(string propertyName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?));
         #endregion Synchronous Operations
     }
 
@@ -149,7 +149,7 @@ namespace KnowledgeService.ApiClient.Api
         /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of void</returns>
-        System.Threading.Tasks.Task PropertyPropertyNamePutAsync(string propertyName, SetPropertyDTO setPropertyDTO = default(SetPropertyDTO), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task PropertyPropertyNamePutAsync(string propertyName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <summary>
         /// Sets value of a given property. If the property does not exist, it will be created.
@@ -162,7 +162,7 @@ namespace KnowledgeService.ApiClient.Api
         /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse</returns>
-        System.Threading.Tasks.Task<ApiResponse<Object>> PropertyPropertyNamePutWithHttpInfoAsync(string propertyName, SetPropertyDTO setPropertyDTO = default(SetPropertyDTO), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ApiResponse<Object>> PropertyPropertyNamePutWithHttpInfoAsync(string propertyName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
         #endregion Asynchronous Operations
     }
 
@@ -619,7 +619,7 @@ namespace KnowledgeService.ApiClient.Api
         /// <param name="propertyName">The name of the property to set.</param>
         /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
         /// <returns></returns>
-        public void PropertyPropertyNamePut(string propertyName, SetPropertyDTO setPropertyDTO = default(SetPropertyDTO))
+        public void PropertyPropertyNamePut(string propertyName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?))
         {
             PropertyPropertyNamePutWithHttpInfo(propertyName, setPropertyDTO);
         }
@@ -631,7 +631,7 @@ namespace KnowledgeService.ApiClient.Api
         /// <param name="propertyName">The name of the property to set.</param>
         /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        public KnowledgeService.ApiClient.Client.ApiResponse<Object> PropertyPropertyNamePutWithHttpInfo(string propertyName, SetPropertyDTO setPropertyDTO = default(SetPropertyDTO))
+        public KnowledgeService.ApiClient.Client.ApiResponse<Object> PropertyPropertyNamePutWithHttpInfo(string propertyName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?))
         {
             // verify the required parameter 'propertyName' is set
             if (propertyName == null)
@@ -682,7 +682,7 @@ namespace KnowledgeService.ApiClient.Api
         /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of void</returns>
-        public async System.Threading.Tasks.Task PropertyPropertyNamePutAsync(string propertyName, SetPropertyDTO setPropertyDTO = default(SetPropertyDTO), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task PropertyPropertyNamePutAsync(string propertyName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             await PropertyPropertyNamePutWithHttpInfoAsync(propertyName, setPropertyDTO, cancellationToken).ConfigureAwait(false);
         }
@@ -695,7 +695,7 @@ namespace KnowledgeService.ApiClient.Api
         /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse</returns>
-        public async System.Threading.Tasks.Task<KnowledgeService.ApiClient.Client.ApiResponse<Object>> PropertyPropertyNamePutWithHttpInfoAsync(string propertyName, SetPropertyDTO setPropertyDTO = default(SetPropertyDTO), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<KnowledgeService.ApiClient.Client.ApiResponse<Object>> PropertyPropertyNamePutWithHttpInfoAsync(string propertyName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             // verify the required parameter 'propertyName' is set
             if (propertyName == null)

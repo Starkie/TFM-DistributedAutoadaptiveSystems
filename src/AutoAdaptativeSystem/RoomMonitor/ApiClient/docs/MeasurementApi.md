@@ -10,7 +10,7 @@ Method | HTTP request | Description
 
 <a name="measurementhumiditypost"></a>
 # **MeasurementHumidityPost**
-> void MeasurementHumidityPost (HumidityMeasurementDTO humidityMeasurementDTO = null)
+> void MeasurementHumidityPost (HumidityMeasurementDTO? humidityMeasurementDTO = null)
 
 
 
@@ -35,7 +35,7 @@ namespace Example
             HttpClient httpClient = new HttpClient();
             HttpClientHandler httpClientHandler = new HttpClientHandler();
             var apiInstance = new MeasurementApi(httpClient, config, httpClientHandler);
-            var humidityMeasurementDTO = new HumidityMeasurementDTO(); // HumidityMeasurementDTO |  (optional) 
+            var humidityMeasurementDTO = new HumidityMeasurementDTO?(); // HumidityMeasurementDTO? |  (optional) 
 
             try
             {
@@ -56,7 +56,7 @@ namespace Example
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **humidityMeasurementDTO** | [**HumidityMeasurementDTO**](HumidityMeasurementDTO.md)|  | [optional] 
+ **humidityMeasurementDTO** | [**HumidityMeasurementDTO?**](HumidityMeasurementDTO?.md)|  | [optional] 
 
 ### Return type
 
@@ -82,7 +82,7 @@ No authorization required
 
 <a name="measurementtemperaturepost"></a>
 # **MeasurementTemperaturePost**
-> void MeasurementTemperaturePost (TemperatureMeasurementDTO temperatureMeasurementDTO = null)
+> void MeasurementTemperaturePost (TemperatureMeasurementDTO? temperatureMeasurementDTO = null)
 
 
 
@@ -107,7 +107,7 @@ namespace Example
             HttpClient httpClient = new HttpClient();
             HttpClientHandler httpClientHandler = new HttpClientHandler();
             var apiInstance = new MeasurementApi(httpClient, config, httpClientHandler);
-            var temperatureMeasurementDTO = new TemperatureMeasurementDTO(); // TemperatureMeasurementDTO |  (optional) 
+            var temperatureMeasurementDTO = new TemperatureMeasurementDTO?(); // TemperatureMeasurementDTO? |  (optional) 
 
             try
             {
@@ -128,7 +128,7 @@ namespace Example
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **temperatureMeasurementDTO** | [**TemperatureMeasurementDTO**](TemperatureMeasurementDTO.md)|  | [optional] 
+ **temperatureMeasurementDTO** | [**TemperatureMeasurementDTO?**](TemperatureMeasurementDTO?.md)|  | [optional] 
 
 ### Return type
 

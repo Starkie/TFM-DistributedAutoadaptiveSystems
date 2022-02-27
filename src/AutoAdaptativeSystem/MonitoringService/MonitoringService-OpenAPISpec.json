@@ -1,7 +1,8 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "MonitoringService",
+    "title": "Monitoring Service",
+    "description": "",
     "version": "v1"
   },
   "paths": {

@@ -84,7 +84,7 @@ namespace KnowledgeService.ApiClient.Test.Api
         {
             // TODO uncomment below to test the method and replace null with proper value
             //string propertyName = null;
-            //SetPropertyDTO setPropertyDTO = null;
+            //SetPropertyDTO? setPropertyDTO = null;
             //instance.PropertyPropertyNamePut(propertyName, setPropertyDTO);
         }
     }

@@ -1,0 +1,119 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Analysis Service",
+    "description": "Demonstrates all the existing operations to access and manage Adaption Rules.",
+    "version": "v1"
+  },
+  "paths": {
+    "/Property/{propertyName}": {
+      "get": {
+        "tags": [
+          "Property"
+        ],
+        "summary": "Looks for the Knowledge property with the given name.",
+        "parameters": [
+          {
+            "name": "propertyName",
+            "in": "path",
+            "description": "The name of the property to look for.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The property was found. Returns the property's value.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No property with that name was found.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "PropertyDTO": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "Gets or Sets Value",
+            "nullable": true
+          },
+          "lastModification": {
+            "type": "string",
+            "description": "Gets or Sets LastModification",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "PropertyDTO"
+      }
+    }
+  }
+}

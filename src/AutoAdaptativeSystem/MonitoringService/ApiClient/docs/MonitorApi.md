@@ -9,7 +9,7 @@ Method | HTTP request | Description
 
 <a name="monitormonitoridmeasurementpost"></a>
 # **MonitorMonitorIdMeasurementPost**
-> void MonitorMonitorIdMeasurementPost (Guid monitorId, MeasurementDTO measurementDTO = null)
+> void MonitorMonitorIdMeasurementPost (Guid monitorId, MeasurementDTO? measurementDTO = null)
 
 Registers a measurement from a monitor.
 
@@ -35,7 +35,7 @@ namespace Example
             HttpClientHandler httpClientHandler = new HttpClientHandler();
             var apiInstance = new MonitorApi(httpClient, config, httpClientHandler);
             var monitorId = "monitorId_example";  // Guid | The identifier of the monitor reporting the measurement.
-            var measurementDTO = new MeasurementDTO(); // MeasurementDTO | The DTO containing information of the measurement. (optional) 
+            var measurementDTO = new MeasurementDTO?(); // MeasurementDTO? | The DTO containing information of the measurement. (optional) 
 
             try
             {
@@ -58,7 +58,7 @@ namespace Example
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **monitorId** | **Guid**| The identifier of the monitor reporting the measurement. | 
- **measurementDTO** | [**MeasurementDTO**](MeasurementDTO.md)| The DTO containing information of the measurement. | [optional] 
+ **measurementDTO** | [**MeasurementDTO?**](MeasurementDTO?.md)| The DTO containing information of the measurement. | [optional] 
 
 ### Return type
 

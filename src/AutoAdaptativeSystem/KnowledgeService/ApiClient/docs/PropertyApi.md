@@ -160,7 +160,7 @@ No authorization required
 
 <a name="propertypropertynameput"></a>
 # **PropertyPropertyNamePut**
-> void PropertyPropertyNamePut (string propertyName, SetPropertyDTO setPropertyDTO = null)
+> void PropertyPropertyNamePut (string propertyName, SetPropertyDTO? setPropertyDTO = null)
 
 Sets value of a given property. If the property does not exist, it will be created.
 
@@ -186,7 +186,7 @@ namespace Example
             HttpClientHandler httpClientHandler = new HttpClientHandler();
             var apiInstance = new PropertyApi(httpClient, config, httpClientHandler);
             var propertyName = "propertyName_example";  // string | The name of the property to set.
-            var setPropertyDTO = new SetPropertyDTO(); // SetPropertyDTO | The DTO containing the value to set. (optional) 
+            var setPropertyDTO = new SetPropertyDTO?(); // SetPropertyDTO? | The DTO containing the value to set. (optional) 
 
             try
             {
@@ -209,7 +209,7 @@ namespace Example
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **propertyName** | **string**| The name of the property to set. | 
- **setPropertyDTO** | [**SetPropertyDTO**](SetPropertyDTO.md)| The DTO containing the value to set. | [optional] 
+ **setPropertyDTO** | [**SetPropertyDTO?**](SetPropertyDTO?.md)| The DTO containing the value to set. | [optional] 
 
 ### Return type
 
