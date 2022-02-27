@@ -7,7 +7,7 @@ import requests
 import shutil
 
 netCoreVersion = "net6.0"
-codegen_library_version = "6.0.0-20220205.074732-39"
+codegen_library_version = "6.0.0-20220227.092735-72"
 codegen_library_name = F"openapi-generator-cli-{codegen_library_version}.jar"
 
 def generate_api_spec(project_name, project_path, api_name):
@@ -54,6 +54,7 @@ def generate_api_client(codegen_path, openapi_path, project_name, output_path):
 
 project_list = [
     { "path": "./KnowledgeService/KnowledgeService.csproj", "name": "KnowledgeService", "api_name": "v1", "output_path": "./KnowledgeService/ApiClient", "remove_existing_files": True },
+    { "path": "./AnalysisService/AnalysisService.csproj", "name": "AnalysisService", "api_name": "v1", "output_path": "./AnalysisService/ApiClient", "remove_existing_files": True },
     { "path": "./MonitoringService/MonitoringService.csproj", "name": "MonitoringService", "api_name": "v1", "output_path": "./MonitoringService/ApiClient", "remove_existing_files": True },
     { "path": "./RoomMonitor/RoomMonitor.csproj", "name": "RoomMonitor", "api_name": "v1", "output_path": "./RoomMonitor/ApiClient", "remove_existing_files": True },
 ]
