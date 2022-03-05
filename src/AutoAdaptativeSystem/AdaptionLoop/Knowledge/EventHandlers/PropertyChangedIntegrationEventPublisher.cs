@@ -1,7 +1,7 @@
 namespace Knowledge.Service.Controllers.IntegrationEvents;
 
 using Core.Bus.Publisher;
-using Knowledge.Contracts.Controllers.IntegrationEvents;
+using Knowledge.Contracts.IntegrationEvents;
 using Rebus.Bus;
 
 public class PropertyChangedIntegrationEventPublisher

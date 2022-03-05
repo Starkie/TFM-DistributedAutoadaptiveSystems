@@ -3,7 +3,7 @@ namespace Knowledge.Service.Controllers;
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Knowledge.Contracts.Controllers.IntegrationEvents;
+using Knowledge.Contracts.IntegrationEvents;
 using Knowledge.Service.Controllers.IntegrationEvents;
 using Knowledge.Service.Diagnostics;
 using Knowledge.Service.DTOs;

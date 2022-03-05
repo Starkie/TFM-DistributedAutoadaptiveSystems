@@ -1,6 +1,9 @@
-namespace Knowledge.Service;
+namespace Analysis.Service;
 
-using Knowledge.Service.Diagnostics;
+using Analysis.Service.Configurations;
+using Analysis.Service.Diagnostics;
+using Knowledge.Contracts.IntegrationEvents;
+using Knowledge.Service.ApiClient.Api;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -22,15 +25,29 @@ public class Startup
         services.AddControllers();
 
         services.AddSwagger(
-            "Knowledge Service",
-            "Demonstrates all the existing operations to access and manage Knowledge properties.",
+            "Analysis Service",
+            "Demonstrates all the existing operations to access and manage Adaption Rules.",
             "v1");
 
-        services.AddBus(Configuration, this.GetType().Assembly);
+        services.AddBus(
+            Configuration,
+            this.GetType().Assembly,
+            registerSubscriptions: async bus =>
+            {
+                await bus.Subscribe<PropertyChangedIntegrationEvent>();
+            });
 
-        services.AddTracing(Configuration, KnowledgeServiceConstants.AppName, "v1.0");
+        services.AddTracing(Configuration, AnalysisServiceConstants.AppName, "v1.0");
 
-        services.AddSingleton<KnowledgeServiceDiagnostics>();
+        services.AddScoped<IPropertyApi, PropertyApi>(_ =>
+        {
+            var configuration =
+                Configuration.BindOptions<KnowledgeServiceConfiguration>(KnowledgeServiceConfiguration.ConfigurationPath);
+
+            return new PropertyApi(configuration.ServiceUri);
+        });
+
+        services.AddSingleton<AnalysisServiceDiagnostics>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

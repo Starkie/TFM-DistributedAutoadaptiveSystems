@@ -1,6 +1,6 @@
-namespace Knowledge.Service;
+namespace Analysis.Service;
 
-public static class KnowledgeServiceConstants
+public static class AnalysisServiceConstants
 {
     private static readonly string Namespace = typeof(Program).Namespace;
 

@@ -1,4 +1,4 @@
-namespace Knowledge.Contracts.IntegrationEvents;
+namespace Analysis.Service.Contracts.IntegrationEvents;
 
 using Core.Bus.Contracts.Events;
 
