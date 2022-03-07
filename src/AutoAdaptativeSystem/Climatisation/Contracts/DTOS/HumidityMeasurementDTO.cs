@@ -1,4 +1,4 @@
-namespace RoomMonitor.DTOS;
+namespace Climatisation.Monitor.DTOS;
 
 public class HumidityMeasurementDTO
 {

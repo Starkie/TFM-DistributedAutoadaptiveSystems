@@ -1,7 +1,6 @@
 namespace Microsoft.Extensions.DependencyInjection;
 
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 public static class ServiceCollectionExtensions
 {
