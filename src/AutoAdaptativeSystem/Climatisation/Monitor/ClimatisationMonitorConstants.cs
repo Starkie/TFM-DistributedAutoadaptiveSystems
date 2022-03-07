@@ -1,8 +1,8 @@
-namespace RoomMonitor;
+namespace Climatisation.Monitor;
 
 using System;
 
-public static class RoomMonitorConstants
+public static class ClimatisationMonitorConstants
 {
     private static readonly string Namespace = typeof(Program).Namespace;
 

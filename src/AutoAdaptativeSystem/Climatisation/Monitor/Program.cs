@@ -1,4 +1,4 @@
-namespace RoomMonitor;
+namespace Climatisation.Monitor;
 
 using System;
 using Microsoft.AspNetCore.Hosting;
@@ -42,7 +42,7 @@ public class Program
     {
         return new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
-            .Enrich.WithProperty("source", RoomMonitorConstants.AppName)
+            .Enrich.WithProperty("source", ClimatisationMonitorConstants.AppName)
             .CreateLogger();
     }
 

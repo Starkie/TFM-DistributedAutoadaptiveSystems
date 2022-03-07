@@ -1,4 +1,4 @@
-namespace RoomMonitor;
+namespace Climatisation.Monitor;
 
 using System;
 using System.Diagnostics;
@@ -6,7 +6,7 @@ using Climatisation.Contacts;
 using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-public class RoomMonitorDiagnostics
+public class ClimatisationMonitorDiagnostics
 {
 
     private static readonly Action<ILogger, Exception> GetPreviousMeasurement = LoggerMessage.Define(
@@ -28,11 +28,11 @@ public class RoomMonitorDiagnostics
 
     private readonly ILogger _logger;
 
-    public RoomMonitorDiagnostics(ILoggerProvider loggerProvider)
+    public ClimatisationMonitorDiagnostics(ILoggerProvider loggerProvider)
     {
-        _logger = loggerProvider.CreateLogger(RoomMonitorConstants.AppName);
+        _logger = loggerProvider.CreateLogger(ClimatisationMonitorConstants.AppName);
 
-        _activitySource = new ActivitySource(RoomMonitorConstants.AppName);
+        _activitySource = new ActivitySource(ClimatisationMonitorConstants.AppName);
     }
 
     public Activity LogGetPreviousMeasurement()

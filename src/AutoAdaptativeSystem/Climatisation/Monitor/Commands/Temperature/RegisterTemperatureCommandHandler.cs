@@ -1,4 +1,4 @@
-namespace RoomMonitor.Commands.Temperature;
+namespace Climatisation.Monitor.Commands.Temperature;
 
 using System;
 using System.Threading;
@@ -17,14 +17,14 @@ public class RegisterTemperatureCommandHandler : IRequestHandler<TemperatureMeas
 
     private readonly IPropertyApi _propertyApi;
 
-    private readonly RoomMonitorDiagnostics _roomMonitorDiagnostics;
+    private readonly ClimatisationMonitorDiagnostics _climatisationMonitorDiagnostics;
     private string TemperaturePropertyName = "Temperature";
 
-    public RegisterTemperatureCommandHandler(IMonitorApi monitorApi, IPropertyApi propertyApi, RoomMonitorDiagnostics roomMonitorDiagnostics)
+    public RegisterTemperatureCommandHandler(IMonitorApi monitorApi, IPropertyApi propertyApi, ClimatisationMonitorDiagnostics climatisationMonitorDiagnostics)
     {
         _monitorApi = monitorApi;
         _propertyApi = propertyApi;
-        _roomMonitorDiagnostics = roomMonitorDiagnostics;
+        _climatisationMonitorDiagnostics = climatisationMonitorDiagnostics;
     }
 
     public async Task<Unit> Handle(TemperatureMeasurementDTO request, CancellationToken cancellationToken)
@@ -34,7 +34,7 @@ public class RegisterTemperatureCommandHandler : IRequestHandler<TemperatureMeas
             return Unit.Value;
         }
 
-        using var activity = _roomMonitorDiagnostics.RegisterTemperatureMeasurement(request);
+        using var activity = _climatisationMonitorDiagnostics.RegisterTemperatureMeasurement(request);
 
         var previousMeasurement = await GetPreviousMeasurement();
 
@@ -65,7 +65,7 @@ public class RegisterTemperatureCommandHandler : IRequestHandler<TemperatureMeas
     {
         TemperatureMeasurementDTO previousMeasurement = null;
 
-        using var activity = _roomMonitorDiagnostics.LogGetPreviousMeasurement();
+        using var activity = _climatisationMonitorDiagnostics.LogGetPreviousMeasurement();
 
         try
         {
@@ -87,7 +87,7 @@ public class RegisterTemperatureCommandHandler : IRequestHandler<TemperatureMeas
 
     private async Task RegisterNewTemperatureMeasurement(TemperatureMeasurementDTO temperatureMeasurement)
     {
-        await _monitorApi.MonitorMonitorIdMeasurementPostAsync(RoomMonitorConstants.MonitorId, new MeasurementDTO()
+        await _monitorApi.MonitorMonitorIdMeasurementPostAsync(ClimatisationMonitorConstants.MonitorId, new MeasurementDTO()
         {
             ProbeId = Guid.NewGuid(),
             Property = new Property

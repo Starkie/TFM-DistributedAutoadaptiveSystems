@@ -1,6 +1,7 @@
-namespace RoomMonitor;
+namespace Climatisation.Monitor;
 
 using System.Text.Json.Serialization;
+using Climatisation.Monitor.Configurations;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Monitoring.Service.ApiClient.Api;
-using RoomMonitor.Configurations;
 
 public class Startup
 {
@@ -28,7 +28,7 @@ public class Startup
 
         services.AddSwagger("Room Monitor Service", string.Empty, "v1");
 
-        services.AddTracing(Configuration, RoomMonitorConstants.AppName, "ver1.0");
+        services.AddTracing(Configuration, ClimatisationMonitorConstants.AppName, "ver1.0");
 
         services.AddScoped<IPropertyApi, PropertyApi>(_ =>
         {
@@ -46,7 +46,7 @@ public class Startup
             return new MonitorApi(configuration.ServiceUri);
         });
 
-        services.AddSingleton<RoomMonitorDiagnostics>();
+        services.AddSingleton<ClimatisationMonitorDiagnostics>();
 
         services.AddMediatR(typeof(Startup));
     }
