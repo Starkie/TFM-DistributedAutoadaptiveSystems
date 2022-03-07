@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
+using Climatisation.Monitor.ApiClient.Api;
+using Climatisation.Monitor.ApiClient.Model;
 using Microsoft.Extensions.Configuration;
-using RoomMonitor.ApiClient.Api;
-using RoomMonitor.ApiClient.Model;
-using TemperatureProbe.Configuration;
+using Climatisation.Probes.Temperature.Configuration;
 
 var configuration = new ConfigurationBuilder()
     .AddEnvironmentVariables()

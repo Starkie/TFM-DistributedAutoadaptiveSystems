@@ -8,4 +8,4 @@ WORKDIR /app
 
 ENV ROOMMONITOR__SERVICEURI "${ROOMMONITOR_SERVICEURI}"
 
-ENTRYPOINT [ "dotnet", "TemperatureProbe.dll" ]
+ENTRYPOINT [ "dotnet", "Climatisation.Probes.Temperature.dll" ]

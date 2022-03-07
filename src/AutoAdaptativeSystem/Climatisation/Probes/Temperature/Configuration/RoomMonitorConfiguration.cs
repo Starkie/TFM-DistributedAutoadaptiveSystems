@@ -1,4 +1,4 @@
-namespace TemperatureProbe.Configuration;
+namespace Climatisation.Probes.Temperature.Configuration;
 
 public class RoomMonitorConfiguration
 {
