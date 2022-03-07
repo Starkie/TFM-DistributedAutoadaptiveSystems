@@ -11,15 +11,13 @@ services:
         JAEGER_PORT: "6831"
     environment:
       ASPNETCORE_ENVIRONMENT: "Production"
+    depends_on:
+      - rabbitmq
     ports:
       - "5001:80"
     networks:
       - knowledge-network
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 20s
-        max_attempts: 5
+    restart: on-failure:5
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -48,9 +46,9 @@ services:
       - adaption-loop-network
       - knowledge-network
 
-  roommonitor:
+  climatisation_monitor:
     build:
-      context: ./roommonitor
+      context: ./climatisation_monitor
       args:
         MONITORINGSERVICE_SERVICEURI: "http://monitoring:80"
         GRAFANA_LOKI_URI: "http://loki:3100"
@@ -67,7 +65,7 @@ services:
     build:
       context: ./temperatureprobe
       args:
-        ROOMMONITOR_SERVICEURI: "http://roommonitor:80"
+        ROOMMONITOR_SERVICEURI: "http://climatisation_monitor:80"
     networks:
       - adaption-loop-network
 
@@ -82,15 +80,15 @@ services:
         JAEGER_PORT: "6831"
     environment:
       ASPNETCORE_ENVIRONMENT: "Production"
+    depends_on:
+      - rabbitmq
     ports:
       - "8001:80"
     networks:
       - knowledge-network
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 20s
-        max_attempts: 5
+      - analysis-network
+    restart: on-failure:5
+
 
   climatisation_rules:
     build:
@@ -103,15 +101,14 @@ services:
         JAEGER_PORT: "6831"
     environment:
       ASPNETCORE_ENVIRONMENT: "Production"
+    depends_on:
+      - rabbitmq
     ports:
       - "9001:80"
     networks:
       - knowledge-network
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 20s
-        max_attempts: 5
+      - analysis-network
+    restart: on-failure:5
 
   loki:
     image: "grafana/loki:latest"
@@ -146,8 +143,9 @@ services:
 networks:
   knowledge-network:
     driver: bridge
+  analysis-network:
+    driver: bridge
   adaption-loop-network:
     driver: bridge
   monitoring-network:
-    external:
-      name: monitoring-network
+    name: monitoring-network
