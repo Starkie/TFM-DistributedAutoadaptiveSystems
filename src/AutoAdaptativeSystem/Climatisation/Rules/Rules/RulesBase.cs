@@ -5,12 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AnalysisService.Contracts.Rules;
 using Climatisation.Rules.Diagnostics;
 using Climatisation.Rules.Events;
 using MediatR;
 
-public abstract class RuleBase : INotificationHandler<PropertyChangedEvent>, IRule
+public abstract class RuleBase : INotificationHandler<PropertyChangedEvent>
 {
     private readonly ClimatisationRulesDiagnostics _diagnostics;
 
@@ -33,19 +32,28 @@ public abstract class RuleBase : INotificationHandler<PropertyChangedEvent>, IRu
             return;
         }
 
-        var activity = _diagnostics.EvaluatingRule(_ruleName);
-
-        if (await EvaluateCondition())
+        try
         {
-            var activity2 = _diagnostics.ExecutingRule(_ruleName);
+            var activity = _diagnostics.EvaluatingRule(_ruleName);
 
-            await Execute();
+            if (await EvaluateCondition(cancellationToken))
+            {
+                var activity2 = _diagnostics.ExecutingRule(_ruleName);
+
+                await Execute(cancellationToken);
+            }
+        }
+        catch (Exception e)
+        {
+            _diagnostics.RuleEvaluationError(_ruleName, e);
+
+            throw;
         }
     }
 
-    public abstract Task<bool> EvaluateCondition();
+    protected abstract Task<bool> EvaluateCondition(CancellationToken cancellationToken);
 
-    public abstract Task<bool> Execute();
+    protected abstract Task Execute(CancellationToken cancellationToken);
 
     private bool IsSubscribedToProperty(PropertyChangedEvent request)
     {
