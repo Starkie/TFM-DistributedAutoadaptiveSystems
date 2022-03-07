@@ -1,6 +1,9 @@
 namespace Climatisation.Rules;
 
+using Analysis.Service.ApiClient.Api;
+using AnalysisService.Configurations;
 using Climatisation.Rules.Diagnostics;
+using Climatisation.Rules.Services;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,7 +26,7 @@ public class Startup
         services.AddControllers();
 
         services.AddSwagger(
-            "Climatization Service",
+            "Climatisation Rules Service",
             "Demonstrates all the existing operations to access and manage Adaption Rules.",
             "v1");
 
@@ -32,12 +35,23 @@ public class Startup
             this.GetType().Assembly,
             registerSubscriptions: async bus =>
             {
+                // TODO: Find how to obtain these registrations from the rules in the current assembly.
                 await bus.Advanced.Topics.Subscribe("Temperature");
             });
+
+        services.AddScoped<IPropertyApi, PropertyApi>(_ =>
+        {
+            var configuration =
+                Configuration.BindOptions<AnalysisServiceConfiguration>(AnalysisServiceConfiguration.ConfigurationPath);
+
+            return new PropertyApi(configuration.ServiceUri);
+        });
 
         services.AddTracing(Configuration, ClimatisationRulesConstants.AppName, "v1.0");
 
         services.AddSingleton<ClimatisationRulesDiagnostics>();
+
+        services.AddScoped<IPropertyService, PropertyService>();
 
         services.AddMediatR(typeof(Startup).Assembly);
     }
@@ -51,7 +65,7 @@ public class Startup
         }
 
         app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "KnowledgeService v1"));
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Knowledge.Service v1"));
 
         app.UseRouting();
 

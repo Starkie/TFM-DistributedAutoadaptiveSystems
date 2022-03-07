@@ -2,7 +2,7 @@ namespace Climatisation.Rules.Diagnostics;
 
 using System;
 using System.Diagnostics;
-using AnalysisService.Contracts.IntegrationEvents;
+using Analysis.Service.Contracts.IntegrationEvents;
 using Microsoft.Extensions.Logging;
 
 public class ClimatisationRulesDiagnostics
@@ -19,8 +19,18 @@ public class ClimatisationRulesDiagnostics
 
     private static readonly Action<ILogger, string, Exception> LogRuleExecution = LoggerMessage.Define<string>(
         LogLevel.Information,
-        ClimatisationRulesEventIds.EvaluatingRuleEventId,
+        ClimatisationRulesEventIds.ExecutingRuleEventId,
         "Executing rule: {ruleName}");
+
+    private static readonly Action<ILogger, string, Exception> LogGetPropertyValue = LoggerMessage.Define<string>(
+        LogLevel.Information,
+        ClimatisationRulesEventIds.GetPropertyValueEventId,
+        "Requesting property '{propertyName}' value");
+
+    private static readonly Action<ILogger, string, Exception> LogRuleEvaluationError = LoggerMessage.Define<string>(
+        LogLevel.Error,
+        ClimatisationRulesEventIds.ErrorEvaluatingRuleEventId,
+        "Error evaluating rule '{ruleName}' value");
 
     private readonly ActivitySource _activitySource;
 
@@ -54,10 +64,28 @@ public class ClimatisationRulesDiagnostics
         return _activitySource.StartActivity($"Executing rule: {ruleName}");
     }
 
+    public void RuleEvaluationError(string ruleName, Exception exception)
+    {
+        LogRuleEvaluationError(_logger, ruleName, exception);
+    }
+
+    public Activity GetPropertyValue(string propertyName)
+    {
+        LogGetPropertyValue(_logger, propertyName, null);
+
+        return _activitySource.StartActivity($"Get property: {propertyName}");
+    }
+
     private static class ClimatisationRulesEventIds
     {
         public static EventId PropertyChangeEventReceivedEventId = new EventId(100, nameof(PropertyChangeEventReceivedEventId));
 
         public static EventId EvaluatingRuleEventId = new EventId(200, nameof(EvaluatingRuleEventId));
+
+        public static EventId ErrorEvaluatingRuleEventId = new EventId(201, nameof(ErrorEvaluatingRuleEventId));
+
+        public static EventId ExecutingRuleEventId = new EventId(300, nameof(ExecutingRuleEventId));
+
+        public static EventId GetPropertyValueEventId = new EventId(400, nameof(GetPropertyValueEventId));
     }
 }

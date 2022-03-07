@@ -1,12 +1,11 @@
 namespace Climatisation.Rules.EventHandlers;
 
 using System.Threading.Tasks;
-using AnalysisService.Contracts.IntegrationEvents;
+using Analysis.Service.Contracts.IntegrationEvents;
 using Climatisation.Rules.Diagnostics;
 using Climatisation.Rules.Events;
 using Core.Bus.Handlers;
 using MediatR;
-using Rebus.Bus;
 
 public class PropertyChangedIntegrationEventHandler : IntegrationEventHandler<PropertyChangedIntegrationEvent>
 {
