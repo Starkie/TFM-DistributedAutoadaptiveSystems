@@ -110,18 +110,17 @@ namespace Example
             // create instances of HttpClient, HttpClientHandler to be reused later with different Api classes
             HttpClient httpClient = new HttpClient();
             HttpClientHandler httpClientHandler = new HttpClientHandler();
-            var apiInstance = new PropertyApi(httpClient, config, httpClientHandler);
-            var propertyName = "propertyName_example";  // string | The name of the property to look for.
+            var apiInstance = new ConfigurationApi(httpClient, config, httpClientHandler);
+            var configurationChangeRequestDTO = new ConfigurationChangeRequestDTO?(); // ConfigurationChangeRequestDTO? | The DTO containing the request to change the property. (optional) 
 
             try
             {
-                // Looks for the Knowledge property with the given name.
-                PropertyDTO result = apiInstance.PropertyPropertyNameGet(propertyName);
-                Debug.WriteLine(result);
+                // Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
+                apiInstance.ConfigurationRequestChangePost(configurationChangeRequestDTO);
             }
             catch (ApiException e)
             {
-                Debug.Print("Exception when calling PropertyApi.PropertyPropertyNameGet: " + e.Message );
+                Debug.Print("Exception when calling ConfigurationApi.ConfigurationRequestChangePost: " + e.Message );
                 Debug.Print("Status Code: "+ e.ErrorCode);
                 Debug.Print(e.StackTrace);
             }
@@ -138,14 +137,19 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*ConfigurationApi* | [**ConfigurationRequestChangePost**](docs/ConfigurationApi.md#configurationrequestchangepost) | **POST** /Configuration/request-change | Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
 *PropertyApi* | [**PropertyPropertyNameGet**](docs/PropertyApi.md#propertypropertynameget) | **GET** /Property/{propertyName} | Looks for the Knowledge property with the given name.
+*PropertyApi* | [**PropertyPropertyNamePut**](docs/PropertyApi.md#propertypropertynameput) | **PUT** /Property/{propertyName} | Sets value of a given property. If the property does not exist, it will be created.
 
 
 <a name="documentation-for-models"></a>
 ## Documentation for Models
 
+ - [Model.ChangeRequestDTO](docs/ChangeRequestDTO.md)
+ - [Model.ConfigurationChangeRequestDTO](docs/ConfigurationChangeRequestDTO.md)
  - [Model.ProblemDetails](docs/ProblemDetails.md)
  - [Model.PropertyDTO](docs/PropertyDTO.md)
+ - [Model.SymptomDTO](docs/SymptomDTO.md)
 
 
 <a name="documentation-for-authorization"></a>

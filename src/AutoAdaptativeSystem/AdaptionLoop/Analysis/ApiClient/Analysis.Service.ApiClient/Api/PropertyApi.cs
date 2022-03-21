@@ -45,6 +45,26 @@ namespace Analysis.Service.ApiClient.Api
         /// <param name="propertyName">The name of the property to look for.</param>
         /// <returns>ApiResponse of PropertyDTO</returns>
         ApiResponse<PropertyDTO> PropertyPropertyNameGetWithHttpInfo(string propertyName);
+        /// <summary>
+        /// Sets value of a given property. If the property does not exist, it will be created.
+        /// </summary>
+        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="propertyName">The name of the property to set.</param>
+        /// <param name="propertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <returns></returns>
+        void PropertyPropertyNamePut(string propertyName, PropertyDTO? propertyDTO = default(PropertyDTO?));
+
+        /// <summary>
+        /// Sets value of a given property. If the property does not exist, it will be created.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="propertyName">The name of the property to set.</param>
+        /// <param name="propertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <returns>ApiResponse of Object(void)</returns>
+        ApiResponse<Object> PropertyPropertyNamePutWithHttpInfo(string propertyName, PropertyDTO? propertyDTO = default(PropertyDTO?));
         #endregion Synchronous Operations
     }
 
@@ -77,6 +97,31 @@ namespace Analysis.Service.ApiClient.Api
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse (PropertyDTO)</returns>
         System.Threading.Tasks.Task<ApiResponse<PropertyDTO>> PropertyPropertyNameGetWithHttpInfoAsync(string propertyName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <summary>
+        /// Sets value of a given property. If the property does not exist, it will be created.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="propertyName">The name of the property to set.</param>
+        /// <param name="propertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of void</returns>
+        System.Threading.Tasks.Task PropertyPropertyNamePutAsync(string propertyName, PropertyDTO? propertyDTO = default(PropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <summary>
+        /// Sets value of a given property. If the property does not exist, it will be created.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="propertyName">The name of the property to set.</param>
+        /// <param name="propertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse</returns>
+        System.Threading.Tasks.Task<ApiResponse<Object>> PropertyPropertyNamePutWithHttpInfoAsync(string propertyName, PropertyDTO? propertyDTO = default(PropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
         #endregion Asynchronous Operations
     }
 
@@ -403,6 +448,135 @@ namespace Analysis.Service.ApiClient.Api
             if (this.ExceptionFactory != null)
             {
                 Exception _exception = this.ExceptionFactory("PropertyPropertyNameGet", localVarResponse);
+                if (_exception != null) throw _exception;
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Sets value of a given property. If the property does not exist, it will be created. 
+        /// </summary>
+        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="propertyName">The name of the property to set.</param>
+        /// <param name="propertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <returns></returns>
+        public void PropertyPropertyNamePut(string propertyName, PropertyDTO? propertyDTO = default(PropertyDTO?))
+        {
+            PropertyPropertyNamePutWithHttpInfo(propertyName, propertyDTO);
+        }
+
+        /// <summary>
+        /// Sets value of a given property. If the property does not exist, it will be created. 
+        /// </summary>
+        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="propertyName">The name of the property to set.</param>
+        /// <param name="propertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <returns>ApiResponse of Object(void)</returns>
+        public Analysis.Service.ApiClient.Client.ApiResponse<Object> PropertyPropertyNamePutWithHttpInfo(string propertyName, PropertyDTO? propertyDTO = default(PropertyDTO?))
+        {
+            // verify the required parameter 'propertyName' is set
+            if (propertyName == null)
+                throw new Analysis.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'propertyName' when calling PropertyApi->PropertyPropertyNamePut");
+
+            Analysis.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Analysis.Service.ApiClient.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+                "application/json",
+                "text/json",
+                "application/_*+json"
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "text/plain",
+                "application/json",
+                "text/json"
+            };
+
+            var localVarContentType = Analysis.Service.ApiClient.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null) localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+
+            var localVarAccept = Analysis.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+
+            localVarRequestOptions.PathParameters.Add("propertyName", Analysis.Service.ApiClient.Client.ClientUtils.ParameterToString(propertyName)); // path parameter
+            localVarRequestOptions.Data = propertyDTO;
+
+
+            // make the HTTP request
+            var localVarResponse = this.Client.Put<Object>("/Property/{propertyName}", localVarRequestOptions, this.Configuration);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("PropertyPropertyNamePut", localVarResponse);
+                if (_exception != null) throw _exception;
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Sets value of a given property. If the property does not exist, it will be created. 
+        /// </summary>
+        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="propertyName">The name of the property to set.</param>
+        /// <param name="propertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of void</returns>
+        public async System.Threading.Tasks.Task PropertyPropertyNamePutAsync(string propertyName, PropertyDTO? propertyDTO = default(PropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            await PropertyPropertyNamePutWithHttpInfoAsync(propertyName, propertyDTO, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Sets value of a given property. If the property does not exist, it will be created. 
+        /// </summary>
+        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="propertyName">The name of the property to set.</param>
+        /// <param name="propertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse</returns>
+        public async System.Threading.Tasks.Task<Analysis.Service.ApiClient.Client.ApiResponse<Object>> PropertyPropertyNamePutWithHttpInfoAsync(string propertyName, PropertyDTO? propertyDTO = default(PropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            // verify the required parameter 'propertyName' is set
+            if (propertyName == null)
+                throw new Analysis.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'propertyName' when calling PropertyApi->PropertyPropertyNamePut");
+
+
+            Analysis.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Analysis.Service.ApiClient.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+                "application/json", 
+                "text/json", 
+                "application/_*+json"
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "text/plain",
+                "application/json",
+                "text/json"
+            };
+
+
+            var localVarContentType = Analysis.Service.ApiClient.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null) localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+
+            var localVarAccept = Analysis.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+
+            localVarRequestOptions.PathParameters.Add("propertyName", Analysis.Service.ApiClient.Client.ClientUtils.ParameterToString(propertyName)); // path parameter
+            localVarRequestOptions.Data = propertyDTO;
+
+
+            // make the HTTP request
+
+            var localVarResponse = await this.AsynchronousClient.PutAsync<Object>("/Property/{propertyName}", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("PropertyPropertyNamePut", localVarResponse);
                 if (_exception != null) throw _exception;
             }
 
