@@ -3,6 +3,7 @@ namespace Knowledge.Service.Diagnostics;
 using System;
 using System.Diagnostics;
 using Knowledge.Service.DTOs;
+using Knowledge.Service.DTOs.Configuration;
 using Microsoft.Extensions.Logging;
 
 public class KnowledgeServiceDiagnostics
@@ -31,6 +32,21 @@ public class KnowledgeServiceDiagnostics
         LogLevel.Information,
         KnowledgeServiceEventIds.DeletePropertyId,
         "Delete property request: {propertyName}");
+
+    private static readonly Action<ILogger, string, Exception> LogGetConfigurationMessage = LoggerMessage.Define<string>(
+        LogLevel.Information,
+        KnowledgeServiceEventIds.GetConfigurationEventId,
+        "Get configuration value request: {configurationName}");
+
+    private static readonly Action<ILogger, string, ConfigurationDTO, Exception> LogConfigurationFoundMessage = LoggerMessage.Define<string, ConfigurationDTO>(
+        LogLevel.Information,
+        KnowledgeServiceEventIds.ConfigurationFoundEventId,
+        "Configuration '{ConfigurationName}' found. Value: '{@PropertyValue}'");
+
+    private static readonly Action<ILogger, string, Exception> LogConfigurationNotFoundMessage = LoggerMessage.Define<string>(
+        LogLevel.Information,
+        KnowledgeServiceEventIds.PropertyNotFoundEventId,
+        "Configuration '{ConfigurationName}' not found.");
 
     private readonly ActivitySource _activitySource;
 
@@ -74,6 +90,23 @@ public class KnowledgeServiceDiagnostics
         LogPropertyFoundMessage(_logger, propertyName, value, null);
     }
 
+    public Activity LogGetConfiguration(string configurationName)
+    {
+        LogGetConfigurationMessage(_logger, configurationName, null);
+
+        return _activitySource.StartActivity("Get Configuration Value");
+    }
+
+    public void LogConfigurationFound(string configurationName, ConfigurationDTO value)
+    {
+        LogConfigurationFoundMessage(_logger, configurationName, value, null);
+    }
+
+    public void LogConfigurationNotFound(string configurationName)
+    {
+        LogConfigurationNotFoundMessage(_logger, configurationName, null);
+    }
+
     internal class KnowledgeServiceEventIds
     {
         public static EventId GetPropertyEventId = new EventId(200, nameof(GetPropertyEventId));
@@ -85,5 +118,11 @@ public class KnowledgeServiceDiagnostics
         public static EventId SetPropertyId = new EventId(500, nameof(SetPropertyId));
 
         public static EventId DeletePropertyId = new EventId(600, nameof(DeletePropertyId));
+
+        public static EventId GetConfigurationEventId = new EventId(700, nameof(GetConfigurationEventId));
+
+        public static EventId ConfigurationFoundEventId = new EventId(800, nameof(ConfigurationFoundEventId));
+
+        public static EventId ConfigurationNotFoundEventId = new EventId(300, nameof(ConfigurationNotFoundEventId));
     }
 }
