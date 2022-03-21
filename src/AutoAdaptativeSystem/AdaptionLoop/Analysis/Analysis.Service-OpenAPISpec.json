@@ -6,6 +6,59 @@
     "version": "v1"
   },
   "paths": {
+    "/Configuration/request-change": {
+      "post": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Requests a change in a configuration key of a given service. For example,\r\ncould be used to set the target temperature of an AC system.",
+        "requestBody": {
+          "description": "The DTO containing the request to change the property.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfigurationChangeRequestDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfigurationChangeRequestDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfigurationChangeRequestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The configuration change request was submitted successfully."
+          },
+          "400": {
+            "description": "The request was formed incorrectly (null request DTO, invalid values..).",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/Property/{propertyName}": {
       "get": {
         "tags": [
@@ -65,11 +118,126 @@
             }
           }
         }
+      },
+      "put": {
+        "tags": [
+          "Property"
+        ],
+        "summary": "Sets value of a given property. If the property does not exist, it will be created.",
+        "parameters": [
+          {
+            "name": "propertyName",
+            "in": "path",
+            "description": "The name of the property to set.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The DTO containing the value to set.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PropertyDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PropertyDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PropertyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "There was an error with the provided arguments.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "The property was updated or created successfully."
+          }
+        }
       }
     }
   },
   "components": {
     "schemas": {
+      "ChangeRequestDTO": {
+        "type": "object",
+        "properties": {
+          "serviceName": {
+            "type": "string",
+            "description": "Gets or Sets ServiceName",
+            "nullable": true
+          },
+          "propertyName": {
+            "type": "string",
+            "description": "Gets or Sets PropertyName",
+            "nullable": true
+          },
+          "propertyNewValue": {
+            "type": "string",
+            "description": "Gets or Sets PropertyNewValue",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "ChangeRequestDTO"
+      },
+      "ConfigurationChangeRequestDTO": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "description": "Gets or Sets Timestamp",
+            "format": "date-time"
+          },
+          "symptoms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SymptomDTO"
+            },
+            "description": "Gets or Sets Symptoms",
+            "nullable": true
+          },
+          "requestedChanges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChangeRequestDTO"
+            },
+            "description": "Gets or Sets RequestedChanges",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "ConfigurationChangeRequestDTO"
+      },
       "ProblemDetails": {
         "type": "object",
         "properties": {
@@ -113,6 +281,23 @@
         },
         "additionalProperties": false,
         "description": "PropertyDTO"
+      },
+      "SymptomDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Gets or Sets Name",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "description": "Gets or Sets Value",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "SymptomDTO"
       }
     }
   }

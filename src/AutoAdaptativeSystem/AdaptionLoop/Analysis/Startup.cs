@@ -47,6 +47,14 @@ public class Startup
             return new PropertyApi(configuration.ServiceUri);
         });
 
+        services.AddScoped<IConfigurationApi, ConfigurationApi>(_ =>
+        {
+            var configuration =
+                Configuration.BindOptions<KnowledgeServiceConfiguration>(KnowledgeServiceConfiguration.ConfigurationPath);
+
+            return new ConfigurationApi(configuration.ServiceUri);
+        });
+
         services.AddSingleton<AnalysisServiceDiagnostics>();
     }
 
