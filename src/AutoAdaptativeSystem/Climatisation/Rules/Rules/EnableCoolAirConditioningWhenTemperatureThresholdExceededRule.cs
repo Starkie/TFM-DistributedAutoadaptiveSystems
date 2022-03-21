@@ -1,14 +1,19 @@
 namespace Climatisation.Rules.Rules;
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Analysis.Service.ApiClient.Api;
+using Analysis.Service.ApiClient.Model;
 using Climatisation.Contacts;
 using Climatisation.Rules.Diagnostics;
 using Climatisation.Rules.Services;
 
 public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : RuleBase
 {
+    private readonly IConfigurationApi _configurationApi;
+
     private readonly IPropertyService _propertyService;
 
     private const string RuleName = nameof(EnableCoolAirConditioningWhenTemperatureThresholdExceededRule);
@@ -22,9 +27,11 @@ public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : Rul
 
     public EnableCoolAirConditioningWhenTemperatureThresholdExceededRule(
         ClimatisationRulesDiagnostics diagnostics,
+        IConfigurationApi configurationApi,
         IPropertyService propertyService)
         : base(diagnostics, RuleName, Properties)
     {
+        _configurationApi = configurationApi;
         _propertyService = propertyService;
     }
 
@@ -43,8 +50,6 @@ public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : Rul
         }
 
         return currentTemperature.Value > 25.0;
-
-        // return false;
     }
 
     protected override async Task Execute(CancellationToken cancellationToken)
@@ -54,6 +59,12 @@ public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : Rul
             return;
         }
 
-        // await _propertyApi.Get
+        // TODO: Check if the AC is already enabled.
+
+        var symptoms = new List<SymptomDTO>{ new SymptomDTO("temperature-greater-than-target", "true") };
+
+        var changeRequests = new List<ChangeRequestDTO> { new ChangeRequestDTO("airconditioning-service", "enabled", "true") };
+
+        await _configurationApi.ConfigurationRequestChangePostAsync(new ConfigurationChangeRequestDTO(DateTime.Now, symptoms, changeRequests), cancellationToken);
     }
 }

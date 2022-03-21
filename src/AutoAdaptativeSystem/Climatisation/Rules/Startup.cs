@@ -47,6 +47,14 @@ public class Startup
             return new PropertyApi(configuration.ServiceUri);
         });
 
+        services.AddScoped<IConfigurationApi, ConfigurationApi>(_ =>
+        {
+            var configuration =
+                Configuration.BindOptions<AnalysisServiceConfiguration>(AnalysisServiceConfiguration.ConfigurationPath);
+
+            return new ConfigurationApi(configuration.ServiceUri);
+        });
+
         services.AddTracing(Configuration, ClimatisationRulesConstants.AppName, "v1.0");
 
         services.AddSingleton<ClimatisationRulesDiagnostics>();
