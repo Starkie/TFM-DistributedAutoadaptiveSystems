@@ -45,7 +45,7 @@ public class KnowledgeServiceDiagnostics
 
     private static readonly Action<ILogger, string, Exception> LogConfigurationNotFoundMessage = LoggerMessage.Define<string>(
         LogLevel.Information,
-        KnowledgeServiceEventIds.PropertyNotFoundEventId,
+        KnowledgeServiceEventIds.ConfigurationNotFoundEventId,
         "Configuration '{ConfigurationName}' not found.");
 
     private readonly ActivitySource _activitySource;
@@ -123,6 +123,6 @@ public class KnowledgeServiceDiagnostics
 
         public static EventId ConfigurationFoundEventId = new EventId(800, nameof(ConfigurationFoundEventId));
 
-        public static EventId ConfigurationNotFoundEventId = new EventId(300, nameof(ConfigurationNotFoundEventId));
+        public static EventId ConfigurationNotFoundEventId = new EventId(900, nameof(ConfigurationNotFoundEventId));
     }
 }

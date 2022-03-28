@@ -15,15 +15,15 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("[controller]")]
-public sealed class ConfigurationController : ControllerBase
+public sealed class ServiceController : ControllerBase
 {
     private readonly KnowledgeServiceDiagnostics _diagnostics;
 
     private readonly ConfigurationChangeRequestIntegrationEventPublisher _configurationChangeRequestIntegrationEventPublisher;
 
-    private static ConcurrentDictionary<string, ConfigurationDTO> configuration = new();
+    private static ConcurrentDictionary<string, ConcurrentDictionary<string, ConfigurationDTO>> configuration = new();
 
-    public ConfigurationController(
+    public ServiceController(
         KnowledgeServiceDiagnostics diagnostics,
         ConfigurationChangeRequestIntegrationEventPublisher configurationChangeRequestIntegrationEventPublisher)
     {
@@ -34,16 +34,17 @@ public sealed class ConfigurationController : ControllerBase
     /// <summary>
     ///    Gets a configuration property given its name.
     /// </summary>
+    /// <param name="serviceName"> The name of the service whose configuration we are looking for. </param>
     /// <param name="configurationName"> The name of the configuration property to find. </param>
     /// <returns> An IActionResult with result of the query. </returns>
     /// <response code="200"> The configuration property was found. Returns the value of the property. </response>
     /// <response code="404"> The configuration property was not found. </response>
     /// <response code="400"> There was an error with the provided arguments. </response>
-    [HttpGet("{configurationName}")]
-    [ProducesResponseType(typeof(PropertyDTO), StatusCodes.Status200OK)]
+    [HttpGet("{servicename}/configuration/{configurationName}")]
+    [ProducesResponseType(typeof(ConfigurationDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult GetConfigurationProperty([FromRoute]string configurationName)
+    public IActionResult GetConfigurationProperty([FromRoute]string serviceName, [FromRoute]string configurationName)
     {
         if (string.IsNullOrEmpty(configurationName))
         {
@@ -52,9 +53,9 @@ public sealed class ConfigurationController : ControllerBase
 
         using var activity = _diagnostics.LogGetConfiguration(configurationName);
 
-        bool foundProperty = configuration.TryGetValue(configurationName, out ConfigurationDTO configurationDto);
+        var configurationDto = GetConfiguration(serviceName, configurationName);
 
-        if (!foundProperty)
+        if (configurationDto is null)
         {
             _diagnostics.LogConfigurationNotFound(configurationName);
 
@@ -74,7 +75,7 @@ public sealed class ConfigurationController : ControllerBase
     /// <returns> An IActionResult with result of the command. </returns>
     /// <response code="204"> The configuration property was updated or created successfully. </response>
     /// <response code="400"> There was an error with the provided arguments. </response>
-    [HttpPost("request-change")]
+    [HttpPost("configuration/request-change")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RequestConfigurationChangeAsync([FromBody]ConfigurationChangeRequestDTO configurationChangeRequestDto)
@@ -90,6 +91,19 @@ public sealed class ConfigurationController : ControllerBase
         return NoContent();
     }
 
+    private static ConfigurationDTO GetConfiguration(string serviceName, string configurationName)
+    {
+        bool foundConfiguration = configuration.TryGetValue(serviceName, out ConcurrentDictionary<string, ConfigurationDTO> serviceConfigurations);
+
+        if (!foundConfiguration)
+        {
+            return null;
+        }
+
+        serviceConfigurations.TryGetValue(configurationName, out ConfigurationDTO configurationDto);
+
+        return configurationDto;
+    }
 
     // /// <summary>
     // ///    Sets value of a given configuration property. If the property does not exist, it will be created.
