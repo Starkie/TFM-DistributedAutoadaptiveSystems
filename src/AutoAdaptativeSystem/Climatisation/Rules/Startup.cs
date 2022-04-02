@@ -1,8 +1,12 @@
 namespace Climatisation.Rules;
 
+using System.Linq;
+using System.Reflection;
+using Analysis.Contracts.Attributes;
 using Analysis.Service.ApiClient.Api;
 using AnalysisService.Configurations;
 using Climatisation.Rules.Diagnostics;
+using Climatisation.Rules.Rules;
 using Climatisation.Rules.Services;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -10,6 +14,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 public class Startup
 {
@@ -35,8 +40,22 @@ public class Startup
             this.GetType().Assembly,
             registerSubscriptions: async bus =>
             {
-                // TODO: Find how to obtain these registrations from the rules in the current assembly.
-                await bus.Advanced.Topics.Subscribe("Temperature");
+                var ruleTypes = this.GetType().Assembly.GetTypes()
+                    .Where(t => t.IsAssignableTo(typeof(RuleBase)));
+
+                var propertyNames = ruleTypes.Select(t =>
+                {
+                    var attribute = t.GetCustomAttribute(typeof(RuleKnowledgePropertyDependencyAttribute)) as RuleKnowledgePropertyDependencyAttribute;
+
+                    return attribute?.PropertyNames ?? Enumerable.Empty<string>();
+                })
+                    .SelectMany(p => p)
+                    .Distinct();
+
+                foreach (var propertyName in propertyNames)
+                {
+                    await bus.Advanced.Topics.Subscribe(propertyName);
+                }
             });
 
         services.AddScoped<IPropertyApi, PropertyApi>(_ =>

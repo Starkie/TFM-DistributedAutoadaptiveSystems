@@ -5,10 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Analysis.Contracts.Attributes;
 using Climatisation.Rules.Diagnostics;
 using Climatisation.Rules.Events;
 using MediatR;
 
+[RuleKnowledgePropertyDependency]
 public abstract class RuleBase : INotificationHandler<PropertyChangedEvent>
 {
     private readonly ClimatisationRulesDiagnostics _diagnostics;

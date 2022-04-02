@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Analysis.Contracts.Attributes;
 using Analysis.Service.ApiClient.Api;
 using Analysis.Service.ApiClient.Model;
 using Climatisation.Contacts;
 using Climatisation.Rules.Diagnostics;
 using Climatisation.Rules.Services;
 
+[RuleKnowledgePropertyDependency(Temperature)]
 public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : RuleBase
 {
     private readonly IConfigurationApi _configurationApi;
