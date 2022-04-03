@@ -28,6 +28,21 @@ public class AnalysisServiceDiagnostics
         AnalysisServiceEventIds.PropertyChangeEventReceivedEventId,
         "Property changed: {@PropertyChangeEvent}");
 
+    private static readonly Action<ILogger, string, Exception> LogGetConfigurationMessage = LoggerMessage.Define<string>(
+        LogLevel.Information,
+        AnalysisServiceEventIds.GetConfigurationEventId,
+        "Get configuration value request: {configurationName}");
+
+    private static readonly Action<ILogger, string, ConfigurationDTO, Exception> LogConfigurationFoundMessage = LoggerMessage.Define<string, ConfigurationDTO>(
+        LogLevel.Information,
+        AnalysisServiceEventIds.ConfigurationFoundEventId,
+        "Configuration '{ConfigurationName}' found. Value: '{@PropertyValue}'");
+
+    private static readonly Action<ILogger, string, Exception> LogConfigurationNotFoundMessage = LoggerMessage.Define<string>(
+        LogLevel.Information,
+        AnalysisServiceEventIds.ConfigurationNotFoundEventId,
+        "Configuration '{ConfigurationName}' not found.");
+
     private readonly ActivitySource _activitySource;
 
     private readonly ILogger _logger;
@@ -63,6 +78,23 @@ public class AnalysisServiceDiagnostics
         LogPropertyFoundMessage(_logger, propertyName, value, null);
     }
 
+    public Activity LogGetConfiguration(string configurationName)
+    {
+        LogGetConfigurationMessage(_logger, configurationName, null);
+
+        return _activitySource.StartActivity("Get Configuration Value");
+    }
+
+    public void LogConfigurationFound(string configurationName, ConfigurationDTO value)
+    {
+        LogConfigurationFoundMessage(_logger, configurationName, value, null);
+    }
+
+    public void LogConfigurationNotFound(string configurationName)
+    {
+        LogConfigurationNotFoundMessage(_logger, configurationName, null);
+    }
+
     private static class AnalysisServiceEventIds
     {
         public static EventId PropertyChangeEventReceivedEventId = new EventId(100, nameof(PropertyChangeEventReceivedEventId));
@@ -72,5 +104,11 @@ public class AnalysisServiceDiagnostics
         public static EventId PropertyNotFoundEventId = new EventId(300, nameof(PropertyNotFoundEventId));
 
         public static EventId PropertyFoundEventId = new EventId(400, nameof(PropertyFoundEventId));
+
+        public static EventId GetConfigurationEventId = new EventId(500, nameof(GetConfigurationEventId));
+
+        public static EventId ConfigurationFoundEventId = new EventId(600, nameof(ConfigurationFoundEventId));
+
+        public static EventId ConfigurationNotFoundEventId = new EventId(700, nameof(ConfigurationNotFoundEventId));
     }
 }

@@ -61,4 +61,31 @@ public class PropertyController : ControllerBase
 
         return Ok(property);
     }
+
+    /// <summary>
+    ///    Sets value of a given property. If the property does not exist, it will be created.
+    /// </summary>
+    /// <param name="propertyName"> The name of the property to set. </param>
+    /// <param name="propertyDto"> The DTO containing the value to set. </param>
+    /// <returns> An IActionResult with result of the command. </returns>
+    /// <response code="204"> The property was updated or created successfully. </response>
+    /// <response code="400"> There was an error with the provided arguments. </response>
+    [HttpPut("{propertyName}")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> SetAsync([FromRoute]string propertyName, [FromBody]PropertyDTO propertyDto)
+    {
+        if (propertyDto == null || string.IsNullOrEmpty(propertyName))
+        {
+            return this.BadRequest();
+        }
+
+        // _diagnostics.LogReportedMeasurement(propertyDto.Property.Key, propertyDto);
+
+        await _propertyApi.PropertyPropertyNamePutAsync(
+            propertyName,
+            new SetPropertyDTO(propertyDto.Value));
+
+        return this.CreatedAtAction("Get", propertyName);
+    }
 }

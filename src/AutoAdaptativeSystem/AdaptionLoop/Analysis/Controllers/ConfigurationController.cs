@@ -44,4 +44,51 @@ public class ConfigurationController : ControllerBase
 
         return NoContent();
     }
+
+    /// <summary>
+    ///    Gets a configuration property given its name.
+    /// </summary>
+    /// <param name="configurationName"> The name of the configuration property to find. </param>
+    /// <returns> An IActionResult with result of the query. </returns>
+    /// <response code="200"> The configuration property was found. Returns the value of the property. </response>
+    /// <response code="404"> The configuration property was not found. </response>
+    /// <response code="400"> There was an error with the provided arguments. </response>
+    [HttpGet("{configurationName}")]
+    [ProducesResponseType(typeof(ConfigurationDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetAsync([FromRoute]string name)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            return BadRequest();
+        }
+
+        using var activity = _diagnostics.LogGetConfiguration(name);
+
+        ConfigurationDTO configuration = null;
+
+        try
+        {
+            configuration = await _configurationApi.ConfigurationConfigurationNameGetAsync(name);
+        }
+        catch (ApiException exception)
+        {
+            if (exception.ErrorCode != StatusCodes.Status404NotFound)
+            {
+                throw;
+            }
+        }
+
+        if (configuration is null)
+        {
+            _diagnostics.LogConfigurationNotFound(name);
+
+            return NotFound();
+        }
+
+        _diagnostics.LogConfigurationFound(name, configuration);
+
+        return Ok(configuration);
+    }
 }
