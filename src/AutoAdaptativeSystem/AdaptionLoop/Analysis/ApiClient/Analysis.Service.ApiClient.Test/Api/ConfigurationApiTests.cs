@@ -54,6 +54,19 @@ namespace Analysis.Service.ApiClient.Test.Api
         }
 
         /// <summary>
+        /// Test ConfigurationConfigurationNameGet
+        /// </summary>
+        [Fact]
+        public void ConfigurationConfigurationNameGetTest()
+        {
+            // TODO uncomment below to test the method and replace null with proper value
+            //string name = null;
+            //string configurationName = null;
+            //var response = instance.ConfigurationConfigurationNameGet(name, configurationName);
+            //Assert.IsType<ConfigurationDTO>(response);
+        }
+
+        /// <summary>
         /// Test ConfigurationRequestChangePost
         /// </summary>
         [Fact]

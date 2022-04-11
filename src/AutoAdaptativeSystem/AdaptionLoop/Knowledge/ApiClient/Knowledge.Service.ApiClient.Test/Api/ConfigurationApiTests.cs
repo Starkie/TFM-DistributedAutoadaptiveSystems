@@ -62,7 +62,7 @@ namespace Knowledge.Service.ApiClient.Test.Api
             // TODO uncomment below to test the method and replace null with proper value
             //string configurationName = null;
             //var response = instance.ConfigurationConfigurationNameGet(configurationName);
-            //Assert.IsType<PropertyDTO>(response);
+            //Assert.IsType<ConfigurationDTO>(response);
         }
 
         /// <summary>

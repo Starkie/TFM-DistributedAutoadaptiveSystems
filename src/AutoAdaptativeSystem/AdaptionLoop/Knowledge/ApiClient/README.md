@@ -116,7 +116,7 @@ namespace Example
             try
             {
                 // Gets a configuration property given its name.
-                PropertyDTO result = apiInstance.ConfigurationConfigurationNameGet(configurationName);
+                ConfigurationDTO result = apiInstance.ConfigurationConfigurationNameGet(configurationName);
                 Debug.WriteLine(result);
             }
             catch (ApiException e)
@@ -150,6 +150,7 @@ Class | Method | HTTP request | Description
 
  - [Model.ChangeRequestDTO](docs/ChangeRequestDTO.md)
  - [Model.ConfigurationChangeRequestDTO](docs/ConfigurationChangeRequestDTO.md)
+ - [Model.ConfigurationDTO](docs/ConfigurationDTO.md)
  - [Model.ProblemDetails](docs/ProblemDetails.md)
  - [Model.PropertyDTO](docs/PropertyDTO.md)
  - [Model.SetPropertyDTO](docs/SetPropertyDTO.md)

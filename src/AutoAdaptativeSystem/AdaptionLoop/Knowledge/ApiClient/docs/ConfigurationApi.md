@@ -10,7 +10,7 @@ Method | HTTP request | Description
 
 <a name="configurationconfigurationnameget"></a>
 # **ConfigurationConfigurationNameGet**
-> PropertyDTO ConfigurationConfigurationNameGet (string configurationName)
+> ConfigurationDTO ConfigurationConfigurationNameGet (string configurationName)
 
 Gets a configuration property given its name.
 
@@ -40,7 +40,7 @@ namespace Example
             try
             {
                 // Gets a configuration property given its name.
-                PropertyDTO result = apiInstance.ConfigurationConfigurationNameGet(configurationName);
+                ConfigurationDTO result = apiInstance.ConfigurationConfigurationNameGet(configurationName);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -62,7 +62,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**PropertyDTO**](PropertyDTO.md)
+[**ConfigurationDTO**](ConfigurationDTO.md)
 
 ### Authorization
 

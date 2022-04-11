@@ -111,16 +111,18 @@ namespace Example
             HttpClient httpClient = new HttpClient();
             HttpClientHandler httpClientHandler = new HttpClientHandler();
             var apiInstance = new ConfigurationApi(httpClient, config, httpClientHandler);
-            var configurationChangeRequestDTO = new ConfigurationChangeRequestDTO?(); // ConfigurationChangeRequestDTO? | The DTO containing the request to change the property. (optional) 
+            var name = "name_example";  // string | 
+            var configurationName = "configurationName_example";  // string | 
 
             try
             {
-                // Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
-                apiInstance.ConfigurationRequestChangePost(configurationChangeRequestDTO);
+                // Gets a configuration property given its name.
+                ConfigurationDTO result = apiInstance.ConfigurationConfigurationNameGet(name, configurationName);
+                Debug.WriteLine(result);
             }
             catch (ApiException e)
             {
-                Debug.Print("Exception when calling ConfigurationApi.ConfigurationRequestChangePost: " + e.Message );
+                Debug.Print("Exception when calling ConfigurationApi.ConfigurationConfigurationNameGet: " + e.Message );
                 Debug.Print("Status Code: "+ e.ErrorCode);
                 Debug.Print(e.StackTrace);
             }
@@ -137,6 +139,7 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*ConfigurationApi* | [**ConfigurationConfigurationNameGet**](docs/ConfigurationApi.md#configurationconfigurationnameget) | **GET** /Configuration/{configurationName} | Gets a configuration property given its name.
 *ConfigurationApi* | [**ConfigurationRequestChangePost**](docs/ConfigurationApi.md#configurationrequestchangepost) | **POST** /Configuration/request-change | Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
 *PropertyApi* | [**PropertyPropertyNameGet**](docs/PropertyApi.md#propertypropertynameget) | **GET** /Property/{propertyName} | Looks for the Knowledge property with the given name.
 *PropertyApi* | [**PropertyPropertyNamePut**](docs/PropertyApi.md#propertypropertynameput) | **PUT** /Property/{propertyName} | Sets value of a given property. If the property does not exist, it will be created.
@@ -147,6 +150,7 @@ Class | Method | HTTP request | Description
 
  - [Model.ChangeRequestDTO](docs/ChangeRequestDTO.md)
  - [Model.ConfigurationChangeRequestDTO](docs/ConfigurationChangeRequestDTO.md)
+ - [Model.ConfigurationDTO](docs/ConfigurationDTO.md)
  - [Model.ProblemDetails](docs/ProblemDetails.md)
  - [Model.PropertyDTO](docs/PropertyDTO.md)
  - [Model.SymptomDTO](docs/SymptomDTO.md)

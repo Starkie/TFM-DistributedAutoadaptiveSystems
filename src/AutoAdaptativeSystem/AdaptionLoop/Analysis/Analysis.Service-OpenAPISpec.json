@@ -59,6 +59,94 @@
         }
       }
     },
+    "/Configuration/{configurationName}": {
+      "get": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Gets a configuration property given its name.",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "configurationName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The configuration property was found. Returns the value of the property.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigurationDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigurationDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigurationDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The configuration property was not found.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "There was an error with the provided arguments.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/Property/{propertyName}": {
       "get": {
         "tags": [
@@ -237,6 +325,33 @@
         },
         "additionalProperties": false,
         "description": "ConfigurationChangeRequestDTO"
+      },
+      "ConfigurationDTO": {
+        "type": "object",
+        "properties": {
+          "serviceName": {
+            "type": "string",
+            "description": "Gets or Sets ServiceName",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "description": "Gets or Sets Name",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "description": "Gets or Sets Value",
+            "nullable": true
+          },
+          "lastModification": {
+            "type": "string",
+            "description": "Gets or Sets LastModification",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "ConfigurationDTO"
       },
       "ProblemDetails": {
         "type": "object",

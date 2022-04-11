@@ -25,4 +25,8 @@
     <ProjectReference Include="..\Contracts\Climatisation.Contacts.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="EventHandlers" />
+  </ItemGroup>
+
 </Project>

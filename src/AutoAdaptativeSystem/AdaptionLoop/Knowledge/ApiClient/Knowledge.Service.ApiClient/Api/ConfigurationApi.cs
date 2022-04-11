@@ -32,8 +32,8 @@ namespace Knowledge.Service.ApiClient.Api
         /// </summary>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="configurationName">The name of the configuration property to find.</param>
-        /// <returns>PropertyDTO</returns>
-        PropertyDTO ConfigurationConfigurationNameGet(string configurationName);
+        /// <returns>ConfigurationDTO</returns>
+        ConfigurationDTO ConfigurationConfigurationNameGet(string configurationName);
 
         /// <summary>
         /// Gets a configuration property given its name.
@@ -43,8 +43,8 @@ namespace Knowledge.Service.ApiClient.Api
         /// </remarks>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="configurationName">The name of the configuration property to find.</param>
-        /// <returns>ApiResponse of PropertyDTO</returns>
-        ApiResponse<PropertyDTO> ConfigurationConfigurationNameGetWithHttpInfo(string configurationName);
+        /// <returns>ApiResponse of ConfigurationDTO</returns>
+        ApiResponse<ConfigurationDTO> ConfigurationConfigurationNameGetWithHttpInfo(string configurationName);
         /// <summary>
         /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
         /// </summary>
@@ -81,8 +81,8 @@ namespace Knowledge.Service.ApiClient.Api
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="configurationName">The name of the configuration property to find.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of PropertyDTO</returns>
-        System.Threading.Tasks.Task<PropertyDTO> ConfigurationConfigurationNameGetAsync(string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <returns>Task of ConfigurationDTO</returns>
+        System.Threading.Tasks.Task<ConfigurationDTO> ConfigurationConfigurationNameGetAsync(string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <summary>
         /// Gets a configuration property given its name.
@@ -93,8 +93,8 @@ namespace Knowledge.Service.ApiClient.Api
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="configurationName">The name of the configuration property to find.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (PropertyDTO)</returns>
-        System.Threading.Tasks.Task<ApiResponse<PropertyDTO>> ConfigurationConfigurationNameGetWithHttpInfoAsync(string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <returns>Task of ApiResponse (ConfigurationDTO)</returns>
+        System.Threading.Tasks.Task<ApiResponse<ConfigurationDTO>> ConfigurationConfigurationNameGetWithHttpInfoAsync(string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
         /// <summary>
         /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
         /// </summary>
@@ -336,10 +336,10 @@ namespace Knowledge.Service.ApiClient.Api
         /// </summary>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="configurationName">The name of the configuration property to find.</param>
-        /// <returns>PropertyDTO</returns>
-        public PropertyDTO ConfigurationConfigurationNameGet(string configurationName)
+        /// <returns>ConfigurationDTO</returns>
+        public ConfigurationDTO ConfigurationConfigurationNameGet(string configurationName)
         {
-            Knowledge.Service.ApiClient.Client.ApiResponse<PropertyDTO> localVarResponse = ConfigurationConfigurationNameGetWithHttpInfo(configurationName);
+            Knowledge.Service.ApiClient.Client.ApiResponse<ConfigurationDTO> localVarResponse = ConfigurationConfigurationNameGetWithHttpInfo(configurationName);
             return localVarResponse.Data;
         }
 
@@ -348,8 +348,8 @@ namespace Knowledge.Service.ApiClient.Api
         /// </summary>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="configurationName">The name of the configuration property to find.</param>
-        /// <returns>ApiResponse of PropertyDTO</returns>
-        public Knowledge.Service.ApiClient.Client.ApiResponse<PropertyDTO> ConfigurationConfigurationNameGetWithHttpInfo(string configurationName)
+        /// <returns>ApiResponse of ConfigurationDTO</returns>
+        public Knowledge.Service.ApiClient.Client.ApiResponse<ConfigurationDTO> ConfigurationConfigurationNameGetWithHttpInfo(string configurationName)
         {
             // verify the required parameter 'configurationName' is set
             if (configurationName == null)
@@ -377,7 +377,7 @@ namespace Knowledge.Service.ApiClient.Api
 
 
             // make the HTTP request
-            var localVarResponse = this.Client.Get<PropertyDTO>("/Configuration/{configurationName}", localVarRequestOptions, this.Configuration);
+            var localVarResponse = this.Client.Get<ConfigurationDTO>("/Configuration/{configurationName}", localVarRequestOptions, this.Configuration);
 
             if (this.ExceptionFactory != null)
             {
@@ -394,10 +394,10 @@ namespace Knowledge.Service.ApiClient.Api
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="configurationName">The name of the configuration property to find.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of PropertyDTO</returns>
-        public async System.Threading.Tasks.Task<PropertyDTO> ConfigurationConfigurationNameGetAsync(string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <returns>Task of ConfigurationDTO</returns>
+        public async System.Threading.Tasks.Task<ConfigurationDTO> ConfigurationConfigurationNameGetAsync(string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            Knowledge.Service.ApiClient.Client.ApiResponse<PropertyDTO> localVarResponse = await ConfigurationConfigurationNameGetWithHttpInfoAsync(configurationName, cancellationToken).ConfigureAwait(false);
+            Knowledge.Service.ApiClient.Client.ApiResponse<ConfigurationDTO> localVarResponse = await ConfigurationConfigurationNameGetWithHttpInfoAsync(configurationName, cancellationToken).ConfigureAwait(false);
             return localVarResponse.Data;
         }
 
@@ -407,8 +407,8 @@ namespace Knowledge.Service.ApiClient.Api
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="configurationName">The name of the configuration property to find.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (PropertyDTO)</returns>
-        public async System.Threading.Tasks.Task<Knowledge.Service.ApiClient.Client.ApiResponse<PropertyDTO>> ConfigurationConfigurationNameGetWithHttpInfoAsync(string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <returns>Task of ApiResponse (ConfigurationDTO)</returns>
+        public async System.Threading.Tasks.Task<Knowledge.Service.ApiClient.Client.ApiResponse<ConfigurationDTO>> ConfigurationConfigurationNameGetWithHttpInfoAsync(string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             // verify the required parameter 'configurationName' is set
             if (configurationName == null)
@@ -439,7 +439,7 @@ namespace Knowledge.Service.ApiClient.Api
 
             // make the HTTP request
 
-            var localVarResponse = await this.AsynchronousClient.GetAsync<PropertyDTO>("/Configuration/{configurationName}", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+            var localVarResponse = await this.AsynchronousClient.GetAsync<ConfigurationDTO>("/Configuration/{configurationName}", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
 
             if (this.ExceptionFactory != null)
             {

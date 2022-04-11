@@ -28,6 +28,26 @@ namespace Analysis.Service.ApiClient.Api
     {
         #region Synchronous Operations
         /// <summary>
+        /// Gets a configuration property given its name.
+        /// </summary>
+        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="name"></param>
+        /// <param name="configurationName"></param>
+        /// <returns>ConfigurationDTO</returns>
+        ConfigurationDTO ConfigurationConfigurationNameGet(string name, string configurationName);
+
+        /// <summary>
+        /// Gets a configuration property given its name.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="name"></param>
+        /// <param name="configurationName"></param>
+        /// <returns>ApiResponse of ConfigurationDTO</returns>
+        ApiResponse<ConfigurationDTO> ConfigurationConfigurationNameGetWithHttpInfo(string name, string configurationName);
+        /// <summary>
         /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
         /// </summary>
         /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
@@ -54,6 +74,31 @@ namespace Analysis.Service.ApiClient.Api
     public interface IConfigurationApiAsync : IApiAccessor
     {
         #region Asynchronous Operations
+        /// <summary>
+        /// Gets a configuration property given its name.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="name"></param>
+        /// <param name="configurationName"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ConfigurationDTO</returns>
+        System.Threading.Tasks.Task<ConfigurationDTO> ConfigurationConfigurationNameGetAsync(string name, string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <summary>
+        /// Gets a configuration property given its name.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="name"></param>
+        /// <param name="configurationName"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (ConfigurationDTO)</returns>
+        System.Threading.Tasks.Task<ApiResponse<ConfigurationDTO>> ConfigurationConfigurationNameGetWithHttpInfoAsync(string name, string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
         /// <summary>
         /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
         /// </summary>
@@ -288,6 +333,139 @@ namespace Analysis.Service.ApiClient.Api
                 return _exceptionFactory;
             }
             set { _exceptionFactory = value; }
+        }
+
+        /// <summary>
+        /// Gets a configuration property given its name. 
+        /// </summary>
+        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="name"></param>
+        /// <param name="configurationName"></param>
+        /// <returns>ConfigurationDTO</returns>
+        public ConfigurationDTO ConfigurationConfigurationNameGet(string name, string configurationName)
+        {
+            Analysis.Service.ApiClient.Client.ApiResponse<ConfigurationDTO> localVarResponse = ConfigurationConfigurationNameGetWithHttpInfo(name, configurationName);
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        /// Gets a configuration property given its name. 
+        /// </summary>
+        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="name"></param>
+        /// <param name="configurationName"></param>
+        /// <returns>ApiResponse of ConfigurationDTO</returns>
+        public Analysis.Service.ApiClient.Client.ApiResponse<ConfigurationDTO> ConfigurationConfigurationNameGetWithHttpInfo(string name, string configurationName)
+        {
+            // verify the required parameter 'name' is set
+            if (name == null)
+                throw new Analysis.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'name' when calling ConfigurationApi->ConfigurationConfigurationNameGet");
+
+            // verify the required parameter 'configurationName' is set
+            if (configurationName == null)
+                throw new Analysis.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'configurationName' when calling ConfigurationApi->ConfigurationConfigurationNameGet");
+
+            Analysis.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Analysis.Service.ApiClient.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "text/plain",
+                "application/json",
+                "text/json"
+            };
+
+            var localVarContentType = Analysis.Service.ApiClient.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null) localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+
+            var localVarAccept = Analysis.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+
+            localVarRequestOptions.PathParameters.Add("name", Analysis.Service.ApiClient.Client.ClientUtils.ParameterToString(name)); // path parameter
+            localVarRequestOptions.PathParameters.Add("configurationName", Analysis.Service.ApiClient.Client.ClientUtils.ParameterToString(configurationName)); // path parameter
+
+
+            // make the HTTP request
+            var localVarResponse = this.Client.Get<ConfigurationDTO>("/Configuration/{configurationName}", localVarRequestOptions, this.Configuration);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("ConfigurationConfigurationNameGet", localVarResponse);
+                if (_exception != null) throw _exception;
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Gets a configuration property given its name. 
+        /// </summary>
+        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="name"></param>
+        /// <param name="configurationName"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ConfigurationDTO</returns>
+        public async System.Threading.Tasks.Task<ConfigurationDTO> ConfigurationConfigurationNameGetAsync(string name, string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            Analysis.Service.ApiClient.Client.ApiResponse<ConfigurationDTO> localVarResponse = await ConfigurationConfigurationNameGetWithHttpInfoAsync(name, configurationName, cancellationToken).ConfigureAwait(false);
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        /// Gets a configuration property given its name. 
+        /// </summary>
+        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="name"></param>
+        /// <param name="configurationName"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (ConfigurationDTO)</returns>
+        public async System.Threading.Tasks.Task<Analysis.Service.ApiClient.Client.ApiResponse<ConfigurationDTO>> ConfigurationConfigurationNameGetWithHttpInfoAsync(string name, string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            // verify the required parameter 'name' is set
+            if (name == null)
+                throw new Analysis.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'name' when calling ConfigurationApi->ConfigurationConfigurationNameGet");
+
+            // verify the required parameter 'configurationName' is set
+            if (configurationName == null)
+                throw new Analysis.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'configurationName' when calling ConfigurationApi->ConfigurationConfigurationNameGet");
+
+
+            Analysis.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Analysis.Service.ApiClient.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "text/plain",
+                "application/json",
+                "text/json"
+            };
+
+
+            var localVarContentType = Analysis.Service.ApiClient.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null) localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+
+            var localVarAccept = Analysis.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+
+            localVarRequestOptions.PathParameters.Add("name", Analysis.Service.ApiClient.Client.ClientUtils.ParameterToString(name)); // path parameter
+            localVarRequestOptions.PathParameters.Add("configurationName", Analysis.Service.ApiClient.Client.ClientUtils.ParameterToString(configurationName)); // path parameter
+
+
+            // make the HTTP request
+
+            var localVarResponse = await this.AsynchronousClient.GetAsync<ConfigurationDTO>("/Configuration/{configurationName}", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("ConfigurationConfigurationNameGet", localVarResponse);
+                if (_exception != null) throw _exception;
+            }
+
+            return localVarResponse;
         }
 
         /// <summary>
