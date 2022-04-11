@@ -1,4 +1,4 @@
-namespace Climatisation.Rules.Rules;
+namespace Climatisation.Rules.EventHandlers.Rules;
 
 using System;
 using System.Collections.Generic;
@@ -6,12 +6,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Analysis.Contracts.Attributes;
+using Analysis.Service.Contracts.IntegrationEvents;
 using Climatisation.Rules.Diagnostics;
 using Climatisation.Rules.Events;
+using Core.Bus.Handlers;
 using MediatR;
 
 [RuleKnowledgePropertyDependency]
-public abstract class RuleBase : INotificationHandler<PropertyChangedEvent>
+public abstract class RuleBase : IntegrationEventHandler<PropertyChangedIntegrationEvent>
 {
     private readonly ClimatisationRulesDiagnostics _diagnostics;
 
@@ -26,10 +28,9 @@ public abstract class RuleBase : INotificationHandler<PropertyChangedEvent>
         _propertyNames = propertyNames;
     }
 
-    public async Task Handle(PropertyChangedEvent request, CancellationToken cancellationToken)
+    public override async Task Handle(PropertyChangedIntegrationEvent request)
     {
-        if (cancellationToken.IsCancellationRequested
-            || !IsSubscribedToProperty(request))
+        if (!IsSubscribedToProperty(request))
         {
             return;
         }
@@ -38,11 +39,11 @@ public abstract class RuleBase : INotificationHandler<PropertyChangedEvent>
         {
             var activity = _diagnostics.EvaluatingRule(_ruleName);
 
-            if (await EvaluateCondition(cancellationToken))
+            if (await EvaluateCondition())
             {
                 var activity2 = _diagnostics.ExecutingRule(_ruleName);
 
-                await Execute(cancellationToken);
+                await Execute();
             }
         }
         catch (Exception e)
@@ -53,12 +54,12 @@ public abstract class RuleBase : INotificationHandler<PropertyChangedEvent>
         }
     }
 
-    protected abstract Task<bool> EvaluateCondition(CancellationToken cancellationToken);
+    protected abstract Task<bool> EvaluateCondition();
 
-    protected abstract Task Execute(CancellationToken cancellationToken);
+    protected abstract Task Execute();
 
-    private bool IsSubscribedToProperty(PropertyChangedEvent request)
+    private bool IsSubscribedToProperty(PropertyChangedIntegrationEvent request)
     {
-        return _propertyNames.Contains(request.Name, StringComparer.OrdinalIgnoreCase);
+        return _propertyNames.Contains(request.PropertyName, StringComparer.OrdinalIgnoreCase);
     }
 }
