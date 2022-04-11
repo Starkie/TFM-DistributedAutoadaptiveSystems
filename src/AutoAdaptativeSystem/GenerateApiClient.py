@@ -7,7 +7,7 @@ import requests
 import shutil
 
 netCoreVersion = "net6.0"
-codegen_library_version = "6.0.0-20220205.074732-39"
+codegen_library_version = "6.0.0-20220227.092735-72"
 codegen_library_name = F"openapi-generator-cli-{codegen_library_version}.jar"
 
 def generate_api_spec(project_name, project_path, api_name):
@@ -53,9 +53,10 @@ def generate_api_client(codegen_path, openapi_path, project_name, output_path):
     os.system(f"java -jar {codegen_path} generate -i {openapi_path} -o {output_path} -g csharp-netcore --library httpclient --additional-properties=packageName={project_name}.ApiClient,netCoreProjectFile=true,targetFramework={netCoreVersion},sourceFolder=\"\"")
 
 project_list = [
-    { "path": "./KnowledgeService/KnowledgeService.csproj", "name": "KnowledgeService", "api_name": "v1", "output_path": "./KnowledgeService/ApiClient", "remove_existing_files": True },
-    { "path": "./MonitoringService/MonitoringService.csproj", "name": "MonitoringService", "api_name": "v1", "output_path": "./MonitoringService/ApiClient", "remove_existing_files": True },
-    { "path": "./RoomMonitor/RoomMonitor.csproj", "name": "RoomMonitor", "api_name": "v1", "output_path": "./RoomMonitor/ApiClient", "remove_existing_files": True },
+    { "path": "./AdaptionLoop/Knowledge/Knowledge.Service.csproj", "name": "Knowledge.Service", "api_name": "v1", "output_path": "./AdaptionLoop/Knowledge/ApiClient", "remove_existing_files": True },
+    { "path": "./AdaptionLoop/Monitoring/Monitoring.Service.csproj", "name": "Monitoring.Service", "api_name": "v1", "output_path": "./AdaptionLoop/Monitoring/ApiClient", "remove_existing_files": True },
+    { "path": "./AdaptionLoop/Analysis/Analysis.Service.csproj", "name": "Analysis.Service", "api_name": "v1", "output_path": "./AdaptionLoop/Analysis/ApiClient", "remove_existing_files": True },
+    { "path": "./Climatisation/Monitor/Climatisation.Monitor.csproj", "name": "Climatisation.Monitor", "api_name": "v1", "output_path": "./Climatisation/Monitor/ApiClient", "remove_existing_files": True },
 ]
 
 codegen_path = download_codegen_jar()

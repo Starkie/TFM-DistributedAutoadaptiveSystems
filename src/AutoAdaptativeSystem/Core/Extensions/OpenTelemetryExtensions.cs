@@ -4,6 +4,7 @@ using KnowledgeService.Options;
 using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Rebus.OpenTelemetry.Configuration;
 
 public static class OpenTelemetryTracingExtensions
 {
@@ -16,6 +17,7 @@ public static class OpenTelemetryTracingExtensions
                     .AddService(serviceName, serviceVersion: serviceVersion))
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
+                .AddRebusInstrumentation()
                 .AddSource(serviceName)
                 .AddJaegerExporter(configure =>
                 {

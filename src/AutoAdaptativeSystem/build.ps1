@@ -6,7 +6,7 @@ function Build-Project([psobject]$Project, [string]$PublishPath)
 
     Write-Host $PublishDirectory
 
-    dotnet publish "$($Project.Path)/$($Project.Path).csproj" -c Release -r linux-x64 --no-self-contained -o "$PublishDirectory/app" -v m /p:clp=Summary -m
+    dotnet publish "$($Project.Path)/$($Project.ProjectName).csproj" -c Release -r linux-x64 --no-self-contained -o "$PublishDirectory/app" -v m /p:clp=Summary -m
 
     cp (Join-Path $Project.Path "Dockerfile") "$PublishDirectory/Dockerfile"
 }
@@ -14,19 +14,33 @@ function Build-Project([psobject]$Project, [string]$PublishPath)
 $Projects = @(
     @{
         Name = "knowledge"
-        Path = "KnowledgeService"
+        Path = "AdaptionLoop/Knowledge"
+        ProjectName = "Knowledge.Service"
     },
     @{
         Name = "monitoring"
-        Path = "MonitoringService"
+        Path = "AdaptionLoop/Monitoring"
+        ProjectName = "Monitoring.Service"
     },
     @{
-        Name = "roommonitor"
-        Path = "RoomMonitor"
+        Name = "climatisation_monitor"
+        Path = "Climatisation/Monitor"
+        ProjectName = "Climatisation.Monitor"
     },
     @{
         Name = "temperatureprobe"
-        Path = "TemperatureProbe"
+        Path = "Climatisation/Probes/Temperature"
+        ProjectName = "Climatisation.Probes.Temperature"
+    },
+    @{
+        Name = "analysis"
+        Path = "AdaptionLoop/Analysis"
+        ProjectName = "Analysis.Service"
+    },
+    @{
+        Name = "climatisation_rules"
+        Path = "Climatisation/Rules"
+        ProjectName = "Climatisation.Rules"
     }
 )
 

@@ -1,19 +1,34 @@
-version: "3.3"
+version: "3.8"
 
 services:
   knowledge:
     build:
       context: ./knowledge
       args:
+        BUSCONFIGURATION_SERVICEURI: "amqp://user:password@rabbitmq"
         GRAFANA_LOKI_URI: "http://loki:3100"
         JAEGER_HOST: "jaeger"
         JAEGER_PORT: "6831"
     environment:
       ASPNETCORE_ENVIRONMENT: "Production"
+    depends_on:
+      - rabbitmq
     ports:
       - "5001:80"
     networks:
-      - adaption-loop-network
+      - knowledge-network
+    restart: on-failure:5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - knowledge-network
 
   monitoring:
     build:
@@ -29,10 +44,11 @@ services:
       - "6001:80"
     networks:
       - adaption-loop-network
+      - knowledge-network
 
-  roommonitor:
+  climatisation_monitor:
     build:
-      context: ./roommonitor
+      context: ./climatisation_monitor
       args:
         MONITORINGSERVICE_SERVICEURI: "http://monitoring:80"
         GRAFANA_LOKI_URI: "http://loki:3100"
@@ -49,15 +65,57 @@ services:
     build:
       context: ./temperatureprobe
       args:
-        ROOMMONITOR_SERVICEURI: "http://roommonitor:80"
+        ROOMMONITOR_SERVICEURI: "http://climatisation_monitor:80"
     networks:
       - adaption-loop-network
+
+  analysis:
+    build:
+      context: ./analysis
+      args:
+        KNOWLEDGESERVICE_SERVICEURI: "http://knowledge:80"
+        BUSCONFIGURATION_SERVICEURI: "amqp://user:password@rabbitmq"
+        GRAFANA_LOKI_URI: "http://loki:3100"
+        JAEGER_HOST: "jaeger"
+        JAEGER_PORT: "6831"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+    depends_on:
+      - rabbitmq
+    ports:
+      - "8001:80"
+    networks:
+      - knowledge-network
+      - analysis-network
+    restart: on-failure:5
+
+
+  climatisation_rules:
+    build:
+      context: ./climatisation_rules
+      args:
+        ANALYSISSERVICE_SERVICEURI: "http://analysis:80"
+        BUSCONFIGURATION_SERVICEURI: "amqp://user:password@rabbitmq"
+        GRAFANA_LOKI_URI: "http://loki:3100"
+        JAEGER_HOST: "jaeger"
+        JAEGER_PORT: "6831"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+    depends_on:
+      - rabbitmq
+    ports:
+      - "9001:80"
+    networks:
+      - knowledge-network
+      - analysis-network
+    restart: on-failure:5
 
   loki:
     image: "grafana/loki:latest"
     ports:
       - "3100:3100"
     networks:
+      - knowledge-network
       - adaption-loop-network
       - monitoring-network
 
@@ -78,12 +136,16 @@ services:
     environment:
       COLLECTOR_ZIPKIN_HOST_PORT: 9411
     networks:
+      - knowledge-network
       - adaption-loop-network
       - monitoring-network
 
 networks:
+  knowledge-network:
+    driver: bridge
+  analysis-network:
+    driver: bridge
   adaption-loop-network:
     driver: bridge
   monitoring-network:
-    external:
-      name: monitoring-network
+    name: monitoring-network
