@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Monitoring.Service.ApiClient.Api;
+using OpenTelemetry.Resources;
 
 public class Startup
 {
@@ -28,7 +29,11 @@ public class Startup
 
         services.AddSwagger("Room Monitor Service", string.Empty, "v1");
 
-        services.AddTracing(Configuration, ClimatisationMonitorConstants.AppName, "ver1.0");
+        var resourceBuilder = ResourceBuilder
+            .CreateDefault()
+            .AddService(ClimatisationMonitorConstants.AppName, "v1.0");
+
+        services.AddTracing(Configuration, resourceBuilder, ClimatisationMonitorConstants.AppName);
 
         services.AddScoped<IPropertyApi, PropertyApi>(_ =>
         {

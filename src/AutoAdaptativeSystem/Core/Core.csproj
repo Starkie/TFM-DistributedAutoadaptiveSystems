@@ -8,14 +8,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="OpenTelemetry" Version="1.1.0" />
-      <PackageReference Include="OpenTelemetry.Api" Version="1.1.0" />
-      <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="1.1.0" />
-      <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc7" />
-      <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc7" />
-      <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc7" />
+      <PackageReference Include="OpenTelemetry" Version="1.2.0-rc5" />
+      <PackageReference Include="OpenTelemetry.Api" Version="1.2.0-rc5" />
+      <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="1.2.0-rc5" />
+      <PackageReference Include="OpenTelemetry.Exporter.Prometheus" Version="1.2.0-rc5" />
+      <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc9.2" />
+      <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc9.2" />
+      <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc9.2" />
       <PackageReference Include="Rebus.OpenTelemetry" Version="0.0.4" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+      <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="6.0.0" />
       <!-- TODO: Remove these references. Added to be able to build the solution with the ASP.NET Core dependencies. -->
       <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
       <PackageReference Include="System.Runtime.Handles" Version="4.3.0" />

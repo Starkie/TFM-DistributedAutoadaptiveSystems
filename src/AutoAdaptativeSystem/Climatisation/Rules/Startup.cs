@@ -30,7 +30,7 @@ public class Startup
 
         services.AddAdaptionLoopAnalysisServices(Configuration, this.GetType().Assembly);
 
-        services.AddTracing(Configuration, ClimatisationRulesConstants.AppName, "v1.0");
+        services.AddTelemetry(Configuration, ClimatisationRulesConstants.AppName, "v1.0");
 
         services.AddSingleton<ClimatisationRulesDiagnostics>();
 

@@ -28,7 +28,7 @@ public class Startup
 
         services.AddSwagger("Monitoring Service", string.Empty, "v1");
 
-        services.AddTracing(Configuration, MonitoringServiceConstants.AppName, "v1.0");
+        services.AddTelemetry(Configuration, MonitoringServiceConstants.AppName, "v1.0");
 
         services.AddSingleton<MonitoringServiceDiagnostics>();
 

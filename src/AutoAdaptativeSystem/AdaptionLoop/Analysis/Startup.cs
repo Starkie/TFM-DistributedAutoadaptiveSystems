@@ -37,7 +37,7 @@ public class Startup
                 await bus.Subscribe<PropertyChangedIntegrationEvent>();
             });
 
-        services.AddTracing(Configuration, AnalysisServiceConstants.AppName, "v1.0");
+        services.AddTelemetry(Configuration, AnalysisServiceConstants.AppName, "v1.0");
 
         services.AddScoped<IPropertyApi, PropertyApi>(_ =>
         {
