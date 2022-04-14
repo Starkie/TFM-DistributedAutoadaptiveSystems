@@ -37,11 +37,11 @@ public abstract class RuleBase : IntegrationEventHandler<PropertyChangedIntegrat
 
         try
         {
-            var activity = _diagnostics.EvaluatingRule(_ruleName);
+            using var activity = _diagnostics.EvaluatingRule(_ruleName);
 
             if (await EvaluateCondition())
             {
-                var activity2 = _diagnostics.ExecutingRule(_ruleName);
+                using var activity2 = _diagnostics.ExecutingRule(_ruleName);
 
                 await Execute();
             }

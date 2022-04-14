@@ -41,7 +41,7 @@ public class MonitorController : ControllerBase
             return this.BadRequest();
         }
 
-        _diagnostics.LogReportedMeasurement(measurementDto.Property.Key, measurementDto);
+        using var activity = _diagnostics.LogReportedMeasurement(measurementDto.Property.Key, measurementDto);
 
         await _propertyApi.PropertyPropertyNamePutAsync(
             measurementDto.Property.Key,

@@ -21,6 +21,6 @@ public class SystemChangeRequestIntegrationEventHandler : IntegrationEventHandle
 
     public override async Task Handle(SystemChangeRequestIntegrationEvent message)
     {
-        _diagnostics.SystemChangeRequestReceived(message);
+        using var activity = _diagnostics.SystemChangeRequestReceived(message);
     }
 }

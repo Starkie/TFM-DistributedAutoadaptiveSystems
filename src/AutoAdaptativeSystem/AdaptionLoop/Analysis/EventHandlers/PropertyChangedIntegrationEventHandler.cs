@@ -21,7 +21,7 @@ public class PropertyChangedIntegrationEventHandler : IntegrationEventHandler<Pr
 
     public override async Task Handle(PropertyChangedIntegrationEvent message)
     {
-        _analysisServiceDiagnostics.PropertyChangeEventReceived(message);
+        using var activity = _analysisServiceDiagnostics.PropertyChangeEventReceived(message);
 
         await _bus.Advanced.Topics.Publish(
             message.PropertyName,
