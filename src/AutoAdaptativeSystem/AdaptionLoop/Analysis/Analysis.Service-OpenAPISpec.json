@@ -6,147 +6,6 @@
     "version": "v1"
   },
   "paths": {
-    "/Configuration/request-change": {
-      "post": {
-        "tags": [
-          "Configuration"
-        ],
-        "summary": "Requests a change in a configuration key of a given service. For example,\r\ncould be used to set the target temperature of an AC system.",
-        "requestBody": {
-          "description": "The DTO containing the request to change the property.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ConfigurationChangeRequestDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ConfigurationChangeRequestDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ConfigurationChangeRequestDTO"
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": "The configuration change request was submitted successfully."
-          },
-          "400": {
-            "description": "The request was formed incorrectly (null request DTO, invalid values..).",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Configuration/{configurationName}": {
-      "get": {
-        "tags": [
-          "Configuration"
-        ],
-        "summary": "Gets a configuration property given its name.",
-        "parameters": [
-          {
-            "name": "name",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "configurationName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The configuration property was found. Returns the value of the property.",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ConfigurationDTO"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ConfigurationDTO"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ConfigurationDTO"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "The configuration property was not found.",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "There was an error with the provided arguments.",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/Property/{propertyName}": {
       "get": {
         "tags": [
@@ -272,59 +131,165 @@
           }
         }
       }
+    },
+    "/Service/{serviceName}/configuration/{configurationName}": {
+      "get": {
+        "tags": [
+          "Service"
+        ],
+        "summary": "Gets a configuration property given its name.",
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "description": "The name of the service whose configuration we are looking for.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "configurationName",
+            "in": "path",
+            "description": "The name of the configuration property to find.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The configuration property was found. Returns the value of the property.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigurationDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigurationDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigurationDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "There was an error with the provided arguments.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The configuration property was not found.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/System/request-change": {
+      "post": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Requests a change in a configuration key of a given service. For example,\r\ncould be used to set the target temperature of an AC system.",
+        "requestBody": {
+          "description": "The DTO containing the request to change the property.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemConfigurationChangeRequestDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemConfigurationChangeRequestDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemConfigurationChangeRequestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The configuration change request was submitted successfully."
+          },
+          "400": {
+            "description": "The request was formed incorrectly (null request DTO, invalid values..).",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
-      "ChangeRequestDTO": {
+      "BindingConfiguration": {
         "type": "object",
         "properties": {
-          "serviceName": {
+          "targetService": {
             "type": "string",
-            "description": "Gets or Sets ServiceName",
             "nullable": true
           },
-          "propertyName": {
-            "type": "string",
-            "description": "Gets or Sets PropertyName",
-            "nullable": true
-          },
-          "propertyNewValue": {
-            "type": "string",
-            "description": "Gets or Sets PropertyNewValue",
-            "nullable": true
+          "active": {
+            "type": "boolean"
           }
         },
-        "additionalProperties": false,
-        "description": "ChangeRequestDTO"
-      },
-      "ConfigurationChangeRequestDTO": {
-        "type": "object",
-        "properties": {
-          "timestamp": {
-            "type": "string",
-            "description": "Gets or Sets Timestamp",
-            "format": "date-time"
-          },
-          "symptoms": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SymptomDTO"
-            },
-            "description": "Gets or Sets Symptoms",
-            "nullable": true
-          },
-          "requestedChanges": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ChangeRequestDTO"
-            },
-            "description": "Gets or Sets RequestedChanges",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false,
-        "description": "ConfigurationChangeRequestDTO"
+        "additionalProperties": false
       },
       "ConfigurationDTO": {
         "type": "object",
@@ -352,6 +317,20 @@
         },
         "additionalProperties": false,
         "description": "ConfigurationDTO"
+      },
+      "ConfigurationProperty": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "ProblemDetails": {
         "type": "object",
@@ -397,22 +376,70 @@
         "additionalProperties": false,
         "description": "PropertyDTO"
       },
+      "ServiceConfigurationDTO": {
+        "type": "object",
+        "properties": {
+          "serviceName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "configurationProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConfigurationProperty"
+            },
+            "nullable": true
+          },
+          "bindings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BindingConfiguration"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "SymptomDTO": {
         "type": "object",
         "properties": {
           "name": {
             "type": "string",
-            "description": "Gets or Sets Name",
             "nullable": true
           },
           "value": {
             "type": "string",
-            "description": "Gets or Sets Value",
             "nullable": true
           }
         },
-        "additionalProperties": false,
-        "description": "SymptomDTO"
+        "additionalProperties": false
+      },
+      "SystemConfigurationChangeRequestDTO": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "symptoms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SymptomDTO"
+            },
+            "nullable": true
+          },
+          "serviceConfiguration": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceConfigurationDTO"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       }
     }
   }

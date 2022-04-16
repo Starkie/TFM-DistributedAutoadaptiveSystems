@@ -27,44 +27,41 @@ using OpenAPIDateConverter = Analysis.Service.ApiClient.Client.OpenAPIDateConver
 namespace Analysis.Service.ApiClient.Model
 {
     /// <summary>
-    /// ConfigurationChangeRequestDTO
+    /// SystemConfigurationChangeRequestDTO
     /// </summary>
-    [DataContract(Name = "ConfigurationChangeRequestDTO")]
-    public partial class ConfigurationChangeRequestDTO : IEquatable<ConfigurationChangeRequestDTO>, IValidatableObject
+    [DataContract(Name = "SystemConfigurationChangeRequestDTO")]
+    public partial class SystemConfigurationChangeRequestDTO : IEquatable<SystemConfigurationChangeRequestDTO>, IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationChangeRequestDTO" /> class.
+        /// Initializes a new instance of the <see cref="SystemConfigurationChangeRequestDTO" /> class.
         /// </summary>
-        /// <param name="timestamp">Gets or Sets Timestamp.</param>
-        /// <param name="symptoms">Gets or Sets Symptoms.</param>
-        /// <param name="requestedChanges">Gets or Sets RequestedChanges.</param>
-        public ConfigurationChangeRequestDTO(DateTime timestamp = default(DateTime), List<SymptomDTO> symptoms = default(List<SymptomDTO>), List<ChangeRequestDTO> requestedChanges = default(List<ChangeRequestDTO>))
+        /// <param name="timestamp">timestamp.</param>
+        /// <param name="symptoms">symptoms.</param>
+        /// <param name="serviceConfiguration">serviceConfiguration.</param>
+        public SystemConfigurationChangeRequestDTO(DateTime timestamp = default(DateTime), List<SymptomDTO> symptoms = default(List<SymptomDTO>), List<ServiceConfigurationDTO> serviceConfiguration = default(List<ServiceConfigurationDTO>))
         {
             this.Timestamp = timestamp;
             this.Symptoms = symptoms;
-            this.RequestedChanges = requestedChanges;
+            this.ServiceConfiguration = serviceConfiguration;
         }
 
         /// <summary>
         /// Gets or Sets Timestamp
         /// </summary>
-        /// <value>Gets or Sets Timestamp</value>
         [DataMember(Name = "timestamp", EmitDefaultValue = false)]
         public DateTime Timestamp { get; set; }
 
         /// <summary>
         /// Gets or Sets Symptoms
         /// </summary>
-        /// <value>Gets or Sets Symptoms</value>
         [DataMember(Name = "symptoms", EmitDefaultValue = true)]
         public List<SymptomDTO> Symptoms { get; set; }
 
         /// <summary>
-        /// Gets or Sets RequestedChanges
+        /// Gets or Sets ServiceConfiguration
         /// </summary>
-        /// <value>Gets or Sets RequestedChanges</value>
-        [DataMember(Name = "requestedChanges", EmitDefaultValue = true)]
-        public List<ChangeRequestDTO> RequestedChanges { get; set; }
+        [DataMember(Name = "serviceConfiguration", EmitDefaultValue = true)]
+        public List<ServiceConfigurationDTO> ServiceConfiguration { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -73,10 +70,10 @@ namespace Analysis.Service.ApiClient.Model
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class ConfigurationChangeRequestDTO {\n");
+            sb.Append("class SystemConfigurationChangeRequestDTO {\n");
             sb.Append("  Timestamp: ").Append(Timestamp).Append("\n");
             sb.Append("  Symptoms: ").Append(Symptoms).Append("\n");
-            sb.Append("  RequestedChanges: ").Append(RequestedChanges).Append("\n");
+            sb.Append("  ServiceConfiguration: ").Append(ServiceConfiguration).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -97,15 +94,15 @@ namespace Analysis.Service.ApiClient.Model
         /// <returns>Boolean</returns>
         public override bool Equals(object input)
         {
-            return this.Equals(input as ConfigurationChangeRequestDTO);
+            return this.Equals(input as SystemConfigurationChangeRequestDTO);
         }
 
         /// <summary>
-        /// Returns true if ConfigurationChangeRequestDTO instances are equal
+        /// Returns true if SystemConfigurationChangeRequestDTO instances are equal
         /// </summary>
-        /// <param name="input">Instance of ConfigurationChangeRequestDTO to be compared</param>
+        /// <param name="input">Instance of SystemConfigurationChangeRequestDTO to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(ConfigurationChangeRequestDTO input)
+        public bool Equals(SystemConfigurationChangeRequestDTO input)
         {
             if (input == null)
             {
@@ -124,10 +121,10 @@ namespace Analysis.Service.ApiClient.Model
                     this.Symptoms.SequenceEqual(input.Symptoms)
                 ) && 
                 (
-                    this.RequestedChanges == input.RequestedChanges ||
-                    this.RequestedChanges != null &&
-                    input.RequestedChanges != null &&
-                    this.RequestedChanges.SequenceEqual(input.RequestedChanges)
+                    this.ServiceConfiguration == input.ServiceConfiguration ||
+                    this.ServiceConfiguration != null &&
+                    input.ServiceConfiguration != null &&
+                    this.ServiceConfiguration.SequenceEqual(input.ServiceConfiguration)
                 );
         }
 
@@ -148,9 +145,9 @@ namespace Analysis.Service.ApiClient.Model
                 {
                     hashCode = (hashCode * 59) + this.Symptoms.GetHashCode();
                 }
-                if (this.RequestedChanges != null)
+                if (this.ServiceConfiguration != null)
                 {
-                    hashCode = (hashCode * 59) + this.RequestedChanges.GetHashCode();
+                    hashCode = (hashCode * 59) + this.ServiceConfiguration.GetHashCode();
                 }
                 return hashCode;
             }

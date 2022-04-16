@@ -27,33 +27,33 @@ using OpenAPIDateConverter = Analysis.Service.ApiClient.Client.OpenAPIDateConver
 namespace Analysis.Service.ApiClient.Model
 {
     /// <summary>
-    /// SymptomDTO
+    /// BindingConfiguration
     /// </summary>
-    [DataContract(Name = "SymptomDTO")]
-    public partial class SymptomDTO : IEquatable<SymptomDTO>, IValidatableObject
+    [DataContract(Name = "BindingConfiguration")]
+    public partial class BindingConfiguration : IEquatable<BindingConfiguration>, IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SymptomDTO" /> class.
+        /// Initializes a new instance of the <see cref="BindingConfiguration" /> class.
         /// </summary>
-        /// <param name="name">name.</param>
-        /// <param name="value">value.</param>
-        public SymptomDTO(string name = default(string), string value = default(string))
+        /// <param name="targetService">targetService.</param>
+        /// <param name="active">active.</param>
+        public BindingConfiguration(string targetService = default(string), bool active = default(bool))
         {
-            this.Name = name;
-            this.Value = value;
+            this.TargetService = targetService;
+            this.Active = active;
         }
 
         /// <summary>
-        /// Gets or Sets Name
+        /// Gets or Sets TargetService
         /// </summary>
-        [DataMember(Name = "name", EmitDefaultValue = true)]
-        public string Name { get; set; }
+        [DataMember(Name = "targetService", EmitDefaultValue = true)]
+        public string TargetService { get; set; }
 
         /// <summary>
-        /// Gets or Sets Value
+        /// Gets or Sets Active
         /// </summary>
-        [DataMember(Name = "value", EmitDefaultValue = true)]
-        public string Value { get; set; }
+        [DataMember(Name = "active", EmitDefaultValue = true)]
+        public bool Active { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -62,9 +62,9 @@ namespace Analysis.Service.ApiClient.Model
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class SymptomDTO {\n");
-            sb.Append("  Name: ").Append(Name).Append("\n");
-            sb.Append("  Value: ").Append(Value).Append("\n");
+            sb.Append("class BindingConfiguration {\n");
+            sb.Append("  TargetService: ").Append(TargetService).Append("\n");
+            sb.Append("  Active: ").Append(Active).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -85,15 +85,15 @@ namespace Analysis.Service.ApiClient.Model
         /// <returns>Boolean</returns>
         public override bool Equals(object input)
         {
-            return this.Equals(input as SymptomDTO);
+            return this.Equals(input as BindingConfiguration);
         }
 
         /// <summary>
-        /// Returns true if SymptomDTO instances are equal
+        /// Returns true if BindingConfiguration instances are equal
         /// </summary>
-        /// <param name="input">Instance of SymptomDTO to be compared</param>
+        /// <param name="input">Instance of BindingConfiguration to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(SymptomDTO input)
+        public bool Equals(BindingConfiguration input)
         {
             if (input == null)
             {
@@ -101,14 +101,13 @@ namespace Analysis.Service.ApiClient.Model
             }
             return 
                 (
-                    this.Name == input.Name ||
-                    (this.Name != null &&
-                    this.Name.Equals(input.Name))
+                    this.TargetService == input.TargetService ||
+                    (this.TargetService != null &&
+                    this.TargetService.Equals(input.TargetService))
                 ) && 
                 (
-                    this.Value == input.Value ||
-                    (this.Value != null &&
-                    this.Value.Equals(input.Value))
+                    this.Active == input.Active ||
+                    this.Active.Equals(input.Active)
                 );
         }
 
@@ -121,14 +120,11 @@ namespace Analysis.Service.ApiClient.Model
             unchecked // Overflow is fine, just wrap
             {
                 int hashCode = 41;
-                if (this.Name != null)
+                if (this.TargetService != null)
                 {
-                    hashCode = (hashCode * 59) + this.Name.GetHashCode();
+                    hashCode = (hashCode * 59) + this.TargetService.GetHashCode();
                 }
-                if (this.Value != null)
-                {
-                    hashCode = (hashCode * 59) + this.Value.GetHashCode();
-                }
+                hashCode = (hashCode * 59) + this.Active.GetHashCode();
                 return hashCode;
             }
         }

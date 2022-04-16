@@ -1,4 +1,4 @@
-# Analysis.Service.ApiClient.Model.SymptomDTO
+# Analysis.Service.ApiClient.Model.ConfigurationProperty
 
 ## Properties
 

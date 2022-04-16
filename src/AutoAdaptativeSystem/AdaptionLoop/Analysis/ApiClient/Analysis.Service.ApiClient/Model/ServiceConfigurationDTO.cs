@@ -27,44 +27,49 @@ using OpenAPIDateConverter = Analysis.Service.ApiClient.Client.OpenAPIDateConver
 namespace Analysis.Service.ApiClient.Model
 {
     /// <summary>
-    /// ChangeRequestDTO
+    /// ServiceConfigurationDTO
     /// </summary>
-    [DataContract(Name = "ChangeRequestDTO")]
-    public partial class ChangeRequestDTO : IEquatable<ChangeRequestDTO>, IValidatableObject
+    [DataContract(Name = "ServiceConfigurationDTO")]
+    public partial class ServiceConfigurationDTO : IEquatable<ServiceConfigurationDTO>, IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChangeRequestDTO" /> class.
+        /// Initializes a new instance of the <see cref="ServiceConfigurationDTO" /> class.
         /// </summary>
-        /// <param name="serviceName">Gets or Sets ServiceName.</param>
-        /// <param name="propertyName">Gets or Sets PropertyName.</param>
-        /// <param name="propertyNewValue">Gets or Sets PropertyNewValue.</param>
-        public ChangeRequestDTO(string serviceName = default(string), string propertyName = default(string), string propertyNewValue = default(string))
+        /// <param name="serviceName">serviceName.</param>
+        /// <param name="isActive">isActive.</param>
+        /// <param name="configurationProperties">configurationProperties.</param>
+        /// <param name="bindings">bindings.</param>
+        public ServiceConfigurationDTO(string serviceName = default(string), bool isActive = default(bool), List<ConfigurationProperty> configurationProperties = default(List<ConfigurationProperty>), List<BindingConfiguration> bindings = default(List<BindingConfiguration>))
         {
             this.ServiceName = serviceName;
-            this.PropertyName = propertyName;
-            this.PropertyNewValue = propertyNewValue;
+            this.IsActive = isActive;
+            this.ConfigurationProperties = configurationProperties;
+            this.Bindings = bindings;
         }
 
         /// <summary>
         /// Gets or Sets ServiceName
         /// </summary>
-        /// <value>Gets or Sets ServiceName</value>
         [DataMember(Name = "serviceName", EmitDefaultValue = true)]
         public string ServiceName { get; set; }
 
         /// <summary>
-        /// Gets or Sets PropertyName
+        /// Gets or Sets IsActive
         /// </summary>
-        /// <value>Gets or Sets PropertyName</value>
-        [DataMember(Name = "propertyName", EmitDefaultValue = true)]
-        public string PropertyName { get; set; }
+        [DataMember(Name = "isActive", EmitDefaultValue = true)]
+        public bool IsActive { get; set; }
 
         /// <summary>
-        /// Gets or Sets PropertyNewValue
+        /// Gets or Sets ConfigurationProperties
         /// </summary>
-        /// <value>Gets or Sets PropertyNewValue</value>
-        [DataMember(Name = "propertyNewValue", EmitDefaultValue = true)]
-        public string PropertyNewValue { get; set; }
+        [DataMember(Name = "configurationProperties", EmitDefaultValue = true)]
+        public List<ConfigurationProperty> ConfigurationProperties { get; set; }
+
+        /// <summary>
+        /// Gets or Sets Bindings
+        /// </summary>
+        [DataMember(Name = "bindings", EmitDefaultValue = true)]
+        public List<BindingConfiguration> Bindings { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -73,10 +78,11 @@ namespace Analysis.Service.ApiClient.Model
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class ChangeRequestDTO {\n");
+            sb.Append("class ServiceConfigurationDTO {\n");
             sb.Append("  ServiceName: ").Append(ServiceName).Append("\n");
-            sb.Append("  PropertyName: ").Append(PropertyName).Append("\n");
-            sb.Append("  PropertyNewValue: ").Append(PropertyNewValue).Append("\n");
+            sb.Append("  IsActive: ").Append(IsActive).Append("\n");
+            sb.Append("  ConfigurationProperties: ").Append(ConfigurationProperties).Append("\n");
+            sb.Append("  Bindings: ").Append(Bindings).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -97,15 +103,15 @@ namespace Analysis.Service.ApiClient.Model
         /// <returns>Boolean</returns>
         public override bool Equals(object input)
         {
-            return this.Equals(input as ChangeRequestDTO);
+            return this.Equals(input as ServiceConfigurationDTO);
         }
 
         /// <summary>
-        /// Returns true if ChangeRequestDTO instances are equal
+        /// Returns true if ServiceConfigurationDTO instances are equal
         /// </summary>
-        /// <param name="input">Instance of ChangeRequestDTO to be compared</param>
+        /// <param name="input">Instance of ServiceConfigurationDTO to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(ChangeRequestDTO input)
+        public bool Equals(ServiceConfigurationDTO input)
         {
             if (input == null)
             {
@@ -118,14 +124,20 @@ namespace Analysis.Service.ApiClient.Model
                     this.ServiceName.Equals(input.ServiceName))
                 ) && 
                 (
-                    this.PropertyName == input.PropertyName ||
-                    (this.PropertyName != null &&
-                    this.PropertyName.Equals(input.PropertyName))
+                    this.IsActive == input.IsActive ||
+                    this.IsActive.Equals(input.IsActive)
                 ) && 
                 (
-                    this.PropertyNewValue == input.PropertyNewValue ||
-                    (this.PropertyNewValue != null &&
-                    this.PropertyNewValue.Equals(input.PropertyNewValue))
+                    this.ConfigurationProperties == input.ConfigurationProperties ||
+                    this.ConfigurationProperties != null &&
+                    input.ConfigurationProperties != null &&
+                    this.ConfigurationProperties.SequenceEqual(input.ConfigurationProperties)
+                ) && 
+                (
+                    this.Bindings == input.Bindings ||
+                    this.Bindings != null &&
+                    input.Bindings != null &&
+                    this.Bindings.SequenceEqual(input.Bindings)
                 );
         }
 
@@ -142,13 +154,14 @@ namespace Analysis.Service.ApiClient.Model
                 {
                     hashCode = (hashCode * 59) + this.ServiceName.GetHashCode();
                 }
-                if (this.PropertyName != null)
+                hashCode = (hashCode * 59) + this.IsActive.GetHashCode();
+                if (this.ConfigurationProperties != null)
                 {
-                    hashCode = (hashCode * 59) + this.PropertyName.GetHashCode();
+                    hashCode = (hashCode * 59) + this.ConfigurationProperties.GetHashCode();
                 }
-                if (this.PropertyNewValue != null)
+                if (this.Bindings != null)
                 {
-                    hashCode = (hashCode * 59) + this.PropertyNewValue.GetHashCode();
+                    hashCode = (hashCode * 59) + this.Bindings.GetHashCode();
                 }
                 return hashCode;
             }

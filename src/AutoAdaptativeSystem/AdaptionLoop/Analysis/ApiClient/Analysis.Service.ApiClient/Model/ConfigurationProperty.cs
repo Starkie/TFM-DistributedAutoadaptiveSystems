@@ -27,17 +27,17 @@ using OpenAPIDateConverter = Analysis.Service.ApiClient.Client.OpenAPIDateConver
 namespace Analysis.Service.ApiClient.Model
 {
     /// <summary>
-    /// SymptomDTO
+    /// ConfigurationProperty
     /// </summary>
-    [DataContract(Name = "SymptomDTO")]
-    public partial class SymptomDTO : IEquatable<SymptomDTO>, IValidatableObject
+    [DataContract(Name = "ConfigurationProperty")]
+    public partial class ConfigurationProperty : IEquatable<ConfigurationProperty>, IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SymptomDTO" /> class.
+        /// Initializes a new instance of the <see cref="ConfigurationProperty" /> class.
         /// </summary>
         /// <param name="name">name.</param>
         /// <param name="value">value.</param>
-        public SymptomDTO(string name = default(string), string value = default(string))
+        public ConfigurationProperty(string name = default(string), string value = default(string))
         {
             this.Name = name;
             this.Value = value;
@@ -62,7 +62,7 @@ namespace Analysis.Service.ApiClient.Model
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class SymptomDTO {\n");
+            sb.Append("class ConfigurationProperty {\n");
             sb.Append("  Name: ").Append(Name).Append("\n");
             sb.Append("  Value: ").Append(Value).Append("\n");
             sb.Append("}\n");
@@ -85,15 +85,15 @@ namespace Analysis.Service.ApiClient.Model
         /// <returns>Boolean</returns>
         public override bool Equals(object input)
         {
-            return this.Equals(input as SymptomDTO);
+            return this.Equals(input as ConfigurationProperty);
         }
 
         /// <summary>
-        /// Returns true if SymptomDTO instances are equal
+        /// Returns true if ConfigurationProperty instances are equal
         /// </summary>
-        /// <param name="input">Instance of SymptomDTO to be compared</param>
+        /// <param name="input">Instance of ConfigurationProperty to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(SymptomDTO input)
+        public bool Equals(ConfigurationProperty input)
         {
             if (input == null)
             {

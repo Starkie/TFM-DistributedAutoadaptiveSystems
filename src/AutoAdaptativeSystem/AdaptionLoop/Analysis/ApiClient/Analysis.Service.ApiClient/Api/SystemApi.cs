@@ -24,36 +24,16 @@ namespace Analysis.Service.ApiClient.Api
     /// <summary>
     /// Represents a collection of functions to interact with the API endpoints
     /// </summary>
-    public interface IConfigurationApiSync : IApiAccessor
+    public interface ISystemApiSync : IApiAccessor
     {
         #region Synchronous Operations
         /// <summary>
-        /// Gets a configuration property given its name.
-        /// </summary>
-        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="name"></param>
-        /// <param name="configurationName"></param>
-        /// <returns>ConfigurationDTO</returns>
-        ConfigurationDTO ConfigurationConfigurationNameGet(string name, string configurationName);
-
-        /// <summary>
-        /// Gets a configuration property given its name.
-        /// </summary>
-        /// <remarks>
-        /// 
-        /// </remarks>
-        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="name"></param>
-        /// <param name="configurationName"></param>
-        /// <returns>ApiResponse of ConfigurationDTO</returns>
-        ApiResponse<ConfigurationDTO> ConfigurationConfigurationNameGetWithHttpInfo(string name, string configurationName);
-        /// <summary>
         /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
         /// </summary>
         /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="configurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
+        /// <param name="systemConfigurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
         /// <returns></returns>
-        void ConfigurationRequestChangePost(ConfigurationChangeRequestDTO? configurationChangeRequestDTO = default(ConfigurationChangeRequestDTO?));
+        void SystemRequestChangePost(SystemConfigurationChangeRequestDTO? systemConfigurationChangeRequestDTO = default(SystemConfigurationChangeRequestDTO?));
 
         /// <summary>
         /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
@@ -62,54 +42,29 @@ namespace Analysis.Service.ApiClient.Api
         /// 
         /// </remarks>
         /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="configurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
+        /// <param name="systemConfigurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        ApiResponse<Object> ConfigurationRequestChangePostWithHttpInfo(ConfigurationChangeRequestDTO? configurationChangeRequestDTO = default(ConfigurationChangeRequestDTO?));
+        ApiResponse<Object> SystemRequestChangePostWithHttpInfo(SystemConfigurationChangeRequestDTO? systemConfigurationChangeRequestDTO = default(SystemConfigurationChangeRequestDTO?));
         #endregion Synchronous Operations
     }
 
     /// <summary>
     /// Represents a collection of functions to interact with the API endpoints
     /// </summary>
-    public interface IConfigurationApiAsync : IApiAccessor
+    public interface ISystemApiAsync : IApiAccessor
     {
         #region Asynchronous Operations
         /// <summary>
-        /// Gets a configuration property given its name.
-        /// </summary>
-        /// <remarks>
-        /// 
-        /// </remarks>
-        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="name"></param>
-        /// <param name="configurationName"></param>
-        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ConfigurationDTO</returns>
-        System.Threading.Tasks.Task<ConfigurationDTO> ConfigurationConfigurationNameGetAsync(string name, string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-
-        /// <summary>
-        /// Gets a configuration property given its name.
-        /// </summary>
-        /// <remarks>
-        /// 
-        /// </remarks>
-        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="name"></param>
-        /// <param name="configurationName"></param>
-        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (ConfigurationDTO)</returns>
-        System.Threading.Tasks.Task<ApiResponse<ConfigurationDTO>> ConfigurationConfigurationNameGetWithHttpInfoAsync(string name, string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-        /// <summary>
         /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
         /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="configurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
+        /// <param name="systemConfigurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of void</returns>
-        System.Threading.Tasks.Task ConfigurationRequestChangePostAsync(ConfigurationChangeRequestDTO? configurationChangeRequestDTO = default(ConfigurationChangeRequestDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task SystemRequestChangePostAsync(SystemConfigurationChangeRequestDTO? systemConfigurationChangeRequestDTO = default(SystemConfigurationChangeRequestDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <summary>
         /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
@@ -118,17 +73,17 @@ namespace Analysis.Service.ApiClient.Api
         /// 
         /// </remarks>
         /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="configurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
+        /// <param name="systemConfigurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse</returns>
-        System.Threading.Tasks.Task<ApiResponse<Object>> ConfigurationRequestChangePostWithHttpInfoAsync(ConfigurationChangeRequestDTO? configurationChangeRequestDTO = default(ConfigurationChangeRequestDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ApiResponse<Object>> SystemRequestChangePostWithHttpInfoAsync(SystemConfigurationChangeRequestDTO? systemConfigurationChangeRequestDTO = default(SystemConfigurationChangeRequestDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
         #endregion Asynchronous Operations
     }
 
     /// <summary>
     /// Represents a collection of functions to interact with the API endpoints
     /// </summary>
-    public interface IConfigurationApi : IConfigurationApiSync, IConfigurationApiAsync
+    public interface ISystemApi : ISystemApiSync, ISystemApiAsync
     {
 
     }
@@ -136,29 +91,29 @@ namespace Analysis.Service.ApiClient.Api
     /// <summary>
     /// Represents a collection of functions to interact with the API endpoints
     /// </summary>
-    public partial class ConfigurationApi : IDisposable, IConfigurationApi
+    public partial class SystemApi : IDisposable, ISystemApi
     {
         private Analysis.Service.ApiClient.Client.ExceptionFactory _exceptionFactory = (name, response) => null;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationApi"/> class.
+        /// Initializes a new instance of the <see cref="SystemApi"/> class.
         /// **IMPORTANT** This will also create an instance of HttpClient, which is less than ideal.
         /// It's better to reuse the <see href="https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests#issues-with-the-original-httpclient-class-available-in-net">HttpClient and HttpClientHandler</see>.
         /// </summary>
         /// <returns></returns>
-        public ConfigurationApi() : this((string)null)
+        public SystemApi() : this((string)null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationApi"/> class.
+        /// Initializes a new instance of the <see cref="SystemApi"/> class.
         /// **IMPORTANT** This will also create an instance of HttpClient, which is less than ideal.
         /// It's better to reuse the <see href="https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests#issues-with-the-original-httpclient-class-available-in-net">HttpClient and HttpClientHandler</see>.
         /// </summary>
         /// <param name="basePath">The target service's base path in URL format.</param>
         /// <exception cref="ArgumentException"></exception>
         /// <returns></returns>
-        public ConfigurationApi(string basePath)
+        public SystemApi(string basePath)
         {
             this.Configuration = Analysis.Service.ApiClient.Client.Configuration.MergeConfigurations(
                 Analysis.Service.ApiClient.Client.GlobalConfiguration.Instance,
@@ -171,14 +126,14 @@ namespace Analysis.Service.ApiClient.Api
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationApi"/> class using Configuration object.
+        /// Initializes a new instance of the <see cref="SystemApi"/> class using Configuration object.
         /// **IMPORTANT** This will also create an instance of HttpClient, which is less than ideal.
         /// It's better to reuse the <see href="https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests#issues-with-the-original-httpclient-class-available-in-net">HttpClient and HttpClientHandler</see>.
         /// </summary>
         /// <param name="configuration">An instance of Configuration.</param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <returns></returns>
-        public ConfigurationApi(Analysis.Service.ApiClient.Client.Configuration configuration)
+        public SystemApi(Analysis.Service.ApiClient.Client.Configuration configuration)
         {
             if (configuration == null) throw new ArgumentNullException("configuration");
 
@@ -193,7 +148,7 @@ namespace Analysis.Service.ApiClient.Api
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationApi"/> class.
+        /// Initializes a new instance of the <see cref="SystemApi"/> class.
         /// </summary>
         /// <param name="client">An instance of HttpClient.</param>
         /// <param name="handler">An optional instance of HttpClientHandler that is used by HttpClient.</param>
@@ -203,12 +158,12 @@ namespace Analysis.Service.ApiClient.Api
         /// Some configuration settings will not be applied without passing an HttpClientHandler.
         /// The features affected are: Setting and Retrieving Cookies, Client Certificates, Proxy settings.
         /// </remarks>
-        public ConfigurationApi(HttpClient client, HttpClientHandler handler = null) : this(client, (string)null, handler)
+        public SystemApi(HttpClient client, HttpClientHandler handler = null) : this(client, (string)null, handler)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationApi"/> class.
+        /// Initializes a new instance of the <see cref="SystemApi"/> class.
         /// </summary>
         /// <param name="client">An instance of HttpClient.</param>
         /// <param name="basePath">The target service's base path in URL format.</param>
@@ -220,7 +175,7 @@ namespace Analysis.Service.ApiClient.Api
         /// Some configuration settings will not be applied without passing an HttpClientHandler.
         /// The features affected are: Setting and Retrieving Cookies, Client Certificates, Proxy settings.
         /// </remarks>
-        public ConfigurationApi(HttpClient client, string basePath, HttpClientHandler handler = null)
+        public SystemApi(HttpClient client, string basePath, HttpClientHandler handler = null)
         {
             if (client == null) throw new ArgumentNullException("client");
 
@@ -235,7 +190,7 @@ namespace Analysis.Service.ApiClient.Api
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationApi"/> class using Configuration object.
+        /// Initializes a new instance of the <see cref="SystemApi"/> class using Configuration object.
         /// </summary>
         /// <param name="client">An instance of HttpClient.</param>
         /// <param name="configuration">An instance of Configuration.</param>
@@ -246,7 +201,7 @@ namespace Analysis.Service.ApiClient.Api
         /// Some configuration settings will not be applied without passing an HttpClientHandler.
         /// The features affected are: Setting and Retrieving Cookies, Client Certificates, Proxy settings.
         /// </remarks>
-        public ConfigurationApi(HttpClient client, Analysis.Service.ApiClient.Client.Configuration configuration, HttpClientHandler handler = null)
+        public SystemApi(HttpClient client, Analysis.Service.ApiClient.Client.Configuration configuration, HttpClientHandler handler = null)
         {
             if (configuration == null) throw new ArgumentNullException("configuration");
             if (client == null) throw new ArgumentNullException("client");
@@ -262,14 +217,14 @@ namespace Analysis.Service.ApiClient.Api
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationApi"/> class
+        /// Initializes a new instance of the <see cref="SystemApi"/> class
         /// using a Configuration object and client instance.
         /// </summary>
         /// <param name="client">The client interface for synchronous API access.</param>
         /// <param name="asyncClient">The client interface for asynchronous API access.</param>
         /// <param name="configuration">The configuration object.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public ConfigurationApi(Analysis.Service.ApiClient.Client.ISynchronousClient client, Analysis.Service.ApiClient.Client.IAsynchronousClient asyncClient, Analysis.Service.ApiClient.Client.IReadableConfiguration configuration)
+        public SystemApi(Analysis.Service.ApiClient.Client.ISynchronousClient client, Analysis.Service.ApiClient.Client.IAsynchronousClient asyncClient, Analysis.Service.ApiClient.Client.IReadableConfiguration configuration)
         {
             if (client == null) throw new ArgumentNullException("client");
             if (asyncClient == null) throw new ArgumentNullException("asyncClient");
@@ -336,156 +291,23 @@ namespace Analysis.Service.ApiClient.Api
         }
 
         /// <summary>
-        /// Gets a configuration property given its name. 
-        /// </summary>
-        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="name"></param>
-        /// <param name="configurationName"></param>
-        /// <returns>ConfigurationDTO</returns>
-        public ConfigurationDTO ConfigurationConfigurationNameGet(string name, string configurationName)
-        {
-            Analysis.Service.ApiClient.Client.ApiResponse<ConfigurationDTO> localVarResponse = ConfigurationConfigurationNameGetWithHttpInfo(name, configurationName);
-            return localVarResponse.Data;
-        }
-
-        /// <summary>
-        /// Gets a configuration property given its name. 
-        /// </summary>
-        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="name"></param>
-        /// <param name="configurationName"></param>
-        /// <returns>ApiResponse of ConfigurationDTO</returns>
-        public Analysis.Service.ApiClient.Client.ApiResponse<ConfigurationDTO> ConfigurationConfigurationNameGetWithHttpInfo(string name, string configurationName)
-        {
-            // verify the required parameter 'name' is set
-            if (name == null)
-                throw new Analysis.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'name' when calling ConfigurationApi->ConfigurationConfigurationNameGet");
-
-            // verify the required parameter 'configurationName' is set
-            if (configurationName == null)
-                throw new Analysis.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'configurationName' when calling ConfigurationApi->ConfigurationConfigurationNameGet");
-
-            Analysis.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Analysis.Service.ApiClient.Client.RequestOptions();
-
-            string[] _contentTypes = new string[] {
-            };
-
-            // to determine the Accept header
-            string[] _accepts = new string[] {
-                "text/plain",
-                "application/json",
-                "text/json"
-            };
-
-            var localVarContentType = Analysis.Service.ApiClient.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
-            if (localVarContentType != null) localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
-
-            var localVarAccept = Analysis.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
-            if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
-
-            localVarRequestOptions.PathParameters.Add("name", Analysis.Service.ApiClient.Client.ClientUtils.ParameterToString(name)); // path parameter
-            localVarRequestOptions.PathParameters.Add("configurationName", Analysis.Service.ApiClient.Client.ClientUtils.ParameterToString(configurationName)); // path parameter
-
-
-            // make the HTTP request
-            var localVarResponse = this.Client.Get<ConfigurationDTO>("/Configuration/{configurationName}", localVarRequestOptions, this.Configuration);
-
-            if (this.ExceptionFactory != null)
-            {
-                Exception _exception = this.ExceptionFactory("ConfigurationConfigurationNameGet", localVarResponse);
-                if (_exception != null) throw _exception;
-            }
-
-            return localVarResponse;
-        }
-
-        /// <summary>
-        /// Gets a configuration property given its name. 
-        /// </summary>
-        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="name"></param>
-        /// <param name="configurationName"></param>
-        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ConfigurationDTO</returns>
-        public async System.Threading.Tasks.Task<ConfigurationDTO> ConfigurationConfigurationNameGetAsync(string name, string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
-        {
-            Analysis.Service.ApiClient.Client.ApiResponse<ConfigurationDTO> localVarResponse = await ConfigurationConfigurationNameGetWithHttpInfoAsync(name, configurationName, cancellationToken).ConfigureAwait(false);
-            return localVarResponse.Data;
-        }
-
-        /// <summary>
-        /// Gets a configuration property given its name. 
-        /// </summary>
-        /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="name"></param>
-        /// <param name="configurationName"></param>
-        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (ConfigurationDTO)</returns>
-        public async System.Threading.Tasks.Task<Analysis.Service.ApiClient.Client.ApiResponse<ConfigurationDTO>> ConfigurationConfigurationNameGetWithHttpInfoAsync(string name, string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
-        {
-            // verify the required parameter 'name' is set
-            if (name == null)
-                throw new Analysis.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'name' when calling ConfigurationApi->ConfigurationConfigurationNameGet");
-
-            // verify the required parameter 'configurationName' is set
-            if (configurationName == null)
-                throw new Analysis.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'configurationName' when calling ConfigurationApi->ConfigurationConfigurationNameGet");
-
-
-            Analysis.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Analysis.Service.ApiClient.Client.RequestOptions();
-
-            string[] _contentTypes = new string[] {
-            };
-
-            // to determine the Accept header
-            string[] _accepts = new string[] {
-                "text/plain",
-                "application/json",
-                "text/json"
-            };
-
-
-            var localVarContentType = Analysis.Service.ApiClient.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
-            if (localVarContentType != null) localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
-
-            var localVarAccept = Analysis.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
-            if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
-
-            localVarRequestOptions.PathParameters.Add("name", Analysis.Service.ApiClient.Client.ClientUtils.ParameterToString(name)); // path parameter
-            localVarRequestOptions.PathParameters.Add("configurationName", Analysis.Service.ApiClient.Client.ClientUtils.ParameterToString(configurationName)); // path parameter
-
-
-            // make the HTTP request
-
-            var localVarResponse = await this.AsynchronousClient.GetAsync<ConfigurationDTO>("/Configuration/{configurationName}", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
-
-            if (this.ExceptionFactory != null)
-            {
-                Exception _exception = this.ExceptionFactory("ConfigurationConfigurationNameGet", localVarResponse);
-                if (_exception != null) throw _exception;
-            }
-
-            return localVarResponse;
-        }
-
-        /// <summary>
         /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system. 
         /// </summary>
         /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="configurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
+        /// <param name="systemConfigurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
         /// <returns></returns>
-        public void ConfigurationRequestChangePost(ConfigurationChangeRequestDTO? configurationChangeRequestDTO = default(ConfigurationChangeRequestDTO?))
+        public void SystemRequestChangePost(SystemConfigurationChangeRequestDTO? systemConfigurationChangeRequestDTO = default(SystemConfigurationChangeRequestDTO?))
         {
-            ConfigurationRequestChangePostWithHttpInfo(configurationChangeRequestDTO);
+            SystemRequestChangePostWithHttpInfo(systemConfigurationChangeRequestDTO);
         }
 
         /// <summary>
         /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system. 
         /// </summary>
         /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="configurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
+        /// <param name="systemConfigurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        public Analysis.Service.ApiClient.Client.ApiResponse<Object> ConfigurationRequestChangePostWithHttpInfo(ConfigurationChangeRequestDTO? configurationChangeRequestDTO = default(ConfigurationChangeRequestDTO?))
+        public Analysis.Service.ApiClient.Client.ApiResponse<Object> SystemRequestChangePostWithHttpInfo(SystemConfigurationChangeRequestDTO? systemConfigurationChangeRequestDTO = default(SystemConfigurationChangeRequestDTO?))
         {
             Analysis.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Analysis.Service.ApiClient.Client.RequestOptions();
 
@@ -508,15 +330,15 @@ namespace Analysis.Service.ApiClient.Api
             var localVarAccept = Analysis.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
             if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
 
-            localVarRequestOptions.Data = configurationChangeRequestDTO;
+            localVarRequestOptions.Data = systemConfigurationChangeRequestDTO;
 
 
             // make the HTTP request
-            var localVarResponse = this.Client.Post<Object>("/Configuration/request-change", localVarRequestOptions, this.Configuration);
+            var localVarResponse = this.Client.Post<Object>("/System/request-change", localVarRequestOptions, this.Configuration);
 
             if (this.ExceptionFactory != null)
             {
-                Exception _exception = this.ExceptionFactory("ConfigurationRequestChangePost", localVarResponse);
+                Exception _exception = this.ExceptionFactory("SystemRequestChangePost", localVarResponse);
                 if (_exception != null) throw _exception;
             }
 
@@ -527,22 +349,22 @@ namespace Analysis.Service.ApiClient.Api
         /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system. 
         /// </summary>
         /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="configurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
+        /// <param name="systemConfigurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of void</returns>
-        public async System.Threading.Tasks.Task ConfigurationRequestChangePostAsync(ConfigurationChangeRequestDTO? configurationChangeRequestDTO = default(ConfigurationChangeRequestDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task SystemRequestChangePostAsync(SystemConfigurationChangeRequestDTO? systemConfigurationChangeRequestDTO = default(SystemConfigurationChangeRequestDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            await ConfigurationRequestChangePostWithHttpInfoAsync(configurationChangeRequestDTO, cancellationToken).ConfigureAwait(false);
+            await SystemRequestChangePostWithHttpInfoAsync(systemConfigurationChangeRequestDTO, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system. 
         /// </summary>
         /// <exception cref="Analysis.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="configurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
+        /// <param name="systemConfigurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse</returns>
-        public async System.Threading.Tasks.Task<Analysis.Service.ApiClient.Client.ApiResponse<Object>> ConfigurationRequestChangePostWithHttpInfoAsync(ConfigurationChangeRequestDTO? configurationChangeRequestDTO = default(ConfigurationChangeRequestDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<Analysis.Service.ApiClient.Client.ApiResponse<Object>> SystemRequestChangePostWithHttpInfoAsync(SystemConfigurationChangeRequestDTO? systemConfigurationChangeRequestDTO = default(SystemConfigurationChangeRequestDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
 
             Analysis.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Analysis.Service.ApiClient.Client.RequestOptions();
@@ -567,16 +389,16 @@ namespace Analysis.Service.ApiClient.Api
             var localVarAccept = Analysis.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
             if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
 
-            localVarRequestOptions.Data = configurationChangeRequestDTO;
+            localVarRequestOptions.Data = systemConfigurationChangeRequestDTO;
 
 
             // make the HTTP request
 
-            var localVarResponse = await this.AsynchronousClient.PostAsync<Object>("/Configuration/request-change", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+            var localVarResponse = await this.AsynchronousClient.PostAsync<Object>("/System/request-change", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
 
             if (this.ExceptionFactory != null)
             {
-                Exception _exception = this.ExceptionFactory("ConfigurationRequestChangePost", localVarResponse);
+                Exception _exception = this.ExceptionFactory("SystemRequestChangePost", localVarResponse);
                 if (_exception != null) throw _exception;
             }
 
