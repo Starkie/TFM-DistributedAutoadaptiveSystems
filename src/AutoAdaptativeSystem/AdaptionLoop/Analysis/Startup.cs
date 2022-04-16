@@ -38,6 +38,8 @@ public class Startup
                 await bus.Subscribe<PropertyChangedIntegrationEvent>();
             });
 
+        services.AddAutoMapper(typeof(Startup));
+
         services.AddTelemetry(Configuration, AnalysisServiceConstants.AppName, "v1.0");
 
         services.AddScoped<IPropertyApi, PropertyApi>(_ =>
@@ -48,12 +50,12 @@ public class Startup
             return new PropertyApi(configuration.ServiceUri);
         });
 
-        services.AddScoped<IConfigurationApi, ConfigurationApi>(_ =>
+        services.AddScoped<IServiceApi, ServiceApi>(_ =>
         {
             var configuration =
                 Configuration.BindOptions<KnowledgeServiceConfiguration>(KnowledgeServiceConfiguration.ConfigurationPath);
 
-            return new ConfigurationApi(configuration.ServiceUri);
+            return new ServiceApi(configuration.ServiceUri);
         });
 
         services.AddSingleton<AnalysisServiceDiagnostics>();
