@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Planning.Contracts.IntegrationEvents;
 using Planning.Service.Configurations;
+using Serilog;
 
 public class Startup
 {
@@ -65,6 +66,8 @@ public class Startup
         {
             app.UseDeveloperExceptionPage();
         }
+
+        app.UseSerilogRequestLogging();
 
         app.UseSwagger();
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{PlanningServiceConstants.AppName} v1"));

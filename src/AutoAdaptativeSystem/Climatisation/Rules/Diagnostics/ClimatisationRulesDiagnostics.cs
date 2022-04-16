@@ -36,9 +36,9 @@ public class ClimatisationRulesDiagnostics
 
     private readonly ILogger _logger;
 
-    public ClimatisationRulesDiagnostics(ILoggerProvider loggerProvider)
+    public ClimatisationRulesDiagnostics(ILoggerFactory loggerFactory)
     {
-        _logger = loggerProvider.CreateLogger(ClimatisationRulesConstants.AppName);
+        _logger = loggerFactory.CreateLogger(ClimatisationRulesConstants.AppName);
 
         _activitySource = new ActivitySource(ClimatisationRulesConstants.AppName);
     }

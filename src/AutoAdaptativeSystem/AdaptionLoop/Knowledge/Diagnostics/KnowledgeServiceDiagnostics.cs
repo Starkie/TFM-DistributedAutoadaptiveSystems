@@ -1,7 +1,10 @@
 namespace Knowledge.Service.Diagnostics;
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Knowledge.Service.DTOs;
 using Knowledge.Service.DTOs.Configuration;
 using Microsoft.Extensions.Logging;
@@ -52,9 +55,9 @@ public class KnowledgeServiceDiagnostics
 
     private readonly ILogger _logger;
 
-    public KnowledgeServiceDiagnostics(ILoggerProvider loggerProvider)
+    public KnowledgeServiceDiagnostics(ILoggerFactory loggerFactory)
     {
-        _logger = loggerProvider.CreateLogger(KnowledgeServiceConstants.AppName);
+        _logger = loggerFactory.CreateLogger(KnowledgeServiceConstants.AppName);
 
         _activitySource = new ActivitySource(KnowledgeServiceConstants.AppName);
     }

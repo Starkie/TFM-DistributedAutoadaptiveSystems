@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
     <PackageReference Include="Serilog.Enrichers.Span" Version="2.0.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Serilog.Sinks.Grafana.Loki" Version="7.1.0" />
@@ -17,8 +18,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Core\Core.Bus\Core.Bus.csproj" />
     <ProjectReference Include="..\..\..\Core\Core.csproj" />
+    <ProjectReference Include="..\..\Analysis\Contracts\Analysis.Contracts.csproj" />
     <ProjectReference Include="..\..\Knowledge\ApiClient\Knowledge.Service.ApiClient\Knowledge.Service.ApiClient.csproj" />
     <ProjectReference Include="..\Planning.Contracts\Planning.Contracts.csproj" />
   </ItemGroup>
-  
+
 </Project>

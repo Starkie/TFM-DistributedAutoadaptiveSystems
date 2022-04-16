@@ -28,9 +28,9 @@ public class ClimatisationMonitorDiagnostics
 
     private readonly ILogger _logger;
 
-    public ClimatisationMonitorDiagnostics(ILoggerProvider loggerProvider)
+    public ClimatisationMonitorDiagnostics(ILoggerFactory loggerFactory)
     {
-        _logger = loggerProvider.CreateLogger(ClimatisationMonitorConstants.AppName);
+        _logger = loggerFactory.CreateLogger(ClimatisationMonitorConstants.AppName);
 
         _activitySource = new ActivitySource(ClimatisationMonitorConstants.AppName);
     }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Resources;
+using Serilog;
 
 public class Startup
 {
@@ -42,6 +43,8 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
 
+        app.UseSerilogRequestLogging();
+
         app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
         app.UseSwagger();
@@ -50,7 +53,6 @@ public class Startup
         app.UseRouting();
 
         app.UseAuthorization();
-
 
         app.UseEndpoints(endpoints =>
         {

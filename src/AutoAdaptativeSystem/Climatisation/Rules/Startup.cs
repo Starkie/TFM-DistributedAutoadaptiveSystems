@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 public class Startup
 {
@@ -46,6 +47,8 @@ public class Startup
         {
             app.UseDeveloperExceptionPage();
         }
+
+        app.UseSerilogRequestLogging();
 
         app.UseSwagger();
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Knowledge.Service v1"));

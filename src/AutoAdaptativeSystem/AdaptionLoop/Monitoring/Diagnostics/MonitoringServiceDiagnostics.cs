@@ -32,9 +32,9 @@ public class MonitoringServiceDiagnostics
 
     private readonly ILogger _logger;
 
-    public MonitoringServiceDiagnostics(ILoggerProvider loggerProvider)
+    public MonitoringServiceDiagnostics(ILoggerFactory loggerFactory)
     {
-        _logger = loggerProvider.CreateLogger(MonitoringServiceConstants.AppName);
+        _logger = loggerFactory.CreateLogger(MonitoringServiceConstants.AppName);
 
         _activitySource = new ActivitySource(MonitoringServiceConstants.AppName);
     }
