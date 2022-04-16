@@ -1,5 +1,6 @@
 namespace Planning.Service;
 
+using Analysis.Contracts.IntegrationEvents;
 using Planning.Service.Diagnostics;
 using Knowledge.Service.ApiClient.Api;
 using Microsoft.AspNetCore.Builder;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Planning.Contracts.IntegrationEvents;
 using Planning.Service.Configurations;
 using Serilog;
 
@@ -35,7 +35,7 @@ public class Startup
             this.GetType().Assembly,
             registerSubscriptions: async bus =>
             {
-                await bus.Subscribe<SystemChangeRequestIntegrationEvent>();
+                await bus.Subscribe<SystemConfigurationChangeRequestIntegrationEvent>();
             });
 
         services.AddTelemetry(Configuration, PlanningServiceConstants.AppName, "v1.0");
@@ -48,12 +48,12 @@ public class Startup
             return new PropertyApi(configuration.ServiceUri);
         });
 
-        services.AddScoped<IConfigurationApi, ConfigurationApi>(_ =>
+        services.AddScoped<IServiceApi, ServiceApi>(_ =>
         {
             var configuration =
                 Configuration.BindOptions<KnowledgeServiceConfiguration>(KnowledgeServiceConfiguration.ConfigurationPath);
 
-            return new ConfigurationApi(configuration.ServiceUri);
+            return new ServiceApi(configuration.ServiceUri);
         });
 
         services.AddSingleton<PlanningServiceDiagnostics>();
