@@ -38,12 +38,12 @@ public sealed class ServiceController : ControllerBase
     /// <param name="configurationName"> The name of the configuration property to find. </param>
     /// <returns> An IActionResult with result of the query. </returns>
     /// <response code="200"> The configuration property was found. Returns the value of the property. </response>
-    /// <response code="404"> The configuration property was not found. </response>
     /// <response code="400"> There was an error with the provided arguments. </response>
-    [HttpGet("{servicename}/configuration/{configurationName}")]
+    /// <response code="404"> The configuration property was not found. </response>
+    [HttpGet("{serviceName}/configuration/{configurationName}")]
     [ProducesResponseType(typeof(ConfigurationDTO), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GetConfigurationProperty([FromRoute]string serviceName, [FromRoute]string configurationName)
     {
         if (string.IsNullOrEmpty(configurationName))
@@ -65,30 +65,6 @@ public sealed class ServiceController : ControllerBase
         _diagnostics.LogConfigurationFound(configurationName, configurationDto);
 
         return Ok(configurationDto);
-    }
-
-    /// <summary>
-    ///    Requests a change in a configuration key of a given service. For example,
-    ///    could be used to set the target temperature of an AC system.
-    /// </summary>
-    /// <param name="configurationChangeRequestDto"> The DTO containing the request to change the property. </param>
-    /// <returns> An IActionResult with result of the command. </returns>
-    /// <response code="204"> The configuration property was updated or created successfully. </response>
-    /// <response code="400"> There was an error with the provided arguments. </response>
-    [HttpPost("configuration/request-change")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> RequestConfigurationChangeAsync([FromBody]ConfigurationChangeRequestDTO configurationChangeRequestDto)
-    {
-        var integrationEvent = new ConfigurationChangeRequestIntegrationEvent(
-            configurationChangeRequestDto.RequestedChanges.Select(cr =>  new ChangeRequest(cr.ServiceName, cr.PropertyName, cr.PropertyNewValue)),
-            configurationChangeRequestDto.Symptoms.Select(s => new Symptom(s.Name, s.Value)),
-            configurationChangeRequestDto.Timestamp
-        );
-
-        await _configurationChangeRequestIntegrationEventPublisher.PublishAsync(integrationEvent);
-
-        return NoContent();
     }
 
     private static ConfigurationDTO GetConfiguration(string serviceName, string configurationName)
