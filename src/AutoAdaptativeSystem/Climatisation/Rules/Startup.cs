@@ -35,6 +35,7 @@ public class Startup
 
         services.AddSingleton<ClimatisationRulesDiagnostics>();
 
+        services.AddScoped<IConfigurationService, ConfigurationService>();
         services.AddScoped<IPropertyService, PropertyService>();
 
         services.AddMediatR(typeof(Startup).Assembly);

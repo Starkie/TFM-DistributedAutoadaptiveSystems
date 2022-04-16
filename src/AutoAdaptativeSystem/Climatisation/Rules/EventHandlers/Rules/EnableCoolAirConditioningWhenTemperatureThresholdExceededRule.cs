@@ -7,40 +7,42 @@ using System.Threading.Tasks;
 using Analysis.Contracts.Attributes;
 using Analysis.Service.ApiClient.Api;
 using Analysis.Service.ApiClient.Model;
-using Analysis.Service.Contracts.IntegrationEvents;
 using Climatisation.Contacts;
 using Climatisation.Rules.Diagnostics;
 using Climatisation.Rules.Services;
 using Microsoft.Extensions.DependencyInjection;
 
+// TODO: Suscribirse a los cambios de configuración del sistema.
 [RuleKnowledgePropertyDependency(Temperature)]
 public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : RuleBase
 {
-
     private const string RuleName = nameof(EnableCoolAirConditioningWhenTemperatureThresholdExceededRule);
 
     private const string Temperature = "Temperature";
 
+    // TODO: Extract to constants of the Air Conditiniong service.
+    private const string AirConditioningServiceName = "airconditioning-service";
+
     private static readonly IEnumerable<string> propertyNames =
         typeof(EnableCoolAirConditioningWhenTemperatureThresholdExceededRule)
             .GetRulePropertyDependencies();
-    private readonly IConfigurationApi _configurationApi;
+
+    private readonly IConfigurationService _configurationService;
 
     private readonly IPropertyService _propertyService;
 
+    private readonly ISystemApi _systemApi;
+
     public EnableCoolAirConditioningWhenTemperatureThresholdExceededRule(
         ClimatisationRulesDiagnostics diagnostics,
-        IConfigurationApi configurationApi,
-        IPropertyService propertyService)
+        IConfigurationService configurationService,
+        IPropertyService propertyService,
+        ISystemApi systemApi)
         : base(diagnostics, RuleName, propertyNames)
     {
-        _configurationApi = configurationApi;
+        _configurationService = configurationService;
         _propertyService = propertyService;
-    }
-
-    public override Task Handle(PropertyChangedIntegrationEvent message)
-    {
-        throw new NotImplementedException();
+        _systemApi = systemApi;
     }
 
     protected override async Task<bool> EvaluateCondition()
@@ -52,18 +54,39 @@ public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : Rul
             return false;
         }
 
-        // TODO: Obtener la configuración del servicio.
-        // var isEnabled = await _configurationApi.ConfigurationConfigurationNameGetAsync("");
+        // TODO: Extraer los nombres de las propiedades a contratos.
+        var isEnabled = await _configurationService.GetConfigurationKey<bool?>(AirConditioningServiceName, "enabled", CancellationToken.None);
 
-        return currentTemperature.Value > 25.0;
+        var thresholdTemperature = await _configurationService.GetConfigurationKey<float?>(AirConditioningServiceName, "thresholdHotTemperature",  CancellationToken.None);
+        thresholdTemperature ??= 25.0f;
+
+        return isEnabled != true && currentTemperature.Value > thresholdTemperature;
     }
 
     protected override async Task Execute()
     {
-        var symptoms = new List<SymptomDTO> { new SymptomDTO("temperature-greater-than-target", "true") };
+        var changeRequests = new List<ServiceConfigurationDTO>
+        {
+            new()
+            {
+                ServiceName = AirConditioningServiceName,
+                IsActive = true,
+                ConfigurationProperties = new List<ConfigurationProperty>()
+                {
+                    new() { Name = "enabled", Value = "true" },
+                },
+            },
+        };
 
-        var changeRequests = new List<ChangeRequestDTO> { new ChangeRequestDTO("airconditioning-service", "enabled", "true") };
+        var symptoms = new List<SymptomDTO> { new("temperature-greater-than-target", "true") };
 
-        await _configurationApi.ConfigurationRequestChangePostAsync(new ConfigurationChangeRequestDTO(DateTime.Now, symptoms, changeRequests), CancellationToken.None);
+        var systemConfigurationChangeRequest = new SystemConfigurationChangeRequestDTO()
+        {
+            ServiceConfiguration = changeRequests,
+            Symptoms = symptoms,
+            Timestamp = DateTime.UtcNow,
+        };
+
+        await _systemApi.SystemRequestChangePostAsync(systemConfigurationChangeRequest, CancellationToken.None);
     }
 }

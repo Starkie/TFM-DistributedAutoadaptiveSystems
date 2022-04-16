@@ -44,12 +44,20 @@ public static class ServiceCollectionExtensions
             return new PropertyApi(apiConfiguration.ServiceUri);
         });
 
-        services.AddScoped<IConfigurationApi, ConfigurationApi>(_ =>
+        services.AddScoped<IServiceApi, ServiceApi>(_ =>
         {
             var apiConfiguration =
                 configuration.BindOptions<AnalysisServiceConfiguration>(AnalysisServiceConfiguration.ConfigurationPath);
 
-            return new ConfigurationApi(apiConfiguration.ServiceUri);
+            return new ServiceApi(apiConfiguration.ServiceUri);
+        });
+
+        services.AddScoped<ISystemApi, SystemApi>(_ =>
+        {
+            var apiConfiguration =
+                configuration.BindOptions<AnalysisServiceConfiguration>(AnalysisServiceConfiguration.ConfigurationPath);
+
+            return new SystemApi(apiConfiguration.ServiceUri);
         });
 
         return services;
