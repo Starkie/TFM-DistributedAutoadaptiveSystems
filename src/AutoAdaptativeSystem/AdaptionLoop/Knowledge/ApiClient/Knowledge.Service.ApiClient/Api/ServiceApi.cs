@@ -24,16 +24,17 @@ namespace Knowledge.Service.ApiClient.Api
     /// <summary>
     /// Represents a collection of functions to interact with the API endpoints
     /// </summary>
-    public interface IConfigurationApiSync : IApiAccessor
+    public interface IServiceApiSync : IApiAccessor
     {
         #region Synchronous Operations
         /// <summary>
         /// Gets a configuration property given its name.
         /// </summary>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="serviceName">The name of the service whose configuration we are looking for.</param>
         /// <param name="configurationName">The name of the configuration property to find.</param>
         /// <returns>ConfigurationDTO</returns>
-        ConfigurationDTO ConfigurationConfigurationNameGet(string configurationName);
+        ConfigurationDTO ServiceServiceNameConfigurationConfigurationNameGet(string serviceName, string configurationName);
 
         /// <summary>
         /// Gets a configuration property given its name.
@@ -42,34 +43,17 @@ namespace Knowledge.Service.ApiClient.Api
         /// 
         /// </remarks>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="serviceName">The name of the service whose configuration we are looking for.</param>
         /// <param name="configurationName">The name of the configuration property to find.</param>
         /// <returns>ApiResponse of ConfigurationDTO</returns>
-        ApiResponse<ConfigurationDTO> ConfigurationConfigurationNameGetWithHttpInfo(string configurationName);
-        /// <summary>
-        /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
-        /// </summary>
-        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="configurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
-        /// <returns></returns>
-        void ConfigurationRequestChangePost(ConfigurationChangeRequestDTO? configurationChangeRequestDTO = default(ConfigurationChangeRequestDTO?));
-
-        /// <summary>
-        /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
-        /// </summary>
-        /// <remarks>
-        /// 
-        /// </remarks>
-        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="configurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
-        /// <returns>ApiResponse of Object(void)</returns>
-        ApiResponse<Object> ConfigurationRequestChangePostWithHttpInfo(ConfigurationChangeRequestDTO? configurationChangeRequestDTO = default(ConfigurationChangeRequestDTO?));
+        ApiResponse<ConfigurationDTO> ServiceServiceNameConfigurationConfigurationNameGetWithHttpInfo(string serviceName, string configurationName);
         #endregion Synchronous Operations
     }
 
     /// <summary>
     /// Represents a collection of functions to interact with the API endpoints
     /// </summary>
-    public interface IConfigurationApiAsync : IApiAccessor
+    public interface IServiceApiAsync : IApiAccessor
     {
         #region Asynchronous Operations
         /// <summary>
@@ -79,10 +63,11 @@ namespace Knowledge.Service.ApiClient.Api
         /// 
         /// </remarks>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="serviceName">The name of the service whose configuration we are looking for.</param>
         /// <param name="configurationName">The name of the configuration property to find.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ConfigurationDTO</returns>
-        System.Threading.Tasks.Task<ConfigurationDTO> ConfigurationConfigurationNameGetAsync(string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ConfigurationDTO> ServiceServiceNameConfigurationConfigurationNameGetAsync(string serviceName, string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <summary>
         /// Gets a configuration property given its name.
@@ -91,40 +76,18 @@ namespace Knowledge.Service.ApiClient.Api
         /// 
         /// </remarks>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="serviceName">The name of the service whose configuration we are looking for.</param>
         /// <param name="configurationName">The name of the configuration property to find.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse (ConfigurationDTO)</returns>
-        System.Threading.Tasks.Task<ApiResponse<ConfigurationDTO>> ConfigurationConfigurationNameGetWithHttpInfoAsync(string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-        /// <summary>
-        /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
-        /// </summary>
-        /// <remarks>
-        /// 
-        /// </remarks>
-        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="configurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
-        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of void</returns>
-        System.Threading.Tasks.Task ConfigurationRequestChangePostAsync(ConfigurationChangeRequestDTO? configurationChangeRequestDTO = default(ConfigurationChangeRequestDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-
-        /// <summary>
-        /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
-        /// </summary>
-        /// <remarks>
-        /// 
-        /// </remarks>
-        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="configurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
-        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse</returns>
-        System.Threading.Tasks.Task<ApiResponse<Object>> ConfigurationRequestChangePostWithHttpInfoAsync(ConfigurationChangeRequestDTO? configurationChangeRequestDTO = default(ConfigurationChangeRequestDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ApiResponse<ConfigurationDTO>> ServiceServiceNameConfigurationConfigurationNameGetWithHttpInfoAsync(string serviceName, string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
         #endregion Asynchronous Operations
     }
 
     /// <summary>
     /// Represents a collection of functions to interact with the API endpoints
     /// </summary>
-    public interface IConfigurationApi : IConfigurationApiSync, IConfigurationApiAsync
+    public interface IServiceApi : IServiceApiSync, IServiceApiAsync
     {
 
     }
@@ -132,29 +95,29 @@ namespace Knowledge.Service.ApiClient.Api
     /// <summary>
     /// Represents a collection of functions to interact with the API endpoints
     /// </summary>
-    public partial class ConfigurationApi : IDisposable, IConfigurationApi
+    public partial class ServiceApi : IDisposable, IServiceApi
     {
         private Knowledge.Service.ApiClient.Client.ExceptionFactory _exceptionFactory = (name, response) => null;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationApi"/> class.
+        /// Initializes a new instance of the <see cref="ServiceApi"/> class.
         /// **IMPORTANT** This will also create an instance of HttpClient, which is less than ideal.
         /// It's better to reuse the <see href="https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests#issues-with-the-original-httpclient-class-available-in-net">HttpClient and HttpClientHandler</see>.
         /// </summary>
         /// <returns></returns>
-        public ConfigurationApi() : this((string)null)
+        public ServiceApi() : this((string)null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationApi"/> class.
+        /// Initializes a new instance of the <see cref="ServiceApi"/> class.
         /// **IMPORTANT** This will also create an instance of HttpClient, which is less than ideal.
         /// It's better to reuse the <see href="https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests#issues-with-the-original-httpclient-class-available-in-net">HttpClient and HttpClientHandler</see>.
         /// </summary>
         /// <param name="basePath">The target service's base path in URL format.</param>
         /// <exception cref="ArgumentException"></exception>
         /// <returns></returns>
-        public ConfigurationApi(string basePath)
+        public ServiceApi(string basePath)
         {
             this.Configuration = Knowledge.Service.ApiClient.Client.Configuration.MergeConfigurations(
                 Knowledge.Service.ApiClient.Client.GlobalConfiguration.Instance,
@@ -167,14 +130,14 @@ namespace Knowledge.Service.ApiClient.Api
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationApi"/> class using Configuration object.
+        /// Initializes a new instance of the <see cref="ServiceApi"/> class using Configuration object.
         /// **IMPORTANT** This will also create an instance of HttpClient, which is less than ideal.
         /// It's better to reuse the <see href="https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests#issues-with-the-original-httpclient-class-available-in-net">HttpClient and HttpClientHandler</see>.
         /// </summary>
         /// <param name="configuration">An instance of Configuration.</param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <returns></returns>
-        public ConfigurationApi(Knowledge.Service.ApiClient.Client.Configuration configuration)
+        public ServiceApi(Knowledge.Service.ApiClient.Client.Configuration configuration)
         {
             if (configuration == null) throw new ArgumentNullException("configuration");
 
@@ -189,7 +152,7 @@ namespace Knowledge.Service.ApiClient.Api
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationApi"/> class.
+        /// Initializes a new instance of the <see cref="ServiceApi"/> class.
         /// </summary>
         /// <param name="client">An instance of HttpClient.</param>
         /// <param name="handler">An optional instance of HttpClientHandler that is used by HttpClient.</param>
@@ -199,12 +162,12 @@ namespace Knowledge.Service.ApiClient.Api
         /// Some configuration settings will not be applied without passing an HttpClientHandler.
         /// The features affected are: Setting and Retrieving Cookies, Client Certificates, Proxy settings.
         /// </remarks>
-        public ConfigurationApi(HttpClient client, HttpClientHandler handler = null) : this(client, (string)null, handler)
+        public ServiceApi(HttpClient client, HttpClientHandler handler = null) : this(client, (string)null, handler)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationApi"/> class.
+        /// Initializes a new instance of the <see cref="ServiceApi"/> class.
         /// </summary>
         /// <param name="client">An instance of HttpClient.</param>
         /// <param name="basePath">The target service's base path in URL format.</param>
@@ -216,7 +179,7 @@ namespace Knowledge.Service.ApiClient.Api
         /// Some configuration settings will not be applied without passing an HttpClientHandler.
         /// The features affected are: Setting and Retrieving Cookies, Client Certificates, Proxy settings.
         /// </remarks>
-        public ConfigurationApi(HttpClient client, string basePath, HttpClientHandler handler = null)
+        public ServiceApi(HttpClient client, string basePath, HttpClientHandler handler = null)
         {
             if (client == null) throw new ArgumentNullException("client");
 
@@ -231,7 +194,7 @@ namespace Knowledge.Service.ApiClient.Api
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationApi"/> class using Configuration object.
+        /// Initializes a new instance of the <see cref="ServiceApi"/> class using Configuration object.
         /// </summary>
         /// <param name="client">An instance of HttpClient.</param>
         /// <param name="configuration">An instance of Configuration.</param>
@@ -242,7 +205,7 @@ namespace Knowledge.Service.ApiClient.Api
         /// Some configuration settings will not be applied without passing an HttpClientHandler.
         /// The features affected are: Setting and Retrieving Cookies, Client Certificates, Proxy settings.
         /// </remarks>
-        public ConfigurationApi(HttpClient client, Knowledge.Service.ApiClient.Client.Configuration configuration, HttpClientHandler handler = null)
+        public ServiceApi(HttpClient client, Knowledge.Service.ApiClient.Client.Configuration configuration, HttpClientHandler handler = null)
         {
             if (configuration == null) throw new ArgumentNullException("configuration");
             if (client == null) throw new ArgumentNullException("client");
@@ -258,14 +221,14 @@ namespace Knowledge.Service.ApiClient.Api
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationApi"/> class
+        /// Initializes a new instance of the <see cref="ServiceApi"/> class
         /// using a Configuration object and client instance.
         /// </summary>
         /// <param name="client">The client interface for synchronous API access.</param>
         /// <param name="asyncClient">The client interface for asynchronous API access.</param>
         /// <param name="configuration">The configuration object.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public ConfigurationApi(Knowledge.Service.ApiClient.Client.ISynchronousClient client, Knowledge.Service.ApiClient.Client.IAsynchronousClient asyncClient, Knowledge.Service.ApiClient.Client.IReadableConfiguration configuration)
+        public ServiceApi(Knowledge.Service.ApiClient.Client.ISynchronousClient client, Knowledge.Service.ApiClient.Client.IAsynchronousClient asyncClient, Knowledge.Service.ApiClient.Client.IReadableConfiguration configuration)
         {
             if (client == null) throw new ArgumentNullException("client");
             if (asyncClient == null) throw new ArgumentNullException("asyncClient");
@@ -335,11 +298,12 @@ namespace Knowledge.Service.ApiClient.Api
         /// Gets a configuration property given its name. 
         /// </summary>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="serviceName">The name of the service whose configuration we are looking for.</param>
         /// <param name="configurationName">The name of the configuration property to find.</param>
         /// <returns>ConfigurationDTO</returns>
-        public ConfigurationDTO ConfigurationConfigurationNameGet(string configurationName)
+        public ConfigurationDTO ServiceServiceNameConfigurationConfigurationNameGet(string serviceName, string configurationName)
         {
-            Knowledge.Service.ApiClient.Client.ApiResponse<ConfigurationDTO> localVarResponse = ConfigurationConfigurationNameGetWithHttpInfo(configurationName);
+            Knowledge.Service.ApiClient.Client.ApiResponse<ConfigurationDTO> localVarResponse = ServiceServiceNameConfigurationConfigurationNameGetWithHttpInfo(serviceName, configurationName);
             return localVarResponse.Data;
         }
 
@@ -347,13 +311,18 @@ namespace Knowledge.Service.ApiClient.Api
         /// Gets a configuration property given its name. 
         /// </summary>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="serviceName">The name of the service whose configuration we are looking for.</param>
         /// <param name="configurationName">The name of the configuration property to find.</param>
         /// <returns>ApiResponse of ConfigurationDTO</returns>
-        public Knowledge.Service.ApiClient.Client.ApiResponse<ConfigurationDTO> ConfigurationConfigurationNameGetWithHttpInfo(string configurationName)
+        public Knowledge.Service.ApiClient.Client.ApiResponse<ConfigurationDTO> ServiceServiceNameConfigurationConfigurationNameGetWithHttpInfo(string serviceName, string configurationName)
         {
+            // verify the required parameter 'serviceName' is set
+            if (serviceName == null)
+                throw new Knowledge.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'serviceName' when calling ServiceApi->ServiceServiceNameConfigurationConfigurationNameGet");
+
             // verify the required parameter 'configurationName' is set
             if (configurationName == null)
-                throw new Knowledge.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'configurationName' when calling ConfigurationApi->ConfigurationConfigurationNameGet");
+                throw new Knowledge.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'configurationName' when calling ServiceApi->ServiceServiceNameConfigurationConfigurationNameGet");
 
             Knowledge.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Knowledge.Service.ApiClient.Client.RequestOptions();
 
@@ -373,15 +342,16 @@ namespace Knowledge.Service.ApiClient.Api
             var localVarAccept = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
             if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
 
+            localVarRequestOptions.PathParameters.Add("serviceName", Knowledge.Service.ApiClient.Client.ClientUtils.ParameterToString(serviceName)); // path parameter
             localVarRequestOptions.PathParameters.Add("configurationName", Knowledge.Service.ApiClient.Client.ClientUtils.ParameterToString(configurationName)); // path parameter
 
 
             // make the HTTP request
-            var localVarResponse = this.Client.Get<ConfigurationDTO>("/Configuration/{configurationName}", localVarRequestOptions, this.Configuration);
+            var localVarResponse = this.Client.Get<ConfigurationDTO>("/Service/{serviceName}/configuration/{configurationName}", localVarRequestOptions, this.Configuration);
 
             if (this.ExceptionFactory != null)
             {
-                Exception _exception = this.ExceptionFactory("ConfigurationConfigurationNameGet", localVarResponse);
+                Exception _exception = this.ExceptionFactory("ServiceServiceNameConfigurationConfigurationNameGet", localVarResponse);
                 if (_exception != null) throw _exception;
             }
 
@@ -392,12 +362,13 @@ namespace Knowledge.Service.ApiClient.Api
         /// Gets a configuration property given its name. 
         /// </summary>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="serviceName">The name of the service whose configuration we are looking for.</param>
         /// <param name="configurationName">The name of the configuration property to find.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ConfigurationDTO</returns>
-        public async System.Threading.Tasks.Task<ConfigurationDTO> ConfigurationConfigurationNameGetAsync(string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<ConfigurationDTO> ServiceServiceNameConfigurationConfigurationNameGetAsync(string serviceName, string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            Knowledge.Service.ApiClient.Client.ApiResponse<ConfigurationDTO> localVarResponse = await ConfigurationConfigurationNameGetWithHttpInfoAsync(configurationName, cancellationToken).ConfigureAwait(false);
+            Knowledge.Service.ApiClient.Client.ApiResponse<ConfigurationDTO> localVarResponse = await ServiceServiceNameConfigurationConfigurationNameGetWithHttpInfoAsync(serviceName, configurationName, cancellationToken).ConfigureAwait(false);
             return localVarResponse.Data;
         }
 
@@ -405,14 +376,19 @@ namespace Knowledge.Service.ApiClient.Api
         /// Gets a configuration property given its name. 
         /// </summary>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="serviceName">The name of the service whose configuration we are looking for.</param>
         /// <param name="configurationName">The name of the configuration property to find.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse (ConfigurationDTO)</returns>
-        public async System.Threading.Tasks.Task<Knowledge.Service.ApiClient.Client.ApiResponse<ConfigurationDTO>> ConfigurationConfigurationNameGetWithHttpInfoAsync(string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<Knowledge.Service.ApiClient.Client.ApiResponse<ConfigurationDTO>> ServiceServiceNameConfigurationConfigurationNameGetWithHttpInfoAsync(string serviceName, string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            // verify the required parameter 'serviceName' is set
+            if (serviceName == null)
+                throw new Knowledge.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'serviceName' when calling ServiceApi->ServiceServiceNameConfigurationConfigurationNameGet");
+
             // verify the required parameter 'configurationName' is set
             if (configurationName == null)
-                throw new Knowledge.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'configurationName' when calling ConfigurationApi->ConfigurationConfigurationNameGet");
+                throw new Knowledge.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'configurationName' when calling ServiceApi->ServiceServiceNameConfigurationConfigurationNameGet");
 
 
             Knowledge.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Knowledge.Service.ApiClient.Client.RequestOptions();
@@ -434,131 +410,17 @@ namespace Knowledge.Service.ApiClient.Api
             var localVarAccept = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
             if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
 
+            localVarRequestOptions.PathParameters.Add("serviceName", Knowledge.Service.ApiClient.Client.ClientUtils.ParameterToString(serviceName)); // path parameter
             localVarRequestOptions.PathParameters.Add("configurationName", Knowledge.Service.ApiClient.Client.ClientUtils.ParameterToString(configurationName)); // path parameter
 
 
             // make the HTTP request
 
-            var localVarResponse = await this.AsynchronousClient.GetAsync<ConfigurationDTO>("/Configuration/{configurationName}", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+            var localVarResponse = await this.AsynchronousClient.GetAsync<ConfigurationDTO>("/Service/{serviceName}/configuration/{configurationName}", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
 
             if (this.ExceptionFactory != null)
             {
-                Exception _exception = this.ExceptionFactory("ConfigurationConfigurationNameGet", localVarResponse);
-                if (_exception != null) throw _exception;
-            }
-
-            return localVarResponse;
-        }
-
-        /// <summary>
-        /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system. 
-        /// </summary>
-        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="configurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
-        /// <returns></returns>
-        public void ConfigurationRequestChangePost(ConfigurationChangeRequestDTO? configurationChangeRequestDTO = default(ConfigurationChangeRequestDTO?))
-        {
-            ConfigurationRequestChangePostWithHttpInfo(configurationChangeRequestDTO);
-        }
-
-        /// <summary>
-        /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system. 
-        /// </summary>
-        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="configurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
-        /// <returns>ApiResponse of Object(void)</returns>
-        public Knowledge.Service.ApiClient.Client.ApiResponse<Object> ConfigurationRequestChangePostWithHttpInfo(ConfigurationChangeRequestDTO? configurationChangeRequestDTO = default(ConfigurationChangeRequestDTO?))
-        {
-            Knowledge.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Knowledge.Service.ApiClient.Client.RequestOptions();
-
-            string[] _contentTypes = new string[] {
-                "application/json",
-                "text/json",
-                "application/_*+json"
-            };
-
-            // to determine the Accept header
-            string[] _accepts = new string[] {
-                "text/plain",
-                "application/json",
-                "text/json"
-            };
-
-            var localVarContentType = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
-            if (localVarContentType != null) localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
-
-            var localVarAccept = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
-            if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
-
-            localVarRequestOptions.Data = configurationChangeRequestDTO;
-
-
-            // make the HTTP request
-            var localVarResponse = this.Client.Post<Object>("/Configuration/request-change", localVarRequestOptions, this.Configuration);
-
-            if (this.ExceptionFactory != null)
-            {
-                Exception _exception = this.ExceptionFactory("ConfigurationRequestChangePost", localVarResponse);
-                if (_exception != null) throw _exception;
-            }
-
-            return localVarResponse;
-        }
-
-        /// <summary>
-        /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system. 
-        /// </summary>
-        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="configurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
-        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of void</returns>
-        public async System.Threading.Tasks.Task ConfigurationRequestChangePostAsync(ConfigurationChangeRequestDTO? configurationChangeRequestDTO = default(ConfigurationChangeRequestDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
-        {
-            await ConfigurationRequestChangePostWithHttpInfoAsync(configurationChangeRequestDTO, cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system. 
-        /// </summary>
-        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="configurationChangeRequestDTO">The DTO containing the request to change the property. (optional)</param>
-        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse</returns>
-        public async System.Threading.Tasks.Task<Knowledge.Service.ApiClient.Client.ApiResponse<Object>> ConfigurationRequestChangePostWithHttpInfoAsync(ConfigurationChangeRequestDTO? configurationChangeRequestDTO = default(ConfigurationChangeRequestDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
-        {
-
-            Knowledge.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Knowledge.Service.ApiClient.Client.RequestOptions();
-
-            string[] _contentTypes = new string[] {
-                "application/json", 
-                "text/json", 
-                "application/_*+json"
-            };
-
-            // to determine the Accept header
-            string[] _accepts = new string[] {
-                "text/plain",
-                "application/json",
-                "text/json"
-            };
-
-
-            var localVarContentType = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
-            if (localVarContentType != null) localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
-
-            var localVarAccept = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
-            if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
-
-            localVarRequestOptions.Data = configurationChangeRequestDTO;
-
-
-            // make the HTTP request
-
-            var localVarResponse = await this.AsynchronousClient.PostAsync<Object>("/Configuration/request-change", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
-
-            if (this.ExceptionFactory != null)
-            {
-                Exception _exception = this.ExceptionFactory("ConfigurationRequestChangePost", localVarResponse);
+                Exception _exception = this.ExceptionFactory("ServiceServiceNameConfigurationConfigurationNameGet", localVarResponse);
                 if (_exception != null) throw _exception;
             }
 
