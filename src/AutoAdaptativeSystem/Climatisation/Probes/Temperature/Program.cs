@@ -34,5 +34,5 @@ while (true)
         Console.WriteLine(e);
     }
 
-    Thread.Sleep(TimeSpan.FromMinutes(1));
+    Thread.Sleep(TimeSpan.FromSeconds(15));
 }
