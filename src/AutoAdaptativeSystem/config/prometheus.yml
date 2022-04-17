@@ -1,0 +1,72 @@
+
+# my global config
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: "prometheus"
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: knowledge
+    static_configs:
+      - targets: ['knowledge:80']
+        labels:
+          host: localhost
+          source: Knowledge.Service
+
+  - job_name: monitoring
+    static_configs:
+      - targets: ['monitoring:80']
+        labels:
+          host: localhost
+          source: Monitoring.Service
+
+  - job_name: climatisation_monitor
+    static_configs:
+      - targets: ['climatisation_monitor:80']
+        labels:
+          host: localhost
+          source: Climatisation.Monitor.Service
+
+  - job_name: analysis
+    static_configs:
+      - targets: ['analysis:80']
+        labels:
+          host: localhost
+          source: Analysis.Service
+
+  - job_name: climatisation_rules
+    static_configs:
+      - targets: ['climatisation_rules:80']
+        labels:
+          host: localhost
+          source: Climatisation.Rules.Service
+
+  - job_name: planning
+    static_configs:
+      - targets: ['planning:80']
+        labels:
+          host: localhost
+          source: Planning.Service

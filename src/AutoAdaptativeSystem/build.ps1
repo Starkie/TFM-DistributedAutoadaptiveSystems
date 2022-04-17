@@ -49,7 +49,7 @@ $Projects = @(
     }
 )
 
-$PublishPath = Join-Path (Get-Location) "publish"
+$PublishPath = Join-Path ($PSScriptRoot) "publish"
 
 if (Test-Path $PublishPath)
 {
@@ -63,6 +63,15 @@ foreach ($project in $Projects) {
 }
 
 cp "docker-compose.yml" "$PublishPath/docker-compose.yml"
+
+$PrometheusConfigPath = "$HOME/.prometheus"
+
+if (-not (Test-Path $PrometheusConfigPath))
+{
+    New-Item -ItemType Directory $PrometheusConfigPath
+}
+
+cp (Join-Path $PSScriptRoot "config/prometheus.yml") "$PrometheusConfigPath/prometheus.yml"
 
 # Start the compose.
 docker-compose -f ./publish/docker-compose.yml up --build

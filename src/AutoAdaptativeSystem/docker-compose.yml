@@ -159,10 +159,24 @@ services:
       - adaption-loop-network
       - monitoring-network
 
+  prometheus:
+    image: "prom/prometheus:latest"
+    volumes:
+      - ~/.prometheus:/etc/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - knowledge-network
+      - monitoring-network
+      - adaption-loop-network
+      - planning-network
+
 networks:
   knowledge-network:
     driver: bridge
   analysis-network:
+    driver: bridge
+  planning-network:
     driver: bridge
   adaption-loop-network:
     driver: bridge
