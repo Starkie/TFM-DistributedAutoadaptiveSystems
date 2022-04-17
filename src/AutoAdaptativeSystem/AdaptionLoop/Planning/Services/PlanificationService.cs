@@ -4,26 +4,33 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Analysis.Contracts.IntegrationEvents;
 using Knowledge.Service.ApiClient.Services;
+using MediatR;
 using Planning.Contracts.IntegrationEvents;
 using Planning.Contracts.IntegrationEvents.AdaptionActions;
 using Planning.Service.Diagnostics;
 
 public class PlanificationService : IPlanificationService
 {
-    private readonly PlanningServiceDiagnostics _planningServiceDiagnostics;
+    private readonly PlanningServiceDiagnostics _diagnostics;
 
     private readonly IConfigurationService _configurationService;
 
+    private readonly IMediator _mediator;
+
     public PlanificationService(
-        PlanningServiceDiagnostics planningServiceDiagnostics,
-        IConfigurationService configurationService)
+        PlanningServiceDiagnostics diagnostics,
+        IConfigurationService configurationService,
+        IMediator mediator)
     {
-        _planningServiceDiagnostics = planningServiceDiagnostics;
+        _diagnostics = diagnostics;
         _configurationService = configurationService;
+        _mediator = mediator;
     }
 
     public async Task PlanNextConfiguration(SystemConfigurationChangeRequestIntegrationEvent systemConfigurationChangeRequestIntegrationEvent)
     {
+        using var activity = _diagnostics.DefininingChangePlan();
+
         var changePlan = new ConfigurationChangePlan();
 
         foreach (var request in systemConfigurationChangeRequestIntegrationEvent.ConfigurationRequests)
@@ -42,14 +49,17 @@ public class PlanificationService : IPlanificationService
 
         if (changePlan.Actions.Count == 0)
         {
-            _planningServiceDiagnostics.ChangePlanDiscarded();
+            _diagnostics.ChangePlanDiscarded();
 
             return;
         }
 
-        _planningServiceDiagnostics.ConfigurationChangePlanCreated(changePlan);
+        _diagnostics.ConfigurationChangePlanCreated(changePlan);
 
-        // TODO: Publish to the bus.
+        await _mediator.Publish(new ConfigurationChangePlanCreatedIntegrationEvent()
+        {
+            ChangePlan = changePlan,
+        });
     }
 
     private async Task<AdaptionAction> BuildDeploymentAction(SystemConfigurationRequest request)

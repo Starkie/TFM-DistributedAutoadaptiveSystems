@@ -10,4 +10,8 @@
       <ProjectReference Include="..\..\..\Core\Core.Bus\Contracts\Core.Bus.Contracts.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="MediatR.Contracts" Version="1.0.1" />
+    </ItemGroup>
+
 </Project>

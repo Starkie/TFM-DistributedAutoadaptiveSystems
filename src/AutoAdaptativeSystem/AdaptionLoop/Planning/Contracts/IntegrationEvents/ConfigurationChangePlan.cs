@@ -44,7 +44,7 @@ public class ConfigurationChangePlan
         }
 
         changePlanDescriptionBuilder.AppendLine(adaptionActionType + ":");
-    
+
         foreach (var action in actionsDescriptions)
         {
             changePlanDescriptionBuilder.AppendLine("\t" + action);

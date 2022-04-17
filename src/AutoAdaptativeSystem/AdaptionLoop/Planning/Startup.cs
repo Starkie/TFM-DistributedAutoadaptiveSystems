@@ -1,6 +1,7 @@
 namespace Planning.Service;
 
 using Analysis.Contracts.IntegrationEvents;
+using MediatR;
 using Planning.Service.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -38,6 +39,8 @@ public class Startup
             });
 
         services.AddTelemetry(Configuration, PlanningServiceConstants.AppName, "v1.0");
+
+        services.AddMediatR(this.GetType().Assembly);
 
         services.AddKnowledgeServices(Configuration);
 
