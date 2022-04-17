@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Monitoring.Service.Configurations;
 using Monitoring.Service.Diagnostics;
+using Prometheus;
 using Serilog;
 
 public class Startup
@@ -52,10 +53,16 @@ public class Startup
 
         app.UseSerilogRequestLogging();
 
+        app.UseMetricServer();
+
         app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Monitoring.Service v1"));
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{MonitoringServiceConstants.AppName} v1"));
 
         app.UseRouting();
+
+        app.UseHttpMetrics();
+
+        app.UseAuthentication();
 
         app.UseEndpoints(endpoints =>
         {

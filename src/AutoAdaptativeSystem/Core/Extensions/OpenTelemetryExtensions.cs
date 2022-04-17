@@ -46,15 +46,16 @@ public static class OpenTelemetryTracingExtensions
 
     public static IServiceCollection AddMetrics(this IServiceCollection services, IConfiguration configuration, ResourceBuilder resourceBuilder)
     {
-        services.AddOpenTelemetryMetrics(builder =>
-        {
-            builder.SetResourceBuilder(resourceBuilder)
-                .AddHttpClientInstrumentation()
-                // TODO: There are some Well-Known ASP.NET Core metrics: https://docs.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
-                // They are NOT supported yet. See the issue tracking this: https://github.com/open-telemetry/opentelemetry-dotnet-contrib/issues/215
-                .AddAspNetCoreInstrumentation()
-                .AddPrometheusExporter();
-        });
+        // TODO: When the metrics support is improved, use this configuration and remove the dependency with prometheus-net.
+        // services.AddOpenTelemetryMetrics(builder =>
+        // {
+        //     builder.SetResourceBuilder(resourceBuilder)
+        //         .AddHttpClientInstrumentation()
+        //         // TODO: There are some Well-Known ASP.NET Core metrics: https://docs.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
+        //         // They are NOT supported yet. See the issue tracking this: https://github.com/open-telemetry/opentelemetry-dotnet-contrib/issues/215
+        //         .AddAspNetCoreInstrumentation()
+        //         .AddPrometheusExporter();
+        // });
 
         return services;
     }

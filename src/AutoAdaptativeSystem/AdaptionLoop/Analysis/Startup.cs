@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Prometheus;
 using Serilog;
 
 public class Startup
@@ -71,10 +72,14 @@ public class Startup
 
         app.UseSerilogRequestLogging();
 
+        app.UseMetricServer();
+
         app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Knowledge.Service v1"));
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{AnalysisServiceConstants.AppName} v1"));
 
         app.UseRouting();
+
+        app.UseHttpMetrics();
 
         app.UseAuthorization();
 

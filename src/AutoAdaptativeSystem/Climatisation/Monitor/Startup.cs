@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Monitoring.Service.ApiClient.Api;
 using OpenTelemetry.Resources;
+using Prometheus;
 using Serilog;
 
 public class Startup
@@ -65,12 +66,16 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
 
-       app.UseSerilogRequestLogging();
+        app.UseSerilogRequestLogging();
+
+        app.UseMetricServer();
 
         app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "RoomMonitor v1"));
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{ClimatisationMonitorConstants.AppName} v1"));
 
         app.UseRouting();
+
+        app.UseHttpMetrics();
 
         app.UseAuthorization();
 
