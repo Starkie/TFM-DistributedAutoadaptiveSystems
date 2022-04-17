@@ -2,8 +2,10 @@ namespace Climatisation.Rules.Diagnostics;
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using Analysis.Service.Contracts.IntegrationEvents;
 using Microsoft.Extensions.Logging;
+using Prometheus;
 
 public class ClimatisationRulesDiagnostics
 {
@@ -36,11 +38,18 @@ public class ClimatisationRulesDiagnostics
 
     private readonly ILogger _logger;
 
+    private readonly Counter _evaluatedRulesCounter;
+
+    private readonly Counter _executedRulesCounter;
+
     public ClimatisationRulesDiagnostics(ILoggerFactory loggerFactory)
     {
         _logger = loggerFactory.CreateLogger(ClimatisationRulesConstants.AppName);
 
         _activitySource = new ActivitySource(ClimatisationRulesConstants.AppName);
+
+        _evaluatedRulesCounter = Metrics.CreateCounter("evaluated_rules", "The number of evaluated rules until now since service startup.");
+        _executedRulesCounter = Metrics.CreateCounter("executed_rules", "The number of executed rules until now since service startup.");
     }
 
     public Activity PropertyChangeEventReceived(PropertyChangedIntegrationEvent propertyChangedIntegrationEvent)
@@ -54,12 +63,16 @@ public class ClimatisationRulesDiagnostics
     {
         LogRuleEvaluation(_logger, ruleName, null);
 
+        _evaluatedRulesCounter.Inc();
+
         return _activitySource.StartActivity($"Evaluating rule: {ruleName}");
     }
 
     public Activity ExecutingRule(string ruleName)
     {
         LogRuleExecution(_logger, ruleName, null);
+
+        _executedRulesCounter.Inc();
 
         return _activitySource.StartActivity($"Executing rule: {ruleName}");
     }
