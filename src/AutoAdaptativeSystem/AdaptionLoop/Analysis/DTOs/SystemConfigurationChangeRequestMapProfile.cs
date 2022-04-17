@@ -7,7 +7,8 @@ public class SystemConfigurationChangeRequestMapProfile : Profile
 {
     public SystemConfigurationChangeRequestMapProfile()
     {
-        CreateMap<SystemConfigurationChangeRequestDTO, SystemConfigurationChangeRequestIntegrationEvent>();
+        CreateMap<SystemConfigurationChangeRequestDTO, SystemConfigurationChangeRequestIntegrationEvent>()
+            .ForMember(dst => dst.ConfigurationRequests, opts => opts.MapFrom(src => src.ServiceConfiguration));
 
         CreateMap<ServiceConfigurationDTO, SystemConfigurationRequest>();
 
