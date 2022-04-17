@@ -12,7 +12,7 @@ public class PlanningServiceDiagnostics
         LoggerMessage.Define<SystemConfigurationChangeRequestIntegrationEvent>(
             LogLevel.Information,
             PlanningServiceEventIds.SystemConfigurationChangeRequestEventId,
-            "System change request received: @{systemChangeRequest}");
+            "System change request received: {@SystemChangeRequest}");
 
     private static readonly Action<ILogger, Exception> LogDefiningChangePlanMessage =
         LoggerMessage.Define(
@@ -45,11 +45,9 @@ public class PlanningServiceDiagnostics
         _activitySource = new ActivitySource(PlanningServiceConstants.AppName);
     }
 
-    public Activity SystemConfigurationChangeRequestReceived(SystemConfigurationChangeRequestIntegrationEvent message)
+    public void SystemConfigurationChangeRequestReceived(SystemConfigurationChangeRequestIntegrationEvent message)
     {
         LogSystemChangeRequestReceivedMessage(_logger, message, null);
-
-        return _activitySource.StartActivity("System configuration change request received");
     }
 
     public Activity DefininingChangePlan()
