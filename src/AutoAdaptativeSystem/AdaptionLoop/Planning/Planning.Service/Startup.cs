@@ -2,13 +2,12 @@ namespace Planning.Service;
 
 using Analysis.Contracts.IntegrationEvents;
 using Planning.Service.Diagnostics;
-using Knowledge.Service.ApiClient.Api;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Planning.Service.Configurations;
+using Planning.Service.Services;
 using Serilog;
 
 public class Startup
@@ -40,23 +39,11 @@ public class Startup
 
         services.AddTelemetry(Configuration, PlanningServiceConstants.AppName, "v1.0");
 
-        services.AddScoped<IPropertyApi, PropertyApi>(_ =>
-        {
-            var configuration =
-                Configuration.BindOptions<KnowledgeServiceConfiguration>(KnowledgeServiceConfiguration.ConfigurationPath);
-
-            return new PropertyApi(configuration.ServiceUri);
-        });
-
-        services.AddScoped<IServiceApi, ServiceApi>(_ =>
-        {
-            var configuration =
-                Configuration.BindOptions<KnowledgeServiceConfiguration>(KnowledgeServiceConfiguration.ConfigurationPath);
-
-            return new ServiceApi(configuration.ServiceUri);
-        });
+        services.AddKnowledgeServices(Configuration);
 
         services.AddSingleton<PlanningServiceDiagnostics>();
+
+        services.AddScoped<IPlanificationService, PlanificationService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

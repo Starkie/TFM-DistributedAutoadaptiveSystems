@@ -30,5 +30,6 @@
         "JAEGER__HOST": "localhost",
         "JAEGER__PORT": "6831"
       }
+    }
   }
 }

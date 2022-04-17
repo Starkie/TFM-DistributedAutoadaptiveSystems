@@ -1,26 +1,32 @@
 namespace Planning.Service.EventHandlers;
 
+using System.Threading;
 using System.Threading.Tasks;
 using Analysis.Contracts.IntegrationEvents;
 using Core.Bus.Handlers;
 using Planning.Service.Diagnostics;
+using Planning.Service.Services;
 using Rebus.Bus;
 
-public class SystemConfigurationChangeRequestIntegrationEventHandler : IntegrationEventHandler<SystemConfigurationChangeRequestIntegrationEvent>
+public class SystemConfigurationChangeRequestIntegrationEventHandler
+    : IntegrationEventHandler<SystemConfigurationChangeRequestIntegrationEvent>
 {
     private readonly PlanningServiceDiagnostics _diagnostics;
 
-    private readonly IBus _bus;
+    private readonly IPlanificationService _planificationService;
 
-    public SystemConfigurationChangeRequestIntegrationEventHandler(PlanningServiceDiagnostics diagnostics, IBus bus)
+    public SystemConfigurationChangeRequestIntegrationEventHandler(
+        PlanningServiceDiagnostics diagnostics,
+        IPlanificationService planificationService)
     {
         _diagnostics = diagnostics;
-
-        _bus = bus;
+        _planificationService = planificationService;
     }
 
     public override async Task Handle(SystemConfigurationChangeRequestIntegrationEvent message)
     {
-        using var activity = _diagnostics.SystemConfigurationChangeRequestReceived(message);
+        _diagnostics.SystemConfigurationChangeRequestReceived(message);
+
+        await _planificationService.PlanNextConfiguration(message);
     }
 }
