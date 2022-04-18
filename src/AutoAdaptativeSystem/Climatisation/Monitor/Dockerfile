@@ -14,4 +14,4 @@ ENV JAEGER__HOST "${JAEGER_HOST}"
 ENV JAEGER__PORT "${JAEGER_PORT}"
 ENV MONITORINGSERVICE__SERVICEURI "${MONITORINGSERVICE_SERVICEURI}"
 
-ENTRYPOINT [ "dotnet", "Climatisation.Monitor.dll" ]
+ENTRYPOINT [ "dotnet", "Climatisation.Monitor.Service.dll" ]

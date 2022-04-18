@@ -1,10 +1,10 @@
-namespace Climatisation.Rules.Services;
+namespace Climatisation.Rules.Service.Services;
 
 using System.Threading;
 using System.Threading.Tasks;
 using Analysis.Service.ApiClient.Api;
 using Analysis.Service.ApiClient.Client;
-using Climatisation.Rules.Diagnostics;
+using Climatisation.Rules.Service.Diagnostics;
 using Newtonsoft.Json;
 
 public class ConfigurationService : IConfigurationService

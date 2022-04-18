@@ -1,8 +1,7 @@
-namespace Climatisation.Rules.Diagnostics;
+namespace Climatisation.Rules.Service.Diagnostics;
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.Metrics;
 using Analysis.Service.Contracts.IntegrationEvents;
 using Microsoft.Extensions.Logging;
 using Prometheus;

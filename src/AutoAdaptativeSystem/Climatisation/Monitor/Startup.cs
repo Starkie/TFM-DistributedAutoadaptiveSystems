@@ -1,7 +1,8 @@
-namespace Climatisation.Monitor;
+namespace Climatisation.Monitor.Service;
 
 using System.Text.Json.Serialization;
-using Climatisation.Monitor.Configurations;
+using Climatisation.Monitor.Service.Configurations;
+using Climatisation.Monitor.Service.Diagnostics;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

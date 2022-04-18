@@ -1,4 +1,4 @@
-# Climatisation.Monitor.ApiClient.Model.HumidityUnit
+# Climatisation.Monitor.Service.ApiClient.Model.HumidityUnit
 
 ## Properties
 

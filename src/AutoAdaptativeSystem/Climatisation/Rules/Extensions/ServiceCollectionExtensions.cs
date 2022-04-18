@@ -7,7 +7,7 @@ using System.Reflection;
 using Analysis.Contracts.Attributes;
 using Analysis.Service.ApiClient.Api;
 using AnalysisService.Configurations;
-using Climatisation.Rules.EventHandlers.Rules;
+using Climatisation.Rules.Service.EventHandlers.Rules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -1,4 +1,4 @@
-namespace Climatisation.Rules.Events;
+namespace Climatisation.Rules.Service.Events;
 
 using MediatR;
 

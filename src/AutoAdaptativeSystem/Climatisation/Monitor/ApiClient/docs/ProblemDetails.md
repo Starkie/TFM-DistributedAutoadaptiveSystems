@@ -1,4 +1,4 @@
-# Climatisation.Monitor.ApiClient.Model.ProblemDetails
+# Climatisation.Monitor.Service.ApiClient.Model.ProblemDetails
 
 ## Properties
 

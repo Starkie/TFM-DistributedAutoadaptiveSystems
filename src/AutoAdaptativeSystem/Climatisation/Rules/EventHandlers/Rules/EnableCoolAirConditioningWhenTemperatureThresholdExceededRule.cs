@@ -1,4 +1,4 @@
-namespace Climatisation.Rules.EventHandlers.Rules;
+namespace Climatisation.Rules.Service.EventHandlers.Rules;
 
 using System;
 using System.Collections.Generic;
@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Analysis.Contracts.Attributes;
 using Analysis.Service.ApiClient.Api;
 using Analysis.Service.ApiClient.Model;
-using Climatisation.Contacts;
-using Climatisation.Rules.Diagnostics;
-using Climatisation.Rules.Services;
+using Climatisation.Contracts;
+using Climatisation.Rules.Service.Diagnostics;
+using Climatisation.Rules.Service.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 // TODO: Suscribirse a los cambios de configuración del sistema.

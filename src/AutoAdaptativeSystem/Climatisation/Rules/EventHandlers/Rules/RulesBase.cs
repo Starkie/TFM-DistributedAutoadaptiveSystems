@@ -1,16 +1,13 @@
-namespace Climatisation.Rules.EventHandlers.Rules;
+namespace Climatisation.Rules.Service.EventHandlers.Rules;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Analysis.Contracts.Attributes;
 using Analysis.Service.Contracts.IntegrationEvents;
-using Climatisation.Rules.Diagnostics;
-using Climatisation.Rules.Events;
+using Climatisation.Rules.Service.Diagnostics;
 using Core.Bus.Handlers;
-using MediatR;
 
 [RuleKnowledgePropertyDependency]
 public abstract class RuleBase : IntegrationEventHandler<PropertyChangedIntegrationEvent>

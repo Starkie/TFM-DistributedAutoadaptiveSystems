@@ -1,4 +1,4 @@
-namespace Climatisation.Rules;
+namespace Climatisation.Rules.Service;
 
 using System;
 using Microsoft.AspNetCore.Hosting;

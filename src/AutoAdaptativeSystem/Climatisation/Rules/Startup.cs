@@ -1,7 +1,7 @@
-namespace Climatisation.Rules;
+namespace Climatisation.Rules.Service;
 
-using Climatisation.Rules.Diagnostics;
-using Climatisation.Rules.Services;
+using Climatisation.Rules.Service.Diagnostics;
+using Climatisation.Rules.Service.Services;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

@@ -1,9 +1,10 @@
-namespace Climatisation.Monitor.Commands.Temperature;
+namespace Climatisation.Monitor.Service.Commands.Temperature;
 
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Climatisation.Contacts;
+using Climatisation.Contracts;
+using Climatisation.Monitor.Service.Diagnostics;
 using MediatR;
 using Monitoring.Service.ApiClient.Api;
 using Monitoring.Service.ApiClient.Client;
@@ -12,12 +13,12 @@ using Newtonsoft.Json;
 
 public class RegisterTemperatureCommandHandler : IRequestHandler<TemperatureMeasurementDTO>
 {
-
     private readonly IMonitorApi _monitorApi;
 
     private readonly IPropertyApi _propertyApi;
 
     private readonly ClimatisationMonitorDiagnostics _climatisationMonitorDiagnostics;
+
     private string TemperaturePropertyName = "Temperature";
 
     public RegisterTemperatureCommandHandler(IMonitorApi monitorApi, IPropertyApi propertyApi, ClimatisationMonitorDiagnostics climatisationMonitorDiagnostics)
