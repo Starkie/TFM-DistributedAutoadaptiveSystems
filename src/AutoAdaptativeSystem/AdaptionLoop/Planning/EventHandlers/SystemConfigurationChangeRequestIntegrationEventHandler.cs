@@ -9,7 +9,7 @@ using Planning.Service.Services;
 using Rebus.Bus;
 
 public class SystemConfigurationChangeRequestIntegrationEventHandler
-    : IntegrationEventHandler<SystemConfigurationChangeRequestIntegrationEvent>
+    : IIntegrationEventHandler<SystemConfigurationChangeRequestIntegrationEvent>
 {
     private readonly PlanningServiceDiagnostics _diagnostics;
 
@@ -23,7 +23,7 @@ public class SystemConfigurationChangeRequestIntegrationEventHandler
         _planificationService = planificationService;
     }
 
-    public override async Task Handle(SystemConfigurationChangeRequestIntegrationEvent message)
+    public async Task Handle(SystemConfigurationChangeRequestIntegrationEvent message)
     {
         _diagnostics.SystemConfigurationChangeRequestReceived(message);
 

@@ -6,7 +6,7 @@ using Core.Bus.Handlers;
 using Knowledge.Contracts.IntegrationEvents;
 using Rebus.Bus;
 
-public class ConfigurationChangedIntegrationEventHandler : IntegrationEventHandler<ConfigurationChangedIntegrationEvent>
+public class ConfigurationChangedIntegrationEventHandler : IIntegrationEventHandler<ConfigurationChangedIntegrationEvent>
 {
     private readonly AnalysisServiceDiagnostics _analysisServiceDiagnostics;
 
@@ -19,7 +19,7 @@ public class ConfigurationChangedIntegrationEventHandler : IntegrationEventHandl
         _bus = bus;
     }
 
-    public override async Task Handle(ConfigurationChangedIntegrationEvent message)
+    public async Task Handle(ConfigurationChangedIntegrationEvent message)
     {
         using var activity = _analysisServiceDiagnostics.ConfigurationChangedEventReceived(message);
 
