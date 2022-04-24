@@ -67,12 +67,12 @@ public class PlanificationService : IPlanificationService
         var isDeployed =
             await _configurationService.GetConfigurationKey<bool?>(request.ServiceName, "deployed");
 
-        if (isDeployed == request.IsActive)
+        if (isDeployed == request.IsDeployed)
         {
             return null;
         }
 
-        var deploymentAction = request.IsActive switch
+        var deploymentAction = request.IsDeployed switch
         {
             true => AdaptionActionType.Deploy,
             false => AdaptionActionType.Undeploy,

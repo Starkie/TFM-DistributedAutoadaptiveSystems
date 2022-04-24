@@ -36,13 +36,13 @@ namespace Analysis.Service.ApiClient.Model
         /// Initializes a new instance of the <see cref="ServiceConfigurationDTO" /> class.
         /// </summary>
         /// <param name="serviceName">serviceName.</param>
-        /// <param name="isActive">isActive.</param>
+        /// <param name="isDeployed">isActive.</param>
         /// <param name="configurationProperties">configurationProperties.</param>
         /// <param name="bindings">bindings.</param>
-        public ServiceConfigurationDTO(string serviceName = default(string), bool isActive = default(bool), List<ConfigurationProperty> configurationProperties = default(List<ConfigurationProperty>), List<BindingConfiguration> bindings = default(List<BindingConfiguration>))
+        public ServiceConfigurationDTO(string serviceName = default(string), bool isDeployed = default(bool), List<ConfigurationProperty> configurationProperties = default(List<ConfigurationProperty>), List<BindingConfiguration> bindings = default(List<BindingConfiguration>))
         {
             this.ServiceName = serviceName;
-            this.IsActive = isActive;
+            this.IsDeployed = isDeployed;
             this.ConfigurationProperties = configurationProperties;
             this.Bindings = bindings;
         }
@@ -54,10 +54,10 @@ namespace Analysis.Service.ApiClient.Model
         public string ServiceName { get; set; }
 
         /// <summary>
-        /// Gets or Sets IsActive
+        /// Gets or Sets IsDeployed
         /// </summary>
-        [DataMember(Name = "isActive", EmitDefaultValue = true)]
-        public bool IsActive { get; set; }
+        [DataMember(Name = "isDeployed", EmitDefaultValue = true)]
+        public bool IsDeployed { get; set; }
 
         /// <summary>
         /// Gets or Sets ConfigurationProperties
@@ -80,7 +80,7 @@ namespace Analysis.Service.ApiClient.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class ServiceConfigurationDTO {\n");
             sb.Append("  ServiceName: ").Append(ServiceName).Append("\n");
-            sb.Append("  IsActive: ").Append(IsActive).Append("\n");
+            sb.Append("  IsActive: ").Append(IsDeployed).Append("\n");
             sb.Append("  ConfigurationProperties: ").Append(ConfigurationProperties).Append("\n");
             sb.Append("  Bindings: ").Append(Bindings).Append("\n");
             sb.Append("}\n");
@@ -117,22 +117,22 @@ namespace Analysis.Service.ApiClient.Model
             {
                 return false;
             }
-            return 
+            return
                 (
                     this.ServiceName == input.ServiceName ||
                     (this.ServiceName != null &&
                     this.ServiceName.Equals(input.ServiceName))
-                ) && 
+                ) &&
                 (
-                    this.IsActive == input.IsActive ||
-                    this.IsActive.Equals(input.IsActive)
-                ) && 
+                    this.IsDeployed == input.IsDeployed ||
+                    this.IsDeployed.Equals(input.IsDeployed)
+                ) &&
                 (
                     this.ConfigurationProperties == input.ConfigurationProperties ||
                     this.ConfigurationProperties != null &&
                     input.ConfigurationProperties != null &&
                     this.ConfigurationProperties.SequenceEqual(input.ConfigurationProperties)
-                ) && 
+                ) &&
                 (
                     this.Bindings == input.Bindings ||
                     this.Bindings != null &&
@@ -154,7 +154,7 @@ namespace Analysis.Service.ApiClient.Model
                 {
                     hashCode = (hashCode * 59) + this.ServiceName.GetHashCode();
                 }
-                hashCode = (hashCode * 59) + this.IsActive.GetHashCode();
+                hashCode = (hashCode * 59) + this.IsDeployed.GetHashCode();
                 if (this.ConfigurationProperties != null)
                 {
                     hashCode = (hashCode * 59) + this.ConfigurationProperties.GetHashCode();
