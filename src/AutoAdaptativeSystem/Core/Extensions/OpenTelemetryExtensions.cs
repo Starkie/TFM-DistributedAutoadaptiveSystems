@@ -25,6 +25,7 @@ public static class OpenTelemetryTracingExtensions
 
     public static IServiceCollection AddTracing(this IServiceCollection services, IConfiguration configuration, ResourceBuilder resourceBuilder, string serviceName)
     {
+        // TODO: Exclude the /metrics EP from the tracing.
         services.AddOpenTelemetryTracing(builder =>
         {
             builder.SetResourceBuilder(resourceBuilder)
