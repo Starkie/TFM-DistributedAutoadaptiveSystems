@@ -10,35 +10,59 @@ using Climatisation.Rules.Service.Diagnostics;
 using Core.Bus.Handlers;
 
 [RuleKnowledgePropertyDependency]
-public abstract class RuleBase : IntegrationEventHandler<PropertyChangedIntegrationEvent>
+public abstract class RuleBase
+    : IIntegrationEventHandler<PropertyChangedIntegrationEvent>,
+    IIntegrationEventHandler<ConfigurationChangedIntegrationEvent>
 {
     private readonly ClimatisationRulesDiagnostics _diagnostics;
 
     private readonly string _ruleName;
 
-    private readonly IEnumerable<string> _propertyNames;
+    private readonly IEnumerable<string> _subscribedPropertyNames;
 
-    protected RuleBase(ClimatisationRulesDiagnostics diagnostics, string ruleName, IEnumerable<string> propertyNames)
+    private readonly IDictionary<string, IEnumerable<string>> _subscribedConfigurationNames;
+
+    protected RuleBase(
+        ClimatisationRulesDiagnostics diagnostics,
+        string ruleName,
+        IEnumerable<string> subscribedPropertyNames,
+        IDictionary<string, IEnumerable<string>> subscribedConfigurationNames)
     {
         _diagnostics = diagnostics;
         _ruleName = ruleName;
-        _propertyNames = propertyNames;
+        _subscribedPropertyNames = subscribedPropertyNames;
+        _subscribedConfigurationNames = subscribedConfigurationNames;
     }
 
-    public override async Task Handle(PropertyChangedIntegrationEvent request)
+    public async Task Handle(PropertyChangedIntegrationEvent request)
     {
         if (!IsSubscribedToProperty(request))
         {
             return;
         }
 
+        await Handle();
+    }
+
+    public async Task Handle(ConfigurationChangedIntegrationEvent message)
+    {
+        if (!IsSubscribedToConfiguration(message))
+        {
+            return;
+        }
+
+        await Handle();
+    }
+
+    private async Task Handle()
+    {
         try
         {
-            using var activity = _diagnostics.EvaluatingRule(_ruleName);
+            using var evaluatingRuleActivity = _diagnostics.EvaluatingRule(_ruleName);
 
             if (await EvaluateCondition())
             {
-                using var activity2 = _diagnostics.ExecutingRule(_ruleName);
+                using var executingRuleActivity = _diagnostics.ExecutingRule(_ruleName);
 
                 await Execute();
             }
@@ -57,6 +81,13 @@ public abstract class RuleBase : IntegrationEventHandler<PropertyChangedIntegrat
 
     private bool IsSubscribedToProperty(PropertyChangedIntegrationEvent request)
     {
-        return _propertyNames.Contains(request.PropertyName, StringComparer.OrdinalIgnoreCase);
+        return _subscribedPropertyNames.Contains(request.PropertyName, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private bool IsSubscribedToConfiguration(ConfigurationChangedIntegrationEvent request)
+    {
+        bool subscribedToService = _subscribedConfigurationNames.TryGetValue(request.ServiceName, out IEnumerable<string> keys);
+
+        return subscribedToService && keys.Contains(request.PropertyName, StringComparer.OrdinalIgnoreCase);
     }
 }

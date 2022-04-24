@@ -35,6 +35,10 @@ public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : Rul
         typeof(EnableCoolAirConditioningWhenTemperatureThresholdExceededRule)
             .GetRulePropertyDependencies();
 
+    private static readonly IDictionary<string, IEnumerable<string>> configurationNames =
+        typeof(EnableCoolAirConditioningWhenTemperatureThresholdExceededRule)
+            .GetRuleConfigurationDependencies();
+
     private readonly IConfigurationService _configurationService;
 
     private readonly IPropertyService _propertyService;
@@ -46,7 +50,7 @@ public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : Rul
         IConfigurationService configurationService,
         IPropertyService propertyService,
         ISystemApi systemApi)
-        : base(diagnostics, RuleName, propertyNames)
+        : base(diagnostics, RuleName, propertyNames, configurationNames)
     {
         _configurationService = configurationService;
         _propertyService = propertyService;

@@ -20,24 +20,7 @@ public static class ServiceCollectionExtensions
             rulesAssembly,
             registerSubscriptions: async bus =>
             {
-                var ruleTypes = rulesAssembly.GetTypes()
-                    .Where(t => t.IsAssignableTo(typeof(RuleBase)));
-
-                var subscriptions = new List<string>();
-
-                var propertyNames = ruleTypes
-                    .Select(GetRulePropertyDependencies)
-                    .SelectMany(p => p)
-                    .Distinct();
-
-                subscriptions.AddRange(propertyNames);
-
-                var configurationKeys = ruleTypes
-                    .Select(GetRuleConfigurationDependencies)
-                    .SelectMany(c => c)
-                    .Distinct();
-
-                subscriptions.AddRange(configurationKeys);
+                var subscriptions = GetRulesBusTopicNames(rulesAssembly);
 
                 foreach (var subscription in subscriptions)
                 {
@@ -79,13 +62,48 @@ public static class ServiceCollectionExtensions
         return attribute?.PropertyNames ?? Enumerable.Empty<string>();
     }
 
-    public static IEnumerable<string> GetRuleConfigurationDependencies(this Type t)
+    public static IDictionary<string, IEnumerable<string>> GetRuleConfigurationDependencies(this Type t)
     {
-        var attribute = t.GetCustomAttribute(typeof(RuleKnowledgeConfigurationDependencyAttribute)) as RuleKnowledgeConfigurationDependencyAttribute;
+        var attributes = t.GetCustomAttributes<RuleKnowledgeConfigurationDependencyAttribute>();
 
-        var configurationKeys = attribute?.ConfigurationKeys
-            .Select(ck => attribute.ServiceName + "." + ck);
+        var configurationKeys = new Dictionary<string, IEnumerable<string>>();
 
-        return configurationKeys ?? Enumerable.Empty<string>();
+        foreach (var attribute in attributes)
+        {
+            configurationKeys[attribute.ServiceName] = attribute.ConfigurationKeys;
+        }
+
+        return configurationKeys;
+    }
+
+    private static IEnumerable<string> GetRulesBusTopicNames(Assembly rulesAssembly)
+    {
+        var ruleTypes = rulesAssembly.GetTypes()
+            .Where(t => t.IsAssignableTo(typeof(RuleBase)));
+
+        var subscriptions = new List<string>();
+
+        var propertyNames = ruleTypes
+            .Select(GetRulePropertyDependencies)
+            .SelectMany(p => p)
+            .Distinct();
+
+        subscriptions.AddRange(propertyNames);
+
+        var configurationKeys = ruleTypes
+            .Select(GetRuleConfigurationDependencies)
+            .SelectMany(GetConfigurationServiceNames)
+            .Distinct();
+
+        subscriptions.AddRange(configurationKeys);
+
+        return subscriptions;
+    }
+
+    private static IEnumerable<string> GetConfigurationServiceNames(IDictionary<string, IEnumerable<string>> configurationKeys)
+    {
+        return configurationKeys
+            .SelectMany(kvp =>
+                kvp.Value.Select(v => kvp.Key + "." + kvp.Value));
     }
 }
