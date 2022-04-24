@@ -49,6 +49,11 @@ public class KnowledgeServiceDiagnostics
         KnowledgeServiceEventIds.ConfigurationNotFoundEventId,
         "Configuration '{ConfigurationName}' not found.");
 
+    private static readonly Action<ILogger, string, string, SetPropertyDTO, Exception> LogSetConfigurationMessage = LoggerMessage.Define<string, string, SetPropertyDTO>(
+        LogLevel.Information,
+        KnowledgeServiceEventIds.SetConfigurationId,
+        "Set service '{serviceName}' configuration key '{propertyName}' with value '{@setPropertyValue} ");
+
     private readonly ActivitySource _activitySource;
 
     private readonly ILogger _logger;
@@ -138,7 +143,17 @@ public class KnowledgeServiceDiagnostics
         _getConfigurationNotFoundCounter.Inc();
     }
 
-    internal class KnowledgeServiceEventIds
+    public Activity LogSetConfigurationKey(string serviceName, string propertyName, SetPropertyDTO setPropertyDto)
+    {
+        LogSetConfigurationMessage(_logger, serviceName, propertyName, setPropertyDto, null);
+
+        _setConfigurationCounter.Inc();
+
+        return _activitySource.StartActivity("Set Configuration Key Value");
+    }
+
+
+    private class KnowledgeServiceEventIds
     {
         public static EventId GetPropertyEventId = new EventId(200, nameof(GetPropertyEventId));
 
@@ -155,5 +170,7 @@ public class KnowledgeServiceDiagnostics
         public static EventId ConfigurationFoundEventId = new EventId(800, nameof(ConfigurationFoundEventId));
 
         public static EventId ConfigurationNotFoundEventId = new EventId(900, nameof(ConfigurationNotFoundEventId));
+
+        public static EventId SetConfigurationId = new EventId(1000, nameof(SetConfigurationId));
     }
 }

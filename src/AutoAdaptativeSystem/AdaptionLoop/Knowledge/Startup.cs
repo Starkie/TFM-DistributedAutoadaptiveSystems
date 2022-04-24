@@ -1,12 +1,12 @@
 namespace Knowledge.Service;
 
 using Knowledge.Service.Diagnostics;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OpenTelemetry.Resources;
 using Prometheus;
 using Serilog;
 
@@ -32,6 +32,8 @@ public class Startup
         services.AddBus(Configuration, this.GetType().Assembly);
 
         services.AddTelemetry(Configuration, KnowledgeServiceConstants.AppName, "v1.0");
+
+        services.AddMediatR(this.GetType().Assembly);
 
         services.AddSingleton<KnowledgeServiceDiagnostics>();
     }

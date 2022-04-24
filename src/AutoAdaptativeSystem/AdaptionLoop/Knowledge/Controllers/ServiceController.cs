@@ -2,14 +2,12 @@ namespace Knowledge.Service.Controllers;
 
 using System;
 using System.Collections.Concurrent;
-using System.Linq;
 using System.Threading.Tasks;
 using Knowledge.Contracts.IntegrationEvents;
-using Knowledge.Contracts.IntegrationEvents.Configuration;
-using Knowledge.Service.Controllers.IntegrationEvents;
 using Knowledge.Service.Diagnostics;
 using Knowledge.Service.DTOs;
 using Knowledge.Service.DTOs.Configuration;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,16 +17,16 @@ public sealed class ServiceController : ControllerBase
 {
     private readonly KnowledgeServiceDiagnostics _diagnostics;
 
-    private readonly ConfigurationChangeRequestIntegrationEventPublisher _configurationChangeRequestIntegrationEventPublisher;
+    private readonly IMediator _mediator;
 
     private static ConcurrentDictionary<string, ConcurrentDictionary<string, ConfigurationDTO>> configuration = new();
 
     public ServiceController(
         KnowledgeServiceDiagnostics diagnostics,
-        ConfigurationChangeRequestIntegrationEventPublisher configurationChangeRequestIntegrationEventPublisher)
+        IMediator mediator)
     {
         _diagnostics = diagnostics;
-        _configurationChangeRequestIntegrationEventPublisher = configurationChangeRequestIntegrationEventPublisher;
+        _mediator = mediator;
     }
 
     /// <summary>
@@ -81,34 +79,53 @@ public sealed class ServiceController : ControllerBase
         return configurationDto;
     }
 
-    // /// <summary>
-    // ///    Sets value of a given configuration property. If the property does not exist, it will be created.
-    // /// </summary>
-    // /// <param name="configurationName"> The name of the property to set. </param>
-    // /// <param name="setPropertyDto"> The DTO containing the value to set. </param>
-    // /// <returns> An IActionResult with result of the command. </returns>
-    // /// <response code="204"> The property was updated or created successfully. </response>
-    // /// <response code="400"> There was an error with the provided arguments. </response>
-    // [HttpPut("{configurationName}")]
-    // [ProducesResponseType(StatusCodes.Status204NoContent)]
-    // [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    // public async Task<IActionResult> SetPropertyAsync([FromRoute]string configurationName, [FromBody]SetPropertyDTO setPropertyDto)
-    // {
-    //     if (string.IsNullOrEmpty(configurationName) || string.IsNullOrEmpty(setPropertyDto?.Value))
-    //     {
-    //         return BadRequest();
-    //     }
-    //
-    //     using var activity = _diagnostics.LogSetProperty(configurationName, setPropertyDto);
-    //
-    //     PropertyDTO newValue = new()
-    //     {
-    //         Value = setPropertyDto.Value,
-    //         LastModification = DateTime.UtcNow,
-    //     };
-    //
-    //     configuration.AddOrUpdate(configurationName, newValue, (_, _) => newValue);
-    //
-    //     return NoContent();
-    // }
+    /// <summary>
+    ///    Sets value of a given configuration property. If the property does not exist, it will be created.
+    /// </summary>
+    /// <param name="serviceName"> The name of the service. </param>
+    /// <param name="configurationName"> The name of the property to set. </param>
+    /// <param name="setPropertyDto"> The DTO containing the value to set. </param>
+    /// <returns> An IActionResult with result of the command. </returns>
+    /// <response code="204"> The property was updated or created successfully. </response>
+    /// <response code="400"> There was an error with the provided arguments. </response>
+    [HttpPut("{serviceName}/configuration/{configurationName}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> SetPropertyAsync([FromRoute]string serviceName, [FromRoute]string configurationName, [FromBody]SetPropertyDTO setPropertyDto)
+    {
+        if (string.IsNullOrEmpty(serviceName)
+            || string.IsNullOrEmpty(configurationName)
+            || string.IsNullOrEmpty(setPropertyDto?.Value))
+        {
+            return BadRequest();
+        }
+
+        using var activity = _diagnostics.LogSetConfigurationKey(serviceName, configurationName, setPropertyDto);
+
+        ConfigurationDTO newValue = new()
+        {
+            Name = configurationName,
+            Value = setPropertyDto.Value,
+            LastModification = DateTime.UtcNow,
+        };
+
+        InsertProperty(serviceName, newValue);
+
+        await _mediator.Publish(new ConfigurationChangedIntegrationEvent(serviceName, configurationName));
+
+        return NoContent();
+    }
+
+    private static void InsertProperty(string serviceName, ConfigurationDTO newValue)
+    {
+        bool foundConfiguration = configuration.TryGetValue(serviceName, out ConcurrentDictionary<string, ConfigurationDTO> serviceConfigurations);
+
+        if (!foundConfiguration)
+        {
+            configuration[serviceName] = new();
+            serviceConfigurations = configuration[serviceName];
+        }
+
+        serviceConfigurations[newValue.Name] = newValue;
+    }
 }
