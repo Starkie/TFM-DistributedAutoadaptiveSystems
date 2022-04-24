@@ -437,8 +437,8 @@
           "expr": "sum by(source) (rate(http_requests_received_total[$__rate_interval]))",
           "format": "time_series",
           "hide": false,
-          "instant": true,
-          "key": "Q-9b622ead-3c94-4cf3-8f14-cbed49cd9dca-0",
+          "interval": "",
+          "legendFormat": "{{label_name}}",
           "range": true,
           "refId": "A"
         }
