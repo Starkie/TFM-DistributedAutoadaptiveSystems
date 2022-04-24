@@ -171,6 +171,13 @@ services:
       - adaption-loop-network
       - planning-network
 
+  grafana:
+    build: ./grafana
+    ports:
+      - "3001:3000"
+    networks:
+      - monitoring-network
+
 networks:
   knowledge-network:
     driver: bridge

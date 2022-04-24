@@ -71,7 +71,9 @@ if (-not (Test-Path $PrometheusConfigPath))
     New-Item -ItemType Directory $PrometheusConfigPath
 }
 
-cp (Join-Path $PSScriptRoot "config/prometheus.yml") "$PrometheusConfigPath/prometheus.yml"
+Copy-Item (Join-Path $PSScriptRoot "config/prometheus.yml") "$PrometheusConfigPath/prometheus.yml"
+
+Copy-Item -Force -Recurse (Join-Path $PSScriptRoot "config/grafana") "$PublishPath"
 
 # Start the compose.
 docker-compose -f ./publish/docker-compose.yml up --build
