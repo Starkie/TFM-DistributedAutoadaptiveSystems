@@ -15,7 +15,7 @@ public class SystemConfigurationRequest
 {
     public string ServiceName { get; set; }
 
-    public bool IsActive { get; set; }
+    public bool IsDeployed { get; set; }
 
     public IList<ConfigurationProperty> ConfigurationProperties { get; set; }
 

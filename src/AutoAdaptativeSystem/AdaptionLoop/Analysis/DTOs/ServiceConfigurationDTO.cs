@@ -6,7 +6,7 @@ public class ServiceConfigurationDTO
 {
     public string ServiceName { get; set; }
 
-    public bool IsActive { get; set; }
+    public bool IsDeployed { get; set; }
 
     public IList<ConfigurationProperty> ConfigurationProperties { get; set; } = new List<ConfigurationProperty>();
 

@@ -6,6 +6,7 @@ using Analysis.Service.Controllers.IntegrationEvents;
 using Analysis.Service.Diagnostics;
 using Analysis.Service.DTOs.Configuration;
 using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,18 +16,18 @@ public class SystemController : ControllerBase
 {
     private readonly AnalysisServiceDiagnostics _diagnostics;
 
-    private readonly SystemConfigurationChangeRequestIntegrationEventPublisher _configurationChangeRequestEventPublisher;
-
     private readonly IMapper _mapper;
+
+    private readonly IMediator _mediator;
 
     public SystemController(
         AnalysisServiceDiagnostics diagnostics,
         IMapper mapper,
-        SystemConfigurationChangeRequestIntegrationEventPublisher configurationChangeRequestEventPublisher)
+        IMediator mediator)
     {
         _diagnostics = diagnostics;
         _mapper = mapper;
-        _configurationChangeRequestEventPublisher = configurationChangeRequestEventPublisher;
+        _mediator = mediator;
     }
 
     /// <summary>
@@ -51,7 +52,7 @@ public class SystemController : ControllerBase
 
         var integrationEvent = _mapper.Map<SystemConfigurationChangeRequestIntegrationEvent>(configurationChangeRequestDto);
 
-        await _configurationChangeRequestEventPublisher.PublishAsync(integrationEvent);
+        await _mediator.Publish(integrationEvent);
 
         return NoContent();
     }

@@ -44,11 +44,17 @@ public class AnalysisServiceDiagnostics
         AnalysisServiceEventIds.ConfigurationNotFoundEventId,
         "Service '{serviceName}' Configuration '{ConfigurationName}' not found.");
 
-    private static readonly Action<ILogger, SystemConfigurationChangeRequestDTO, Exception> LogConfigurationChangeRequestedMessage =
+    private static readonly Action<ILogger, SystemConfigurationChangeRequestDTO, Exception> LogConfigurationChangeRequestEventReceived =
         LoggerMessage.Define<SystemConfigurationChangeRequestDTO>(
             LogLevel.Information,
             AnalysisServiceEventIds.SystemConfigurationChangeRequestedEventId,
             "Requested system configuration change '@{configurationChangeRequest}'.");
+
+    private static readonly Action<ILogger, string, string, Exception> LogConfigurationChangedEventReceived =
+        LoggerMessage.Define<string, string>(
+            LogLevel.Information,
+            AnalysisServiceEventIds.ConfigurationChangedEventId,
+            "Configuration changed: {serviceName}.{configurationName}'");
 
     private readonly ActivitySource _activitySource;
 
@@ -104,9 +110,16 @@ public class AnalysisServiceDiagnostics
 
     public Activity LogConfigurationChangeRequested(SystemConfigurationChangeRequestDTO configurationChangeRequestDto)
     {
-        LogConfigurationChangeRequestedMessage(_logger, configurationChangeRequestDto, null);
+        LogConfigurationChangeRequestEventReceived(_logger, configurationChangeRequestDto, null);
 
         return _activitySource.StartActivity("Configuration change requested");
+    }
+
+    public Activity ConfigurationChangedEventReceived(ConfigurationChangedIntegrationEvent configurationCHangedEvent)
+    {
+        LogConfigurationChangedEventReceived(_logger, configurationCHangedEvent.ServiceName, configurationCHangedEvent.ConfigurationName, null);
+
+        return _activitySource.StartActivity("Configuration Changed Event Received");
     }
 
     private static class AnalysisServiceEventIds
@@ -126,5 +139,7 @@ public class AnalysisServiceDiagnostics
         public static EventId ConfigurationNotFoundEventId = new EventId(700, nameof(ConfigurationNotFoundEventId));
 
         public static EventId SystemConfigurationChangeRequestedEventId = new EventId(800, nameof(SystemConfigurationChangeRequestedEventId));
+
+        public static EventId ConfigurationChangedEventId = new EventId(900, nameof(ConfigurationChangedEventId));
     }
 }
