@@ -23,16 +23,25 @@ public static class ServiceCollectionExtensions
                 var ruleTypes = rulesAssembly.GetTypes()
                     .Where(t => t.IsAssignableTo(typeof(RuleBase)));
 
-                var propertyNames = ruleTypes.Select(t =>
-                    {
-                        return GetRulePropertyDependencies(t);
-                    })
+                var subscriptions = new List<string>();
+
+                var propertyNames = ruleTypes
+                    .Select(GetRulePropertyDependencies)
                     .SelectMany(p => p)
                     .Distinct();
 
-                foreach (var propertyName in propertyNames)
+                subscriptions.AddRange(propertyNames);
+
+                var configurationKeys = ruleTypes
+                    .Select(GetRuleConfigurationDependencies)
+                    .SelectMany(c => c)
+                    .Distinct();
+
+                subscriptions.AddRange(configurationKeys);
+
+                foreach (var subscription in subscriptions)
                 {
-                    await bus.Advanced.Topics.Subscribe(propertyName);
+                    await bus.Advanced.Topics.Subscribe(subscription);
                 }
             });
 
@@ -68,5 +77,15 @@ public static class ServiceCollectionExtensions
         var attribute = t.GetCustomAttribute(typeof(RuleKnowledgePropertyDependencyAttribute)) as RuleKnowledgePropertyDependencyAttribute;
 
         return attribute?.PropertyNames ?? Enumerable.Empty<string>();
+    }
+
+    public static IEnumerable<string> GetRuleConfigurationDependencies(this Type t)
+    {
+        var attribute = t.GetCustomAttribute(typeof(RuleKnowledgeConfigurationDependencyAttribute)) as RuleKnowledgeConfigurationDependencyAttribute;
+
+        var configurationKeys = attribute?.ConfigurationKeys
+            .Select(ck => attribute.ServiceName + "." + ck);
+
+        return configurationKeys ?? Enumerable.Empty<string>();
     }
 }
