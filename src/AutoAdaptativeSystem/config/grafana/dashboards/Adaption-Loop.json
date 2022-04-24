@@ -24,7 +24,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 5,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -299,6 +298,70 @@
       "fieldConfig": {
         "defaults": {
           "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 13,
+        "y": 0
+      },
+      "id": 9,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false,
+        "text": {
+          "titleSize": 2
+        }
+      },
+      "pluginVersion": "v1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "4x1ifEU7k"
+          },
+          "editorMode": "code",
+          "expr": "rate(executed_rules[$__rate_interval]) / rate(evaluated_rules[$__rate_interval])",
+          "format": "time_series",
+          "hide": false,
+          "legendFormat": "Execution Rate",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Analysis: Rule execution rate",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "4x1ifEU7k"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
             "mode": "palette-classic"
           },
           "custom": {
@@ -440,13 +503,13 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "{host=\"localhost\", instance=\"climatisation_rules:80\", job=\"climatisation_rules\", source=\"Climatisation.Rules.Service\"}"
+              "options": "Evaluated rules"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "dark-orange",
+                  "fixedColor": "blue",
                   "mode": "fixed"
                 }
               }
@@ -457,10 +520,10 @@
       "gridPos": {
         "h": 12,
         "w": 9,
-        "x": 9,
+        "x": 8,
         "y": 8
       },
-      "id": 2,
+      "id": 1,
       "options": {
         "legend": {
           "calcs": [],
@@ -478,99 +541,31 @@
             "type": "prometheus",
             "uid": "4x1ifEU7k"
           },
-          "expr": "rate(executed_rules{}[$__rate_interval])",
-          "key": "Q-ff656733-762a-4b2f-924e-f82038831581-0",
-          "refId": "A"
-        }
-      ],
-      "title": "Rule Execution rate",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "4x1ifEU7k"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 9,
-        "x": 0,
-        "y": 20
-      },
-      "id": 1,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
+          "editorMode": "code",
           "expr": "rate(evaluated_rules{}[$__rate_interval])",
           "key": "Q-ff656733-762a-4b2f-924e-f82038831581-0",
+          "legendFormat": "Evaluated rules",
+          "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "4x1ifEU7k"
+          },
+          "editorMode": "code",
+          "expr": "rate(executed_rules{}[$__rate_interval])",
+          "hide": false,
+          "legendFormat": "Executed rules",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "Rule Evaluation rate",
       "type": "timeseries"
     }
   ],
-  "refresh": "30s",
+  "refresh": "10s",
   "schemaVersion": 36,
   "style": "dark",
   "tags": [],
@@ -585,6 +580,6 @@
   "timezone": "",
   "title": "AdaptionLoop",
   "uid": "N0ZSfeUnz",
-  "version": 4,
+  "version": 1,
   "weekStart": ""
 }
