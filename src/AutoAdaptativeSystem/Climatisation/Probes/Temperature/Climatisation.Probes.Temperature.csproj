@@ -13,8 +13,8 @@
 
     <ItemGroup>
       <PackageReference Include="FubarCoder.RestSharp.Portable.HttpClient" Version="4.0.8" />
-      <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
       <!-- TODO: Remove these references. Added to be able to build the solution with the ASP.NET Core dependencies. -->
       <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
       <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
