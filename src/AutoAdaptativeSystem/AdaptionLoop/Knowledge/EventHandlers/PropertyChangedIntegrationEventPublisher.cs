@@ -1,13 +1,23 @@
 namespace Knowledge.Service.Controllers.IntegrationEvents;
 
-using Core.Bus.Publisher;
+using System.Threading;
+using System.Threading.Tasks;
 using Knowledge.Contracts.IntegrationEvents;
+using MediatR;
 using Rebus.Bus;
 
 public class PropertyChangedIntegrationEventPublisher
-    : IntegrationEventPublisher<PropertyChangedIntegrationEvent>
+    : INotificationHandler<PropertyChangedIntegrationEvent>
 {
-    public PropertyChangedIntegrationEventPublisher(IBus bus) : base(bus)
+    private readonly IBus _bus;
+
+    public PropertyChangedIntegrationEventPublisher(IBus bus)
     {
+        _bus = bus;
+    }
+
+    public async Task Handle(PropertyChangedIntegrationEvent notification, CancellationToken cancellationToken)
+    {
+        await _bus.Publish(notification);
     }
 }

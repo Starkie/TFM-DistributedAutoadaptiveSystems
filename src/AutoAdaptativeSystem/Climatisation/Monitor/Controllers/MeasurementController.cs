@@ -1,8 +1,8 @@
-﻿namespace Climatisation.Monitor.Controllers;
+﻿namespace Climatisation.Monitor.Service.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Climatisation.Contacts;
+using Climatisation.Contracts;
 using Climatisation.Monitor.DTOS;
 using MediatR;
 using Microsoft.AspNetCore.Http;

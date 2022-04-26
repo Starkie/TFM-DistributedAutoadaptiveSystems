@@ -1,6 +1,8 @@
-namespace Climatisation.Rules;
+namespace Climatisation.Rules.Service;
 
 public static class ClimatisationRulesConstants
 {
-    public static readonly string AppName = "Climatisation.Rules"; //Namespace.Substring(Namespace.LastIndexOf('.', Namespace.LastIndexOf('.') - 1) + 1);
+    private static readonly string Namespace = typeof(Program).Namespace;
+
+    public static readonly string AppName = Namespace; //Namespace.Substring(Namespace.LastIndexOf('.', Namespace.LastIndexOf('.') - 1) + 1);
 }

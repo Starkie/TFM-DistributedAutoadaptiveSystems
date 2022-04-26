@@ -6,9 +6,12 @@ using System.Linq;
 
 public static class ConfigurationExtensions
 {
-    public static IConfiguration ReplaceVariable(this IConfiguration configuration, string variableName)
+    public static IConfiguration ReplaceVariable(this IConfiguration configuration, string variableName, string variableValue = null)
     {
-        var variableValue = FindVariableValue(configuration.GetChildren(), variableName);
+        if (string.IsNullOrEmpty(variableValue))
+        {
+            variableValue = FindVariableValue(configuration.GetChildren(), variableName);
+        }
 
         ReplaceVariable(configuration.GetChildren(), variableName, variableValue);
 

@@ -110,18 +110,17 @@ namespace Example
             // create instances of HttpClient, HttpClientHandler to be reused later with different Api classes
             HttpClient httpClient = new HttpClient();
             HttpClientHandler httpClientHandler = new HttpClientHandler();
-            var apiInstance = new ConfigurationApi(httpClient, config, httpClientHandler);
-            var configurationName = "configurationName_example";  // string | The name of the configuration property to find.
+            var apiInstance = new PropertyApi(httpClient, config, httpClientHandler);
+            var propertyName = "propertyName_example";  // string | The name of the property to delete.
 
             try
             {
-                // Gets a configuration property given its name.
-                ConfigurationDTO result = apiInstance.ConfigurationConfigurationNameGet(configurationName);
-                Debug.WriteLine(result);
+                // Deletes the value of a given property.
+                apiInstance.PropertyPropertyNameDelete(propertyName);
             }
             catch (ApiException e)
             {
-                Debug.Print("Exception when calling ConfigurationApi.ConfigurationConfigurationNameGet: " + e.Message );
+                Debug.Print("Exception when calling PropertyApi.PropertyPropertyNameDelete: " + e.Message );
                 Debug.Print("Status Code: "+ e.ErrorCode);
                 Debug.Print(e.StackTrace);
             }
@@ -138,23 +137,19 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*ConfigurationApi* | [**ConfigurationConfigurationNameGet**](docs/ConfigurationApi.md#configurationconfigurationnameget) | **GET** /Configuration/{configurationName} | Gets a configuration property given its name.
-*ConfigurationApi* | [**ConfigurationRequestChangePost**](docs/ConfigurationApi.md#configurationrequestchangepost) | **POST** /Configuration/request-change | Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
 *PropertyApi* | [**PropertyPropertyNameDelete**](docs/PropertyApi.md#propertypropertynamedelete) | **DELETE** /Property/{propertyName} | Deletes the value of a given property.
 *PropertyApi* | [**PropertyPropertyNameGet**](docs/PropertyApi.md#propertypropertynameget) | **GET** /Property/{propertyName} | Gets a property given its name.
 *PropertyApi* | [**PropertyPropertyNamePut**](docs/PropertyApi.md#propertypropertynameput) | **PUT** /Property/{propertyName} | Sets value of a given property. If the property does not exist, it will be created.
+*ServiceApi* | [**ServiceServiceNameConfigurationConfigurationNameGet**](docs/ServiceApi.md#serviceservicenameconfigurationconfigurationnameget) | **GET** /Service/{serviceName}/configuration/{configurationName} | Gets a configuration property given its name.
 
 
 <a name="documentation-for-models"></a>
 ## Documentation for Models
 
- - [Model.ChangeRequestDTO](docs/ChangeRequestDTO.md)
- - [Model.ConfigurationChangeRequestDTO](docs/ConfigurationChangeRequestDTO.md)
  - [Model.ConfigurationDTO](docs/ConfigurationDTO.md)
  - [Model.ProblemDetails](docs/ProblemDetails.md)
  - [Model.PropertyDTO](docs/PropertyDTO.md)
  - [Model.SetPropertyDTO](docs/SetPropertyDTO.md)
- - [Model.SymptomDTO](docs/SymptomDTO.md)
 
 
 <a name="documentation-for-authorization"></a>

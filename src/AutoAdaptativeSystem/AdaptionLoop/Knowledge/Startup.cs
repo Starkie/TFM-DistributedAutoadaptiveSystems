@@ -1,11 +1,14 @@
 namespace Knowledge.Service;
 
 using Knowledge.Service.Diagnostics;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Prometheus;
+using Serilog;
 
 public class Startup
 {
@@ -28,7 +31,9 @@ public class Startup
 
         services.AddBus(Configuration, this.GetType().Assembly);
 
-        services.AddTracing(Configuration, KnowledgeServiceConstants.AppName, "v1.0");
+        services.AddTelemetry(Configuration, KnowledgeServiceConstants.AppName, "v1.0");
+
+        services.AddMediatR(this.GetType().Assembly);
 
         services.AddSingleton<KnowledgeServiceDiagnostics>();
     }
@@ -41,10 +46,16 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
 
+        app.UseSerilogRequestLogging();
+
+        app.UseMetricServer();
+
         app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Knowledge.Service v1"));
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{KnowledgeServiceConstants.AppName} v1"));
 
         app.UseRouting();
+
+        app.UseHttpMetrics();
 
         app.UseAuthorization();
 

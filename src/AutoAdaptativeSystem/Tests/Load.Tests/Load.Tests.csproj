@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="NBomber" Version="2.1.5" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Climatisation\Contracts\Climatisation.Contracts.csproj" />
+      <ProjectReference Include="..\..\Climatisation\Monitor\ApiClient\Climatisation.Monitor.ApiClient\Climatisation.Monitor.ApiClient.csproj" />
+      <ProjectReference Include="..\..\Climatisation\Monitor\ApiClient\Climatisation.Monitor.Service.ApiClient\Climatisation.Monitor.Service.ApiClient.csproj" />
+    </ItemGroup>
+
+</Project>

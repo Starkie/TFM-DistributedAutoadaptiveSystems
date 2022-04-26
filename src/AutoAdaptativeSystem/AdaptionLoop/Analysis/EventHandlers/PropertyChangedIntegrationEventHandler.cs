@@ -6,7 +6,7 @@ using Core.Bus.Handlers;
 using Knowledge.Contracts.IntegrationEvents;
 using Rebus.Bus;
 
-public class PropertyChangedIntegrationEventHandler : IntegrationEventHandler<PropertyChangedIntegrationEvent>
+public class PropertyChangedIntegrationEventHandler : IIntegrationEventHandler<PropertyChangedIntegrationEvent>
 {
     private readonly AnalysisServiceDiagnostics _analysisServiceDiagnostics;
 
@@ -19,9 +19,9 @@ public class PropertyChangedIntegrationEventHandler : IntegrationEventHandler<Pr
         _bus = bus;
     }
 
-    public override async Task Handle(PropertyChangedIntegrationEvent message)
+    public async Task Handle(PropertyChangedIntegrationEvent message)
     {
-        _analysisServiceDiagnostics.PropertyChangeEventReceived(message);
+        using var activity = _analysisServiceDiagnostics.PropertyChangeEventReceived(message);
 
         await _bus.Advanced.Topics.Publish(
             message.PropertyName,

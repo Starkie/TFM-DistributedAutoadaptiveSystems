@@ -25,7 +25,7 @@ $Projects = @(
     @{
         Name = "climatisation_monitor"
         Path = "Climatisation/Monitor"
-        ProjectName = "Climatisation.Monitor"
+        ProjectName = "Climatisation.Monitor.Service"
     },
     @{
         Name = "temperatureprobe"
@@ -38,13 +38,18 @@ $Projects = @(
         ProjectName = "Analysis.Service"
     },
     @{
+        Name = "planning"
+        Path = "AdaptionLoop/Planning"
+        ProjectName = "Planning.Service"
+    },
+    @{
         Name = "climatisation_rules"
         Path = "Climatisation/Rules"
-        ProjectName = "Climatisation.Rules"
+        ProjectName = "Climatisation.Rules.Service"
     }
 )
 
-$PublishPath = Join-Path (Get-Location) "publish"
+$PublishPath = Join-Path ($PSScriptRoot) "publish"
 
 if (Test-Path $PublishPath)
 {
@@ -58,6 +63,17 @@ foreach ($project in $Projects) {
 }
 
 cp "docker-compose.yml" "$PublishPath/docker-compose.yml"
+
+$PrometheusConfigPath = "$HOME/.prometheus"
+
+if (-not (Test-Path $PrometheusConfigPath))
+{
+    New-Item -ItemType Directory $PrometheusConfigPath
+}
+
+Copy-Item (Join-Path $PSScriptRoot "config/prometheus.yml") "$PrometheusConfigPath/prometheus.yml"
+
+Copy-Item -Force -Recurse (Join-Path $PSScriptRoot "config/grafana") "$PublishPath"
 
 # Start the compose.
 docker-compose -f ./publish/docker-compose.yml up --build

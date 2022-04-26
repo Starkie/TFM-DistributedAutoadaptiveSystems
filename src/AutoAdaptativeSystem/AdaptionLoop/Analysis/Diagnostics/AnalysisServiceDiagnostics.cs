@@ -2,6 +2,7 @@ namespace Analysis.Service.Diagnostics;
 
 using System;
 using System.Diagnostics;
+using Analysis.Service.DTOs.Configuration;
 using Knowledge.Contracts.IntegrationEvents;
 using Knowledge.Service.ApiClient.Model;
 using Microsoft.Extensions.Logging;
@@ -28,28 +29,40 @@ public class AnalysisServiceDiagnostics
         AnalysisServiceEventIds.PropertyChangeEventReceivedEventId,
         "Property changed: {@PropertyChangeEvent}");
 
-    private static readonly Action<ILogger, string, Exception> LogGetConfigurationMessage = LoggerMessage.Define<string>(
+    private static readonly Action<ILogger, string, string, Exception> LogGetConfigurationMessage = LoggerMessage.Define<string, string>(
         LogLevel.Information,
         AnalysisServiceEventIds.GetConfigurationEventId,
-        "Get configuration value request: {configurationName}");
+        "Get service '{serviceName}' configuration value request: {configurationName}");
 
-    private static readonly Action<ILogger, string, ConfigurationDTO, Exception> LogConfigurationFoundMessage = LoggerMessage.Define<string, ConfigurationDTO>(
+    private static readonly Action<ILogger, string, string, ConfigurationDTO, Exception> LogConfigurationFoundMessage = LoggerMessage.Define<string, string, ConfigurationDTO>(
         LogLevel.Information,
         AnalysisServiceEventIds.ConfigurationFoundEventId,
-        "Configuration '{ConfigurationName}' found. Value: '{@PropertyValue}'");
+        "Service '{serviceName}' Configuration '{ConfigurationName}' found. Value: '{@PropertyValue}'");
 
-    private static readonly Action<ILogger, string, Exception> LogConfigurationNotFoundMessage = LoggerMessage.Define<string>(
+    private static readonly Action<ILogger, string, string, Exception> LogConfigurationNotFoundMessage = LoggerMessage.Define<string, string>(
         LogLevel.Information,
         AnalysisServiceEventIds.ConfigurationNotFoundEventId,
-        "Configuration '{ConfigurationName}' not found.");
+        "Service '{serviceName}' Configuration '{ConfigurationName}' not found.");
+
+    private static readonly Action<ILogger, SystemConfigurationChangeRequestDTO, Exception> LogConfigurationChangeRequestEventReceived =
+        LoggerMessage.Define<SystemConfigurationChangeRequestDTO>(
+            LogLevel.Information,
+            AnalysisServiceEventIds.SystemConfigurationChangeRequestedEventId,
+            "Requested system configuration change '@{configurationChangeRequest}'.");
+
+    private static readonly Action<ILogger, string, string, Exception> LogConfigurationChangedEventReceived =
+        LoggerMessage.Define<string, string>(
+            LogLevel.Information,
+            AnalysisServiceEventIds.ConfigurationChangedEventId,
+            "Configuration changed: {serviceName}.{configurationName}'");
 
     private readonly ActivitySource _activitySource;
 
     private readonly ILogger _logger;
 
-    public AnalysisServiceDiagnostics(ILoggerProvider loggerProvider)
+    public AnalysisServiceDiagnostics(ILoggerFactory loggerFactory)
     {
-        _logger = loggerProvider.CreateLogger(AnalysisServiceConstants.AppName);
+        _logger = loggerFactory.CreateLogger(AnalysisServiceConstants.AppName);
 
         _activitySource = new ActivitySource(AnalysisServiceConstants.AppName);
     }
@@ -78,21 +91,35 @@ public class AnalysisServiceDiagnostics
         LogPropertyFoundMessage(_logger, propertyName, value, null);
     }
 
-    public Activity LogGetConfiguration(string configurationName)
+    public Activity LogGetServiceConfiguration(string serviceName, string configurationName)
     {
-        LogGetConfigurationMessage(_logger, configurationName, null);
+        LogGetConfigurationMessage(_logger, serviceName, configurationName, null);
 
-        return _activitySource.StartActivity("Get Configuration Value");
+        return _activitySource.StartActivity("Get Service Configuration Value");
     }
 
-    public void LogConfigurationFound(string configurationName, ConfigurationDTO value)
+    public void LogConfigurationFound(string serviceName, string configurationName, ConfigurationDTO value)
     {
-        LogConfigurationFoundMessage(_logger, configurationName, value, null);
+        LogConfigurationFoundMessage(_logger, serviceName, configurationName, value, null);
     }
 
-    public void LogConfigurationNotFound(string configurationName)
+    public void LogConfigurationNotFound(string serviceName, string configurationName)
     {
-        LogConfigurationNotFoundMessage(_logger, configurationName, null);
+        LogConfigurationNotFoundMessage(_logger, serviceName, configurationName, null);
+    }
+
+    public Activity LogConfigurationChangeRequested(SystemConfigurationChangeRequestDTO configurationChangeRequestDto)
+    {
+        LogConfigurationChangeRequestEventReceived(_logger, configurationChangeRequestDto, null);
+
+        return _activitySource.StartActivity("Configuration change requested");
+    }
+
+    public Activity ConfigurationChangedEventReceived(ConfigurationChangedIntegrationEvent configurationCHangedEvent)
+    {
+        LogConfigurationChangedEventReceived(_logger, configurationCHangedEvent.ServiceName, configurationCHangedEvent.ConfigurationName, null);
+
+        return _activitySource.StartActivity("Configuration Changed Event Received");
     }
 
     private static class AnalysisServiceEventIds
@@ -110,5 +137,9 @@ public class AnalysisServiceDiagnostics
         public static EventId ConfigurationFoundEventId = new EventId(600, nameof(ConfigurationFoundEventId));
 
         public static EventId ConfigurationNotFoundEventId = new EventId(700, nameof(ConfigurationNotFoundEventId));
+
+        public static EventId SystemConfigurationChangeRequestedEventId = new EventId(800, nameof(SystemConfigurationChangeRequestedEventId));
+
+        public static EventId ConfigurationChangedEventId = new EventId(900, nameof(ConfigurationChangedEventId));
     }
 }

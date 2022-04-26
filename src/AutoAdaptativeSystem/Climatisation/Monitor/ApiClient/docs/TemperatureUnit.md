@@ -1,4 +1,4 @@
-# Climatisation.Monitor.ApiClient.Model.TemperatureUnit
+# Climatisation.Monitor.Service.ApiClient.Model.TemperatureUnit
 
 ## Properties
 

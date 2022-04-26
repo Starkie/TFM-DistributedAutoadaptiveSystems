@@ -1,4 +1,4 @@
-# Climatisation.Monitor.ApiClient.Model.HumidityMeasurementDTO
+# Climatisation.Monitor.Service.ApiClient.Model.HumidityMeasurementDTO
 
 ## Properties
 

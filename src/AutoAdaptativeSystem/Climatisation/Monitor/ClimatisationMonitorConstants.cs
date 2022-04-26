@@ -1,4 +1,4 @@
-namespace Climatisation.Monitor;
+namespace Climatisation.Monitor.Service;
 
 using System;
 

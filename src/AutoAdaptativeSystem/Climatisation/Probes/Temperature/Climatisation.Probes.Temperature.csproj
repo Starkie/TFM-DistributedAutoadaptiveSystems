@@ -7,8 +7,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\Core\Core.DependencyInjection\Core.DependencyInjection.csproj" />
-      <ProjectReference Include="..\..\Contracts\Climatisation.Contacts.csproj" />
-      <ProjectReference Include="..\..\Monitor\ApiClient\Climatisation.Monitor.ApiClient\Climatisation.Monitor.ApiClient.csproj" />
+      <ProjectReference Include="..\..\Contracts\Climatisation.Contracts.csproj" />
+      <ProjectReference Include="..\..\Monitor\ApiClient\Climatisation.Monitor.Service.ApiClient\Climatisation.Monitor.Service.ApiClient.csproj" />
     </ItemGroup>
 
     <ItemGroup>

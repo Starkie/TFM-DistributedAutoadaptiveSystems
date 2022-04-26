@@ -24,7 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analysis", "Analysis", "{13
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Rules", "Rules", "{AD00A00D-1451-4D6E-83F2-40FF64E1C4AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.Rules", "Climatisation\Rules\Climatisation.Rules.csproj", "{C25857B8-3432-4DAD-B468-4095EA075534}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.Rules", "Climatisation\Rules\Climatisation.Rules.Service.csproj", "{C25857B8-3432-4DAD-B468-4095EA075534}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bus", "Bus", "{9389DD3D-8E1D-458D-81FF-579DC5746EC7}"
 EndProject
@@ -48,13 +48,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monitoring.Service", "Adapt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monitoring.Service.ApiClient", "AdaptionLoop\Monitoring\ApiClient\Monitoring.Service.ApiClient\Monitoring.Service.ApiClient.csproj", "{01832756-2204-4334-B4F7-06515AD26209}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.Contacts", "Climatisation\Contracts\Climatisation.Contacts.csproj", "{D89FCDBA-EDF8-4165-ABCC-39A2D534E7DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.Contracts", "Climatisation\Contracts\Climatisation.Contracts.csproj", "{D89FCDBA-EDF8-4165-ABCC-39A2D534E7DA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.Probes.Temperature", "Climatisation\Probes\Temperature\Climatisation.Probes.Temperature.csproj", "{6151ABA6-7F3A-4A1C-AF47-08BA1B281CBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.Monitor", "Climatisation\Monitor\Climatisation.Monitor.csproj", "{0FF4C930-ED95-42FA-AD7F-6C59E7983E47}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.Monitor.Service", "Climatisation\Monitor\Climatisation.Monitor.Service.csproj", "{0FF4C930-ED95-42FA-AD7F-6C59E7983E47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.Monitor.ApiClient", "Climatisation\Monitor\ApiClient\Climatisation.Monitor.ApiClient\Climatisation.Monitor.ApiClient.csproj", "{28258EC5-D531-4B02-AB63-8423A0A260B6}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Planning", "Planning", "{1E242D5E-650D-4CB0-84D5-BBB10F1B8438}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Planning.Service", "AdaptionLoop\Planning\Planning.Service.csproj", "{04AE231E-CD10-4FAF-A9B8-500EA51AA8DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Planning.Contracts", "AdaptionLoop\Planning\Contracts\Planning.Contracts.csproj", "{4FF2FFA9-027B-4322-9E0B-43B1A8E3BF07}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7C4A54D6-759A-4D9F-9495-E3131A8D0F14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Load.Tests", "Tests\Load.Tests\Load.Tests.csproj", "{A71D880E-B356-4084-BB18-7A5121D28AA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.Monitor.Service.ApiClient", "Climatisation\Monitor\ApiClient\Climatisation.Monitor.Service.ApiClient\Climatisation.Monitor.Service.ApiClient.csproj", "{0FCE7F62-EDCE-4888-A3F4-FE01E69C7A8C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -126,10 +136,22 @@ Global
 		{0FF4C930-ED95-42FA-AD7F-6C59E7983E47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FF4C930-ED95-42FA-AD7F-6C59E7983E47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FF4C930-ED95-42FA-AD7F-6C59E7983E47}.Release|Any CPU.Build.0 = Release|Any CPU
-		{28258EC5-D531-4B02-AB63-8423A0A260B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{28258EC5-D531-4B02-AB63-8423A0A260B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{28258EC5-D531-4B02-AB63-8423A0A260B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{28258EC5-D531-4B02-AB63-8423A0A260B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04AE231E-CD10-4FAF-A9B8-500EA51AA8DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04AE231E-CD10-4FAF-A9B8-500EA51AA8DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04AE231E-CD10-4FAF-A9B8-500EA51AA8DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04AE231E-CD10-4FAF-A9B8-500EA51AA8DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FF2FFA9-027B-4322-9E0B-43B1A8E3BF07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FF2FFA9-027B-4322-9E0B-43B1A8E3BF07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FF2FFA9-027B-4322-9E0B-43B1A8E3BF07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FF2FFA9-027B-4322-9E0B-43B1A8E3BF07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A71D880E-B356-4084-BB18-7A5121D28AA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A71D880E-B356-4084-BB18-7A5121D28AA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A71D880E-B356-4084-BB18-7A5121D28AA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A71D880E-B356-4084-BB18-7A5121D28AA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FCE7F62-EDCE-4888-A3F4-FE01E69C7A8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FCE7F62-EDCE-4888-A3F4-FE01E69C7A8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FCE7F62-EDCE-4888-A3F4-FE01E69C7A8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FCE7F62-EDCE-4888-A3F4-FE01E69C7A8C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{54D144B3-5B4A-48C2-A087-CE8C7EB37E35} = {81D52D84-B86F-4CFC-80CE-775FA8385FEB}
@@ -156,6 +178,10 @@ Global
 		{D89FCDBA-EDF8-4165-ABCC-39A2D534E7DA} = {D58AB3CF-D97A-4D40-BC39-279E615FD8F5}
 		{6151ABA6-7F3A-4A1C-AF47-08BA1B281CBC} = {9F63DD94-8186-49EC-9F1C-22CFBA4AAD51}
 		{0FF4C930-ED95-42FA-AD7F-6C59E7983E47} = {54D144B3-5B4A-48C2-A087-CE8C7EB37E35}
-		{28258EC5-D531-4B02-AB63-8423A0A260B6} = {54D144B3-5B4A-48C2-A087-CE8C7EB37E35}
+		{1E242D5E-650D-4CB0-84D5-BBB10F1B8438} = {424C93E9-0081-4574-B263-394E6F9D73EE}
+		{04AE231E-CD10-4FAF-A9B8-500EA51AA8DC} = {1E242D5E-650D-4CB0-84D5-BBB10F1B8438}
+		{4FF2FFA9-027B-4322-9E0B-43B1A8E3BF07} = {1E242D5E-650D-4CB0-84D5-BBB10F1B8438}
+		{A71D880E-B356-4084-BB18-7A5121D28AA2} = {7C4A54D6-759A-4D9F-9495-E3131A8D0F14}
+		{0FCE7F62-EDCE-4888-A3F4-FE01E69C7A8C} = {54D144B3-5B4A-48C2-A087-CE8C7EB37E35}
 	EndGlobalSection
 EndGlobal

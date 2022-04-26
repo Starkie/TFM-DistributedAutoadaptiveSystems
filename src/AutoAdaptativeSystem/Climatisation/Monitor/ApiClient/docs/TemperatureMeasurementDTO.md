@@ -1,4 +1,4 @@
-# Climatisation.Monitor.ApiClient.Model.TemperatureMeasurementDTO
+# Climatisation.Monitor.Service.ApiClient.Model.TemperatureMeasurementDTO
 
 ## Properties
 

@@ -1,4 +1,4 @@
-namespace Climatisation.Monitor.Configurations;
+namespace Climatisation.Monitor.Service.Configurations;
 
 public class MonitoringServiceConfiguration
 {

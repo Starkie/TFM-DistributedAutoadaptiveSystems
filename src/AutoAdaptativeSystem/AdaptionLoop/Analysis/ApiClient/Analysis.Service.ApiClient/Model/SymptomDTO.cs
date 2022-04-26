@@ -35,8 +35,8 @@ namespace Analysis.Service.ApiClient.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="SymptomDTO" /> class.
         /// </summary>
-        /// <param name="name">Gets or Sets Name.</param>
-        /// <param name="value">Gets or Sets Value.</param>
+        /// <param name="name">name.</param>
+        /// <param name="value">value.</param>
         public SymptomDTO(string name = default(string), string value = default(string))
         {
             this.Name = name;
@@ -46,14 +46,12 @@ namespace Analysis.Service.ApiClient.Model
         /// <summary>
         /// Gets or Sets Name
         /// </summary>
-        /// <value>Gets or Sets Name</value>
         [DataMember(Name = "name", EmitDefaultValue = true)]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or Sets Value
         /// </summary>
-        /// <value>Gets or Sets Value</value>
         [DataMember(Name = "value", EmitDefaultValue = true)]
         public string Value { get; set; }
 

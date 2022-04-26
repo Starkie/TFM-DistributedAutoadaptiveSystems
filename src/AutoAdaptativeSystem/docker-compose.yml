@@ -89,7 +89,6 @@ services:
       - analysis-network
     restart: on-failure:5
 
-
   climatisation_rules:
     build:
       context: ./climatisation_rules
@@ -108,6 +107,26 @@ services:
     networks:
       - knowledge-network
       - analysis-network
+    restart: on-failure:5
+
+  planning:
+    build:
+      context: ./planning
+      args:
+        KNOWLEDGESERVICE_SERVICEURI: "http://knowledge:80"
+        BUSCONFIGURATION_SERVICEURI: "amqp://user:password@rabbitmq"
+        GRAFANA_LOKI_URI: "http://loki:3100"
+        JAEGER_HOST: "jaeger"
+        JAEGER_PORT: "6831"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+    depends_on:
+      - rabbitmq
+    ports:
+      - "10001:80"
+    networks:
+      - knowledge-network
+      - planning-network
     restart: on-failure:5
 
   loki:
@@ -140,10 +159,31 @@ services:
       - adaption-loop-network
       - monitoring-network
 
+  prometheus:
+    image: "prom/prometheus:latest"
+    volumes:
+      - ~/.prometheus:/etc/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - knowledge-network
+      - monitoring-network
+      - adaption-loop-network
+      - planning-network
+
+  grafana:
+    build: ./grafana
+    ports:
+      - "3001:3000"
+    networks:
+      - monitoring-network
+
 networks:
   knowledge-network:
     driver: bridge
   analysis-network:
+    driver: bridge
+  planning-network:
     driver: bridge
   adaption-loop-network:
     driver: bridge

@@ -1,4 +1,4 @@
-namespace Climatisation.Monitor;
+namespace Climatisation.Monitor.Service;
 
 using System;
 using Microsoft.AspNetCore.Hosting;
@@ -59,13 +59,9 @@ public class Program
 
     private static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
-            .ConfigureLogging(builder =>
-            {
-                builder.ClearProviders();
-                builder.AddSerilog();
-            })
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();
-            });
+            })
+            .UseSerilog();
 }

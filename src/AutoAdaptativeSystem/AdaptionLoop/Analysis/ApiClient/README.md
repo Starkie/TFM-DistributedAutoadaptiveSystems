@@ -110,19 +110,18 @@ namespace Example
             // create instances of HttpClient, HttpClientHandler to be reused later with different Api classes
             HttpClient httpClient = new HttpClient();
             HttpClientHandler httpClientHandler = new HttpClientHandler();
-            var apiInstance = new ConfigurationApi(httpClient, config, httpClientHandler);
-            var name = "name_example";  // string | 
-            var configurationName = "configurationName_example";  // string | 
+            var apiInstance = new PropertyApi(httpClient, config, httpClientHandler);
+            var propertyName = "propertyName_example";  // string | The name of the property to look for.
 
             try
             {
-                // Gets a configuration property given its name.
-                ConfigurationDTO result = apiInstance.ConfigurationConfigurationNameGet(name, configurationName);
+                // Looks for the Knowledge property with the given name.
+                PropertyDTO result = apiInstance.PropertyPropertyNameGet(propertyName);
                 Debug.WriteLine(result);
             }
             catch (ApiException e)
             {
-                Debug.Print("Exception when calling ConfigurationApi.ConfigurationConfigurationNameGet: " + e.Message );
+                Debug.Print("Exception when calling PropertyApi.PropertyPropertyNameGet: " + e.Message );
                 Debug.Print("Status Code: "+ e.ErrorCode);
                 Debug.Print(e.StackTrace);
             }
@@ -139,21 +138,23 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*ConfigurationApi* | [**ConfigurationConfigurationNameGet**](docs/ConfigurationApi.md#configurationconfigurationnameget) | **GET** /Configuration/{configurationName} | Gets a configuration property given its name.
-*ConfigurationApi* | [**ConfigurationRequestChangePost**](docs/ConfigurationApi.md#configurationrequestchangepost) | **POST** /Configuration/request-change | Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
 *PropertyApi* | [**PropertyPropertyNameGet**](docs/PropertyApi.md#propertypropertynameget) | **GET** /Property/{propertyName} | Looks for the Knowledge property with the given name.
 *PropertyApi* | [**PropertyPropertyNamePut**](docs/PropertyApi.md#propertypropertynameput) | **PUT** /Property/{propertyName} | Sets value of a given property. If the property does not exist, it will be created.
+*ServiceApi* | [**ServiceServiceNameConfigurationConfigurationNameGet**](docs/ServiceApi.md#serviceservicenameconfigurationconfigurationnameget) | **GET** /Service/{serviceName}/configuration/{configurationName} | Gets a configuration property given its name.
+*SystemApi* | [**SystemRequestChangePost**](docs/SystemApi.md#systemrequestchangepost) | **POST** /System/request-change | Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
 
 
 <a name="documentation-for-models"></a>
 ## Documentation for Models
 
- - [Model.ChangeRequestDTO](docs/ChangeRequestDTO.md)
- - [Model.ConfigurationChangeRequestDTO](docs/ConfigurationChangeRequestDTO.md)
+ - [Model.BindingConfiguration](docs/BindingConfiguration.md)
  - [Model.ConfigurationDTO](docs/ConfigurationDTO.md)
+ - [Model.ConfigurationProperty](docs/ConfigurationProperty.md)
  - [Model.ProblemDetails](docs/ProblemDetails.md)
  - [Model.PropertyDTO](docs/PropertyDTO.md)
+ - [Model.ServiceConfigurationDTO](docs/ServiceConfigurationDTO.md)
  - [Model.SymptomDTO](docs/SymptomDTO.md)
+ - [Model.SystemConfigurationChangeRequestDTO](docs/SystemConfigurationChangeRequestDTO.md)
 
 
 <a name="documentation-for-authorization"></a>

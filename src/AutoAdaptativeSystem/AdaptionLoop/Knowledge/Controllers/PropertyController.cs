@@ -7,6 +7,7 @@ using Knowledge.Contracts.IntegrationEvents;
 using Knowledge.Service.Controllers.IntegrationEvents;
 using Knowledge.Service.Diagnostics;
 using Knowledge.Service.DTOs;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,14 +17,14 @@ public class PropertyController : ControllerBase
 {
     private readonly KnowledgeServiceDiagnostics _diagnostics;
 
-    private readonly PropertyChangedIntegrationEventPublisher _propertyChangedIntegrationEventPublisher;
+    private readonly IMediator _mediator;
 
     private static ConcurrentDictionary<string, PropertyDTO> properties = new();
 
-    public PropertyController(KnowledgeServiceDiagnostics diagnostics, PropertyChangedIntegrationEventPublisher propertyChangedIntegrationEventPublisher)
+    public PropertyController(KnowledgeServiceDiagnostics diagnostics, IMediator mediator)
     {
         _diagnostics = diagnostics;
-        _propertyChangedIntegrationEventPublisher = propertyChangedIntegrationEventPublisher;
+        _mediator = mediator;
     }
 
     /// <summary>
@@ -91,7 +92,7 @@ public class PropertyController : ControllerBase
 
         // TODO: Investigar persistencia de mensajes:
         // https://stackoverflow.com/questions/6148381/rabbitmq-persistent-message-with-topic-exchange
-        await _propertyChangedIntegrationEventPublisher.PublishAsync(new PropertyChangedIntegrationEvent(propertyName));
+        await _mediator.Publish(new PropertyChangedIntegrationEvent(propertyName));
 
         return NoContent();
     }

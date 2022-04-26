@@ -1,4 +1,4 @@
-namespace Climatisation.Rules.Services;
+namespace Climatisation.Rules.Service.Services;
 
 using System.Threading;
 using System.Threading.Tasks;

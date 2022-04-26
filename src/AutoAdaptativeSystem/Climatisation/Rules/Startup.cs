@@ -1,13 +1,15 @@
-namespace Climatisation.Rules;
+namespace Climatisation.Rules.Service;
 
-using Climatisation.Rules.Diagnostics;
-using Climatisation.Rules.Services;
+using Climatisation.Rules.Service.Diagnostics;
+using Climatisation.Rules.Service.Services;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Prometheus;
+using Serilog;
 
 public class Startup
 {
@@ -30,10 +32,11 @@ public class Startup
 
         services.AddAdaptionLoopAnalysisServices(Configuration, this.GetType().Assembly);
 
-        services.AddTracing(Configuration, ClimatisationRulesConstants.AppName, "v1.0");
+        services.AddTelemetry(Configuration, ClimatisationRulesConstants.AppName, "v1.0");
 
         services.AddSingleton<ClimatisationRulesDiagnostics>();
 
+        services.AddScoped<IConfigurationService, ConfigurationService>();
         services.AddScoped<IPropertyService, PropertyService>();
 
         services.AddMediatR(typeof(Startup).Assembly);
@@ -47,10 +50,16 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
 
+        app.UseSerilogRequestLogging();
+
+        app.UseMetricServer();
+
         app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Knowledge.Service v1"));
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{ClimatisationRulesConstants.AppName} v1"));
 
         app.UseRouting();
+
+        app.UseHttpMetrics();
 
         app.UseAuthorization();
 

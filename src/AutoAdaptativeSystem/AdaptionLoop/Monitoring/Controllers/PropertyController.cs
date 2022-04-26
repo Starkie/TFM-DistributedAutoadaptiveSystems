@@ -34,7 +34,7 @@ public class PropertyController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAsync([FromRoute]string propertyName)
     {
-        var activity = _diagnostics.LogGetProperty(propertyName);
+        using var activity = _diagnostics.LogGetProperty(propertyName);
 
         PropertyDTO property = null;
 

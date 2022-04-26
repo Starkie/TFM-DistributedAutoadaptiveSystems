@@ -1,4 +1,4 @@
-# Climatisation.Monitor.ApiClient.Api.MeasurementApi
+# Climatisation.Monitor.Service.ApiClient.Api.MeasurementApi
 
 All URIs are relative to *http://localhost*
 
@@ -19,9 +19,9 @@ Method | HTTP request | Description
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
-using Climatisation.Monitor.ApiClient.Api;
-using Climatisation.Monitor.ApiClient.Client;
-using Climatisation.Monitor.ApiClient.Model;
+using Climatisation.Monitor.Service.ApiClient.Api;
+using Climatisation.Monitor.Service.ApiClient.Client;
+using Climatisation.Monitor.Service.ApiClient.Model;
 
 namespace Example
 {
@@ -91,9 +91,9 @@ No authorization required
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
-using Climatisation.Monitor.ApiClient.Api;
-using Climatisation.Monitor.ApiClient.Client;
-using Climatisation.Monitor.ApiClient.Model;
+using Climatisation.Monitor.Service.ApiClient.Api;
+using Climatisation.Monitor.Service.ApiClient.Client;
+using Climatisation.Monitor.Service.ApiClient.Model;
 
 namespace Example
 {

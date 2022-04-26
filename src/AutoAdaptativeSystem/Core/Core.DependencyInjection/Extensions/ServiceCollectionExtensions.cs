@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection RegisterServicesFromAssembly(this IServiceCollection services, Type typeToRegister, Assembly assembly, ServiceLifetime lifetime = ServiceLifetime.Scoped)
     {
         var types = assembly.GetTypes()
-            .Where(t => DoesTypeSupportInterface(t, typeToRegister));
+            .Where(t => DoesTypeSupportInterface(t, typeToRegister) && !t.IsAbstract);
 
         foreach (var type in types)
         {

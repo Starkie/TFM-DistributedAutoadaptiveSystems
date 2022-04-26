@@ -5,6 +5,7 @@ using System.Diagnostics;
 using Knowledge.Service.DTOs;
 using Knowledge.Service.DTOs.Configuration;
 using Microsoft.Extensions.Logging;
+using Prometheus;
 
 public class KnowledgeServiceDiagnostics
 {
@@ -48,20 +49,47 @@ public class KnowledgeServiceDiagnostics
         KnowledgeServiceEventIds.ConfigurationNotFoundEventId,
         "Configuration '{ConfigurationName}' not found.");
 
+    private static readonly Action<ILogger, string, string, SetPropertyDTO, Exception> LogSetConfigurationMessage = LoggerMessage.Define<string, string, SetPropertyDTO>(
+        LogLevel.Information,
+        KnowledgeServiceEventIds.SetConfigurationId,
+        "Set service '{serviceName}' configuration key '{propertyName}' with value '{@setPropertyValue} ");
+
     private readonly ActivitySource _activitySource;
 
     private readonly ILogger _logger;
 
-    public KnowledgeServiceDiagnostics(ILoggerProvider loggerProvider)
+    private readonly Counter _getPropertyCounter;
+
+    private readonly Counter _getPropertyNotFoundCounter;
+
+    private readonly Counter _setPropertyCounter;
+
+    private readonly Counter _getConfigurationCounter;
+
+    private readonly Counter _getConfigurationNotFoundCounter;
+
+    private readonly Counter _setConfigurationCounter;
+
+    public KnowledgeServiceDiagnostics(ILoggerFactory loggerFactory)
     {
-        _logger = loggerProvider.CreateLogger(KnowledgeServiceConstants.AppName);
+        _logger = loggerFactory.CreateLogger(KnowledgeServiceConstants.AppName);
 
         _activitySource = new ActivitySource(KnowledgeServiceConstants.AppName);
+
+        _getPropertyCounter = Metrics.CreateCounter("knowledge_service_property_get_requests_count", "The number of requests to get the value of a property.");
+        _getPropertyNotFoundCounter = Metrics.CreateCounter("knowledge_service_property_get_not_found_count", "The number of requests to get the value of a property where its value was not found.");
+        _setPropertyCounter = Metrics.CreateCounter("knowledge_service_property_set_requests_count", "The number of requests to update the value of a property.");
+
+        _getConfigurationCounter = Metrics.CreateCounter("knowledge_service_configuration_get_requests_count", "The number of requests to get a configuration key of a service.");
+        _getConfigurationNotFoundCounter = Metrics.CreateCounter("knowledge_service_configuration_get_not_found_count", "The number of requests to get a configuration key where its value was not found.");
+        _setConfigurationCounter = Metrics.CreateCounter("knowledge_service_configuration_get_requests_count", "The number of requests to update the value of a property.");
     }
 
     public Activity LogGetProperty(string propertyName)
     {
         LogGetPropertyMessage(_logger, propertyName, null);
+
+        _getPropertyCounter.Inc();
 
         return _activitySource.StartActivity("Get Property's Value");
     }
@@ -69,6 +97,8 @@ public class KnowledgeServiceDiagnostics
     public Activity LogSetProperty(string propertyName, SetPropertyDTO setPropertyDto)
     {
         LogSetPropertyMessage(_logger, propertyName, setPropertyDto, null);
+
+        _setPropertyCounter.Inc();
 
         return _activitySource.StartActivity("Set Property's Value");
     }
@@ -83,6 +113,8 @@ public class KnowledgeServiceDiagnostics
     public void LogPropertyNotFound(string propertyName)
     {
         LogPropertyNotFoundMessage(_logger, propertyName, null);
+
+        _getPropertyNotFoundCounter.Inc();
     }
 
     public void LogPropertyFound(string propertyName, PropertyDTO value)
@@ -93,6 +125,8 @@ public class KnowledgeServiceDiagnostics
     public Activity LogGetConfiguration(string configurationName)
     {
         LogGetConfigurationMessage(_logger, configurationName, null);
+
+        _getConfigurationCounter.Inc();
 
         return _activitySource.StartActivity("Get Configuration Value");
     }
@@ -105,9 +139,21 @@ public class KnowledgeServiceDiagnostics
     public void LogConfigurationNotFound(string configurationName)
     {
         LogConfigurationNotFoundMessage(_logger, configurationName, null);
+
+        _getConfigurationNotFoundCounter.Inc();
     }
 
-    internal class KnowledgeServiceEventIds
+    public Activity LogSetConfigurationKey(string serviceName, string propertyName, SetPropertyDTO setPropertyDto)
+    {
+        LogSetConfigurationMessage(_logger, serviceName, propertyName, setPropertyDto, null);
+
+        _setConfigurationCounter.Inc();
+
+        return _activitySource.StartActivity("Set Configuration Key Value");
+    }
+
+
+    private class KnowledgeServiceEventIds
     {
         public static EventId GetPropertyEventId = new EventId(200, nameof(GetPropertyEventId));
 
@@ -124,5 +170,7 @@ public class KnowledgeServiceDiagnostics
         public static EventId ConfigurationFoundEventId = new EventId(800, nameof(ConfigurationFoundEventId));
 
         public static EventId ConfigurationNotFoundEventId = new EventId(900, nameof(ConfigurationNotFoundEventId));
+
+        public static EventId SetConfigurationId = new EventId(1000, nameof(SetConfigurationId));
     }
 }

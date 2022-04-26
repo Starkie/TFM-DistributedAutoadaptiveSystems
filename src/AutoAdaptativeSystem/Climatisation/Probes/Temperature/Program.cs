@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
-using Climatisation.Monitor.ApiClient.Api;
-using Climatisation.Monitor.ApiClient.Model;
+using Climatisation.Monitor.Service.ApiClient.Api;
+using Climatisation.Monitor.Service.ApiClient.Model;
 using Microsoft.Extensions.Configuration;
 using Climatisation.Probes.Temperature.Configuration;
 
@@ -34,5 +34,5 @@ while (true)
         Console.WriteLine(e);
     }
 
-    Thread.Sleep(TimeSpan.FromMinutes(1));
+    Thread.Sleep(TimeSpan.FromSeconds(15));
 }

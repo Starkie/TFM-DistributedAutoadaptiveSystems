@@ -1,4 +1,4 @@
-namespace Climatisation.Contacts;
+namespace Climatisation.Contracts;
 
 using System;
 using MediatR;

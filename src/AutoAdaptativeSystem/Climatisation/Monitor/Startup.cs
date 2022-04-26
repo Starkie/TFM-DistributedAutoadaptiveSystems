@@ -1,7 +1,8 @@
-namespace Climatisation.Monitor;
+namespace Climatisation.Monitor.Service;
 
 using System.Text.Json.Serialization;
-using Climatisation.Monitor.Configurations;
+using Climatisation.Monitor.Service.Configurations;
+using Climatisation.Monitor.Service.Diagnostics;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Monitoring.Service.ApiClient.Api;
+using OpenTelemetry.Resources;
+using Prometheus;
+using Serilog;
 
 public class Startup
 {
@@ -28,7 +32,11 @@ public class Startup
 
         services.AddSwagger("Room Monitor Service", string.Empty, "v1");
 
-        services.AddTracing(Configuration, ClimatisationMonitorConstants.AppName, "ver1.0");
+        var resourceBuilder = ResourceBuilder
+            .CreateDefault()
+            .AddService(ClimatisationMonitorConstants.AppName, "v1.0");
+
+        services.AddTracing(Configuration, resourceBuilder, ClimatisationMonitorConstants.AppName);
 
         services.AddScoped<IPropertyApi, PropertyApi>(_ =>
         {
@@ -59,10 +67,16 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
 
+        app.UseSerilogRequestLogging();
+
+        app.UseMetricServer();
+
         app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "RoomMonitor v1"));
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{ClimatisationMonitorConstants.AppName} v1"));
 
         app.UseRouting();
+
+        app.UseHttpMetrics();
 
         app.UseAuthorization();
 
