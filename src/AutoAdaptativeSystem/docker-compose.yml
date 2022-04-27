@@ -61,11 +61,11 @@ services:
     networks:
       - adaption-loop-network
 
-  temperatureprobe:
+  climatisation_airconditioner:
     build:
-      context: ./temperatureprobe
+      context: ./climatisation_airconditioner
       args:
-        ROOMMONITOR_SERVICEURI: "http://climatisation_monitor:80"
+        CLIMATISATIONMONITOR_SERVICEURI: "http://climatisation_monitor:80"
     networks:
       - adaption-loop-network
 

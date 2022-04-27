@@ -28,9 +28,9 @@ $Projects = @(
         ProjectName = "Climatisation.Monitor.Service"
     },
     @{
-        Name = "temperatureprobe"
-        Path = "Climatisation/Probes/Temperature"
-        ProjectName = "Climatisation.Probes.Temperature"
+        Name = "climatisation_airconditioner"
+        Path = "Climatisation/AirConditioner/Service"
+        ProjectName = "Climatisation.AirConditioner.Service"
     },
     @{
         Name = "analysis"
