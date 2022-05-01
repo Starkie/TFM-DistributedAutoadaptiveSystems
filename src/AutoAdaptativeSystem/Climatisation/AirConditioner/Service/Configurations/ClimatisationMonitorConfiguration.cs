@@ -1,4 +1,4 @@
-namespace Climatisation.AirConditioner.Service.Configuration;
+namespace Climatisation.AirConditioner.Service.Configurations;
 
 public class ClimatisationMonitorConfiguration
 {
