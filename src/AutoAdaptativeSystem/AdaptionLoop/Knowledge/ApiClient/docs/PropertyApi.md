@@ -4,10 +4,80 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**PropertyGet**](PropertyApi.md#propertyget) | **GET** /Property | Gets all the property registered in the knowledge.
 [**PropertyPropertyNameDelete**](PropertyApi.md#propertypropertynamedelete) | **DELETE** /Property/{propertyName} | Deletes the value of a given property.
 [**PropertyPropertyNameGet**](PropertyApi.md#propertypropertynameget) | **GET** /Property/{propertyName} | Gets a property given its name.
 [**PropertyPropertyNamePut**](PropertyApi.md#propertypropertynameput) | **PUT** /Property/{propertyName} | Sets value of a given property. If the property does not exist, it will be created.
 
+
+<a name="propertyget"></a>
+# **PropertyGet**
+> Dictionary&lt;string, PropertyDTO&gt; PropertyGet ()
+
+Gets all the property registered in the knowledge.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net.Http;
+using Knowledge.Service.ApiClient.Api;
+using Knowledge.Service.ApiClient.Client;
+using Knowledge.Service.ApiClient.Model;
+
+namespace Example
+{
+    public class PropertyGetExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "http://localhost";
+            // create instances of HttpClient, HttpClientHandler to be reused later with different Api classes
+            HttpClient httpClient = new HttpClient();
+            HttpClientHandler httpClientHandler = new HttpClientHandler();
+            var apiInstance = new PropertyApi(httpClient, config, httpClientHandler);
+
+            try
+            {
+                // Gets all the property registered in the knowledge.
+                Dictionary<string, PropertyDTO> result = apiInstance.PropertyGet();
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling PropertyApi.PropertyGet: " + e.Message );
+                Debug.Print("Status Code: "+ e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+### Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**Dictionary&lt;string, PropertyDTO&gt;**](PropertyDTO.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: text/plain, application/json, text/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | The collection of registered properties. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 <a name="propertypropertynamedelete"></a>
 # **PropertyPropertyNameDelete**

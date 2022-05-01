@@ -6,6 +6,45 @@
     "version": "v1"
   },
   "paths": {
+    "/Property": {
+      "get": {
+        "tags": [
+          "Property"
+        ],
+        "summary": "Gets all the property registered in the knowledge.",
+        "responses": {
+          "200": {
+            "description": "The collection of registered properties.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/PropertyDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/PropertyDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/PropertyDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/Property/{propertyName}": {
       "get": {
         "tags": [
@@ -211,6 +250,54 @@
         }
       }
     },
+    "/Service": {
+      "get": {
+        "tags": [
+          "Service"
+        ],
+        "summary": "Gets all the service configuration properties registered in the knowledge.",
+        "responses": {
+          "200": {
+            "description": "The collection of registered properties.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/ConfigurationDTO"
+                    }
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/ConfigurationDTO"
+                    }
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/ConfigurationDTO"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/Service/{serviceName}/configuration/{configurationName}": {
       "get": {
         "tags": [
@@ -280,6 +367,77 @@
           },
           "404": {
             "description": "The configuration property was not found.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Service"
+        ],
+        "summary": "Sets value of a given configuration property. If the property does not exist, it will be created.",
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "description": "The name of the service.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "configurationName",
+            "in": "path",
+            "description": "The name of the property to set.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The DTO containing the value to set.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPropertyDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPropertyDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPropertyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The property was updated or created successfully."
+          },
+          "400": {
+            "description": "There was an error with the provided arguments.",
             "content": {
               "text/plain": {
                 "schema": {

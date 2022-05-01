@@ -54,6 +54,17 @@ namespace Knowledge.Service.ApiClient.Test.Api
         }
 
         /// <summary>
+        /// Test ServiceGet
+        /// </summary>
+        [Fact]
+        public void ServiceGetTest()
+        {
+            // TODO uncomment below to test the method and replace null with proper value
+            //var response = instance.ServiceGet();
+            //Assert.IsType<Dictionary<string, Dictionary<string, ConfigurationDTO>>>(response);
+        }
+
+        /// <summary>
         /// Test ServiceServiceNameConfigurationConfigurationNameGet
         /// </summary>
         [Fact]
@@ -64,6 +75,19 @@ namespace Knowledge.Service.ApiClient.Test.Api
             //string configurationName = null;
             //var response = instance.ServiceServiceNameConfigurationConfigurationNameGet(serviceName, configurationName);
             //Assert.IsType<ConfigurationDTO>(response);
+        }
+
+        /// <summary>
+        /// Test ServiceServiceNameConfigurationConfigurationNamePut
+        /// </summary>
+        [Fact]
+        public void ServiceServiceNameConfigurationConfigurationNamePutTest()
+        {
+            // TODO uncomment below to test the method and replace null with proper value
+            //string serviceName = null;
+            //string configurationName = null;
+            //SetPropertyDTO? setPropertyDTO = null;
+            //instance.ServiceServiceNameConfigurationConfigurationNamePut(serviceName, configurationName, setPropertyDTO);
         }
     }
 }

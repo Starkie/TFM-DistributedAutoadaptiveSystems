@@ -28,6 +28,22 @@ namespace Knowledge.Service.ApiClient.Api
     {
         #region Synchronous Operations
         /// <summary>
+        /// Gets all the property registered in the knowledge.
+        /// </summary>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <returns>Dictionary&lt;string, PropertyDTO&gt;</returns>
+        Dictionary<string, PropertyDTO> PropertyGet();
+
+        /// <summary>
+        /// Gets all the property registered in the knowledge.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <returns>ApiResponse of Dictionary&lt;string, PropertyDTO&gt;</returns>
+        ApiResponse<Dictionary<string, PropertyDTO>> PropertyGetWithHttpInfo();
+        /// <summary>
         /// Deletes the value of a given property.
         /// </summary>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
@@ -92,6 +108,27 @@ namespace Knowledge.Service.ApiClient.Api
     public interface IPropertyApiAsync : IApiAccessor
     {
         #region Asynchronous Operations
+        /// <summary>
+        /// Gets all the property registered in the knowledge.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of Dictionary&lt;string, PropertyDTO&gt;</returns>
+        System.Threading.Tasks.Task<Dictionary<string, PropertyDTO>> PropertyGetAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <summary>
+        /// Gets all the property registered in the knowledge.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (Dictionary&lt;string, PropertyDTO&gt;)</returns>
+        System.Threading.Tasks.Task<ApiResponse<Dictionary<string, PropertyDTO>>> PropertyGetWithHttpInfoAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
         /// <summary>
         /// Deletes the value of a given property.
         /// </summary>
@@ -374,6 +411,111 @@ namespace Knowledge.Service.ApiClient.Api
                 return _exceptionFactory;
             }
             set { _exceptionFactory = value; }
+        }
+
+        /// <summary>
+        /// Gets all the property registered in the knowledge. 
+        /// </summary>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <returns>Dictionary&lt;string, PropertyDTO&gt;</returns>
+        public Dictionary<string, PropertyDTO> PropertyGet()
+        {
+            Knowledge.Service.ApiClient.Client.ApiResponse<Dictionary<string, PropertyDTO>> localVarResponse = PropertyGetWithHttpInfo();
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        /// Gets all the property registered in the knowledge. 
+        /// </summary>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <returns>ApiResponse of Dictionary&lt;string, PropertyDTO&gt;</returns>
+        public Knowledge.Service.ApiClient.Client.ApiResponse<Dictionary<string, PropertyDTO>> PropertyGetWithHttpInfo()
+        {
+            Knowledge.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Knowledge.Service.ApiClient.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "text/plain",
+                "application/json",
+                "text/json"
+            };
+
+            var localVarContentType = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null) localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+
+            var localVarAccept = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+
+
+
+            // make the HTTP request
+            var localVarResponse = this.Client.Get<Dictionary<string, PropertyDTO>>("/Property", localVarRequestOptions, this.Configuration);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("PropertyGet", localVarResponse);
+                if (_exception != null) throw _exception;
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Gets all the property registered in the knowledge. 
+        /// </summary>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of Dictionary&lt;string, PropertyDTO&gt;</returns>
+        public async System.Threading.Tasks.Task<Dictionary<string, PropertyDTO>> PropertyGetAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            Knowledge.Service.ApiClient.Client.ApiResponse<Dictionary<string, PropertyDTO>> localVarResponse = await PropertyGetWithHttpInfoAsync(cancellationToken).ConfigureAwait(false);
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        /// Gets all the property registered in the knowledge. 
+        /// </summary>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (Dictionary&lt;string, PropertyDTO&gt;)</returns>
+        public async System.Threading.Tasks.Task<Knowledge.Service.ApiClient.Client.ApiResponse<Dictionary<string, PropertyDTO>>> PropertyGetWithHttpInfoAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+
+            Knowledge.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Knowledge.Service.ApiClient.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "text/plain",
+                "application/json",
+                "text/json"
+            };
+
+
+            var localVarContentType = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null) localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+
+            var localVarAccept = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+
+
+
+            // make the HTTP request
+
+            var localVarResponse = await this.AsynchronousClient.GetAsync<Dictionary<string, PropertyDTO>>("/Property", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("PropertyGet", localVarResponse);
+                if (_exception != null) throw _exception;
+            }
+
+            return localVarResponse;
         }
 
         /// <summary>

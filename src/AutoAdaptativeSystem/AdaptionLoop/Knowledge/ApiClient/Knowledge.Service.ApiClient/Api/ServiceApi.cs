@@ -28,6 +28,22 @@ namespace Knowledge.Service.ApiClient.Api
     {
         #region Synchronous Operations
         /// <summary>
+        /// Gets all the service configuration properties registered in the knowledge.
+        /// </summary>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <returns>Dictionary&lt;string, Dictionary&lt;string, ConfigurationDTO&gt;&gt;</returns>
+        Dictionary<string, Dictionary<string, ConfigurationDTO>> ServiceGet();
+
+        /// <summary>
+        /// Gets all the service configuration properties registered in the knowledge.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <returns>ApiResponse of Dictionary&lt;string, Dictionary&lt;string, ConfigurationDTO&gt;&gt;</returns>
+        ApiResponse<Dictionary<string, Dictionary<string, ConfigurationDTO>>> ServiceGetWithHttpInfo();
+        /// <summary>
         /// Gets a configuration property given its name.
         /// </summary>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
@@ -47,6 +63,28 @@ namespace Knowledge.Service.ApiClient.Api
         /// <param name="configurationName">The name of the configuration property to find.</param>
         /// <returns>ApiResponse of ConfigurationDTO</returns>
         ApiResponse<ConfigurationDTO> ServiceServiceNameConfigurationConfigurationNameGetWithHttpInfo(string serviceName, string configurationName);
+        /// <summary>
+        /// Sets value of a given configuration property. If the property does not exist, it will be created.
+        /// </summary>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="serviceName">The name of the service.</param>
+        /// <param name="configurationName">The name of the property to set.</param>
+        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <returns></returns>
+        void ServiceServiceNameConfigurationConfigurationNamePut(string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?));
+
+        /// <summary>
+        /// Sets value of a given configuration property. If the property does not exist, it will be created.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="serviceName">The name of the service.</param>
+        /// <param name="configurationName">The name of the property to set.</param>
+        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <returns>ApiResponse of Object(void)</returns>
+        ApiResponse<Object> ServiceServiceNameConfigurationConfigurationNamePutWithHttpInfo(string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?));
         #endregion Synchronous Operations
     }
 
@@ -56,6 +94,27 @@ namespace Knowledge.Service.ApiClient.Api
     public interface IServiceApiAsync : IApiAccessor
     {
         #region Asynchronous Operations
+        /// <summary>
+        /// Gets all the service configuration properties registered in the knowledge.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of Dictionary&lt;string, Dictionary&lt;string, ConfigurationDTO&gt;&gt;</returns>
+        System.Threading.Tasks.Task<Dictionary<string, Dictionary<string, ConfigurationDTO>>> ServiceGetAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <summary>
+        /// Gets all the service configuration properties registered in the knowledge.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (Dictionary&lt;string, Dictionary&lt;string, ConfigurationDTO&gt;&gt;)</returns>
+        System.Threading.Tasks.Task<ApiResponse<Dictionary<string, Dictionary<string, ConfigurationDTO>>>> ServiceGetWithHttpInfoAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
         /// <summary>
         /// Gets a configuration property given its name.
         /// </summary>
@@ -81,6 +140,33 @@ namespace Knowledge.Service.ApiClient.Api
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse (ConfigurationDTO)</returns>
         System.Threading.Tasks.Task<ApiResponse<ConfigurationDTO>> ServiceServiceNameConfigurationConfigurationNameGetWithHttpInfoAsync(string serviceName, string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <summary>
+        /// Sets value of a given configuration property. If the property does not exist, it will be created.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="serviceName">The name of the service.</param>
+        /// <param name="configurationName">The name of the property to set.</param>
+        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of void</returns>
+        System.Threading.Tasks.Task ServiceServiceNameConfigurationConfigurationNamePutAsync(string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <summary>
+        /// Sets value of a given configuration property. If the property does not exist, it will be created.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="serviceName">The name of the service.</param>
+        /// <param name="configurationName">The name of the property to set.</param>
+        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse</returns>
+        System.Threading.Tasks.Task<ApiResponse<Object>> ServiceServiceNameConfigurationConfigurationNamePutWithHttpInfoAsync(string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
         #endregion Asynchronous Operations
     }
 
@@ -295,6 +381,111 @@ namespace Knowledge.Service.ApiClient.Api
         }
 
         /// <summary>
+        /// Gets all the service configuration properties registered in the knowledge. 
+        /// </summary>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <returns>Dictionary&lt;string, Dictionary&lt;string, ConfigurationDTO&gt;&gt;</returns>
+        public Dictionary<string, Dictionary<string, ConfigurationDTO>> ServiceGet()
+        {
+            Knowledge.Service.ApiClient.Client.ApiResponse<Dictionary<string, Dictionary<string, ConfigurationDTO>>> localVarResponse = ServiceGetWithHttpInfo();
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        /// Gets all the service configuration properties registered in the knowledge. 
+        /// </summary>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <returns>ApiResponse of Dictionary&lt;string, Dictionary&lt;string, ConfigurationDTO&gt;&gt;</returns>
+        public Knowledge.Service.ApiClient.Client.ApiResponse<Dictionary<string, Dictionary<string, ConfigurationDTO>>> ServiceGetWithHttpInfo()
+        {
+            Knowledge.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Knowledge.Service.ApiClient.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "text/plain",
+                "application/json",
+                "text/json"
+            };
+
+            var localVarContentType = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null) localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+
+            var localVarAccept = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+
+
+
+            // make the HTTP request
+            var localVarResponse = this.Client.Get<Dictionary<string, Dictionary<string, ConfigurationDTO>>>("/Service", localVarRequestOptions, this.Configuration);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("ServiceGet", localVarResponse);
+                if (_exception != null) throw _exception;
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Gets all the service configuration properties registered in the knowledge. 
+        /// </summary>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of Dictionary&lt;string, Dictionary&lt;string, ConfigurationDTO&gt;&gt;</returns>
+        public async System.Threading.Tasks.Task<Dictionary<string, Dictionary<string, ConfigurationDTO>>> ServiceGetAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            Knowledge.Service.ApiClient.Client.ApiResponse<Dictionary<string, Dictionary<string, ConfigurationDTO>>> localVarResponse = await ServiceGetWithHttpInfoAsync(cancellationToken).ConfigureAwait(false);
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        /// Gets all the service configuration properties registered in the knowledge. 
+        /// </summary>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (Dictionary&lt;string, Dictionary&lt;string, ConfigurationDTO&gt;&gt;)</returns>
+        public async System.Threading.Tasks.Task<Knowledge.Service.ApiClient.Client.ApiResponse<Dictionary<string, Dictionary<string, ConfigurationDTO>>>> ServiceGetWithHttpInfoAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+
+            Knowledge.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Knowledge.Service.ApiClient.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "text/plain",
+                "application/json",
+                "text/json"
+            };
+
+
+            var localVarContentType = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null) localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+
+            var localVarAccept = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+
+
+
+            // make the HTTP request
+
+            var localVarResponse = await this.AsynchronousClient.GetAsync<Dictionary<string, Dictionary<string, ConfigurationDTO>>>("/Service", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("ServiceGet", localVarResponse);
+                if (_exception != null) throw _exception;
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
         /// Gets a configuration property given its name. 
         /// </summary>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
@@ -421,6 +612,149 @@ namespace Knowledge.Service.ApiClient.Api
             if (this.ExceptionFactory != null)
             {
                 Exception _exception = this.ExceptionFactory("ServiceServiceNameConfigurationConfigurationNameGet", localVarResponse);
+                if (_exception != null) throw _exception;
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Sets value of a given configuration property. If the property does not exist, it will be created. 
+        /// </summary>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="serviceName">The name of the service.</param>
+        /// <param name="configurationName">The name of the property to set.</param>
+        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <returns></returns>
+        public void ServiceServiceNameConfigurationConfigurationNamePut(string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?))
+        {
+            ServiceServiceNameConfigurationConfigurationNamePutWithHttpInfo(serviceName, configurationName, setPropertyDTO);
+        }
+
+        /// <summary>
+        /// Sets value of a given configuration property. If the property does not exist, it will be created. 
+        /// </summary>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="serviceName">The name of the service.</param>
+        /// <param name="configurationName">The name of the property to set.</param>
+        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <returns>ApiResponse of Object(void)</returns>
+        public Knowledge.Service.ApiClient.Client.ApiResponse<Object> ServiceServiceNameConfigurationConfigurationNamePutWithHttpInfo(string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?))
+        {
+            // verify the required parameter 'serviceName' is set
+            if (serviceName == null)
+                throw new Knowledge.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'serviceName' when calling ServiceApi->ServiceServiceNameConfigurationConfigurationNamePut");
+
+            // verify the required parameter 'configurationName' is set
+            if (configurationName == null)
+                throw new Knowledge.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'configurationName' when calling ServiceApi->ServiceServiceNameConfigurationConfigurationNamePut");
+
+            Knowledge.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Knowledge.Service.ApiClient.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+                "application/json",
+                "text/json",
+                "application/_*+json"
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "text/plain",
+                "application/json",
+                "text/json"
+            };
+
+            var localVarContentType = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null) localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+
+            var localVarAccept = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+
+            localVarRequestOptions.PathParameters.Add("serviceName", Knowledge.Service.ApiClient.Client.ClientUtils.ParameterToString(serviceName)); // path parameter
+            localVarRequestOptions.PathParameters.Add("configurationName", Knowledge.Service.ApiClient.Client.ClientUtils.ParameterToString(configurationName)); // path parameter
+            localVarRequestOptions.Data = setPropertyDTO;
+
+
+            // make the HTTP request
+            var localVarResponse = this.Client.Put<Object>("/Service/{serviceName}/configuration/{configurationName}", localVarRequestOptions, this.Configuration);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("ServiceServiceNameConfigurationConfigurationNamePut", localVarResponse);
+                if (_exception != null) throw _exception;
+            }
+
+            return localVarResponse;
+        }
+
+        /// <summary>
+        /// Sets value of a given configuration property. If the property does not exist, it will be created. 
+        /// </summary>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="serviceName">The name of the service.</param>
+        /// <param name="configurationName">The name of the property to set.</param>
+        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of void</returns>
+        public async System.Threading.Tasks.Task ServiceServiceNameConfigurationConfigurationNamePutAsync(string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            await ServiceServiceNameConfigurationConfigurationNamePutWithHttpInfoAsync(serviceName, configurationName, setPropertyDTO, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Sets value of a given configuration property. If the property does not exist, it will be created. 
+        /// </summary>
+        /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="serviceName">The name of the service.</param>
+        /// <param name="configurationName">The name of the property to set.</param>
+        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse</returns>
+        public async System.Threading.Tasks.Task<Knowledge.Service.ApiClient.Client.ApiResponse<Object>> ServiceServiceNameConfigurationConfigurationNamePutWithHttpInfoAsync(string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            // verify the required parameter 'serviceName' is set
+            if (serviceName == null)
+                throw new Knowledge.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'serviceName' when calling ServiceApi->ServiceServiceNameConfigurationConfigurationNamePut");
+
+            // verify the required parameter 'configurationName' is set
+            if (configurationName == null)
+                throw new Knowledge.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'configurationName' when calling ServiceApi->ServiceServiceNameConfigurationConfigurationNamePut");
+
+
+            Knowledge.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Knowledge.Service.ApiClient.Client.RequestOptions();
+
+            string[] _contentTypes = new string[] {
+                "application/json", 
+                "text/json", 
+                "application/_*+json"
+            };
+
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "text/plain",
+                "application/json",
+                "text/json"
+            };
+
+
+            var localVarContentType = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null) localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+
+            var localVarAccept = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+
+            localVarRequestOptions.PathParameters.Add("serviceName", Knowledge.Service.ApiClient.Client.ClientUtils.ParameterToString(serviceName)); // path parameter
+            localVarRequestOptions.PathParameters.Add("configurationName", Knowledge.Service.ApiClient.Client.ClientUtils.ParameterToString(configurationName)); // path parameter
+            localVarRequestOptions.Data = setPropertyDTO;
+
+
+            // make the HTTP request
+
+            var localVarResponse = await this.AsynchronousClient.PutAsync<Object>("/Service/{serviceName}/configuration/{configurationName}", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("ServiceServiceNameConfigurationConfigurationNamePut", localVarResponse);
                 if (_exception != null) throw _exception;
             }
 
