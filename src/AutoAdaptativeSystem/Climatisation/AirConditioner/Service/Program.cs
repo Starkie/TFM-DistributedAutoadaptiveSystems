@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using System.IO;
+using Climatisation.AirConditioner.Contracts;
 using Serilog;
 
 public class Program
@@ -41,7 +42,7 @@ public class Program
     {
         return new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
-            .Enrich.WithProperty("source", ClimatisationAirConditionerServiceConstants.AppName)
+            .Enrich.WithProperty("source", ClimatisationAirConditionerConstants.AppName)
             .CreateLogger();
     }
 
