@@ -2,6 +2,7 @@ namespace Knowledge.Service.Controllers;
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Knowledge.Contracts.IntegrationEvents;
 using Knowledge.Service.Controllers.IntegrationEvents;
@@ -25,6 +26,18 @@ public class PropertyController : ControllerBase
     {
         _diagnostics = diagnostics;
         _mediator = mediator;
+    }
+
+    /// <summary>
+    ///    Gets all the property registered in the knowledge.
+    /// </summary>
+    /// <returns> An IActionResult with result of the query. </returns>
+    /// <response code="200"> The collection of registered properties. </response>
+    [HttpGet]
+    [ProducesResponseType(typeof(IDictionary<string, PropertyDTO>), StatusCodes.Status200OK)]
+    public IActionResult GetAll()
+    {
+        return Ok(properties);
     }
 
     /// <summary>

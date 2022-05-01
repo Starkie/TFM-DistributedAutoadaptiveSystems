@@ -2,6 +2,7 @@ namespace Knowledge.Service.Controllers;
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Knowledge.Contracts.IntegrationEvents;
 using Knowledge.Service.Diagnostics;
@@ -27,6 +28,18 @@ public sealed class ServiceController : ControllerBase
     {
         _diagnostics = diagnostics;
         _mediator = mediator;
+    }
+
+    /// <summary>
+    ///    Gets all the service configuration properties registered in the knowledge.
+    /// </summary>
+    /// <returns> An IActionResult with result of the query. </returns>
+    /// <response code="200"> The collection of registered properties. </response>
+    [HttpGet]
+    [ProducesResponseType(typeof(IDictionary<string, IDictionary<string, ConfigurationDTO>>), StatusCodes.Status200OK)]
+    public IActionResult GetAll()
+    {
+        return Ok(configuration);
     }
 
     /// <summary>
@@ -86,10 +99,10 @@ public sealed class ServiceController : ControllerBase
     /// <param name="configurationName"> The name of the property to set. </param>
     /// <param name="setPropertyDto"> The DTO containing the value to set. </param>
     /// <returns> An IActionResult with result of the command. </returns>
-    /// <response code="204"> The property was updated or created successfully. </response>
+    /// <response code="201"> The property was updated or created successfully. </response>
     /// <response code="400"> There was an error with the provided arguments. </response>
     [HttpPut("{serviceName}/configuration/{configurationName}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SetPropertyAsync([FromRoute]string serviceName, [FromRoute]string configurationName, [FromBody]SetPropertyDTO setPropertyDto)
     {
@@ -113,7 +126,13 @@ public sealed class ServiceController : ControllerBase
 
         await _mediator.Publish(new ConfigurationChangedIntegrationEvent(serviceName, configurationName));
 
-        return NoContent();
+        return this.CreatedAtAction(
+            "GetConfigurationProperty", new
+            {
+                serviceName = serviceName,
+                configurationName = configurationName,
+            },
+            string.Empty);
     }
 
     private static void InsertProperty(string serviceName, ConfigurationDTO newValue)
