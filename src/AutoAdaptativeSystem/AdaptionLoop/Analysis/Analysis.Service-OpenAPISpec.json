@@ -104,7 +104,7 @@
         },
         "responses": {
           "201": {
-            "description": "Success"
+            "description": "Created"
           },
           "400": {
             "description": "There was an error with the provided arguments.",
@@ -383,7 +383,7 @@
             "type": "string",
             "nullable": true
           },
-          "isActive": {
+          "isDeployed": {
             "type": "boolean"
           },
           "configurationProperties": {

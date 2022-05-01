@@ -65,12 +65,12 @@ namespace Analysis.Service.ApiClient.Test.Model
             // TODO unit test for the property 'ServiceName'
         }
         /// <summary>
-        /// Test the property 'IsActive'
+        /// Test the property 'IsDeployed'
         /// </summary>
         [Fact]
-        public void IsActiveTest()
+        public void IsDeployedTest()
         {
-            // TODO unit test for the property 'IsActive'
+            // TODO unit test for the property 'IsDeployed'
         }
         /// <summary>
         /// Test the property 'ConfigurationProperties'

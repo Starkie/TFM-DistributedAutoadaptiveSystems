@@ -152,7 +152,7 @@ No authorization required
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **201** | Success |  -  |
+| **201** | Created |  -  |
 | **400** | There was an error with the provided arguments. |  -  |
 | **204** | The property was updated or created successfully. |  -  |
 
