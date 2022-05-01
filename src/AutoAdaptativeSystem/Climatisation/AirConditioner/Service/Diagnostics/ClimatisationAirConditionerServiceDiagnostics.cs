@@ -1,7 +1,9 @@
 namespace Climatisation.AirConditioner.Service.Diagnostics;
 
 using System.Diagnostics;
+using Climatisation.AirConditioner.Contracts;
 using Climatisation.AirConditioner.Domain.Thermometers.ValueObjects;
+using Prometheus;
 
 public class ClimatisationAirConditionerServiceDiagnostics
 {
@@ -19,16 +21,22 @@ public class ClimatisationAirConditionerServiceDiagnostics
 
     private readonly ILogger _logger;
 
+    private readonly Gauge _temperatureGauge;
+
     public ClimatisationAirConditionerServiceDiagnostics(ILoggerFactory loggerFactory)
     {
-        _logger = loggerFactory.CreateLogger(ClimatisationAirConditionerServiceConstants.AppName);
+        _logger = loggerFactory.CreateLogger(ClimatisationAirConditionerConstants.AppName);
 
-        _activitySource = new ActivitySource(ClimatisationAirConditionerServiceConstants.AppName);
+        _activitySource = new ActivitySource(ClimatisationAirConditionerConstants.AppName);
+
+        _temperatureGauge = Metrics.CreateGauge("airconditioner_service_temperature", "The current temperature detected by the air conditioner.");
     }
 
     public Activity ReportingTemperature(Temperature temperature)
     {
         string formatedTemperature = temperature.Value.ToString("F2");
+
+        _temperatureGauge.Set(decimal.ToDouble(temperature.Value));
 
         LogTemperatureReport(_logger, formatedTemperature, temperature.Unit, null);
 
