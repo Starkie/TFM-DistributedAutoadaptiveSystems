@@ -10,10 +10,14 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\Core\Core.DependencyInjection\Core.DependencyInjection.csproj" />
+      <ProjectReference Include="..\..\Monitor\ApiClient\Climatisation.Monitor.Service.ApiClient\Climatisation.Monitor.Service.ApiClient.csproj" />
+      <ProjectReference Include="..\Contracts\AirConditioner.Contracts.csproj" />
       <ProjectReference Include="..\Domain\AirConditioner.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="MediatR" Version="10.0.1" />
+      <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     </ItemGroup>
 
