@@ -1,4 +1,4 @@
-namespace Climatisation.AirConditioner.Domain.AirConditioners;
+namespace Climatisation.AirConditioner.Contracts;
 
 public enum AirConditioningMode
 {

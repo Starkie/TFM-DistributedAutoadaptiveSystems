@@ -25,6 +25,7 @@
       <ProjectReference Include="..\..\..\Core\Core.DependencyInjection\Core.DependencyInjection.csproj" />
       <ProjectReference Include="..\..\Monitor\ApiClient\Climatisation.Monitor.Service.ApiClient\Climatisation.Monitor.Service.ApiClient.csproj" />
       <ProjectReference Include="..\Application\AirConditioner.Application.csproj" />
+      <ProjectReference Include="..\Contracts\AirConditioner.Contracts.csproj" />
     </ItemGroup>
 
 </Project>
