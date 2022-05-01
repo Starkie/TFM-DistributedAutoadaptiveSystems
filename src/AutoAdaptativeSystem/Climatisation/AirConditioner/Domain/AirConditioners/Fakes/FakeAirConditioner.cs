@@ -1,5 +1,6 @@
 namespace Climatisation.AirConditioner.Domain.AirConditioners.Fakes;
 
+using Climatisation.AirConditioner.Contracts;
 using Climatisation.AirConditioner.Domain.Thermometers.Fakes;
 using Climatisation.AirConditioner.Domain.Thermometers.ValueObjects;
 
