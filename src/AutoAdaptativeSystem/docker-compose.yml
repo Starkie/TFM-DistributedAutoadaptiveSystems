@@ -66,8 +66,16 @@ services:
       context: ./climatisation_airconditioner
       args:
         CLIMATISATIONMONITOR_SERVICEURI: "http://climatisation_monitor:80"
+        GRAFANA_LOKI_URI: "http://loki:3100"
+        JAEGER_HOST: "jaeger"
+        JAEGER_PORT: "6831"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+    ports:
+      - "11001:80"
     networks:
       - adaption-loop-network
+    restart: on-failure:5
 
   analysis:
     build:
@@ -174,7 +182,7 @@ services:
   grafana:
     build: ./grafana
     ports:
-      - "3001:3000"
+      - "3000:3000"
     networks:
       - monitoring-network
 
