@@ -23,6 +23,7 @@
     <ProjectReference Include="..\..\Core\Core.Bus\Core.Bus.csproj" />
     <ProjectReference Include="..\..\Core\Core.csproj" />
     <ProjectReference Include="..\..\Core\Core.DependencyInjection\Core.DependencyInjection.csproj" />
+    <ProjectReference Include="..\AirConditioner\Contracts\AirConditioner.Contracts.csproj" />
     <ProjectReference Include="..\Contracts\Climatisation.Contracts.csproj" />
   </ItemGroup>
 

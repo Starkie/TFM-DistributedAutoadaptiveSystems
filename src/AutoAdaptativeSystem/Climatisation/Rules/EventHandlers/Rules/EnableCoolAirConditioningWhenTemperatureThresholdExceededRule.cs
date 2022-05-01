@@ -7,13 +7,16 @@ using System.Threading.Tasks;
 using Analysis.Contracts.Attributes;
 using Analysis.Service.ApiClient.Api;
 using Analysis.Service.ApiClient.Model;
+using Climatisation.AirConditioner.Contracts;
 using Climatisation.Contracts;
 using Climatisation.Rules.Service.Diagnostics;
 using Climatisation.Rules.Service.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 [RuleKnowledgePropertyDependency(Temperature, HotTemperatureThreshold)]
-[RuleKnowledgeConfigurationDependency(AirConditioningServiceName, ModeConfiguration)]
+[RuleKnowledgeConfigurationDependency(
+    ClimatisationAirConditionerConstants.AppName,
+    ClimatisationAirConditionerConstants.Configuration.Mode)]
 public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : RuleBase
 {
     private const string HotTemperatureThreshold = "HotTemperatureThreshold";
@@ -22,14 +25,7 @@ public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : Rul
 
     private const string Temperature = "Temperature";
 
-    private const string CoolingMode = "Cooling";
-
-    // TODO: Extract to constants of the Air Conditiniong service.
-    private const string AirConditioningServiceName = "airconditioning-service";
-
     private const string SymptomName = "temperature-greater-than-target";
-
-    private const string ModeConfiguration = "Mode";
 
     private static readonly IEnumerable<string> propertyNames =
         typeof(EnableCoolAirConditioningWhenTemperatureThresholdExceededRule)
@@ -66,16 +62,20 @@ public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : Rul
             return false;
         }
 
-        var isEnabled = await _configurationService.GetConfigurationKey<bool?>(AirConditioningServiceName, ModeConfiguration, CancellationToken.None);
+        var airConditionerMode = await _configurationService.GetConfigurationKey<AirConditioningMode?>(
+            ClimatisationAirConditionerConstants.AppName,
+            ClimatisationAirConditionerConstants.Configuration.Mode,
+            CancellationToken.None);
 
         var thresholdTemperature = await _configurationService.GetConfigurationKey<float?>(
-            AirConditioningServiceName,
+            ClimatisationAirConditionerConstants.AppName,
         HotTemperatureThreshold,
             CancellationToken.None);
 
         thresholdTemperature ??= 25.0f;
 
-        return isEnabled != true && currentTemperature.Value > thresholdTemperature;
+        return currentTemperature.Value > thresholdTemperature
+            && airConditionerMode != AirConditioningMode.Cooling;
     }
 
     protected override async Task Execute()
@@ -84,11 +84,15 @@ public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : Rul
         {
             new()
             {
-                ServiceName = AirConditioningServiceName,
+                ServiceName = ClimatisationAirConditionerConstants.AppName,
                 IsDeployed = true,
                 ConfigurationProperties = new List<ConfigurationProperty>()
                 {
-                    new() { Name = ModeConfiguration, Value = CoolingMode },
+                    new()
+                    {
+                        Name = ClimatisationAirConditionerConstants.Configuration.Mode,
+                        Value = AirConditioningMode.Cooling.ToString(),
+                    },
                 },
             },
         };
