@@ -43,6 +43,13 @@ scrape_configs:
           host: localhost
           source: Monitoring.Service
 
+  - job_name: climatisation_airconditioner
+    static_configs:
+      - targets: ['climatisation_airconditioner:80']
+        labels:
+          host: localhost
+          source: Climatisation.AirConditioner.Service
+
   - job_name: climatisation_monitor
     static_configs:
       - targets: ['climatisation_monitor:80']
