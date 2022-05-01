@@ -1,14 +1,17 @@
 namespace Climatisation.AirConditioner.Application.AirConditioners;
 
+using Climatisation.AirConditioner.Contracts;
 using Climatisation.AirConditioner.Domain.Thermometers.ValueObjects;
 
 public interface IAirConditionerService
 {
-    void TurnOff();
+    Task TurnOff();
 
     Temperature GetRoomTemperature();
 
-    void Cool();
+    Task Cool();
 
-    void Heat();
+    AirConditioningMode GetCurrentMode();
+
+    Task Heat();
 }
