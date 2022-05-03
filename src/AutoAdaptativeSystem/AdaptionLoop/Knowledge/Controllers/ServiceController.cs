@@ -3,6 +3,7 @@ namespace Knowledge.Service.Controllers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Knowledge.Contracts.IntegrationEvents;
 using Knowledge.Service.Diagnostics;
@@ -93,46 +94,49 @@ public sealed class ServiceController : ControllerBase
     }
 
     /// <summary>
-    ///    Sets value of a given configuration property. If the property does not exist, it will be created.
+    ///    Sets the values for the given configuration properties. If a given property
+    ///     does not exist, it will be created.
     /// </summary>
     /// <param name="serviceName"> The name of the service. </param>
-    /// <param name="configurationName"> The name of the property to set. </param>
-    /// <param name="setPropertyDto"> The DTO containing the value to set. </param>
+    /// <param name="setPropertiesDtos"> The collection of properties to set. </param>
     /// <returns> An IActionResult with result of the command. </returns>
-    /// <response code="201"> The property was updated or created successfully. </response>
+    /// <response code="204"> The properties were created or updated successfully. </response>
     /// <response code="400"> There was an error with the provided arguments. </response>
-    [HttpPut("{serviceName}/configuration/{configurationName}")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [HttpPut("{serviceName}/configuration")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> SetPropertyAsync([FromRoute]string serviceName, [FromRoute]string configurationName, [FromBody]SetPropertyDTO setPropertyDto)
+    public async Task<IActionResult> SetPropertyAsync([FromRoute]string serviceName, [FromBody]ICollection<SetPropertyDTO> setPropertiesDtos)
     {
-        if (string.IsNullOrEmpty(serviceName)
-            || string.IsNullOrEmpty(configurationName)
-            || string.IsNullOrEmpty(setPropertyDto?.Value))
+        if (string.IsNullOrEmpty(serviceName))
         {
             return BadRequest();
         }
 
-        using var activity = _diagnostics.LogSetConfigurationKey(serviceName, configurationName, setPropertyDto);
+        using var activity = _diagnostics.LogSetConfigurationKeys(serviceName, setPropertiesDtos.Count);
 
-        ConfigurationDTO newValue = new()
+        foreach (var property in setPropertiesDtos)
         {
-            Name = configurationName,
-            Value = setPropertyDto.Value,
-            LastModification = DateTime.UtcNow,
-        };
-
-        InsertProperty(serviceName, newValue);
-
-        await _mediator.Publish(new ConfigurationChangedIntegrationEvent(serviceName, configurationName));
-
-        return this.CreatedAtAction(
-            "GetConfigurationProperty", new
+            if (string.IsNullOrEmpty(property.Name)
+                || string.IsNullOrEmpty(property.Value))
             {
-                serviceName = serviceName,
-                configurationName = configurationName,
-            },
-            string.Empty);
+                return BadRequest();
+            }
+
+            _diagnostics.LogSetConfigurationKey(serviceName, property.Name, property);
+
+            ConfigurationDTO newValue = new()
+            {
+                Name = property.Name,
+                Value = property.Value,
+                LastModification = DateTime.UtcNow,
+            };
+
+            InsertProperty(serviceName, newValue);
+
+            await _mediator.Publish(new ConfigurationChangedIntegrationEvent(serviceName, property.Name));
+        }
+
+        return NoContent();
     }
 
     private static void InsertProperty(string serviceName, ConfigurationDTO newValue)

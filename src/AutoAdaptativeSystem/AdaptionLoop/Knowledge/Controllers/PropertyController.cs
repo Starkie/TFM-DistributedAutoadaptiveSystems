@@ -3,6 +3,7 @@ namespace Knowledge.Service.Controllers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Knowledge.Contracts.IntegrationEvents;
 using Knowledge.Service.Controllers.IntegrationEvents;
@@ -76,38 +77,47 @@ public class PropertyController : ControllerBase
     }
 
     /// <summary>
-    ///    Sets value of a given property. If the property does not exist, it will be created.
+    ///    Sets the value of the given properties. If a given property does not exist, it will be created.
     /// </summary>
-    /// <param name="propertyName"> The name of the property to set. </param>
-    /// <param name="setPropertyDto"> The DTO containing the value to set. </param>
+    /// <param name="setPropertiesDtos"> The collection of properties to set.. </param>
     /// <returns> An IActionResult with result of the command. </returns>
     /// <response code="204"> The property was updated or created successfully. </response>
     /// <response code="400"> There was an error with the provided arguments. </response>
-    [HttpPut("{propertyName}")]
+    [HttpPut]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> SetPropertyAsync([FromRoute]string propertyName, [FromBody]SetPropertyDTO setPropertyDto)
+    public async Task<IActionResult> SetPropertyAsync([FromBody]ICollection<SetPropertyDTO> setPropertiesDtos)
     {
-        if (string.IsNullOrEmpty(propertyName) || string.IsNullOrEmpty(setPropertyDto?.Value))
+        using var activity = _diagnostics.LogSetProperties(setPropertiesDtos.Count);
+
+        foreach (var propertyDto in setPropertiesDtos)
         {
-            return BadRequest();
+            if (string.IsNullOrEmpty(propertyDto.Name) || string.IsNullOrEmpty(propertyDto.Value))
+            {
+                return BadRequest();
+            }
+
+            await SetProperty(propertyDto);
         }
 
-        using var activity = _diagnostics.LogSetProperty(propertyName, setPropertyDto);
+        return NoContent();
+    }
+
+    private async Task SetProperty(SetPropertyDTO propertyDto)
+    {
+        _diagnostics.LogSetProperty(propertyDto);
 
         PropertyDTO newValue = new()
         {
-            Value = setPropertyDto.Value,
+            Value = propertyDto.Value,
             LastModification = DateTime.UtcNow,
         };
 
-        properties.AddOrUpdate(propertyName, newValue, (_, _) => newValue);
+        properties.AddOrUpdate(propertyDto.Name, newValue, (_, _) => newValue);
 
         // TODO: Investigar persistencia de mensajes:
         // https://stackoverflow.com/questions/6148381/rabbitmq-persistent-message-with-topic-exchange
-        await _mediator.Publish(new PropertyChangedIntegrationEvent(propertyName));
-
-        return NoContent();
+        await _mediator.Publish(new PropertyChangedIntegrationEvent(propertyDto.Name));
     }
 
     /// <summary>
