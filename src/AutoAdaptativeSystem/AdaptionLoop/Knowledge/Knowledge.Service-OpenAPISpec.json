@@ -43,6 +43,66 @@
             }
           }
         }
+      },
+      "put": {
+        "tags": [
+          "Property"
+        ],
+        "summary": "Sets the value of the given properties. If a given property does not exist, it will be created.",
+        "requestBody": {
+          "description": "The collection of properties to set..",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SetPropertyDTO"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SetPropertyDTO"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SetPropertyDTO"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The property was updated or created successfully."
+          },
+          "400": {
+            "description": "There was an error with the provided arguments.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/Property/{propertyName}": {
@@ -102,68 +162,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "description": "There was an error with the provided arguments.",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Property"
-        ],
-        "summary": "Sets value of a given property. If the property does not exist, it will be created.",
-        "parameters": [
-          {
-            "name": "propertyName",
-            "in": "path",
-            "description": "The name of the property to set.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "The DTO containing the value to set.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetPropertyDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetPropertyDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetPropertyDTO"
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": "The property was updated or created successfully."
           },
           "400": {
             "description": "There was an error with the provided arguments.",
@@ -386,12 +384,14 @@
             }
           }
         }
-      },
+      }
+    },
+    "/Service/{serviceName}/configuration": {
       "put": {
         "tags": [
           "Service"
         ],
-        "summary": "Sets value of a given configuration property. If the property does not exist, it will be created.",
+        "summary": "Sets the values for the given configuration properties. If a given property\r\n does not exist, it will be created.",
         "parameters": [
           {
             "name": "serviceName",
@@ -401,40 +401,40 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "configurationName",
-            "in": "path",
-            "description": "The name of the property to set.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "requestBody": {
-          "description": "The DTO containing the value to set.",
+          "description": "The collection of properties to set.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SetPropertyDTO"
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SetPropertyDTO"
+                }
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/SetPropertyDTO"
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SetPropertyDTO"
+                }
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/SetPropertyDTO"
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SetPropertyDTO"
+                }
               }
             }
           }
         },
         "responses": {
           "204": {
-            "description": "The property was updated or created successfully."
+            "description": "The properties were created or updated successfully."
           },
           "400": {
             "description": "There was an error with the provided arguments.",
@@ -465,10 +465,6 @@
       "ConfigurationDTO": {
         "type": "object",
         "properties": {
-          "serviceName": {
-            "type": "string",
-            "nullable": true
-          },
           "name": {
             "type": "string",
             "nullable": true
@@ -528,6 +524,10 @@
       "SetPropertyDTO": {
         "type": "object",
         "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
           "value": {
             "type": "string",
             "nullable": true

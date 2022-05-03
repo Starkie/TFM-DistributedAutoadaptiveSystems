@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 VisualStudioVersion = 12.0.0.0
 MinimumVisualStudioVersion = 10.0.0.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knowledge.Service.ApiClient", "src\Knowledge.Service.ApiClient\Knowledge.Service.ApiClient.csproj", "{EC280D52-75A6-418C-98BF-5EE32FDBA4DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knowledge.Service.ApiClient", "src\Knowledge.Service.ApiClient\Knowledge.Service.ApiClient.csproj", "{BFCEACB0-64DC-49CF-B81B-D0FE28272D34}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knowledge.Service.ApiClient.Test", "src\Knowledge.Service.ApiClient.Test\Knowledge.Service.ApiClient.Test.csproj", "{19F1DEBC-DE5E-4517-8062-F000CD499087}"
 EndProject
@@ -12,10 +12,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EC280D52-75A6-418C-98BF-5EE32FDBA4DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EC280D52-75A6-418C-98BF-5EE32FDBA4DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EC280D52-75A6-418C-98BF-5EE32FDBA4DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EC280D52-75A6-418C-98BF-5EE32FDBA4DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFCEACB0-64DC-49CF-B81B-D0FE28272D34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFCEACB0-64DC-49CF-B81B-D0FE28272D34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFCEACB0-64DC-49CF-B81B-D0FE28272D34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFCEACB0-64DC-49CF-B81B-D0FE28272D34}.Release|Any CPU.Build.0 = Release|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Release|Any CPU.ActiveCfg = Release|Any CPU

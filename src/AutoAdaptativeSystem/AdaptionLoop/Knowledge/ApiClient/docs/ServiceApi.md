@@ -6,7 +6,7 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**ServiceGet**](ServiceApi.md#serviceget) | **GET** /Service | Gets all the service configuration properties registered in the knowledge.
 [**ServiceServiceNameConfigurationConfigurationNameGet**](ServiceApi.md#serviceservicenameconfigurationconfigurationnameget) | **GET** /Service/{serviceName}/configuration/{configurationName} | Gets a configuration property given its name.
-[**ServiceServiceNameConfigurationConfigurationNamePut**](ServiceApi.md#serviceservicenameconfigurationconfigurationnameput) | **PUT** /Service/{serviceName}/configuration/{configurationName} | Sets value of a given configuration property. If the property does not exist, it will be created.
+[**ServiceServiceNameConfigurationPut**](ServiceApi.md#serviceservicenameconfigurationput) | **PUT** /Service/{serviceName}/configuration | Sets the values for the given configuration properties. If a given property   does not exist, it will be created.
 
 
 <a name="serviceget"></a>
@@ -155,11 +155,11 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-<a name="serviceservicenameconfigurationconfigurationnameput"></a>
-# **ServiceServiceNameConfigurationConfigurationNamePut**
-> void ServiceServiceNameConfigurationConfigurationNamePut (string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = null)
+<a name="serviceservicenameconfigurationput"></a>
+# **ServiceServiceNameConfigurationPut**
+> void ServiceServiceNameConfigurationPut (string serviceName, List<SetPropertyDTO>? setPropertyDTO = null)
 
-Sets value of a given configuration property. If the property does not exist, it will be created.
+Sets the values for the given configuration properties. If a given property   does not exist, it will be created.
 
 ### Example
 ```csharp
@@ -172,7 +172,7 @@ using Knowledge.Service.ApiClient.Model;
 
 namespace Example
 {
-    public class ServiceServiceNameConfigurationConfigurationNamePutExample
+    public class ServiceServiceNameConfigurationPutExample
     {
         public static void Main()
         {
@@ -183,17 +183,16 @@ namespace Example
             HttpClientHandler httpClientHandler = new HttpClientHandler();
             var apiInstance = new ServiceApi(httpClient, config, httpClientHandler);
             var serviceName = "serviceName_example";  // string | The name of the service.
-            var configurationName = "configurationName_example";  // string | The name of the property to set.
-            var setPropertyDTO = new SetPropertyDTO?(); // SetPropertyDTO? | The DTO containing the value to set. (optional) 
+            var setPropertyDTO = new List<SetPropertyDTO>?(); // List<SetPropertyDTO>? | The collection of properties to set. (optional) 
 
             try
             {
-                // Sets value of a given configuration property. If the property does not exist, it will be created.
-                apiInstance.ServiceServiceNameConfigurationConfigurationNamePut(serviceName, configurationName, setPropertyDTO);
+                // Sets the values for the given configuration properties. If a given property   does not exist, it will be created.
+                apiInstance.ServiceServiceNameConfigurationPut(serviceName, setPropertyDTO);
             }
             catch (ApiException  e)
             {
-                Debug.Print("Exception when calling ServiceApi.ServiceServiceNameConfigurationConfigurationNamePut: " + e.Message );
+                Debug.Print("Exception when calling ServiceApi.ServiceServiceNameConfigurationPut: " + e.Message );
                 Debug.Print("Status Code: "+ e.ErrorCode);
                 Debug.Print(e.StackTrace);
             }
@@ -207,8 +206,7 @@ namespace Example
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **serviceName** | **string**| The name of the service. | 
- **configurationName** | **string**| The name of the property to set. | 
- **setPropertyDTO** | [**SetPropertyDTO?**](SetPropertyDTO?.md)| The DTO containing the value to set. | [optional] 
+ **setPropertyDTO** | [**List&lt;SetPropertyDTO&gt;?**](SetPropertyDTO.md)| The collection of properties to set. | [optional] 
 
 ### Return type
 
@@ -227,7 +225,7 @@ No authorization required
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **204** | The property was updated or created successfully. |  -  |
+| **204** | The properties were created or updated successfully. |  -  |
 | **400** | There was an error with the provided arguments. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

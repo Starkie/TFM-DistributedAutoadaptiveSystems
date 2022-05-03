@@ -80,25 +80,23 @@ namespace Knowledge.Service.ApiClient.Api
         /// <returns>ApiResponse of PropertyDTO</returns>
         ApiResponse<PropertyDTO> PropertyPropertyNameGetWithHttpInfo(string propertyName);
         /// <summary>
-        /// Sets value of a given property. If the property does not exist, it will be created.
+        /// Sets the value of the given properties. If a given property does not exist, it will be created.
         /// </summary>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="propertyName">The name of the property to set.</param>
-        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="setPropertyDTO">The collection of properties to set.. (optional)</param>
         /// <returns></returns>
-        void PropertyPropertyNamePut(string propertyName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?));
+        void PropertyPut(List<SetPropertyDTO>? setPropertyDTO = default(List<SetPropertyDTO>?));
 
         /// <summary>
-        /// Sets value of a given property. If the property does not exist, it will be created.
+        /// Sets the value of the given properties. If a given property does not exist, it will be created.
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="propertyName">The name of the property to set.</param>
-        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="setPropertyDTO">The collection of properties to set.. (optional)</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        ApiResponse<Object> PropertyPropertyNamePutWithHttpInfo(string propertyName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?));
+        ApiResponse<Object> PropertyPutWithHttpInfo(List<SetPropertyDTO>? setPropertyDTO = default(List<SetPropertyDTO>?));
         #endregion Synchronous Operations
     }
 
@@ -176,30 +174,28 @@ namespace Knowledge.Service.ApiClient.Api
         /// <returns>Task of ApiResponse (PropertyDTO)</returns>
         System.Threading.Tasks.Task<ApiResponse<PropertyDTO>> PropertyPropertyNameGetWithHttpInfoAsync(string propertyName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
         /// <summary>
-        /// Sets value of a given property. If the property does not exist, it will be created.
+        /// Sets the value of the given properties. If a given property does not exist, it will be created.
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="propertyName">The name of the property to set.</param>
-        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="setPropertyDTO">The collection of properties to set.. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of void</returns>
-        System.Threading.Tasks.Task PropertyPropertyNamePutAsync(string propertyName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task PropertyPutAsync(List<SetPropertyDTO>? setPropertyDTO = default(List<SetPropertyDTO>?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <summary>
-        /// Sets value of a given property. If the property does not exist, it will be created.
+        /// Sets the value of the given properties. If a given property does not exist, it will be created.
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="propertyName">The name of the property to set.</param>
-        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="setPropertyDTO">The collection of properties to set.. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse</returns>
-        System.Threading.Tasks.Task<ApiResponse<Object>> PropertyPropertyNamePutWithHttpInfoAsync(string propertyName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ApiResponse<Object>> PropertyPutWithHttpInfoAsync(List<SetPropertyDTO>? setPropertyDTO = default(List<SetPropertyDTO>?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
         #endregion Asynchronous Operations
     }
 
@@ -755,30 +751,24 @@ namespace Knowledge.Service.ApiClient.Api
         }
 
         /// <summary>
-        /// Sets value of a given property. If the property does not exist, it will be created. 
+        /// Sets the value of the given properties. If a given property does not exist, it will be created. 
         /// </summary>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="propertyName">The name of the property to set.</param>
-        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="setPropertyDTO">The collection of properties to set.. (optional)</param>
         /// <returns></returns>
-        public void PropertyPropertyNamePut(string propertyName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?))
+        public void PropertyPut(List<SetPropertyDTO>? setPropertyDTO = default(List<SetPropertyDTO>?))
         {
-            PropertyPropertyNamePutWithHttpInfo(propertyName, setPropertyDTO);
+            PropertyPutWithHttpInfo(setPropertyDTO);
         }
 
         /// <summary>
-        /// Sets value of a given property. If the property does not exist, it will be created. 
+        /// Sets the value of the given properties. If a given property does not exist, it will be created. 
         /// </summary>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="propertyName">The name of the property to set.</param>
-        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="setPropertyDTO">The collection of properties to set.. (optional)</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        public Knowledge.Service.ApiClient.Client.ApiResponse<Object> PropertyPropertyNamePutWithHttpInfo(string propertyName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?))
+        public Knowledge.Service.ApiClient.Client.ApiResponse<Object> PropertyPutWithHttpInfo(List<SetPropertyDTO>? setPropertyDTO = default(List<SetPropertyDTO>?))
         {
-            // verify the required parameter 'propertyName' is set
-            if (propertyName == null)
-                throw new Knowledge.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'propertyName' when calling PropertyApi->PropertyPropertyNamePut");
-
             Knowledge.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Knowledge.Service.ApiClient.Client.RequestOptions();
 
             string[] _contentTypes = new string[] {
@@ -800,16 +790,15 @@ namespace Knowledge.Service.ApiClient.Api
             var localVarAccept = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
             if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
 
-            localVarRequestOptions.PathParameters.Add("propertyName", Knowledge.Service.ApiClient.Client.ClientUtils.ParameterToString(propertyName)); // path parameter
             localVarRequestOptions.Data = setPropertyDTO;
 
 
             // make the HTTP request
-            var localVarResponse = this.Client.Put<Object>("/Property/{propertyName}", localVarRequestOptions, this.Configuration);
+            var localVarResponse = this.Client.Put<Object>("/Property", localVarRequestOptions, this.Configuration);
 
             if (this.ExceptionFactory != null)
             {
-                Exception _exception = this.ExceptionFactory("PropertyPropertyNamePut", localVarResponse);
+                Exception _exception = this.ExceptionFactory("PropertyPut", localVarResponse);
                 if (_exception != null) throw _exception;
             }
 
@@ -817,32 +806,26 @@ namespace Knowledge.Service.ApiClient.Api
         }
 
         /// <summary>
-        /// Sets value of a given property. If the property does not exist, it will be created. 
+        /// Sets the value of the given properties. If a given property does not exist, it will be created. 
         /// </summary>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="propertyName">The name of the property to set.</param>
-        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="setPropertyDTO">The collection of properties to set.. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of void</returns>
-        public async System.Threading.Tasks.Task PropertyPropertyNamePutAsync(string propertyName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task PropertyPutAsync(List<SetPropertyDTO>? setPropertyDTO = default(List<SetPropertyDTO>?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            await PropertyPropertyNamePutWithHttpInfoAsync(propertyName, setPropertyDTO, cancellationToken).ConfigureAwait(false);
+            await PropertyPutWithHttpInfoAsync(setPropertyDTO, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Sets value of a given property. If the property does not exist, it will be created. 
+        /// Sets the value of the given properties. If a given property does not exist, it will be created. 
         /// </summary>
         /// <exception cref="Knowledge.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="propertyName">The name of the property to set.</param>
-        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="setPropertyDTO">The collection of properties to set.. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse</returns>
-        public async System.Threading.Tasks.Task<Knowledge.Service.ApiClient.Client.ApiResponse<Object>> PropertyPropertyNamePutWithHttpInfoAsync(string propertyName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<Knowledge.Service.ApiClient.Client.ApiResponse<Object>> PropertyPutWithHttpInfoAsync(List<SetPropertyDTO>? setPropertyDTO = default(List<SetPropertyDTO>?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            // verify the required parameter 'propertyName' is set
-            if (propertyName == null)
-                throw new Knowledge.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'propertyName' when calling PropertyApi->PropertyPropertyNamePut");
-
 
             Knowledge.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Knowledge.Service.ApiClient.Client.RequestOptions();
 
@@ -866,17 +849,16 @@ namespace Knowledge.Service.ApiClient.Api
             var localVarAccept = Knowledge.Service.ApiClient.Client.ClientUtils.SelectHeaderAccept(_accepts);
             if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
 
-            localVarRequestOptions.PathParameters.Add("propertyName", Knowledge.Service.ApiClient.Client.ClientUtils.ParameterToString(propertyName)); // path parameter
             localVarRequestOptions.Data = setPropertyDTO;
 
 
             // make the HTTP request
 
-            var localVarResponse = await this.AsynchronousClient.PutAsync<Object>("/Property/{propertyName}", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+            var localVarResponse = await this.AsynchronousClient.PutAsync<Object>("/Property", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
 
             if (this.ExceptionFactory != null)
             {
-                Exception _exception = this.ExceptionFactory("PropertyPropertyNamePut", localVarResponse);
+                Exception _exception = this.ExceptionFactory("PropertyPut", localVarResponse);
                 if (_exception != null) throw _exception;
             }
 
