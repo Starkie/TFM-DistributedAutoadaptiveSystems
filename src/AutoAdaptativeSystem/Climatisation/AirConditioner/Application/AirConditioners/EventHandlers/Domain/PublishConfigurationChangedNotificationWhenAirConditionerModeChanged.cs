@@ -22,10 +22,14 @@ public class PublishConfigurationChangedNotificationWhenAirConditionerModeChange
         // TODO: Declare activity.
         // using Activity activity = _diag
 
-        await _serviceApi.ServiceServiceNameConfigurationConfigurationNamePutAsync(
+        await _serviceApi.ServiceServiceNameConfigurationPutAsync(
             ClimatisationAirConditionerConstants.AppName,
-            ClimatisationAirConditionerConstants.Configuration.Mode,
-            new SetPropertyDTO(notification.Mode.ToString()),
+            new()
+            {
+                new SetPropertyDTO(
+                ClimatisationAirConditionerConstants.Configuration.Mode,
+                notification.Mode.ToString()),
+            },
             cancellationToken);
     }
 }
