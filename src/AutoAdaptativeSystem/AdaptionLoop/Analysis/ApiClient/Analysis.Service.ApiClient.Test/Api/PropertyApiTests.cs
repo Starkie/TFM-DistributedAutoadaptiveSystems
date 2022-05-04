@@ -64,17 +64,5 @@ namespace Analysis.Service.ApiClient.Test.Api
             //var response = instance.PropertyPropertyNameGet(propertyName);
             //Assert.IsType<PropertyDTO>(response);
         }
-
-        /// <summary>
-        /// Test PropertyPropertyNamePut
-        /// </summary>
-        [Fact]
-        public void PropertyPropertyNamePutTest()
-        {
-            // TODO uncomment below to test the method and replace null with proper value
-            //string propertyName = null;
-            //PropertyDTO? propertyDTO = null;
-            //instance.PropertyPropertyNamePut(propertyName, propertyDTO);
-        }
     }
 }

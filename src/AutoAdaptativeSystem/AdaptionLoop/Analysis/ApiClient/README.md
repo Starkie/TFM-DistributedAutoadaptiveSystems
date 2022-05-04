@@ -139,7 +139,6 @@ All URIs are relative to *http://localhost*
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *PropertyApi* | [**PropertyPropertyNameGet**](docs/PropertyApi.md#propertypropertynameget) | **GET** /Property/{propertyName} | Looks for the Knowledge property with the given name.
-*PropertyApi* | [**PropertyPropertyNamePut**](docs/PropertyApi.md#propertypropertynameput) | **PUT** /Property/{propertyName} | Sets value of a given property. If the property does not exist, it will be created.
 *ServiceApi* | [**ServiceServiceNameConfigurationConfigurationNameGet**](docs/ServiceApi.md#serviceservicenameconfigurationconfigurationnameget) | **GET** /Service/{serviceName}/configuration/{configurationName} | Gets a configuration property given its name.
 *SystemApi* | [**SystemRequestChangePost**](docs/SystemApi.md#systemrequestchangepost) | **POST** /System/request-change | Requests a change in a configuration key of a given service. For example,  could be used to set the target temperature of an AC system.
 
