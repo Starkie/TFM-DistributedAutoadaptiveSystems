@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Analysis.Contracts.IntegrationEvents;
 using Knowledge.Service.ApiClient.Services;
 using MediatR;
+using Planning.Contracts;
 using Planning.Contracts.IntegrationEvents;
 using Planning.Contracts.IntegrationEvents.AdaptionActions;
 using Planning.Service.Diagnostics;
@@ -65,7 +66,7 @@ public class PlanificationService : IPlanificationService
     private async Task<AdaptionAction> BuildDeploymentAction(SystemConfigurationRequest request)
     {
         var isDeployed =
-            await _configurationService.GetConfigurationKey<bool?>(request.ServiceName, "deployed");
+            await _configurationService.GetConfigurationKey<bool?>(request.ServiceName, AdaptionLoopPlanningConstants.Configuration.IsDeployed);
 
         if (isDeployed == request.IsDeployed)
         {
