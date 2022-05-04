@@ -17,6 +17,11 @@ public class ClimatisationAirConditionerServiceDiagnostics
         ClimatisationAirConditionerServiceEventIds.ErrorReportingTemperatureEventId,
         "Error while reporting temperature");
 
+    private static readonly Action<ILogger, Exception> LogSeedAdaptionLoopConfiguration = LoggerMessage.Define(
+        LogLevel.Information,
+        ClimatisationAirConditionerServiceEventIds.SeedAdaptionLoopConfiguration,
+        "Seeding Air Conditioner AdaptionLoop Configuration");
+
     private readonly ActivitySource _activitySource;
 
     private readonly ILogger _logger;
@@ -43,6 +48,13 @@ public class ClimatisationAirConditionerServiceDiagnostics
         return _activitySource.StartActivity("Reporting temperature measurement");
     }
 
+    public Activity StartSeedAdaptionLoopConfiguration()
+    {
+        LogSeedAdaptionLoopConfiguration(_logger, null);
+
+        return _activitySource.StartActivity("Seed Adaption Loop Configuration");
+    }
+
     public void ErrorReportingTemperature(Exception exception)
     {
         LogErrorReportingTemperature(_logger, exception);
@@ -53,5 +65,7 @@ public class ClimatisationAirConditionerServiceDiagnostics
         public static EventId TemperatureReportEventId = new EventId(100, nameof(TemperatureReportEventId));
 
         public static EventId ErrorReportingTemperatureEventId = new EventId(200, nameof(ErrorReportingTemperatureEventId));
+
+        public static EventId SeedAdaptionLoopConfiguration = new EventId(300, nameof(SeedAdaptionLoopConfiguration));
     }
 }

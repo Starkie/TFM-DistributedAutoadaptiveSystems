@@ -20,8 +20,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\AdaptionLoop\Planning\Contracts\Planning.Contracts.csproj" />
       <ProjectReference Include="..\..\..\Core\Core.csproj" />
       <ProjectReference Include="..\..\..\Core\Core.DependencyInjection\Core.DependencyInjection.csproj" />
+      <ProjectReference Include="..\..\Contracts\Climatisation.Contracts.csproj" />
       <ProjectReference Include="..\..\Monitor\ApiClient\Climatisation.Monitor.Service.ApiClient\Climatisation.Monitor.Service.ApiClient.csproj" />
       <ProjectReference Include="..\Application\AirConditioner.Application.csproj" />
       <ProjectReference Include="..\Contracts\AirConditioner.Contracts.csproj" />
