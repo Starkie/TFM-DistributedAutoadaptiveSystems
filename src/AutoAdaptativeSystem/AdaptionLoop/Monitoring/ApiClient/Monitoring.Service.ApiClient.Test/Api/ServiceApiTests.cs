@@ -67,16 +67,15 @@ namespace Monitoring.Service.ApiClient.Test.Api
         }
 
         /// <summary>
-        /// Test ServiceServiceNameConfigurationConfigurationNamePut
+        /// Test ServiceServiceNameConfigurationPut
         /// </summary>
         [Fact]
-        public void ServiceServiceNameConfigurationConfigurationNamePutTest()
+        public void ServiceServiceNameConfigurationPutTest()
         {
             // TODO uncomment below to test the method and replace null with proper value
             //string serviceName = null;
-            //string configurationName = null;
-            //SetPropertyDTO? setPropertyDTO = null;
-            //instance.ServiceServiceNameConfigurationConfigurationNamePut(serviceName, configurationName, setPropertyDTO);
+            //List<SetPropertyDTO>? setPropertyDTO = null;
+            //instance.ServiceServiceNameConfigurationPut(serviceName, setPropertyDTO);
         }
     }
 }

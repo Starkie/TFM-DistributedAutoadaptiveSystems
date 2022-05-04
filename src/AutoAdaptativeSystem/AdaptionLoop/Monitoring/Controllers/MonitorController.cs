@@ -1,6 +1,7 @@
 ﻿namespace Monitoring.Service.Controllers;
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Knowledge.Service.ApiClient.Api;
 using Knowledge.Service.ApiClient.Model;
@@ -34,7 +35,7 @@ public class MonitorController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPost("{monitorId}/measurement")]
-    public async Task<IActionResult> ReportMeasurementAsync([FromRoute]Guid monitorId, [FromBody]MeasurementDTO measurementDto)
+    public async Task<IActionResult> ReportMeasurementAsync([FromRoute]Guid monitorId, [FromBody]MeasurementDTO measurementDto, CancellationToken cancellationToken)
     {
         if (measurementDto == null || string.IsNullOrEmpty(measurementDto.Property?.Key))
         {
@@ -43,9 +44,10 @@ public class MonitorController : ControllerBase
 
         using var activity = _diagnostics.LogReportedMeasurement(measurementDto.Property.Key, measurementDto);
 
-        await _propertyApi.PropertyPropertyNamePutAsync(
-            measurementDto.Property.Key,
-            new SetPropertyDTO(measurementDto.Property.Value));
+        await _propertyApi.PropertyPutAsync(new()
+        {
+            new SetPropertyDTO(measurementDto.Property.Key, measurementDto.Property.Value)
+        });
 
         return this.Ok();
     }

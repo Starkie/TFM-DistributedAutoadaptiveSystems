@@ -35,11 +35,20 @@ namespace Monitoring.Service.ApiClient.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="SetPropertyDTO" /> class.
         /// </summary>
+        /// <param name="name">Gets or Sets Name.</param>
         /// <param name="value">Gets or Sets Value.</param>
-        public SetPropertyDTO(string value = default(string))
+        public SetPropertyDTO(string name = default(string), string value = default(string))
         {
+            this.Name = name;
             this.Value = value;
         }
+
+        /// <summary>
+        /// Gets or Sets Name
+        /// </summary>
+        /// <value>Gets or Sets Name</value>
+        [DataMember(Name = "name", EmitDefaultValue = true)]
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or Sets Value
@@ -56,6 +65,7 @@ namespace Monitoring.Service.ApiClient.Model
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("class SetPropertyDTO {\n");
+            sb.Append("  Name: ").Append(Name).Append("\n");
             sb.Append("  Value: ").Append(Value).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -93,6 +103,11 @@ namespace Monitoring.Service.ApiClient.Model
             }
             return 
                 (
+                    this.Name == input.Name ||
+                    (this.Name != null &&
+                    this.Name.Equals(input.Name))
+                ) && 
+                (
                     this.Value == input.Value ||
                     (this.Value != null &&
                     this.Value.Equals(input.Value))
@@ -108,6 +123,10 @@ namespace Monitoring.Service.ApiClient.Model
             unchecked // Overflow is fine, just wrap
             {
                 int hashCode = 41;
+                if (this.Name != null)
+                {
+                    hashCode = (hashCode * 59) + this.Name.GetHashCode();
+                }
                 if (this.Value != null)
                 {
                     hashCode = (hashCode * 59) + this.Value.GetHashCode();

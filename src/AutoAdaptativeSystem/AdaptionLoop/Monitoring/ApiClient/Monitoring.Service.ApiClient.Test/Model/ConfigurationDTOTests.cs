@@ -57,14 +57,6 @@ namespace Monitoring.Service.ApiClient.Test.Model
 
 
         /// <summary>
-        /// Test the property 'ServiceName'
-        /// </summary>
-        [Fact]
-        public void ServiceNameTest()
-        {
-            // TODO unit test for the property 'ServiceName'
-        }
-        /// <summary>
         /// Test the property 'Name'
         /// </summary>
         [Fact]

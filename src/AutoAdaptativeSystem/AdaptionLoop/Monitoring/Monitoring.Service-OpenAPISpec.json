@@ -220,12 +220,14 @@
             }
           }
         }
-      },
+      }
+    },
+    "/Service/{serviceName}/configuration": {
       "put": {
         "tags": [
           "Service"
         ],
-        "summary": "Sets value of a given configuration property. If the property does not exist, it will be created.",
+        "summary": "Sets the values for the given configuration properties. If a given property\r\n does not exist, it will be created.",
         "parameters": [
           {
             "name": "serviceName",
@@ -235,40 +237,40 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "configurationName",
-            "in": "path",
-            "description": "The name of the property to set.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "requestBody": {
-          "description": "The DTO containing the value to set.",
+          "description": "The collection of properties to set.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SetPropertyDTO"
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SetPropertyDTO"
+                }
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/SetPropertyDTO"
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SetPropertyDTO"
+                }
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/SetPropertyDTO"
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SetPropertyDTO"
+                }
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": "The property was updated or created successfully."
+          "204": {
+            "description": "The properties were created or updated successfully."
           },
           "400": {
             "description": "There was an error with the provided arguments.",
@@ -299,11 +301,6 @@
       "ConfigurationDTO": {
         "type": "object",
         "properties": {
-          "serviceName": {
-            "type": "string",
-            "description": "Gets or Sets ServiceName",
-            "nullable": true
-          },
           "name": {
             "type": "string",
             "description": "Gets or Sets Name",
@@ -397,6 +394,11 @@
       "SetPropertyDTO": {
         "type": "object",
         "properties": {
+          "name": {
+            "type": "string",
+            "description": "Gets or Sets Name",
+            "nullable": true
+          },
           "value": {
             "type": "string",
             "description": "Gets or Sets Value",
