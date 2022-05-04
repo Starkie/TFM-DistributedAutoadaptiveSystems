@@ -13,26 +13,23 @@ using Climatisation.Rules.Service.Diagnostics;
 using Climatisation.Rules.Service.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-[RuleKnowledgePropertyDependency(Temperature, HotTemperatureThreshold)]
+[RuleKnowledgePropertyDependency(ClimatisationConstants.Property.Temperature)]
 [RuleKnowledgeConfigurationDependency(
     ClimatisationAirConditionerConstants.AppName,
+    ClimatisationConstants.Configuration.HotTemperatureThreshold,
     ClimatisationAirConditionerConstants.Configuration.Mode)]
-public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : RuleBase
+public class EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule : RuleBase
 {
-    private const string HotTemperatureThreshold = "HotTemperatureThreshold";
-
-    private const string RuleName = nameof(EnableCoolAirConditioningWhenTemperatureThresholdExceededRule);
-
-    private const string Temperature = "Temperature";
+    private const string RuleName = nameof(EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule);
 
     private const string SymptomName = "temperature-greater-than-target";
 
     private static readonly IEnumerable<string> propertyNames =
-        typeof(EnableCoolAirConditioningWhenTemperatureThresholdExceededRule)
+        typeof(EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule)
             .GetRulePropertyDependencies();
 
     private static readonly IDictionary<string, IEnumerable<string>> configurationNames =
-        typeof(EnableCoolAirConditioningWhenTemperatureThresholdExceededRule)
+        typeof(EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule)
             .GetRuleConfigurationDependencies();
 
     private readonly IConfigurationService _configurationService;
@@ -41,7 +38,7 @@ public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : Rul
 
     private readonly ISystemApi _systemApi;
 
-    public EnableCoolAirConditioningWhenTemperatureThresholdExceededRule(
+    public EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule(
         ClimatisationRulesDiagnostics diagnostics,
         IConfigurationService configurationService,
         IPropertyService propertyService,
@@ -55,7 +52,8 @@ public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : Rul
 
     protected override async Task<bool> EvaluateCondition()
     {
-        var currentTemperature = await _propertyService.GetProperty<TemperatureMeasurementDTO>(Temperature, CancellationToken.None);
+        var currentTemperature =
+            await _propertyService.GetProperty<TemperatureMeasurementDTO>(ClimatisationConstants.Property.Temperature, CancellationToken.None);
 
         if (currentTemperature is null)
         {
@@ -69,10 +67,8 @@ public class EnableCoolAirConditioningWhenTemperatureThresholdExceededRule : Rul
 
         var thresholdTemperature = await _configurationService.GetConfigurationKey<float?>(
             ClimatisationAirConditionerConstants.AppName,
-        HotTemperatureThreshold,
+            ClimatisationConstants.Configuration.HotTemperatureThreshold,
             CancellationToken.None);
-
-        thresholdTemperature ??= 25.0f;
 
         return currentTemperature.Value > thresholdTemperature
             && airConditionerMode != AirConditioningMode.Cooling;
