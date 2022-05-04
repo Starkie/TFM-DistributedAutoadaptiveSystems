@@ -35,24 +35,15 @@ namespace Climatisation.Monitor.Service.ApiClient.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationDTO" /> class.
         /// </summary>
-        /// <param name="serviceName">Gets or Sets ServiceName.</param>
         /// <param name="name">Gets or Sets Name.</param>
         /// <param name="value">Gets or Sets Value.</param>
         /// <param name="lastModification">Gets or Sets LastModification.</param>
-        public ConfigurationDTO(string serviceName = default(string), string name = default(string), string value = default(string), DateTime lastModification = default(DateTime))
+        public ConfigurationDTO(string name = default(string), string value = default(string), DateTime lastModification = default(DateTime))
         {
-            this.ServiceName = serviceName;
             this.Name = name;
             this.Value = value;
             this.LastModification = lastModification;
         }
-
-        /// <summary>
-        /// Gets or Sets ServiceName
-        /// </summary>
-        /// <value>Gets or Sets ServiceName</value>
-        [DataMember(Name = "serviceName", EmitDefaultValue = true)]
-        public string ServiceName { get; set; }
 
         /// <summary>
         /// Gets or Sets Name
@@ -83,7 +74,6 @@ namespace Climatisation.Monitor.Service.ApiClient.Model
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("class ConfigurationDTO {\n");
-            sb.Append("  ServiceName: ").Append(ServiceName).Append("\n");
             sb.Append("  Name: ").Append(Name).Append("\n");
             sb.Append("  Value: ").Append(Value).Append("\n");
             sb.Append("  LastModification: ").Append(LastModification).Append("\n");
@@ -123,11 +113,6 @@ namespace Climatisation.Monitor.Service.ApiClient.Model
             }
             return 
                 (
-                    this.ServiceName == input.ServiceName ||
-                    (this.ServiceName != null &&
-                    this.ServiceName.Equals(input.ServiceName))
-                ) && 
-                (
                     this.Name == input.Name ||
                     (this.Name != null &&
                     this.Name.Equals(input.Name))
@@ -153,10 +138,6 @@ namespace Climatisation.Monitor.Service.ApiClient.Model
             unchecked // Overflow is fine, just wrap
             {
                 int hashCode = 41;
-                if (this.ServiceName != null)
-                {
-                    hashCode = (hashCode * 59) + this.ServiceName.GetHashCode();
-                }
                 if (this.Name != null)
                 {
                     hashCode = (hashCode * 59) + this.Name.GetHashCode();

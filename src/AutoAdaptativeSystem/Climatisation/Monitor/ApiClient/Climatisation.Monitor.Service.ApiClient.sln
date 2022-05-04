@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 VisualStudioVersion = 12.0.0.0
 MinimumVisualStudioVersion = 10.0.0.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.Monitor.Service.ApiClient", "src\Climatisation.Monitor.Service.ApiClient\Climatisation.Monitor.Service.ApiClient.csproj", "{46F88BBC-3B53-4AAD-80C4-2132831B81D8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.Monitor.Service.ApiClient", "src\Climatisation.Monitor.Service.ApiClient\Climatisation.Monitor.Service.ApiClient.csproj", "{67A8CE10-6304-4F03-A3DA-56E185648569}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.Monitor.Service.ApiClient.Test", "src\Climatisation.Monitor.Service.ApiClient.Test\Climatisation.Monitor.Service.ApiClient.Test.csproj", "{19F1DEBC-DE5E-4517-8062-F000CD499087}"
 EndProject
@@ -12,10 +12,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{46F88BBC-3B53-4AAD-80C4-2132831B81D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{46F88BBC-3B53-4AAD-80C4-2132831B81D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{46F88BBC-3B53-4AAD-80C4-2132831B81D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{46F88BBC-3B53-4AAD-80C4-2132831B81D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67A8CE10-6304-4F03-A3DA-56E185648569}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67A8CE10-6304-4F03-A3DA-56E185648569}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67A8CE10-6304-4F03-A3DA-56E185648569}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67A8CE10-6304-4F03-A3DA-56E185648569}.Release|Any CPU.Build.0 = Release|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Release|Any CPU.ActiveCfg = Release|Any CPU

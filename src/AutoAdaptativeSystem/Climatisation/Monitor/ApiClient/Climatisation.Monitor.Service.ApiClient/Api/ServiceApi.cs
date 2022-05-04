@@ -48,27 +48,25 @@ namespace Climatisation.Monitor.Service.ApiClient.Api
         /// <returns>ApiResponse of ConfigurationDTO</returns>
         ApiResponse<ConfigurationDTO> ServiceServiceNameConfigurationConfigurationNameGetWithHttpInfo(string serviceName, string configurationName);
         /// <summary>
-        /// Sets value of a given configuration property. If the property does not exist, it will be created.
+        /// Sets the values for the given configuration properties. If a given property   does not exist, it will be created.
         /// </summary>
         /// <exception cref="Climatisation.Monitor.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="serviceName">The name of the service.</param>
-        /// <param name="configurationName">The name of the property to set.</param>
-        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="setPropertyDTO">The collection of properties to set. (optional)</param>
         /// <returns></returns>
-        void ServiceServiceNameConfigurationConfigurationNamePut(string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?));
+        void ServiceServiceNameConfigurationPut(string serviceName, List<SetPropertyDTO>? setPropertyDTO = default(List<SetPropertyDTO>?));
 
         /// <summary>
-        /// Sets value of a given configuration property. If the property does not exist, it will be created.
+        /// Sets the values for the given configuration properties. If a given property   does not exist, it will be created.
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
         /// <exception cref="Climatisation.Monitor.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="serviceName">The name of the service.</param>
-        /// <param name="configurationName">The name of the property to set.</param>
-        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="setPropertyDTO">The collection of properties to set. (optional)</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        ApiResponse<Object> ServiceServiceNameConfigurationConfigurationNamePutWithHttpInfo(string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?));
+        ApiResponse<Object> ServiceServiceNameConfigurationPutWithHttpInfo(string serviceName, List<SetPropertyDTO>? setPropertyDTO = default(List<SetPropertyDTO>?));
         #endregion Synchronous Operations
     }
 
@@ -104,32 +102,30 @@ namespace Climatisation.Monitor.Service.ApiClient.Api
         /// <returns>Task of ApiResponse (ConfigurationDTO)</returns>
         System.Threading.Tasks.Task<ApiResponse<ConfigurationDTO>> ServiceServiceNameConfigurationConfigurationNameGetWithHttpInfoAsync(string serviceName, string configurationName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
         /// <summary>
-        /// Sets value of a given configuration property. If the property does not exist, it will be created.
+        /// Sets the values for the given configuration properties. If a given property   does not exist, it will be created.
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
         /// <exception cref="Climatisation.Monitor.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="serviceName">The name of the service.</param>
-        /// <param name="configurationName">The name of the property to set.</param>
-        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="setPropertyDTO">The collection of properties to set. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of void</returns>
-        System.Threading.Tasks.Task ServiceServiceNameConfigurationConfigurationNamePutAsync(string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task ServiceServiceNameConfigurationPutAsync(string serviceName, List<SetPropertyDTO>? setPropertyDTO = default(List<SetPropertyDTO>?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <summary>
-        /// Sets value of a given configuration property. If the property does not exist, it will be created.
+        /// Sets the values for the given configuration properties. If a given property   does not exist, it will be created.
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
         /// <exception cref="Climatisation.Monitor.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="serviceName">The name of the service.</param>
-        /// <param name="configurationName">The name of the property to set.</param>
-        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="setPropertyDTO">The collection of properties to set. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse</returns>
-        System.Threading.Tasks.Task<ApiResponse<Object>> ServiceServiceNameConfigurationConfigurationNamePutWithHttpInfoAsync(string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ApiResponse<Object>> ServiceServiceNameConfigurationPutWithHttpInfoAsync(string serviceName, List<SetPropertyDTO>? setPropertyDTO = default(List<SetPropertyDTO>?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
         #endregion Asynchronous Operations
     }
 
@@ -477,35 +473,29 @@ namespace Climatisation.Monitor.Service.ApiClient.Api
         }
 
         /// <summary>
-        /// Sets value of a given configuration property. If the property does not exist, it will be created. 
+        /// Sets the values for the given configuration properties. If a given property   does not exist, it will be created. 
         /// </summary>
         /// <exception cref="Climatisation.Monitor.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="serviceName">The name of the service.</param>
-        /// <param name="configurationName">The name of the property to set.</param>
-        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="setPropertyDTO">The collection of properties to set. (optional)</param>
         /// <returns></returns>
-        public void ServiceServiceNameConfigurationConfigurationNamePut(string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?))
+        public void ServiceServiceNameConfigurationPut(string serviceName, List<SetPropertyDTO>? setPropertyDTO = default(List<SetPropertyDTO>?))
         {
-            ServiceServiceNameConfigurationConfigurationNamePutWithHttpInfo(serviceName, configurationName, setPropertyDTO);
+            ServiceServiceNameConfigurationPutWithHttpInfo(serviceName, setPropertyDTO);
         }
 
         /// <summary>
-        /// Sets value of a given configuration property. If the property does not exist, it will be created. 
+        /// Sets the values for the given configuration properties. If a given property   does not exist, it will be created. 
         /// </summary>
         /// <exception cref="Climatisation.Monitor.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="serviceName">The name of the service.</param>
-        /// <param name="configurationName">The name of the property to set.</param>
-        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="setPropertyDTO">The collection of properties to set. (optional)</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        public Climatisation.Monitor.Service.ApiClient.Client.ApiResponse<Object> ServiceServiceNameConfigurationConfigurationNamePutWithHttpInfo(string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?))
+        public Climatisation.Monitor.Service.ApiClient.Client.ApiResponse<Object> ServiceServiceNameConfigurationPutWithHttpInfo(string serviceName, List<SetPropertyDTO>? setPropertyDTO = default(List<SetPropertyDTO>?))
         {
             // verify the required parameter 'serviceName' is set
             if (serviceName == null)
-                throw new Climatisation.Monitor.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'serviceName' when calling ServiceApi->ServiceServiceNameConfigurationConfigurationNamePut");
-
-            // verify the required parameter 'configurationName' is set
-            if (configurationName == null)
-                throw new Climatisation.Monitor.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'configurationName' when calling ServiceApi->ServiceServiceNameConfigurationConfigurationNamePut");
+                throw new Climatisation.Monitor.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'serviceName' when calling ServiceApi->ServiceServiceNameConfigurationPut");
 
             Climatisation.Monitor.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Climatisation.Monitor.Service.ApiClient.Client.RequestOptions();
 
@@ -529,16 +519,15 @@ namespace Climatisation.Monitor.Service.ApiClient.Api
             if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
 
             localVarRequestOptions.PathParameters.Add("serviceName", Climatisation.Monitor.Service.ApiClient.Client.ClientUtils.ParameterToString(serviceName)); // path parameter
-            localVarRequestOptions.PathParameters.Add("configurationName", Climatisation.Monitor.Service.ApiClient.Client.ClientUtils.ParameterToString(configurationName)); // path parameter
             localVarRequestOptions.Data = setPropertyDTO;
 
 
             // make the HTTP request
-            var localVarResponse = this.Client.Put<Object>("/Service/{serviceName}/configuration/{configurationName}", localVarRequestOptions, this.Configuration);
+            var localVarResponse = this.Client.Put<Object>("/Service/{serviceName}/configuration", localVarRequestOptions, this.Configuration);
 
             if (this.ExceptionFactory != null)
             {
-                Exception _exception = this.ExceptionFactory("ServiceServiceNameConfigurationConfigurationNamePut", localVarResponse);
+                Exception _exception = this.ExceptionFactory("ServiceServiceNameConfigurationPut", localVarResponse);
                 if (_exception != null) throw _exception;
             }
 
@@ -546,37 +535,31 @@ namespace Climatisation.Monitor.Service.ApiClient.Api
         }
 
         /// <summary>
-        /// Sets value of a given configuration property. If the property does not exist, it will be created. 
+        /// Sets the values for the given configuration properties. If a given property   does not exist, it will be created. 
         /// </summary>
         /// <exception cref="Climatisation.Monitor.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="serviceName">The name of the service.</param>
-        /// <param name="configurationName">The name of the property to set.</param>
-        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="setPropertyDTO">The collection of properties to set. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of void</returns>
-        public async System.Threading.Tasks.Task ServiceServiceNameConfigurationConfigurationNamePutAsync(string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task ServiceServiceNameConfigurationPutAsync(string serviceName, List<SetPropertyDTO>? setPropertyDTO = default(List<SetPropertyDTO>?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            await ServiceServiceNameConfigurationConfigurationNamePutWithHttpInfoAsync(serviceName, configurationName, setPropertyDTO, cancellationToken).ConfigureAwait(false);
+            await ServiceServiceNameConfigurationPutWithHttpInfoAsync(serviceName, setPropertyDTO, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Sets value of a given configuration property. If the property does not exist, it will be created. 
+        /// Sets the values for the given configuration properties. If a given property   does not exist, it will be created. 
         /// </summary>
         /// <exception cref="Climatisation.Monitor.Service.ApiClient.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="serviceName">The name of the service.</param>
-        /// <param name="configurationName">The name of the property to set.</param>
-        /// <param name="setPropertyDTO">The DTO containing the value to set. (optional)</param>
+        /// <param name="setPropertyDTO">The collection of properties to set. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse</returns>
-        public async System.Threading.Tasks.Task<Climatisation.Monitor.Service.ApiClient.Client.ApiResponse<Object>> ServiceServiceNameConfigurationConfigurationNamePutWithHttpInfoAsync(string serviceName, string configurationName, SetPropertyDTO? setPropertyDTO = default(SetPropertyDTO?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<Climatisation.Monitor.Service.ApiClient.Client.ApiResponse<Object>> ServiceServiceNameConfigurationPutWithHttpInfoAsync(string serviceName, List<SetPropertyDTO>? setPropertyDTO = default(List<SetPropertyDTO>?), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             // verify the required parameter 'serviceName' is set
             if (serviceName == null)
-                throw new Climatisation.Monitor.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'serviceName' when calling ServiceApi->ServiceServiceNameConfigurationConfigurationNamePut");
-
-            // verify the required parameter 'configurationName' is set
-            if (configurationName == null)
-                throw new Climatisation.Monitor.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'configurationName' when calling ServiceApi->ServiceServiceNameConfigurationConfigurationNamePut");
+                throw new Climatisation.Monitor.Service.ApiClient.Client.ApiException(400, "Missing required parameter 'serviceName' when calling ServiceApi->ServiceServiceNameConfigurationPut");
 
 
             Climatisation.Monitor.Service.ApiClient.Client.RequestOptions localVarRequestOptions = new Climatisation.Monitor.Service.ApiClient.Client.RequestOptions();
@@ -602,17 +585,16 @@ namespace Climatisation.Monitor.Service.ApiClient.Api
             if (localVarAccept != null) localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
 
             localVarRequestOptions.PathParameters.Add("serviceName", Climatisation.Monitor.Service.ApiClient.Client.ClientUtils.ParameterToString(serviceName)); // path parameter
-            localVarRequestOptions.PathParameters.Add("configurationName", Climatisation.Monitor.Service.ApiClient.Client.ClientUtils.ParameterToString(configurationName)); // path parameter
             localVarRequestOptions.Data = setPropertyDTO;
 
 
             // make the HTTP request
 
-            var localVarResponse = await this.AsynchronousClient.PutAsync<Object>("/Service/{serviceName}/configuration/{configurationName}", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+            var localVarResponse = await this.AsynchronousClient.PutAsync<Object>("/Service/{serviceName}/configuration", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
 
             if (this.ExceptionFactory != null)
             {
-                Exception _exception = this.ExceptionFactory("ServiceServiceNameConfigurationConfigurationNamePut", localVarResponse);
+                Exception _exception = this.ExceptionFactory("ServiceServiceNameConfigurationPut", localVarResponse);
                 if (_exception != null) throw _exception;
             }
 
