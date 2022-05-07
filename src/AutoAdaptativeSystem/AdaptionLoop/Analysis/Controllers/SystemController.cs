@@ -1,5 +1,6 @@
 namespace Analysis.Service.Controllers;
 
+using System;
 using System.Threading.Tasks;
 using Analysis.Contracts.IntegrationEvents;
 using Analysis.Service.Controllers.IntegrationEvents;
@@ -46,6 +47,16 @@ public class SystemController : ControllerBase
         if (configurationChangeRequestDto is null)
         {
             return BadRequest();
+        }
+
+        if (configurationChangeRequestDto.Symptoms.Count == 0)
+        {
+            return BadRequest("At least one symptom must be specified");
+        }
+
+        if (configurationChangeRequestDto.ServiceConfiguration.Count == 0)
+        {
+            return BadRequest("At least one service configuration must be specified.");
         }
 
         using var activity = _diagnostics.LogConfigurationChangeRequested(configurationChangeRequestDto);
