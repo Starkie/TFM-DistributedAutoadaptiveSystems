@@ -1,4 +1,4 @@
-namespace AnalysisService.Configurations;
+namespace Analysis.Service.ApiClient.Configurations;
 
 public class AnalysisServiceConfiguration
 {

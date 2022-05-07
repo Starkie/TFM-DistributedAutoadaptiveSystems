@@ -5,8 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Analysis.Contracts.Attributes;
-using Analysis.Service.ApiClient.Api;
-using AnalysisService.Configurations;
+using Analysis.Service.ApiClient.Extensions;
 using Climatisation.Rules.Service.EventHandlers.Rules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +14,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddAdaptionLoopAnalysisServices(this IServiceCollection services, IConfiguration configuration, Assembly rulesAssembly)
     {
+        services.AddAnalysisServices(configuration);
+
         services.AddBus(
             configuration,
             rulesAssembly,
@@ -27,30 +28,6 @@ public static class ServiceCollectionExtensions
                     await bus.Advanced.Topics.Subscribe(subscription);
                 }
             });
-
-        services.AddScoped<IPropertyApi, PropertyApi>(_ =>
-        {
-            var apiConfiguration =
-                configuration.BindOptions<AnalysisServiceConfiguration>(AnalysisServiceConfiguration.ConfigurationPath);
-
-            return new PropertyApi(apiConfiguration.ServiceUri);
-        });
-
-        services.AddScoped<IServiceApi, ServiceApi>(_ =>
-        {
-            var apiConfiguration =
-                configuration.BindOptions<AnalysisServiceConfiguration>(AnalysisServiceConfiguration.ConfigurationPath);
-
-            return new ServiceApi(apiConfiguration.ServiceUri);
-        });
-
-        services.AddScoped<ISystemApi, SystemApi>(_ =>
-        {
-            var apiConfiguration =
-                configuration.BindOptions<AnalysisServiceConfiguration>(AnalysisServiceConfiguration.ConfigurationPath);
-
-            return new SystemApi(apiConfiguration.ServiceUri);
-        });
 
         return services;
     }
