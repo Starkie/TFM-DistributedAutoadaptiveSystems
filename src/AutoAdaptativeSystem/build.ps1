@@ -43,6 +43,11 @@ $Projects = @(
         ProjectName = "Planning.Service"
     },
     @{
+        Name = "execute"
+        Path = "AdaptionLoop/Execute"
+        ProjectName = "Execute.Service"
+    },
+    @{
         Name = "climatisation_rules"
         Path = "Climatisation/Rules"
         ProjectName = "Climatisation.Rules.Service"

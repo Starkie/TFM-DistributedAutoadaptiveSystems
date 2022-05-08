@@ -77,3 +77,10 @@ scrape_configs:
         labels:
           host: localhost
           source: Planning.Service
+
+  - job_name: execute
+    static_configs:
+      - targets: ['execute:80']
+        labels:
+          host: localhost
+          source: Execute.Service
