@@ -27,7 +27,7 @@ public class ConfigurationChangePlanCreatedIntegrationEventHandler
 
         var actionsByService = message.ChangePlan.Actions
             .GroupBy(k =>k.ServiceName)
-            .ToDictionary(k => k.Key, e => e.AsEnumerable());
+            .ToDictionary(k => k.Key, e => e.ToList());
 
         foreach (var serviceName in actionsByService.Keys)
         {
