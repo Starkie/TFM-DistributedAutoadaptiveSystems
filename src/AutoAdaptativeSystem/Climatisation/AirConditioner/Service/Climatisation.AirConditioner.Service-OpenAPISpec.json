@@ -1,0 +1,47 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Monitoring Service",
+    "description": "",
+    "version": "v1"
+  },
+  "paths": {
+    "/AirConditioner/TurnOff": {
+      "post": {
+        "tags": [
+          "AirConditioner"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/AirConditioner/Cool": {
+      "post": {
+        "tags": [
+          "AirConditioner"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/AirConditioner/Heat": {
+      "post": {
+        "tags": [
+          "AirConditioner"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "components": { }
+}
