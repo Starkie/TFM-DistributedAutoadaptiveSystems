@@ -57,6 +57,7 @@ project_list = [
     { "path": "./AdaptionLoop/Monitoring/Monitoring.Service.csproj", "name": "Monitoring.Service", "api_name": "v1", "output_path": "./AdaptionLoop/Monitoring/ApiClient", "remove_existing_files": True },
     { "path": "./AdaptionLoop/Analysis/Analysis.Service.csproj", "name": "Analysis.Service", "api_name": "v1", "output_path": "./AdaptionLoop/Analysis/ApiClient", "remove_existing_files": True },
     { "path": "./Climatisation/Monitor/Climatisation.Monitor.Service.csproj", "name": "Climatisation.Monitor.Service", "api_name": "v1", "output_path": "./Climatisation/Monitor/ApiClient", "remove_existing_files": True },
+    { "path": "./Climatisation/AirConditioner/Service/Climatisation.AirConditioner.Service.csproj", "name": "Climatisation.AirConditioner.Service", "api_name": "v1", "output_path": "./Climatisation/AirConditioner/Service/ApiClient", "remove_existing_files": True },
 ]
 
 codegen_path = download_codegen_jar()

@@ -156,6 +156,27 @@ services:
       - execute-network
     restart: on-failure:5
 
+  climatisation_effectors:
+    build:
+      context: ./climatisation_effectors
+      args:
+        ClimatisationAirConditioner_SERVICEURI: "http://climatisation_airconditioner:80"
+        BUSCONFIGURATION_SERVICEURI: "amqp://user:password@rabbitmq"
+        GRAFANA_LOKI_URI: "http://loki:3100"
+        JAEGER_HOST: "jaeger"
+        JAEGER_PORT: "6831"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+    depends_on:
+      - rabbitmq
+    ports:
+      - "13001:80"
+    networks:
+      - knowledge-network
+      - execute-network
+      - adaption-loop-network
+    restart: on-failure:5
+
   loki:
     image: "grafana/loki:latest"
     ports:
