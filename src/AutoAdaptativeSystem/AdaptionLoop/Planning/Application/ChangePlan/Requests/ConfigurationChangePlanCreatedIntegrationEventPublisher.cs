@@ -1,11 +1,11 @@
-namespace Planning.Service.Services;
+namespace Planning.Service.Application.ChangePlan.Requests;
 
 using Core.Bus.Publisher;
 using Planning.Contracts.IntegrationEvents;
 using Rebus.Bus;
 
 public class ConfigurationChangePlanCreatedIntegrationEventPublisher
-    : IntegrationEventPublisher<ConfigurationChangePlanCreatedIntegrationEvent>
+    : RequestPublisher<ExecuteChangePlanRequest>
 {
     public ConfigurationChangePlanCreatedIntegrationEventPublisher(IBus bus)
         : base(bus)

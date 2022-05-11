@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Planning.Service.Services;
+using Planning.Service.Application.ChangePlan.Services;
 using Prometheus;
 using Serilog;
 
@@ -36,7 +36,7 @@ public class Startup
             this.GetType().Assembly,
             registerSubscriptions: async bus =>
             {
-                await bus.Subscribe<SystemConfigurationChangeRequestIntegrationEvent>();
+                await bus.Subscribe<SystemConfigurationChangeRequest>();
             });
 
         services.AddTelemetry(Configuration, PlanningServiceConstants.AppName, "v1.0");

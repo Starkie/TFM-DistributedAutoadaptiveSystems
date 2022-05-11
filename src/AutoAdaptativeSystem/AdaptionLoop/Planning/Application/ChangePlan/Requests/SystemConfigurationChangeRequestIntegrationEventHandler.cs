@@ -1,15 +1,13 @@
-namespace Planning.Service.EventHandlers;
+namespace Planning.Service.Application.ChangePlan.Requests;
 
-using System.Threading;
 using System.Threading.Tasks;
 using Analysis.Contracts.IntegrationEvents;
 using Core.Bus.Handlers;
+using Planning.Service.Application.ChangePlan.Services;
 using Planning.Service.Diagnostics;
-using Planning.Service.Services;
-using Rebus.Bus;
 
 public class SystemConfigurationChangeRequestIntegrationEventHandler
-    : IIntegrationEventHandler<SystemConfigurationChangeRequestIntegrationEvent>
+    : IRequestConsumer<SystemConfigurationChangeRequest>
 {
     private readonly PlanningServiceDiagnostics _diagnostics;
 
@@ -23,10 +21,10 @@ public class SystemConfigurationChangeRequestIntegrationEventHandler
         _planificationService = planificationService;
     }
 
-    public async Task Handle(SystemConfigurationChangeRequestIntegrationEvent message)
+    public async Task Handle(SystemConfigurationChangeRequest request)
     {
-        _diagnostics.SystemConfigurationChangeRequestReceived(message);
+        _diagnostics.SystemConfigurationChangeRequestReceived(request);
 
-        await _planificationService.PlanNextConfiguration(message);
+        await _planificationService.PlanNextConfiguration(request);
     }
 }

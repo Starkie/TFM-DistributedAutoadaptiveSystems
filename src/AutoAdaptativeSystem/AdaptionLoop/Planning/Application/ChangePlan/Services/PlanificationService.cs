@@ -1,4 +1,4 @@
-namespace Planning.Service.Services;
+namespace Planning.Service.Application.ChangePlan.Services;
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -28,13 +28,13 @@ public class PlanificationService : IPlanificationService
         _mediator = mediator;
     }
 
-    public async Task PlanNextConfiguration(SystemConfigurationChangeRequestIntegrationEvent systemConfigurationChangeRequestIntegrationEvent)
+    public async Task PlanNextConfiguration(SystemConfigurationChangeRequest systemConfigurationChangeRequest)
     {
         using var activity = _diagnostics.DefininingChangePlan();
 
         var changePlan = new ConfigurationChangePlan();
 
-        foreach (var request in systemConfigurationChangeRequestIntegrationEvent.ConfigurationRequests)
+        foreach (var request in systemConfigurationChangeRequest.ConfigurationRequests)
         {
             var deploymentAction = await BuildDeploymentAction(request);
 
@@ -57,7 +57,7 @@ public class PlanificationService : IPlanificationService
 
         _diagnostics.ConfigurationChangePlanCreated(changePlan);
 
-        await _mediator.Publish(new ConfigurationChangePlanCreatedIntegrationEvent()
+        await _mediator.Send(new ExecuteChangePlanRequest()
         {
             ChangePlan = changePlan,
         });

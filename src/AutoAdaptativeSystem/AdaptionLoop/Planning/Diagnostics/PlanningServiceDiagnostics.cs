@@ -8,8 +8,8 @@ using Planning.Contracts.IntegrationEvents;
 
 public class PlanningServiceDiagnostics
 {
-    private static readonly Action<ILogger, SystemConfigurationChangeRequestIntegrationEvent, Exception> LogSystemChangeRequestReceivedMessage =
-        LoggerMessage.Define<SystemConfigurationChangeRequestIntegrationEvent>(
+    private static readonly Action<ILogger, SystemConfigurationChangeRequest, Exception> LogSystemChangeRequestReceivedMessage =
+        LoggerMessage.Define<SystemConfigurationChangeRequest>(
             LogLevel.Information,
             PlanningServiceEventIds.SystemConfigurationChangeRequestEventId,
             "System change request received: {@SystemChangeRequest}");
@@ -45,7 +45,7 @@ public class PlanningServiceDiagnostics
         _activitySource = new ActivitySource(PlanningServiceConstants.AppName);
     }
 
-    public void SystemConfigurationChangeRequestReceived(SystemConfigurationChangeRequestIntegrationEvent message)
+    public void SystemConfigurationChangeRequestReceived(SystemConfigurationChangeRequest message)
     {
         LogSystemChangeRequestReceivedMessage(_logger, message, null);
     }
