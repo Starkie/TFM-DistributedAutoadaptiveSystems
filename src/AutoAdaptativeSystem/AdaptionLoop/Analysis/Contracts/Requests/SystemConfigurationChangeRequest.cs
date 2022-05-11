@@ -1,8 +1,9 @@
 namespace Analysis.Contracts.IntegrationEvents;
 
 using Core.Bus.Contracts.Events;
+using Core.Bus.Contracts.Requests;
 
-public class SystemConfigurationChangeRequestIntegrationEvent : IIntegrationEvent
+public class SystemConfigurationChangeRequest : Request
 {
     public DateTime Timestamp { get; set; }
 

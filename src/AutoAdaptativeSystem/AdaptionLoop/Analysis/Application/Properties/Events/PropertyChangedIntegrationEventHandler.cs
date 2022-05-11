@@ -1,4 +1,4 @@
-namespace Analysis.Service.EventHandlers;
+namespace Analysis.Service.Properties.Requests;
 
 using System.Threading.Tasks;
 using Analysis.Service.Diagnostics;
@@ -6,7 +6,8 @@ using Core.Bus.Handlers;
 using Knowledge.Contracts.IntegrationEvents;
 using Rebus.Bus;
 
-public class PropertyChangedIntegrationEventHandler : IIntegrationEventHandler<PropertyChangedIntegrationEvent>
+public class PropertyChangedIntegrationEventHandler
+    : IIntegrationEventHandler<PropertyChangedIntegrationEvent>
 {
     private readonly AnalysisServiceDiagnostics _analysisServiceDiagnostics;
 

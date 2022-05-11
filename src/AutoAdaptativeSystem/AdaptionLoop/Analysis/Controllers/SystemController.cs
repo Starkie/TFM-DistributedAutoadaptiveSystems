@@ -1,9 +1,7 @@
 namespace Analysis.Service.Controllers;
 
-using System;
 using System.Threading.Tasks;
 using Analysis.Contracts.IntegrationEvents;
-using Analysis.Service.Controllers.IntegrationEvents;
 using Analysis.Service.Diagnostics;
 using Analysis.Service.DTOs.Configuration;
 using AutoMapper;
@@ -61,9 +59,9 @@ public class SystemController : ControllerBase
 
         using var activity = _diagnostics.LogConfigurationChangeRequested(configurationChangeRequestDto);
 
-        var integrationEvent = _mapper.Map<SystemConfigurationChangeRequestIntegrationEvent>(configurationChangeRequestDto);
+        var request = _mapper.Map<SystemConfigurationChangeRequest>(configurationChangeRequestDto);
 
-        await _mediator.Publish(integrationEvent);
+        await _mediator.Send(request);
 
         return NoContent();
     }

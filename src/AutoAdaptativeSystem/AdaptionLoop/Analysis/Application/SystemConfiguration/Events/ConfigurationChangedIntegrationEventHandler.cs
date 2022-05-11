@@ -1,4 +1,4 @@
-namespace Analysis.Service.Controllers.IntegrationEvents;
+namespace Analysis.Service.SystemConfiguration.Events;
 
 using System.Threading.Tasks;
 using Analysis.Service.Diagnostics;
@@ -6,7 +6,8 @@ using Core.Bus.Handlers;
 using Knowledge.Contracts.IntegrationEvents;
 using Rebus.Bus;
 
-public class ConfigurationChangedIntegrationEventHandler : IIntegrationEventHandler<ConfigurationChangedIntegrationEvent>
+public class ConfigurationChangedIntegrationEventHandler
+    : IIntegrationEventHandler<ConfigurationChangedIntegrationEvent>
 {
     private readonly AnalysisServiceDiagnostics _analysisServiceDiagnostics;
 
