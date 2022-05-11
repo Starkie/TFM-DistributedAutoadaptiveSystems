@@ -78,6 +78,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Execute.Service", "Adaption
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Execute.Contracts", "AdaptionLoop\Execute\Contracts\Execute.Contracts.csproj", "{B75509AF-A166-489E-BAA9-1509D14B5404}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Effectors", "Effectors", "{18C766D6-D205-4574-B901-683E814D3FAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.AirConditioner.Service.ApiClient", "Climatisation\AirConditioner\Service\ApiClient\Climatisation.AirConditioner.Service.ApiClient\Climatisation.AirConditioner.Service.ApiClient.csproj", "{1D248AAF-B351-4DAF-B0DD-FD3354A214B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.Effectors.Service", "Climatisation\Effectors\Climatisation.Effectors.Service.csproj", "{F81387EE-E102-434E-9D1A-A7F7D80411D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -184,6 +190,14 @@ Global
 		{B75509AF-A166-489E-BAA9-1509D14B5404}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B75509AF-A166-489E-BAA9-1509D14B5404}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B75509AF-A166-489E-BAA9-1509D14B5404}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D248AAF-B351-4DAF-B0DD-FD3354A214B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D248AAF-B351-4DAF-B0DD-FD3354A214B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D248AAF-B351-4DAF-B0DD-FD3354A214B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D248AAF-B351-4DAF-B0DD-FD3354A214B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F81387EE-E102-434E-9D1A-A7F7D80411D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F81387EE-E102-434E-9D1A-A7F7D80411D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F81387EE-E102-434E-9D1A-A7F7D80411D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F81387EE-E102-434E-9D1A-A7F7D80411D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{54D144B3-5B4A-48C2-A087-CE8C7EB37E35} = {81D52D84-B86F-4CFC-80CE-775FA8385FEB}
@@ -221,5 +235,8 @@ Global
 		{05FC9293-EBB2-4DA1-AC77-D3F57672251A} = {424C93E9-0081-4574-B263-394E6F9D73EE}
 		{40AE73EB-1CED-4D33-853C-AF681097CE0E} = {05FC9293-EBB2-4DA1-AC77-D3F57672251A}
 		{B75509AF-A166-489E-BAA9-1509D14B5404} = {05FC9293-EBB2-4DA1-AC77-D3F57672251A}
+		{18C766D6-D205-4574-B901-683E814D3FAE} = {81D52D84-B86F-4CFC-80CE-775FA8385FEB}
+		{1D248AAF-B351-4DAF-B0DD-FD3354A214B2} = {29A99C41-CC25-4407-864C-4B3124EB1D0D}
+		{F81387EE-E102-434E-9D1A-A7F7D80411D6} = {18C766D6-D205-4574-B901-683E814D3FAE}
 	EndGlobalSection
 EndGlobal
