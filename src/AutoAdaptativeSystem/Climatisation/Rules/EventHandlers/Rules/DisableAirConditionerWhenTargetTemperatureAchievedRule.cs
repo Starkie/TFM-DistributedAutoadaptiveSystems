@@ -1,13 +1,9 @@
 namespace Climatisation.Rules.Service.EventHandlers.Rules;
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Analysis.Contracts.Attributes;
-using Analysis.Service.ApiClient.Api;
-using Analysis.Service.ApiClient.Model;
 using Analysis.Service.ApiClient.Services;
 using Climatisation.AirConditioner.Contracts;
 using Climatisation.Contracts;
@@ -18,20 +14,20 @@ using Microsoft.Extensions.DependencyInjection;
 [RuleKnowledgePropertyDependency(ClimatisationConstants.Property.Temperature)]
 [RuleKnowledgeConfigurationDependency(
     ClimatisationAirConditionerConstants.AppName,
-    ClimatisationConstants.Configuration.HotTemperatureThreshold,
+    ClimatisationConstants.Configuration.TargetTemperature,
     ClimatisationAirConditionerConstants.Configuration.Mode)]
-public class EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule : RuleBase
+public class DisableAirConditionerWhenTargetTemperatureAchievedRule : RuleBase
 {
-    private const string RuleName = nameof(EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule);
+    private const string RuleName = nameof(DisableAirConditionerWhenTargetTemperatureAchievedRule);
 
-    private const string TemperatureGreaterThanHotThreshold = "temperature-greater-than-hot-threshold";
+    private const string TargetTemperatureAchieved = "target-temperature-achieved";
 
     private static readonly IEnumerable<string> propertyNames =
-        typeof(EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule)
+        typeof(DisableAirConditionerWhenTargetTemperatureAchievedRule)
             .GetRulePropertyDependencies();
 
     private static readonly IDictionary<string, IEnumerable<string>> configurationNames =
-        typeof(EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule)
+        typeof(DisableAirConditionerWhenTargetTemperatureAchievedRule)
             .GetRuleConfigurationDependencies();
 
     private readonly IConfigurationService _configurationService;
@@ -40,7 +36,7 @@ public class EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule
 
     private readonly ISystemService _systemService;
 
-    public EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule(
+    public DisableAirConditionerWhenTargetTemperatureAchievedRule(
         ClimatisationRulesDiagnostics diagnostics,
         IConfigurationService configurationService,
         IPropertyService propertyService,
@@ -67,13 +63,13 @@ public class EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule
             ClimatisationAirConditionerConstants.Configuration.Mode,
             CancellationToken.None);
 
-        var thresholdTemperature = await _configurationService.GetConfigurationKey<float?>(
+        var targetTemperature = await _configurationService.GetConfigurationKey<float?>(
             ClimatisationAirConditionerConstants.AppName,
-            ClimatisationConstants.Configuration.HotTemperatureThreshold,
+            ClimatisationConstants.Configuration.TargetTemperature,
             CancellationToken.None);
 
-        return currentTemperature.Value >= thresholdTemperature
-            && airConditionerMode != AirConditioningMode.Cooling;
+        return (airConditionerMode == AirConditioningMode.Cooling && currentTemperature.Value <= targetTemperature)
+            || (airConditionerMode == AirConditioningMode.Heating && currentTemperature.Value >= targetTemperature);
     }
 
     protected override async Task Execute()
@@ -82,13 +78,13 @@ public class EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule
         await _systemService.RequestChangeAsync(changeRequest =>
         {
             changeRequest
-                .ForSymptom(TemperatureGreaterThanHotThreshold)
+                .ForSymptom(TargetTemperatureAchieved)
                 .WithService(ClimatisationAirConditionerConstants.AppName, service =>
                 {
                     service.MustBePresent()
                         .WithParameter(
                             ClimatisationAirConditionerConstants.Configuration.Mode,
-                            AirConditioningMode.Cooling.ToString());
+                            AirConditioningMode.Disabled.ToString());
                 });
         });
     }

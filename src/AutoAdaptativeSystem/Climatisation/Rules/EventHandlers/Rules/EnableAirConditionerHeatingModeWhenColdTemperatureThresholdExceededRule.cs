@@ -1,13 +1,9 @@
 namespace Climatisation.Rules.Service.EventHandlers.Rules;
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Analysis.Contracts.Attributes;
-using Analysis.Service.ApiClient.Api;
-using Analysis.Service.ApiClient.Model;
 using Analysis.Service.ApiClient.Services;
 using Climatisation.AirConditioner.Contracts;
 using Climatisation.Contracts;
@@ -18,20 +14,20 @@ using Microsoft.Extensions.DependencyInjection;
 [RuleKnowledgePropertyDependency(ClimatisationConstants.Property.Temperature)]
 [RuleKnowledgeConfigurationDependency(
     ClimatisationAirConditionerConstants.AppName,
-    ClimatisationConstants.Configuration.HotTemperatureThreshold,
+    ClimatisationConstants.Configuration.ColdTemperatureThreshold,
     ClimatisationAirConditionerConstants.Configuration.Mode)]
-public class EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule : RuleBase
+public class EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceededRule : RuleBase
 {
-    private const string RuleName = nameof(EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule);
+    private const string RuleName = nameof(EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceededRule);
 
-    private const string TemperatureGreaterThanHotThreshold = "temperature-greater-than-hot-threshold";
+    private const string TemperatureLesserThanColdThreshold = "temperature-lesser-than-cold-threshold";
 
     private static readonly IEnumerable<string> propertyNames =
-        typeof(EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule)
+        typeof(EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceededRule)
             .GetRulePropertyDependencies();
 
     private static readonly IDictionary<string, IEnumerable<string>> configurationNames =
-        typeof(EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule)
+        typeof(EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceededRule)
             .GetRuleConfigurationDependencies();
 
     private readonly IConfigurationService _configurationService;
@@ -40,7 +36,7 @@ public class EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule
 
     private readonly ISystemService _systemService;
 
-    public EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule(
+    public EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceededRule(
         ClimatisationRulesDiagnostics diagnostics,
         IConfigurationService configurationService,
         IPropertyService propertyService,
@@ -69,11 +65,11 @@ public class EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule
 
         var thresholdTemperature = await _configurationService.GetConfigurationKey<float?>(
             ClimatisationAirConditionerConstants.AppName,
-            ClimatisationConstants.Configuration.HotTemperatureThreshold,
+            ClimatisationConstants.Configuration.ColdTemperatureThreshold,
             CancellationToken.None);
 
-        return currentTemperature.Value >= thresholdTemperature
-            && airConditionerMode != AirConditioningMode.Cooling;
+        return currentTemperature.Value <= thresholdTemperature
+            && airConditionerMode != AirConditioningMode.Heating;
     }
 
     protected override async Task Execute()
@@ -82,13 +78,13 @@ public class EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule
         await _systemService.RequestChangeAsync(changeRequest =>
         {
             changeRequest
-                .ForSymptom(TemperatureGreaterThanHotThreshold)
+                .ForSymptom(TemperatureLesserThanColdThreshold)
                 .WithService(ClimatisationAirConditionerConstants.AppName, service =>
                 {
                     service.MustBePresent()
                         .WithParameter(
                             ClimatisationAirConditionerConstants.Configuration.Mode,
-                            AirConditioningMode.Cooling.ToString());
+                            AirConditioningMode.Heating.ToString());
                 });
         });
     }
