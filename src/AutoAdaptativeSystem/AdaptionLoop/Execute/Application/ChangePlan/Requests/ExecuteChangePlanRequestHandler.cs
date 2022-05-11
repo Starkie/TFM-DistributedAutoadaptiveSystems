@@ -1,27 +1,27 @@
-namespace Execute.Service.EventHandlers;
+namespace Execute.Service.Application.ChangePlan.Requests;
 
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Bus.Handlers;
 using Execute.Contracts.IntegrationEvents;
 using Execute.Service.Diagnostics;
+using MediatR;
 using Planning.Contracts.IntegrationEvents;
-using Rebus.Bus;
 
-public class ConfigurationChangePlanCreatedIntegrationEventHandler
-    : IIntegrationEventHandler<ConfigurationChangePlanCreatedIntegrationEvent>
+public class ExecuteChangePlanRequestHandler
+    : IRequestConsumer<ExecuteChangePlanRequest>
 {
-    private readonly IBus _bus;
+    private readonly IMediator _mediator;
 
     private readonly ExecuteServiceDiagnostics _diagnostics;
 
-    public ConfigurationChangePlanCreatedIntegrationEventHandler(IBus bus, ExecuteServiceDiagnostics diagnostics)
+    public ExecuteChangePlanRequestHandler(ExecuteServiceDiagnostics diagnostics, IMediator mediator)
     {
-        _bus = bus;
         _diagnostics = diagnostics;
+        _mediator = mediator;
     }
 
-    public async Task Handle(ConfigurationChangePlanCreatedIntegrationEvent message)
+    public async Task Handle(ExecuteChangePlanRequest message)
     {
         using var activity = _diagnostics.StartExecuteChangePlan();
 
@@ -33,11 +33,13 @@ public class ConfigurationChangePlanCreatedIntegrationEventHandler
         {
             _diagnostics.ExecuteServiceActions(serviceName, actionsByService[serviceName]);
 
-            await _bus.Advanced.Topics.Publish(serviceName, new ExecutionRequestIntegrationEvent
+            var request = new ExecutionRequest
             {
                 ServiceName = serviceName,
                 Actions = actionsByService[serviceName],
-            });
+            };
+
+            await _mediator.Send(request);
         }
     }
 }

@@ -36,7 +36,7 @@ public class Startup
             this.GetType().Assembly,
             registerSubscriptions: async bus =>
             {
-                await bus.Subscribe<ConfigurationChangePlanCreatedIntegrationEvent>();
+                await bus.Subscribe<ExecuteChangePlanRequest>();
             });
 
         services.AddTelemetry(Configuration, ExecuteServiceConstants.AppName, "v1.0");
