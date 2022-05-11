@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="MediatR" Version="10.0.1" />
       <PackageReference Include="Rebus" Version="6.6.4" />
       <PackageReference Include="Rebus.OpenTelemetry" Version="0.0.4" />
       <PackageReference Include="Rebus.RabbitMq" Version="7.3.5" />
