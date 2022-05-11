@@ -22,6 +22,21 @@ public class ClimatisationAirConditionerServiceDiagnostics
         ClimatisationAirConditionerServiceEventIds.SeedAdaptionLoopConfiguration,
         "Seeding Air Conditioner AdaptionLoop Configuration");
 
+    private static readonly Action<ILogger, Exception> LogStartHeatingRoom = LoggerMessage.Define(
+        LogLevel.Information,
+        ClimatisationAirConditionerServiceEventIds.HeatRoomEventId,
+        "AirConditionerMode: [HEAT]");
+
+    private static readonly Action<ILogger, Exception> LogStartCoolingRoom = LoggerMessage.Define(
+        LogLevel.Information,
+        ClimatisationAirConditionerServiceEventIds.CoolRoomEventId,
+        "AirConditionerMode: [COOLING]");
+
+    private static readonly Action<ILogger, Exception> LogStartTurnOff = LoggerMessage.Define(
+        LogLevel.Information,
+        ClimatisationAirConditionerServiceEventIds.TurnOffEventId,
+        "AirConditionerMode: [TURN OFF]");
+
     private readonly ActivitySource _activitySource;
 
     private readonly ILogger _logger;
@@ -55,6 +70,27 @@ public class ClimatisationAirConditionerServiceDiagnostics
         return _activitySource.StartActivity("Seed Adaption Loop Configuration");
     }
 
+    public Activity StartHeating()
+    {
+        LogStartHeatingRoom(_logger, null);
+
+        return _activitySource.StartActivity("Heat room");
+    }
+
+    public Activity StartCooling()
+    {
+        LogStartCoolingRoom(_logger, null);
+
+        return _activitySource.StartActivity("Cool room");
+    }
+
+    public Activity StartTurnOff()
+    {
+        LogStartTurnOff(_logger, null);
+
+        return _activitySource.StartActivity("Turn off");
+    }
+
     public void ErrorReportingTemperature(Exception exception)
     {
         LogErrorReportingTemperature(_logger, exception);
@@ -67,5 +103,11 @@ public class ClimatisationAirConditionerServiceDiagnostics
         public static EventId ErrorReportingTemperatureEventId = new EventId(200, nameof(ErrorReportingTemperatureEventId));
 
         public static EventId SeedAdaptionLoopConfiguration = new EventId(300, nameof(SeedAdaptionLoopConfiguration));
+
+        public static EventId HeatRoomEventId = new EventId(400, nameof(HeatRoomEventId));
+
+        public static EventId CoolRoomEventId = new EventId(500, nameof(CoolRoomEventId));
+
+        public static EventId TurnOffEventId = new EventId(600, nameof(TurnOffEventId));
     }
 }

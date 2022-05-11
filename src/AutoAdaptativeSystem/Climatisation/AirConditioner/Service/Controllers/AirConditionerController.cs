@@ -23,21 +23,24 @@ public class AirConditionerController : ControllerBase
     [HttpPost("TurnOff")]
     public async Task TurnOff()
     {
-        // TODO: Diagnostics.
+        using var activity = _diagnostics.StartTurnOff();
+
         await _airConditionerService.TurnOff();
     }
 
     [HttpPost("Cool")]
     public async Task Cool()
     {
-        // TODO: Diagnostics.
+        using var activity = _diagnostics.StartCooling();
+
         await _airConditionerService.Cool();
     }
 
     [HttpPost("Heat")]
     public async Task Heat()
     {
-        // TODO: Diagnostics.
+        using var activity = _diagnostics.StartHeating();
+
         await _airConditionerService.Heat();
     }
 }
