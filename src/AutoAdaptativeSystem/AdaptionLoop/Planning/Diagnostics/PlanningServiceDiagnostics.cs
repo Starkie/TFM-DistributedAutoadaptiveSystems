@@ -5,6 +5,7 @@ using System.Diagnostics;
 using Analysis.Contracts.IntegrationEvents;
 using Microsoft.Extensions.Logging;
 using Planning.Contracts.IntegrationEvents;
+using Prometheus;
 
 public class PlanningServiceDiagnostics
 {
@@ -38,11 +39,15 @@ public class PlanningServiceDiagnostics
 
     private readonly ILogger _logger;
 
+    private readonly Counter _plannedAdaptionActionsCounter;
+
     public PlanningServiceDiagnostics(ILoggerFactory loggerFactory)
     {
         _logger = loggerFactory.CreateLogger(PlanningServiceConstants.AppName);
 
         _activitySource = new ActivitySource(PlanningServiceConstants.AppName);
+
+        _plannedAdaptionActionsCounter = Metrics.CreateCounter("planning_service_adaptionactions_requested_count", "The number of adaption actions requested by this service.");
     }
 
     public void SystemConfigurationChangeRequestReceived(SystemConfigurationChangeRequest message)
@@ -59,6 +64,8 @@ public class PlanningServiceDiagnostics
 
     public void ConfigurationChangePlanCreated(ConfigurationChangePlan configurationChangePlan)
     {
+        _plannedAdaptionActionsCounter.Inc(configurationChangePlan.Actions.Count);
+
         LogChangePlanCreatedMessage(_logger, configurationChangePlan.ToString(), null);
     }
 
