@@ -31,7 +31,7 @@ public class Startup
             .AddJsonOptions(options =>
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-        services.AddSwagger("Monitoring Service", string.Empty, "v1");
+        services.AddSwagger("Climatisation Air Conditioner Service", string.Empty, "v1");
 
         services.AddTelemetry(Configuration, ClimatisationAirConditionerConstants.AppName, "v1.0");
 

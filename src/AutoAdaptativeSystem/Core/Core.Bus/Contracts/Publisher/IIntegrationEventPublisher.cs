@@ -1,8 +1,9 @@
 namespace Core.Bus.Contracts.Publisher;
 
 using Core.Bus.Contracts.Events;
+using MediatR;
 
-public interface IIntegrationEventPublisher<TIntegrationEvent> where TIntegrationEvent : IIntegrationEvent
+public interface IIntegrationEventPublisher<TIntegrationEvent> : INotificationHandler<TIntegrationEvent>
+    where TIntegrationEvent : IIntegrationEvent
 {
-    Task PublishAsync(TIntegrationEvent integrationEvent);
 }

@@ -60,7 +60,7 @@ public class ClimatisationAirConditionerServiceDiagnostics
 
         LogTemperatureReport(_logger, formatedTemperature, temperature.Unit, null);
 
-        return _activitySource.StartActivity("Reporting temperature measurement");
+        return _activitySource.StartActivity("Reporting temperature measurement", ActivityKind.Client);
     }
 
     public Activity StartSeedAdaptionLoopConfiguration()

@@ -1,24 +1,24 @@
 namespace Execute.Service.Application.Execution.Events;
 
-using System.Threading;
 using System.Threading.Tasks;
-using Core.Bus.Contracts.Publisher;
+using Core.Bus.Publisher;
 using Execute.Contracts.IntegrationEvents;
-using MediatR;
 using Rebus.Bus;
 
 public class ExecutionRequestedIntegrationEventPublisher
-    : IIntegrationEventPublisher<ExecutionRequestedIntegrationEvent>
+    : IntegrationEventPublisher<ExecutionRequestedIntegrationEvent>
 {
     private readonly IBus _bus;
 
     public ExecutionRequestedIntegrationEventPublisher(IBus bus)
+        : base(bus)
     {
         _bus = bus;
     }
 
-    public async Task PublishAsync(ExecutionRequestedIntegrationEvent integrationEvent)
+    protected override async Task Publish(ExecutionRequestedIntegrationEvent integrationEvent)
     {
+        // TODO: Implement an integration event publisher with topics.
         await _bus.Advanced.Topics.Publish(integrationEvent.ServiceName, integrationEvent);
     }
 }
