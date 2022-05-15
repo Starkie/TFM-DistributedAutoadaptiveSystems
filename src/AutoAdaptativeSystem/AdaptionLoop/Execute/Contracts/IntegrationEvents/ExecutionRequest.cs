@@ -9,4 +9,6 @@ public class ExecutionRequest : Request
     public string ServiceName { get; init; }
 
     public IEnumerable<AdaptionAction> Actions { get; init; }
+
+    public IEnumerable<Symptom> Symptoms { get; set; }
 }

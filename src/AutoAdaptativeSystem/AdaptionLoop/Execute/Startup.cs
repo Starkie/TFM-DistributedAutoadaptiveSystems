@@ -1,5 +1,6 @@
 namespace Execute.Service;
 
+using System.Reflection;
 using Execute.Service.Diagnostics;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -41,7 +42,9 @@ public class Startup
 
         services.AddTelemetry(Configuration, ExecuteServiceConstants.AppName, "v1.0");
 
-        services.AddMediatR(this.GetType().Assembly);
+        services.AddMediatR(Assembly.GetExecutingAssembly());
+
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
         services.AddSingleton<ExecuteServiceDiagnostics>();
     }

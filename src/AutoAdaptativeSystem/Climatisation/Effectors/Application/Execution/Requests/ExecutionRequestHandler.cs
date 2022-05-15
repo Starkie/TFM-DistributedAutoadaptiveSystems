@@ -28,7 +28,7 @@ public class ExecutionRequestHandler
 
         foreach (var action in request.Actions)
         {
-            _diagnostics.ExecuteAdaptionAction(action);
+            _diagnostics.ExecuteAdaptionAction(action, request.Symptoms);
 
             switch (action)
             {
@@ -39,14 +39,14 @@ public class ExecutionRequestHandler
                     // TODO: Implement.
                     break;
                 case SetParameterAction setParameterAction:
-                    await ExecuteSetParameterAction(setParameterAction);
+                    await ExecuteSetParameterAction(setParameterAction, request.Symptoms);
 
                     break;
             }
         }
     }
 
-    private async Task ExecuteSetParameterAction(SetParameterAction setParameterAction)
+    private async Task ExecuteSetParameterAction(SetParameterAction setParameterAction, IEnumerable<Symptom> symptoms)
     {
         var request = setParameterAction.PropertyName switch
         {
@@ -55,9 +55,11 @@ public class ExecutionRequestHandler
             _ => null,
         };
 
-        if (request is not null)
+        if (request is null)
         {
-            await _mediator.Send(request);
+            return;
         }
+        
+        await _mediator.Send(request);
     }
 }

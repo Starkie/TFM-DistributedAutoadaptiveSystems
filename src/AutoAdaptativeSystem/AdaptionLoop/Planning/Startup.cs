@@ -1,5 +1,6 @@
 namespace Planning.Service;
 
+using System.Reflection;
 using Analysis.Contracts.IntegrationEvents;
 using MediatR;
 using Planning.Service.Diagnostics;
@@ -41,7 +42,9 @@ public class Startup
 
         services.AddTelemetry(Configuration, PlanningServiceConstants.AppName, "v1.0");
 
-        services.AddMediatR(this.GetType().Assembly);
+        services.AddMediatR(Assembly.GetExecutingAssembly());
+
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
         services.AddKnowledgeServices(Configuration);
 

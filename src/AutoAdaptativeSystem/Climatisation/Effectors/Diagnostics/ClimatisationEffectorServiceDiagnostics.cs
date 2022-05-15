@@ -3,6 +3,7 @@ namespace Climatisation.Effectors.Service.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Execute.Contracts.IntegrationEvents;
 using Microsoft.Extensions.Logging;
 using Planning.Contracts.IntegrationEvents.AdaptionActions;
 using Prometheus;
@@ -18,11 +19,11 @@ public class ClimatisationEffectorServiceDiagnostics
         ExecuteServiceEventIds.ExecuteChangePlanEventId,
         "Executing change plan");
 
-    private static readonly Action<ILogger, AdaptionAction, Exception> LogExecuteAdaptionAction =
-        LoggerMessage.Define<AdaptionAction>(
+    private static readonly Action<ILogger, AdaptionAction, IEnumerable<Symptom>, Exception> LogExecuteAdaptionAction =
+        LoggerMessage.Define<AdaptionAction, IEnumerable<Symptom>>(
             LogLevel.Information,
             ExecuteServiceEventIds.ExecuteAdaptionActionEventId,
-            "Executing adaption action: '{@adaptionAction}'");
+            "Executing adaption action {@adaptionAction} for symptoms {@symptoms}");
 
     private readonly Counter _executedAdaptionActionsCounter;
 
@@ -43,11 +44,11 @@ public class ClimatisationEffectorServiceDiagnostics
     }
 
     // TODO: Mover AdaptionAction a ExecuteContracts.
-    public void ExecuteAdaptionAction(AdaptionAction action)
+    public void ExecuteAdaptionAction(AdaptionAction action, IEnumerable<Symptom> symptoms)
     {
         _executedAdaptionActionsCounter.Inc();
 
-        LogExecuteAdaptionAction(_logger, action, null);
+        LogExecuteAdaptionAction(_logger, action, symptoms, null);
     }
 
     private static class ExecuteServiceEventIds

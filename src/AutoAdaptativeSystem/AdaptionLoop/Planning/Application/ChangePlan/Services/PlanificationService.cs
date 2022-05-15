@@ -3,12 +3,14 @@ namespace Planning.Service.Application.ChangePlan.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Analysis.Contracts.IntegrationEvents;
+using AutoMapper;
 using Knowledge.Service.ApiClient.Services;
 using MediatR;
 using Planning.Contracts;
 using Planning.Contracts.IntegrationEvents;
 using Planning.Contracts.IntegrationEvents.AdaptionActions;
 using Planning.Service.Diagnostics;
+using Symptom = Planning.Contracts.IntegrationEvents.Symptom;
 
 public class PlanificationService : IPlanificationService
 {
@@ -18,14 +20,18 @@ public class PlanificationService : IPlanificationService
 
     private readonly IMediator _mediator;
 
+    private readonly IMapper _mapper;
+
     public PlanificationService(
         PlanningServiceDiagnostics diagnostics,
         IConfigurationService configurationService,
-        IMediator mediator)
+        IMediator mediator,
+        IMapper mapper)
     {
         _diagnostics = diagnostics;
         _configurationService = configurationService;
         _mediator = mediator;
+        _mapper = mapper;
     }
 
     public async Task PlanNextConfiguration(SystemConfigurationChangeRequest systemConfigurationChangeRequest)
@@ -34,18 +40,18 @@ public class PlanificationService : IPlanificationService
 
         var changePlan = new ConfigurationChangePlan();
 
-        foreach (var request in systemConfigurationChangeRequest.ConfigurationRequests)
+        foreach (var configurationRequest in systemConfigurationChangeRequest.ConfigurationRequests)
         {
-            var deploymentAction = await BuildDeploymentAction(request);
+            var deploymentAction = await BuildDeploymentAction(configurationRequest);
 
             if (deploymentAction is not null)
             {
                 changePlan.Actions.Add(deploymentAction);
             }
 
-            changePlan.Actions.AddRange(await BuildBindingActions(request));
+            changePlan.Actions.AddRange(await BuildBindingActions(configurationRequest));
 
-            changePlan.Actions.AddRange(await BuildSetParameterActions(request));
+            changePlan.Actions.AddRange(await BuildSetParameterActions(configurationRequest));
         }
 
         if (changePlan.Actions.Count == 0)
@@ -57,10 +63,13 @@ public class PlanificationService : IPlanificationService
 
         _diagnostics.ConfigurationChangePlanCreated(changePlan);
 
-        await _mediator.Send(new ExecuteChangePlanRequest()
+        var request = new ExecuteChangePlanRequest()
         {
             ChangePlan = changePlan,
-        });
+            Symptoms = _mapper.Map<IEnumerable<Symptom>>(systemConfigurationChangeRequest.Symptoms),
+        };
+
+        await _mediator.Send(request);
     }
 
     private async Task<AdaptionAction> BuildDeploymentAction(SystemConfigurationRequest request)
