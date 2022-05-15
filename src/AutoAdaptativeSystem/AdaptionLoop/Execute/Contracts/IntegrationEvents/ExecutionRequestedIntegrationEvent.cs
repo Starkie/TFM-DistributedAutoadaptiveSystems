@@ -4,7 +4,7 @@ using Core.Bus.Contracts.Events;
 using Core.Bus.Contracts.Requests;
 using Planning.Contracts.IntegrationEvents.AdaptionActions;
 
-public class ExecutionRequest : Request
+public class ExecutionRequestedIntegrationEvent : IIntegrationEvent
 {
     public string ServiceName { get; init; }
 

@@ -1,4 +1,4 @@
-namespace Climatisation.Effectors.Service.Application.Execution.Requests;
+namespace Climatisation.Effectors.Service.Application.Execution.Events;
 
 using System.Threading.Tasks;
 using Climatisation.AirConditioner.Contracts;
@@ -9,26 +9,26 @@ using Execute.Contracts.IntegrationEvents;
 using MediatR;
 using Planning.Contracts.IntegrationEvents.AdaptionActions;
 
-public class ExecutionRequestHandler
-    : IRequestConsumer<ExecutionRequest>
+public class ExecutionRequestedIntegrationEventHandler
+    : IIntegrationEventHandler<ExecutionRequestedIntegrationEvent>
 {
     private readonly ClimatisationEffectorServiceDiagnostics _diagnostics;
 
     private readonly IMediator _mediator;
 
-    public ExecutionRequestHandler(ClimatisationEffectorServiceDiagnostics diagnostics, IMediator mediator)
+    public ExecutionRequestedIntegrationEventHandler(ClimatisationEffectorServiceDiagnostics diagnostics, IMediator mediator)
     {
         _diagnostics = diagnostics;
         _mediator = mediator;
     }
 
-    public async Task Handle(ExecutionRequest request)
+    public async Task Handle(ExecutionRequestedIntegrationEvent requestedIntegrationEvent)
     {
         using var activity = _diagnostics.StartExecuteChangePlan();
 
-        foreach (var action in request.Actions)
+        foreach (var action in requestedIntegrationEvent.Actions)
         {
-            _diagnostics.ExecuteAdaptionAction(action, request.Symptoms);
+            _diagnostics.ExecuteAdaptionAction(action, requestedIntegrationEvent.Symptoms);
 
             switch (action)
             {
@@ -39,7 +39,7 @@ public class ExecutionRequestHandler
                     // TODO: Implement.
                     break;
                 case SetParameterAction setParameterAction:
-                    await ExecuteSetParameterAction(setParameterAction, request.Symptoms);
+                    await ExecuteSetParameterAction(setParameterAction, requestedIntegrationEvent.Symptoms);
 
                     break;
             }
@@ -59,7 +59,7 @@ public class ExecutionRequestHandler
         {
             return;
         }
-        
+
         await _mediator.Send(request);
     }
 }

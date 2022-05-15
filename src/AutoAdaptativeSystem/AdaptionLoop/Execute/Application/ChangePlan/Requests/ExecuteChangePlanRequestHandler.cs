@@ -44,14 +44,14 @@ public class ExecuteChangePlanRequestHandler
         {
             _diagnostics.ExecuteServiceActions(serviceName, actionsByService[serviceName]);
 
-            var request = new ExecutionRequest
+            var integrationEvent = new ExecutionRequestedIntegrationEvent
             {
                 ServiceName = serviceName,
                 Actions = actionsByService[serviceName],
                 Symptoms = symptoms,
             };
 
-            await _mediator.Send(request);
+            await _mediator.Publish(integrationEvent);
         }
     }
 }
