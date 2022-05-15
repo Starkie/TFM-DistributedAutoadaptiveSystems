@@ -359,7 +359,7 @@
             "type": "loki",
             "uid": "sH27zbL7z"
           },
-          "expr": "{EnvironmentName=\"Production\"} |= \"Executing adaption action:\"",
+          "expr": "{EnvironmentName=\"Production\"} |= \"Executing adaption action\"",
           "refId": "A"
         }
       ],
