@@ -1,5 +1,6 @@
 namespace Planning.Service;
 
+using System.Reflection;
 using Analysis.Contracts.IntegrationEvents;
 using MediatR;
 using Planning.Service.Diagnostics;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Planning.Service.Services;
+using Planning.Service.Application.ChangePlan.Services;
 using Prometheus;
 using Serilog;
 
@@ -36,12 +37,14 @@ public class Startup
             this.GetType().Assembly,
             registerSubscriptions: async bus =>
             {
-                await bus.Subscribe<SystemConfigurationChangeRequestIntegrationEvent>();
+                await bus.Subscribe<SystemConfigurationChangeRequest>();
             });
 
         services.AddTelemetry(Configuration, PlanningServiceConstants.AppName, "v1.0");
 
-        services.AddMediatR(this.GetType().Assembly);
+        services.AddMediatR(Assembly.GetExecutingAssembly());
+
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
         services.AddKnowledgeServices(Configuration);
 

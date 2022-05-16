@@ -111,16 +111,16 @@ namespace Example
             HttpClient httpClient = new HttpClient();
             HttpClientHandler httpClientHandler = new HttpClientHandler();
             var apiInstance = new PropertyApi(httpClient, config, httpClientHandler);
-            var propertyName = "propertyName_example";  // string | The name of the property to delete.
 
             try
             {
-                // Deletes the value of a given property.
-                apiInstance.PropertyPropertyNameDelete(propertyName);
+                // Gets all the property registered in the knowledge.
+                Dictionary<string, PropertyDTO> result = apiInstance.PropertyGet();
+                Debug.WriteLine(result);
             }
             catch (ApiException e)
             {
-                Debug.Print("Exception when calling PropertyApi.PropertyPropertyNameDelete: " + e.Message );
+                Debug.Print("Exception when calling PropertyApi.PropertyGet: " + e.Message );
                 Debug.Print("Status Code: "+ e.ErrorCode);
                 Debug.Print(e.StackTrace);
             }
@@ -137,10 +137,13 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*PropertyApi* | [**PropertyGet**](docs/PropertyApi.md#propertyget) | **GET** /Property | Gets all the property registered in the knowledge.
 *PropertyApi* | [**PropertyPropertyNameDelete**](docs/PropertyApi.md#propertypropertynamedelete) | **DELETE** /Property/{propertyName} | Deletes the value of a given property.
 *PropertyApi* | [**PropertyPropertyNameGet**](docs/PropertyApi.md#propertypropertynameget) | **GET** /Property/{propertyName} | Gets a property given its name.
-*PropertyApi* | [**PropertyPropertyNamePut**](docs/PropertyApi.md#propertypropertynameput) | **PUT** /Property/{propertyName} | Sets value of a given property. If the property does not exist, it will be created.
+*PropertyApi* | [**PropertyPut**](docs/PropertyApi.md#propertyput) | **PUT** /Property | Sets the value of the given properties. If a given property does not exist, it will be created.
+*ServiceApi* | [**ServiceGet**](docs/ServiceApi.md#serviceget) | **GET** /Service | Gets all the service configuration properties registered in the knowledge.
 *ServiceApi* | [**ServiceServiceNameConfigurationConfigurationNameGet**](docs/ServiceApi.md#serviceservicenameconfigurationconfigurationnameget) | **GET** /Service/{serviceName}/configuration/{configurationName} | Gets a configuration property given its name.
+*ServiceApi* | [**ServiceServiceNameConfigurationPut**](docs/ServiceApi.md#serviceservicenameconfigurationput) | **PUT** /Service/{serviceName}/configuration | Sets the values for the given configuration properties. If a given property   does not exist, it will be created.
 
 
 <a name="documentation-for-models"></a>

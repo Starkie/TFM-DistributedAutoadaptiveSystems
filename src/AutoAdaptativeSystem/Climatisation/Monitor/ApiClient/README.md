@@ -138,14 +138,18 @@ Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *MeasurementApi* | [**MeasurementHumidityPost**](docs/MeasurementApi.md#measurementhumiditypost) | **POST** /Measurement/Humidity | 
 *MeasurementApi* | [**MeasurementTemperaturePost**](docs/MeasurementApi.md#measurementtemperaturepost) | **POST** /Measurement/Temperature | 
+*ServiceApi* | [**ServiceServiceNameConfigurationConfigurationNameGet**](docs/ServiceApi.md#serviceservicenameconfigurationconfigurationnameget) | **GET** /Service/{serviceName}/configuration/{configurationName} | Gets a configuration property given its name.
+*ServiceApi* | [**ServiceServiceNameConfigurationPut**](docs/ServiceApi.md#serviceservicenameconfigurationput) | **PUT** /Service/{serviceName}/configuration | Sets the values for the given configuration properties. If a given property   does not exist, it will be created.
 
 
 <a name="documentation-for-models"></a>
 ## Documentation for Models
 
+ - [Model.ConfigurationDTO](docs/ConfigurationDTO.md)
  - [Model.HumidityMeasurementDTO](docs/HumidityMeasurementDTO.md)
  - [Model.HumidityUnit](docs/HumidityUnit.md)
  - [Model.ProblemDetails](docs/ProblemDetails.md)
+ - [Model.SetPropertyDTO](docs/SetPropertyDTO.md)
  - [Model.TemperatureMeasurementDTO](docs/TemperatureMeasurementDTO.md)
  - [Model.TemperatureUnit](docs/TemperatureUnit.md)
 

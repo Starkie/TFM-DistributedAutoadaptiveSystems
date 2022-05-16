@@ -5,7 +5,6 @@ ConfigurationDTO
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**ServiceName** | **string** | Gets or Sets ServiceName | [optional] 
 **Name** | **string** | Gets or Sets Name | [optional] 
 **Value** | **string** | Gets or Sets Value | [optional] 
 **LastModification** | **DateTime** | Gets or Sets LastModification | [optional] 

@@ -107,10 +107,195 @@
           }
         }
       }
+    },
+    "/Service/{serviceName}/configuration/{configurationName}": {
+      "get": {
+        "tags": [
+          "Service"
+        ],
+        "summary": "Gets a configuration property given its name.",
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "description": "The name of the service whose configuration we are looking for.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "configurationName",
+            "in": "path",
+            "description": "The name of the configuration property to find.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The configuration property was found. Returns the value of the property.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigurationDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigurationDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigurationDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "There was an error with the provided arguments.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The configuration property was not found.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Service/{serviceName}/configuration": {
+      "put": {
+        "tags": [
+          "Service"
+        ],
+        "summary": "Sets the values for the given configuration properties. If a given property\r\n does not exist, it will be created.",
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "description": "The name of the service.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The collection of properties to set.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SetPropertyDTO"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SetPropertyDTO"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SetPropertyDTO"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The properties were created or updated successfully."
+          },
+          "400": {
+            "description": "There was an error with the provided arguments.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "ConfigurationDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Gets or Sets Name",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "description": "Gets or Sets Value",
+            "nullable": true
+          },
+          "lastModification": {
+            "type": "string",
+            "description": "Gets or Sets LastModification",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "ConfigurationDTO"
+      },
       "HumidityMeasurementDTO": {
         "type": "object",
         "properties": {
@@ -157,6 +342,23 @@
           }
         },
         "additionalProperties": { }
+      },
+      "SetPropertyDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Gets or Sets Name",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "description": "Gets or Sets Value",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "SetPropertyDTO"
       },
       "TemperatureMeasurementDTO": {
         "type": "object",

@@ -28,9 +28,9 @@ $Projects = @(
         ProjectName = "Climatisation.Monitor.Service"
     },
     @{
-        Name = "temperatureprobe"
-        Path = "Climatisation/Probes/Temperature"
-        ProjectName = "Climatisation.Probes.Temperature"
+        Name = "climatisation_airconditioner"
+        Path = "Climatisation/AirConditioner/Service"
+        ProjectName = "Climatisation.AirConditioner.Service"
     },
     @{
         Name = "analysis"
@@ -43,9 +43,19 @@ $Projects = @(
         ProjectName = "Planning.Service"
     },
     @{
+        Name = "execute"
+        Path = "AdaptionLoop/Execute"
+        ProjectName = "Execute.Service"
+    },
+    @{
         Name = "climatisation_rules"
         Path = "Climatisation/Rules"
         ProjectName = "Climatisation.Rules.Service"
+    },
+    @{
+        Name = "climatisation_effectors"
+        Path = "Climatisation/Effectors"
+        ProjectName = "Climatisation.Effectors.Service"
     }
 )
 

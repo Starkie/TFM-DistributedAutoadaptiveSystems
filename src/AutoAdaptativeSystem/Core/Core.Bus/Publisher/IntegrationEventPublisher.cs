@@ -14,7 +14,12 @@ public abstract class IntegrationEventPublisher<TIntegrationEvent> : IIntegratio
         _bus = bus;
     }
 
-    public async Task PublishAsync(TIntegrationEvent integrationEvent)
+    public async Task Handle(TIntegrationEvent notification, CancellationToken cancellationToken)
+    {
+        await Publish(notification);
+    }
+
+    protected virtual async Task Publish(TIntegrationEvent integrationEvent)
     {
         await _bus.Publish(integrationEvent);
     }

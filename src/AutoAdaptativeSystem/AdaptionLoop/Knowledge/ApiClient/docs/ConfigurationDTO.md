@@ -4,7 +4,6 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**ServiceName** | **string** |  | [optional] 
 **Name** | **string** |  | [optional] 
 **Value** | **string** |  | [optional] 
 **LastModification** | **DateTime** |  | [optional] 

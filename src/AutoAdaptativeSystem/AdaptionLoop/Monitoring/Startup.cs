@@ -34,13 +34,7 @@ public class Startup
 
         services.AddSingleton<MonitoringServiceDiagnostics>();
 
-        services.AddScoped<IPropertyApi, PropertyApi>(_ =>
-        {
-            var configuration =
-                Configuration.BindOptions<KnowledgeServiceConfiguration>(KnowledgeServiceConfiguration.ConfigurationPath);
-
-            return new PropertyApi(configuration.ServiceUri);
-        });
+        services.AddKnowledgeServices(Configuration);
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **ServiceName** | **string** |  | [optional] 
-**IsActive** | **bool** |  | [optional] 
+**IsDeployed** | **bool** |  | [optional] 
 **ConfigurationProperties** | [**List&lt;ConfigurationProperty&gt;**](ConfigurationProperty.md) |  | [optional] 
 **Bindings** | [**List&lt;BindingConfiguration&gt;**](BindingConfiguration.md) |  | [optional] 
 

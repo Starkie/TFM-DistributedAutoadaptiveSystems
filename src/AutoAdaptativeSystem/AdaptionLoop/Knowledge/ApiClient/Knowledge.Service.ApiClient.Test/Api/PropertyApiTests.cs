@@ -54,6 +54,17 @@ namespace Knowledge.Service.ApiClient.Test.Api
         }
 
         /// <summary>
+        /// Test PropertyGet
+        /// </summary>
+        [Fact]
+        public void PropertyGetTest()
+        {
+            // TODO uncomment below to test the method and replace null with proper value
+            //var response = instance.PropertyGet();
+            //Assert.IsType<Dictionary<string, PropertyDTO>>(response);
+        }
+
+        /// <summary>
         /// Test PropertyPropertyNameDelete
         /// </summary>
         [Fact]
@@ -77,15 +88,14 @@ namespace Knowledge.Service.ApiClient.Test.Api
         }
 
         /// <summary>
-        /// Test PropertyPropertyNamePut
+        /// Test PropertyPut
         /// </summary>
         [Fact]
-        public void PropertyPropertyNamePutTest()
+        public void PropertyPutTest()
         {
             // TODO uncomment below to test the method and replace null with proper value
-            //string propertyName = null;
-            //SetPropertyDTO? setPropertyDTO = null;
-            //instance.PropertyPropertyNamePut(propertyName, setPropertyDTO);
+            //List<SetPropertyDTO>? setPropertyDTO = null;
+            //instance.PropertyPut(setPropertyDTO);
         }
     }
 }

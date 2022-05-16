@@ -24,6 +24,11 @@ public class KnowledgeServiceDiagnostics
         KnowledgeServiceEventIds.PropertyFoundEventId,
         "Property '{PropertyName}' found. Value: '{@PropertyValue}'");
 
+    private static readonly Action<ILogger, int, Exception> LogSetPropertiesMessage = LoggerMessage.Define<int>(
+        LogLevel.Information,
+        KnowledgeServiceEventIds.SetPropertyId,
+        "Setting the value of '{count}' properties");
+
     private static readonly Action<ILogger, string, SetPropertyDTO, Exception> LogSetPropertyMessage = LoggerMessage.Define<string, SetPropertyDTO>(
         LogLevel.Information,
         KnowledgeServiceEventIds.SetPropertyId,
@@ -48,6 +53,11 @@ public class KnowledgeServiceDiagnostics
         LogLevel.Information,
         KnowledgeServiceEventIds.ConfigurationNotFoundEventId,
         "Configuration '{ConfigurationName}' not found.");
+
+    private static readonly Action<ILogger, int, string, Exception> LogSetConfigurationKeysMessage = LoggerMessage.Define<int, string>(
+        LogLevel.Information,
+        KnowledgeServiceEventIds.SetPropertyId,
+        "Setting the value of '{count}' configuration keys of the service '{serviceName}'");
 
     private static readonly Action<ILogger, string, string, SetPropertyDTO, Exception> LogSetConfigurationMessage = LoggerMessage.Define<string, string, SetPropertyDTO>(
         LogLevel.Information,
@@ -94,13 +104,18 @@ public class KnowledgeServiceDiagnostics
         return _activitySource.StartActivity("Get Property's Value");
     }
 
-    public Activity LogSetProperty(string propertyName, SetPropertyDTO setPropertyDto)
+    public Activity LogSetProperties(int count)
     {
-        LogSetPropertyMessage(_logger, propertyName, setPropertyDto, null);
+        LogSetPropertiesMessage(_logger, count, null);
+
+        return _activitySource.StartActivity("Set Properties Values");
+    }
+
+    public void LogSetProperty(SetPropertyDTO setPropertyDto)
+    {
+        LogSetPropertyMessage(_logger, setPropertyDto.Name, setPropertyDto, null);
 
         _setPropertyCounter.Inc();
-
-        return _activitySource.StartActivity("Set Property's Value");
     }
 
     public Activity LogDeleteProperty(string propertyName)
@@ -143,15 +158,19 @@ public class KnowledgeServiceDiagnostics
         _getConfigurationNotFoundCounter.Inc();
     }
 
-    public Activity LogSetConfigurationKey(string serviceName, string propertyName, SetPropertyDTO setPropertyDto)
+    public Activity LogSetConfigurationKeys(string serviceName, int count)
     {
-        LogSetConfigurationMessage(_logger, serviceName, propertyName, setPropertyDto, null);
-
-        _setConfigurationCounter.Inc();
+        LogSetConfigurationKeysMessage(_logger, count, serviceName, null);
 
         return _activitySource.StartActivity("Set Configuration Key Value");
     }
 
+    public void LogSetConfigurationKey(string serviceName, string propertyName, SetPropertyDTO setPropertyDto)
+    {
+        LogSetConfigurationMessage(_logger, serviceName, propertyName, setPropertyDto, null);
+
+        _setConfigurationCounter.Inc();
+    }
 
     private class KnowledgeServiceEventIds
     {

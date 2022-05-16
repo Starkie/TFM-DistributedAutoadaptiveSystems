@@ -1,0 +1,34 @@
+﻿{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:22822",
+      "sslPort": 44369
+    }
+  },
+  "profiles": {
+    "AirConditioner": {
+      "commandName": "Project",
+      "dotnetRunMessages": "true",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:11001",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "GRAFANA_LOKI_URI": "http://localhost:3100",
+        "JAEGER__HOST": "localhost",
+        "JAEGER__PORT": "6831",
+        "CLIMATISATIONMONITOR__SERVICEURI": "http://localhost:7001"
+      }
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "CLIMATISATIONMONITOR__SERVICEURI": "http://localhost:7001"
+      }
+    }
+  }
+}

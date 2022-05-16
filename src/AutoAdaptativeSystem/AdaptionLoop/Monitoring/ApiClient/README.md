@@ -140,15 +140,19 @@ Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *MonitorApi* | [**MonitorMonitorIdMeasurementPost**](docs/MonitorApi.md#monitormonitoridmeasurementpost) | **POST** /Monitor/{monitorId}/measurement | Registers a measurement from a monitor.
 *PropertyApi* | [**PropertyPropertyNameGet**](docs/PropertyApi.md#propertypropertynameget) | **GET** /Property/{propertyName} | Looks for the Knowledge property with the given name.
+*ServiceApi* | [**ServiceServiceNameConfigurationConfigurationNameGet**](docs/ServiceApi.md#serviceservicenameconfigurationconfigurationnameget) | **GET** /Service/{serviceName}/configuration/{configurationName} | Gets a configuration property given its name.
+*ServiceApi* | [**ServiceServiceNameConfigurationPut**](docs/ServiceApi.md#serviceservicenameconfigurationput) | **PUT** /Service/{serviceName}/configuration | Sets the values for the given configuration properties. If a given property   does not exist, it will be created.
 
 
 <a name="documentation-for-models"></a>
 ## Documentation for Models
 
+ - [Model.ConfigurationDTO](docs/ConfigurationDTO.md)
  - [Model.MeasurementDTO](docs/MeasurementDTO.md)
  - [Model.ProblemDetails](docs/ProblemDetails.md)
  - [Model.Property](docs/Property.md)
  - [Model.PropertyDTO](docs/PropertyDTO.md)
+ - [Model.SetPropertyDTO](docs/SetPropertyDTO.md)
 
 
 <a name="documentation-for-authorization"></a>

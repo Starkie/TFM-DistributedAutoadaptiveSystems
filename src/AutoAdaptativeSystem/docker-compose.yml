@@ -61,13 +61,21 @@ services:
     networks:
       - adaption-loop-network
 
-  temperatureprobe:
+  climatisation_airconditioner:
     build:
-      context: ./temperatureprobe
+      context: ./climatisation_airconditioner
       args:
-        ROOMMONITOR_SERVICEURI: "http://climatisation_monitor:80"
+        CLIMATISATIONMONITOR_SERVICEURI: "http://climatisation_monitor:80"
+        GRAFANA_LOKI_URI: "http://loki:3100"
+        JAEGER_HOST: "jaeger"
+        JAEGER_PORT: "6831"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+    ports:
+      - "11001:80"
     networks:
       - adaption-loop-network
+    restart: on-failure:5
 
   analysis:
     build:
@@ -129,6 +137,46 @@ services:
       - planning-network
     restart: on-failure:5
 
+  execute:
+    build:
+      context: ./execute
+      args:
+        BUSCONFIGURATION_SERVICEURI: "amqp://user:password@rabbitmq"
+        GRAFANA_LOKI_URI: "http://loki:3100"
+        JAEGER_HOST: "jaeger"
+        JAEGER_PORT: "6831"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+    depends_on:
+      - rabbitmq
+    ports:
+      - "12001:80"
+    networks:
+      - knowledge-network
+      - execute-network
+    restart: on-failure:5
+
+  climatisation_effectors:
+    build:
+      context: ./climatisation_effectors
+      args:
+        ClimatisationAirConditioner_SERVICEURI: "http://climatisation_airconditioner:80"
+        BUSCONFIGURATION_SERVICEURI: "amqp://user:password@rabbitmq"
+        GRAFANA_LOKI_URI: "http://loki:3100"
+        JAEGER_HOST: "jaeger"
+        JAEGER_PORT: "6831"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+    depends_on:
+      - rabbitmq
+    ports:
+      - "13001:80"
+    networks:
+      - knowledge-network
+      - execute-network
+      - adaption-loop-network
+    restart: on-failure:5
+
   loki:
     image: "grafana/loki:latest"
     ports:
@@ -174,7 +222,7 @@ services:
   grafana:
     build: ./grafana
     ports:
-      - "3001:3000"
+      - "3000:3000"
     networks:
       - monitoring-network
 
@@ -184,6 +232,8 @@ networks:
   analysis-network:
     driver: bridge
   planning-network:
+    driver: bridge
+  execute-network:
     driver: bridge
   adaption-loop-network:
     driver: bridge

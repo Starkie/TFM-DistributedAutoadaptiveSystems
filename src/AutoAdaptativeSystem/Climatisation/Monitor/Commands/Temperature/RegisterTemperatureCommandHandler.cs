@@ -17,15 +17,15 @@ public class RegisterTemperatureCommandHandler : IRequestHandler<TemperatureMeas
 
     private readonly IPropertyApi _propertyApi;
 
-    private readonly ClimatisationMonitorDiagnostics _climatisationMonitorDiagnostics;
+    private readonly ClimatisationMonitorDiagnostics _diagnostics;
 
     private string TemperaturePropertyName = "Temperature";
 
-    public RegisterTemperatureCommandHandler(IMonitorApi monitorApi, IPropertyApi propertyApi, ClimatisationMonitorDiagnostics climatisationMonitorDiagnostics)
+    public RegisterTemperatureCommandHandler(IMonitorApi monitorApi, IPropertyApi propertyApi, ClimatisationMonitorDiagnostics diagnostics)
     {
         _monitorApi = monitorApi;
         _propertyApi = propertyApi;
-        _climatisationMonitorDiagnostics = climatisationMonitorDiagnostics;
+        _diagnostics = diagnostics;
     }
 
     public async Task<Unit> Handle(TemperatureMeasurementDTO request, CancellationToken cancellationToken)
@@ -35,16 +35,16 @@ public class RegisterTemperatureCommandHandler : IRequestHandler<TemperatureMeas
             return Unit.Value;
         }
 
-        using var activity = _climatisationMonitorDiagnostics.RegisterTemperatureMeasurement(request);
+        using var activity = _diagnostics.RegisterTemperatureMeasurement(request);
 
         var previousMeasurement = await GetPreviousMeasurement();
 
-        // if (previousMeasurement is not null) //&& !IsValidReading(request, previousMeasurement))
-        // {
-        //     _roomMonitorDiagnostics.ProbeReadingNotWithinSafeMargins(request);
-        //
-        //     return Unit.Value;
-        // }
+        if (previousMeasurement is not null && !IsValidReading(request, previousMeasurement))
+        {
+            _diagnostics.ProbeReadingNotWithinSafeMargins(request);
+
+            return Unit.Value;
+        }
 
         await RegisterNewTemperatureMeasurement(request);
 
@@ -53,20 +53,20 @@ public class RegisterTemperatureCommandHandler : IRequestHandler<TemperatureMeas
 
     private static bool IsValidReading(TemperatureMeasurementDTO request, TemperatureMeasurementDTO previousMeasurement)
     {
-        TimeSpan differenceTimings = request.DateTime - previousMeasurement.DateTime;
+        var differenceTimings = request.DateTime - previousMeasurement.DateTime;
 
-        var readingsWithinFiveMinutes = differenceTimings <= TimeSpan.FromMinutes(5);
+        var readingsWithinOneMinute = differenceTimings <= TimeSpan.FromMinutes(1);
 
-        var isWithinErrorMargin = Math.Abs(request.Value - previousMeasurement.Value) <= 2.0;
+        var isWithinErrorMargin = Math.Abs(request.Value - previousMeasurement.Value) <= 5.0;
 
-        return readingsWithinFiveMinutes && isWithinErrorMargin;
+        return isWithinErrorMargin || !readingsWithinOneMinute;
     }
 
     private async Task<TemperatureMeasurementDTO> GetPreviousMeasurement()
     {
         TemperatureMeasurementDTO previousMeasurement = null;
 
-        using var activity = _climatisationMonitorDiagnostics.LogGetPreviousMeasurement();
+        using var activity = _diagnostics.LogGetPreviousMeasurement();
 
         try
         {

@@ -36,7 +36,7 @@ datasources:
       - datasourceUid: fL84zbLnz
         matcherRegex: '] (\w+)'
         name: TracerId
-        url: ${__value.raw}
+        url: '$${__value.raw}'
   readOnly: true
   version: 1
 

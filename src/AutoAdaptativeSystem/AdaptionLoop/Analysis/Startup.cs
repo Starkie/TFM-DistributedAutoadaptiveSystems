@@ -4,6 +4,7 @@ using Analysis.Service.Configurations;
 using Analysis.Service.Diagnostics;
 using Knowledge.Contracts.IntegrationEvents;
 using Knowledge.Service.ApiClient.Api;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -60,6 +61,8 @@ public class Startup
         });
 
         services.AddSingleton<AnalysisServiceDiagnostics>();
+
+        services.AddMediatR(this.GetType().Assembly);
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

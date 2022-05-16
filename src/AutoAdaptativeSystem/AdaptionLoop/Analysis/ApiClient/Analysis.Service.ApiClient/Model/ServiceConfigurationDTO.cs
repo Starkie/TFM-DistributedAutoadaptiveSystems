@@ -36,7 +36,7 @@ namespace Analysis.Service.ApiClient.Model
         /// Initializes a new instance of the <see cref="ServiceConfigurationDTO" /> class.
         /// </summary>
         /// <param name="serviceName">serviceName.</param>
-        /// <param name="isDeployed">isActive.</param>
+        /// <param name="isDeployed">isDeployed.</param>
         /// <param name="configurationProperties">configurationProperties.</param>
         /// <param name="bindings">bindings.</param>
         public ServiceConfigurationDTO(string serviceName = default(string), bool isDeployed = default(bool), List<ConfigurationProperty> configurationProperties = default(List<ConfigurationProperty>), List<BindingConfiguration> bindings = default(List<BindingConfiguration>))
@@ -80,7 +80,7 @@ namespace Analysis.Service.ApiClient.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class ServiceConfigurationDTO {\n");
             sb.Append("  ServiceName: ").Append(ServiceName).Append("\n");
-            sb.Append("  IsActive: ").Append(IsDeployed).Append("\n");
+            sb.Append("  IsDeployed: ").Append(IsDeployed).Append("\n");
             sb.Append("  ConfigurationProperties: ").Append(ConfigurationProperties).Append("\n");
             sb.Append("  Bindings: ").Append(Bindings).Append("\n");
             sb.Append("}\n");
@@ -117,22 +117,22 @@ namespace Analysis.Service.ApiClient.Model
             {
                 return false;
             }
-            return
+            return 
                 (
                     this.ServiceName == input.ServiceName ||
                     (this.ServiceName != null &&
                     this.ServiceName.Equals(input.ServiceName))
-                ) &&
+                ) && 
                 (
                     this.IsDeployed == input.IsDeployed ||
                     this.IsDeployed.Equals(input.IsDeployed)
-                ) &&
+                ) && 
                 (
                     this.ConfigurationProperties == input.ConfigurationProperties ||
                     this.ConfigurationProperties != null &&
                     input.ConfigurationProperties != null &&
                     this.ConfigurationProperties.SequenceEqual(input.ConfigurationProperties)
-                ) &&
+                ) && 
                 (
                     this.Bindings == input.Bindings ||
                     this.Bindings != null &&

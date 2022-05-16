@@ -54,6 +54,14 @@ public class Startup
             return new MonitorApi(configuration.ServiceUri);
         });
 
+        services.AddScoped<IServiceApi, ServiceApi>(_ =>
+        {
+            var configuration =
+                Configuration.BindOptions<MonitoringServiceConfiguration>(MonitoringServiceConfiguration.ConfigurationPath);
+
+            return new ServiceApi(configuration.ServiceUri);
+        });
+
         services.AddSingleton<ClimatisationMonitorDiagnostics>();
 
         services.AddMediatR(typeof(Startup));
