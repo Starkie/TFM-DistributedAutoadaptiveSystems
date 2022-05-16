@@ -1,6 +1,7 @@
 namespace Execute.Service;
 
 using System.Reflection;
+using Execute.Service.Contracts;
 using Execute.Service.Diagnostics;
 using MediatR;
 using Microsoft.AspNetCore.Builder;

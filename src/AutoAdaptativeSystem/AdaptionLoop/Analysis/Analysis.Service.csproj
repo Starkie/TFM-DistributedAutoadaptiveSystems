@@ -46,6 +46,7 @@
       <ProjectReference Include="..\..\Core\Core.DependencyInjection\Core.DependencyInjection.csproj" />
       <ProjectReference Include="..\Knowledge\ApiClient\Knowledge.Service.ApiClient\Knowledge.Service.ApiClient.csproj" />
       <ProjectReference Include="..\Knowledge\Contracts\Knowledge.Contracts.csproj" />
+      <ProjectReference Include="..\Planning\Contracts\Planning.Contracts.csproj" />
       <ProjectReference Include="Contracts\Analysis.Contracts.csproj" />
     </ItemGroup>
 

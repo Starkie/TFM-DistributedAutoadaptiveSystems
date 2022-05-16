@@ -6,4 +6,9 @@ public class AdaptionLoopPlanningConstants
     {
         public const string IsDeployed = "IsDeployed";
     }
+
+    public static class Queues
+    {
+        public const string PlanningServiceQueue = "planning-service";
+    }
 }

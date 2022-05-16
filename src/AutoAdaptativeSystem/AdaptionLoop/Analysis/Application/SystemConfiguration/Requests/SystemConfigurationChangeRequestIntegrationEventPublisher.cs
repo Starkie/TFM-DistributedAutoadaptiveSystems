@@ -2,13 +2,14 @@ namespace Analysis.Service.SystemConfiguration.Requests;
 
 using Analysis.Contracts.IntegrationEvents;
 using Core.Bus.Publisher;
+using Planning.Contracts;
 using Rebus.Bus;
 
 public class SystemConfigurationChangeRequestPublisher
-    : RequestPublisher<SystemConfigurationChangeRequest>
+    : RequestQueuePublisher<SystemConfigurationChangeRequest>
 {
     public SystemConfigurationChangeRequestPublisher(IBus bus)
-        : base(bus)
+        : base(bus, AdaptionLoopPlanningConstants.Queues.PlanningServiceQueue)
     {
     }
 }

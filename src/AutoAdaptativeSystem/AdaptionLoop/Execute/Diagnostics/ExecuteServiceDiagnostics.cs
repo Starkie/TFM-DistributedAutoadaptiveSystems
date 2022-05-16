@@ -3,6 +3,7 @@ namespace Execute.Service.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Execute.Service.Contracts;
 using Microsoft.Extensions.Logging;
 using Planning.Contracts.IntegrationEvents.AdaptionActions;
 

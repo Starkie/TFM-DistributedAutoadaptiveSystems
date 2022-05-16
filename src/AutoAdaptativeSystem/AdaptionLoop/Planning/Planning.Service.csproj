@@ -23,6 +23,7 @@
     <ProjectReference Include="..\..\Core\Core.Bus\Core.Bus.csproj" />
     <ProjectReference Include="..\..\Core\Core.csproj" />
     <ProjectReference Include="..\Analysis\Contracts\Analysis.Contracts.csproj" />
+    <ProjectReference Include="..\Execute\Contracts\Execute.Contracts.csproj" />
     <ProjectReference Include="..\Knowledge\ApiClient\Knowledge.Service.ApiClient\Knowledge.Service.ApiClient.csproj" />
     <ProjectReference Include="Contracts\Planning.Contracts.csproj" />
   </ItemGroup>

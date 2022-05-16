@@ -4,15 +4,18 @@ using Core.Bus.Contracts.Requests;
 using MediatR;
 using Rebus.Bus;
 
-public class RequestPublisher<TRequest>
+public class RequestQueuePublisher<TRequest>
     : IRequestPublisher<TRequest>
     where TRequest : Request
 {
     private readonly IBus _bus;
 
-    public RequestPublisher(IBus bus)
+    private readonly string _queueName;
+
+    protected RequestQueuePublisher(IBus bus, string queueName)
     {
         _bus = bus;
+        _queueName = queueName;
     }
 
     public async Task<Unit> Handle(TRequest request, CancellationToken cancellationToken)
@@ -22,8 +25,8 @@ public class RequestPublisher<TRequest>
         return Unit.Value;
     }
 
-    public virtual async Task Publish(TRequest request)
+    protected virtual async Task Publish(TRequest request)
     {
-        await _bus.Publish(request);
+        await _bus.Advanced.Routing.Send(_queueName, request);
     }
 }
