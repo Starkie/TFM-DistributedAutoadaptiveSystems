@@ -9,6 +9,19 @@
 
 La computación autónoma
 
+La autoadaptación de los sistemas \emph{software} se caracteriza por mover a tiempo de ejecución decisiones de configuración y funcionalidad para permitir un comportamiento dinámico del sistema. \cite{brunEngineeringSelfAdaptiveSystems2009} Los bucles de control (o \emph{feedback loops}) nos proporcionan un mecanismo genérico para la autoadaptación.
+
+Un bucle de control realiza cuatro actividades de forma secuencial:
+
+\begin{itemize}
+  \item \textbf{Recolectar}: El bucle \textbf{monitoriza} las diversas fuentes de información que tenga a su disposición. Puede ser información del entorno, métricas del rendimiento del sistema, etc. Estos datos servirán para informar las siguientes etapas del bucle.
+
+  \item \textbf{Analizar}: La información capturada son datos en bruto. Debemos procesarla, agregarla \textcolor{red}{y demás} para poder sacarle partido. El objetivo es identificar \textbf{síntomas}, indicadores de una situación que requiera de nuestra atención.
+
+  \item \textbf{Decidir}: A partir de los síntomas, el bucle determina si es necesario tomar alguna acción. En base a \textbf{políticas} de operación, \textbf{planifica} las acciones a ejecutar.
+
+  \item \textbf{Actuar}: El bucle intenta \textbf{ejecutar} las acciones planificadas. Dependiendo del éxito de esta etapa, la adaptación se lleva a cabo o no. Es la etapa final antes de volver al paso inicial.
+\end{itemize}
 
 En concreto, se trata de un servicio que implementa un bucle de control MAPE-K \cite{ArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}, una para la implementación de sistemas autónomos propuesta inicialmente por IBM. El bucle se encarga de gestionar un \textbf{recurso manejado} en base a unas \textbf{políticas} definidas por el administrador del sistema. Las políticas
 
