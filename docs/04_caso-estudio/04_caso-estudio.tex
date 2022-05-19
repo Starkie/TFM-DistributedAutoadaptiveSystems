@@ -1,0 +1,49 @@
+\chapter{Caso de estudio: Sistema de climatización}
+\label{chap:caso_estudio}
+
+Para verificar la arquitectura definida, decidimos implementar un pequeño sistema autoadaptativo. Se trata de un sistema de climatización, que gestiona la temperatura de una habitación. Para ello, dispondremos de un aire acondicionado, que calentará o enfriará la habitación según corresponda.
+
+Para ello, el usuario define una temperatura de confort, que es la temperatura que el sistema debe tratar de mantener. Para evitar que el aire acondicionado se encienda y se apague constantemente, definimos además unas temperaturas umbrales, tanto de frío como de calor, a partir de las cuales se encenderá el aparato.
+
+Necesitaremos por tanto dos tres elementos para realizar la adaptación: un aire acondicionado (sistema gestionado), un termómetro (sonda) y unos efectores, para ejectura las acciones. El termómetro nos reportará periódicamente la temperatura de la habitación.
+
+Para evitar falsos positivos, y que se lleve a cabo adaptaciones provocadas por errores de medición, deberemos filtrar estos datos. Por ejemplo, podría darse el caso que el termómetro nos provea una temperatura que fluctúa más de los esperado o algo por el estilo. Descartaremos medidas erróneas usando un monitor, que filtrará los datos.
+
+En base a cambios de la temperatura local, deberemos decidir si es necesario llevar a cabo una acción correctiva. Por ejemplo, que si la temperatura es inferior al umbral de temperatura fría, el aparato se enciende en modo calentador. Para ello, deberemos definir una serie de reglas que se disparen cuando cambie una de nuestras propiedades de adaptación. En este caso, la temperatura.
+
+Definimos 4 reglas distintas:
+\begin{itemize}
+  \item Una para activar el aire condicionado en modo enfriar cuando se supere el umbral de calor.
+  \item Una para desactivar el aire acondicionado cuando esté en modo enfriar y se alcance la temperatura de confort.
+  \item Una para activar el aire acondicionad en modo calor cuando la temperatura sea inferior al umbral de frío.
+  \item Una para desactivar el aire acondicionado cuando esté en modo calentar y
+\end{itemize}
+
+Como comentamos en el capitulo anterior, en nuestro ejemplo de bucle MAPE-K, nos limitamos a implementar las adaptaciones de tipo set-parameter. Por tanto, no tendremos reglas de despliegue o de binding.
+
+Una vez se disparan estas reglas, solicitamos un cambio en la configuración del sistema. El módulo de planificación comprobará contra el conocimiento y el estado actual del sistema cuáles de los cambios solicitados es necesario aplicar. Si por ejemplo la propiedad ya tiene el valor solicitado, no hará falta ejecutarla.
+
+El modulo de ejecución recibirá la petición y se la redirigirá a los efectores del sistema de climatización. En este caso, cambiarán el modo del aire acondicionado según corresponda.
+
+Hecho esto, el sistema se adapta a a la nueva situación, y reportará una nueva temperatura en cuanto corresponda. La temperatura variará dependiendo de si está apagado o no.
+
+Para nuestra implementación, hemos decidido implementar un aire acondicionado ficticio, que reporta las medidas periodicamente. Cuando está apagado, la temperatura aumenta o
+
+\section{Análisis}
+
+El primer paso será capturar los requisitos del sistema de climatización. Como comentamos antes, queremos que se controle el aire a
+
+A partir de aquí, podemos definir cuáles serán nuestras propiedades de adaptación.
+
+\section{Diseño}
+
+Describir las sondas (el termómetro) y el que reporta la configuración inicial y la configuración actual del sistema.
+
+Describir el Climatisation.Monitor. Descarta medidas erróneas.
+
+Describir las reglas con la notación SAS.
+
+Describir los efectores.
+
+\section{Implementación}
+
