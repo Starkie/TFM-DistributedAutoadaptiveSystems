@@ -3,7 +3,112 @@
 
 Para verificar la arquitectura definida, decidimos implementar un pequeño sistema autoadaptativo. Se trata de un sistema de climatización, que gestiona la temperatura de una habitación. Para ello, dispondremos de un aire acondicionado, que calentará o enfriará la habitación según corresponda.
 
-Para ello, el usuario define una temperatura de confort, que es la temperatura que el sistema debe tratar de mantener. Para evitar que el aire acondicionado se encienda y se apague constantemente, definimos además unas temperaturas umbrales, tanto de frío como de calor, a partir de las cuales se encenderá el aparato.
+\section{Análisis}
+
+El primer paso es capturar los requisitos del sistema a implementar. Cómo hemos comentado, queremos desarrollar un sistema de climatización. Este sistema regulará la temperatura de una habitación mediante el uso de un aparato de aire acondicionado.
+
+El aparato de aire acondicionado ofrece tres modos de funcionamiento: un modo para calentar la estancia, otro para enfriarla, y un estado neutral (apagado). Además, lo hemos dotado con un termómetro interno que nos reporta la temperatura periódicamente.
+
+Para poder climatizar la habitación, necesitamos que el usuario defina su temperatura objetivo: la temperatura de confort. Cambios en la temperatura deberán activar o desactivar el aparato para mantenerla.
+
+Además, nos interesa evitar que el aire acondicionado se encienda y se apague constantemente cuando se alcance o sobrepase esta temperatura. Por ello, definimos unas temperaturas umbrales, tanto de frío como de calor, a partir de las cuales se encenderá el aparato.
+
+\section{Diseño}
+
+Del análisis anterior ya podemos deducir la existencia de dos componentes: un aparato de aire acondicionado (el sistema gestionado) y un termómetro (la sonda). Aparte de ellos, deberemos implementar la infraestructura necesaria para comunicarse con nuestro bucle MAPE-K: monitores, módulos de reglas y efectores que nos permitan interactuar con el sistema manejado.
+
+Para describir el diseño usaremos la notación de sistemas autoadaptativos descrita en \cite{fonsEspecificacionSistemasAutoadaptativos2021}.
+
+\subsection{Sondas:}
+
+Para implementar el sistema, requerimos de las siguientes sondas:
+
+\begin{table}[htb]
+  \centering
+
+  \begin{tabular}{|r p{11.5cm}|}
+    \hline
+    \textbf{Sonda:} & \emph{thermometer}  \\
+    \textbf{Descripción:} & Reporta la temperatura actual de la habitación (en ºc). \\
+    \textbf{Monitor:} & \emph{Climatisation.Monitor} \\
+    \textbf{Datos:} & \emph{temperature} \\
+    \hline
+    \textbf{Sonda:} & \emph{airconditioner-mode-changed-probe}  \\
+    \textbf{Descripción:} & Reporta el modo de funcionamiento del aire acondicionado cuando este cambia. \\
+    \textbf{Monitor:} & \emph{Climatisation.Monitor} \\
+    \textbf{Datos:} & \emph{airconditioner-mode} \\
+    \hline
+    \textbf{Sonda:} & \emph{airconditioner-adaption-loop-registration}  \\
+    \textbf{Descripción:} & Cuando arranca el servicio de aire acondicionado, registra la configuración inicial del sistema. \\
+    \textbf{Monitor:} & \emph{Climatisation.Monitor} \\
+    \textbf{Datos:} & \emph{airconditioner.is-deployed}, \emph{airconditioner-mode}, \emph{target-temperature}, \emph{cold-temperature-threshold}, \emph{hot-temperature-threshold} \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsection{Efectores:}
+
+Para implementar el sistema, requerimos de los siguientes efectores. Son necesarios para cambiar el modo de funcionamiento del aire acondicionado:
+
+\begin{table}[htb]
+  \centering
+
+  \begin{tabular}{|r p{11.5cm}|}
+    \hline
+    \textbf{Efector:} & \emph{airconditioner.heat}  \\
+    \textbf{Descripción:} & Activa el modo calentar del aire acondicionado. \\
+    \hline
+    \textbf{Efector:} & \emph{airconditioner.cool}  \\
+    \textbf{Descripción:} & Activa el modo enfriar del aire acondicionado. \\
+    \hline
+    \textbf{Efector:} & \emph{airconditioner.turn-off}  \\
+    \textbf{Descripción:} & Apaga el aire acondicionado. \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsection{Propiedades de adaptación:}
+
+También podemos deducir cuáles son nuestras propiedades de adaptación:
+
+\begin{table}[htb]
+  \centering
+
+  \begin{tabular}{|r p{11.5cm}|}
+    \hline
+    \textbf{Propiedad:} & \emph{temperature}  \\
+    \textbf{Descripción:} & Representa la temperatura actual de la habitación (en ºC).  \\
+    \textbf{Tipo de dato:} & \emph{float} \\
+    \hline
+    \textbf{Propiedad:} & \emph{target-temperature}  \\
+    \textbf{Descripción:} & La temperatura de confort definida por el usuario. El sistema deberá adaptarse para alcanzarla.  \\
+    \textbf{Tipo de dato:} & \emph{float} \\
+    \hline
+    \textbf{Propiedad:} & \emph{cold-temperature-threshold}  \\
+    \textbf{Descripción:} & La temperatura umbral de frío (en ºc). Si la temperatura baja por debajo de este umbral, deberá calentarse la habitación. \\
+    \textbf{Tipo de dato:} & \emph{float} \\
+    \hline
+    \textbf{Propiedad:} & \emph{hot-temperature-threshold}  \\
+    \textbf{Descripción:} & La temperatura umbral de calor (en ºc). Si la temperatura sube por encima de este umbral, deberá enfriarse la habitación. \\
+    \textbf{Tipo de dato:} & \emph{float} \\
+    \hline
+    \textbf{Propiedad:} & \emph{airconditioner.is-deployed}  \\
+    \textbf{Descripción:} & Indica si el servicio de aire acondicionado está desplegado y en funcionamiento.  \\
+    \textbf{Tipo de dato:} & \emph{bool} \\
+    \hline
+    \textbf{Propiedad:} & \emph{airconditioner-mode}  \\
+    \textbf{Descripción:} & Representa el modo de operación actual del aire acondicionado: \emph{Off} = 0, \emph{Cooling} = 1, \emph{Heating} = 2  \\
+    \textbf{Tipo de dato:} & Enumerado \\
+    \hline
+  \end{tabular}
+
+  \caption{Propiedades de adaptación del sistema de climatización.}
+  \label{tab:adaption-properties-climatisation}
+\end{table}
+
+Describir el Climatisation.Monitor. Descarta medidas erróneas.
+
+Describir las reglas con la notación SAS.
 
 Necesitaremos por tanto dos tres elementos para realizar la adaptación: un aire acondicionado (sistema gestionado), un termómetro (sonda) y unos efectores, para ejectura las acciones. El termómetro nos reportará periódicamente la temperatura de la habitación.
 
@@ -29,21 +134,4 @@ Hecho esto, el sistema se adapta a a la nueva situación, y reportará una nueva
 
 Para nuestra implementación, hemos decidido implementar un aire acondicionado ficticio, que reporta las medidas periodicamente. Cuando está apagado, la temperatura aumenta o
 
-\section{Análisis}
-
-El primer paso será capturar los requisitos del sistema de climatización. Como comentamos antes, queremos que se controle el aire a
-
-A partir de aquí, podemos definir cuáles serán nuestras propiedades de adaptación.
-
-\section{Diseño}
-
-Describir las sondas (el termómetro) y el que reporta la configuración inicial y la configuración actual del sistema.
-
-Describir el Climatisation.Monitor. Descarta medidas erróneas.
-
-Describir las reglas con la notación SAS.
-
-Describir los efectores.
-
 \section{Implementación}
-
