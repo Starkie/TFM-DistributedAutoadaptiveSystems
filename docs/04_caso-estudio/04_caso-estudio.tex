@@ -44,11 +44,14 @@ Para implementar el sistema, requerimos de las siguientes sondas:
     \textbf{Datos:} & \emph{airconditioner.is-deployed}, \emph{airconditioner-mode}, \emph{target-temperature}, \emph{cold-temperature-threshold}, \emph{hot-temperature-threshold} \\
     \hline
   \end{tabular}
+
+  \caption{Sondas del sistema de climatización.}
+  \label{tab:climatisation-probes}
 \end{table}
 
 \subsection{Efectores:}
 
-Para implementar el sistema, requerimos de los siguientes efectores. Son necesarios para cambiar el modo de funcionamiento del aire acondicionado:
+Para implementar el sistema, requerimos de capaces de cambiar el modo de funcionamiento del aire acondicionado:
 
 \begin{table}[htb]
   \centering
@@ -65,6 +68,9 @@ Para implementar el sistema, requerimos de los siguientes efectores. Son necesar
     \textbf{Descripción:} & Apaga el aire acondicionado. \\
     \hline
   \end{tabular}
+
+  \caption{Efectores del sistema de climatización.}
+    \label{tab:climatisation-effectors}
 \end{table}
 
 \subsection{Propiedades de adaptación:}
@@ -103,28 +109,89 @@ También podemos deducir cuáles son nuestras propiedades de adaptación:
   \end{tabular}
 
   \caption{Propiedades de adaptación del sistema de climatización.}
-  \label{tab:adaption-properties-climatisation}
+  \label{tab:climatisation-adaption-properties}
 \end{table}
 
-Describir el Climatisation.Monitor. Descarta medidas erróneas.
+\subsection{Monitores:}
 
-Describir las reglas con la notación SAS.
+Necesitaremos definir varios monitores para capturar los datos de las sondas. En algunos casos, para evitar falsos positivos, y que se lleve a cabo adaptaciones provocadas por errores de medición, deberemos filtrar estos datos.
 
-Necesitaremos por tanto dos tres elementos para realizar la adaptación: un aire acondicionado (sistema gestionado), un termómetro (sonda) y unos efectores, para ejectura las acciones. El termómetro nos reportará periódicamente la temperatura de la habitación.
+Por ejemplo, en el monitor de las temperaturas, \emph{climatisation.monitor.temperature}. Como en el ejemplo trabajamos con un aire acondicionado ficticio, le hemos establecido un margen de error grande: Si la nueva medida de temperatura está a 5ºc de diferencia o más, y hay menos de un minuto de diferencia entre ellas; la descartaremos. De esta forma, evitamos que el aire acondicionado se active o desactive por un error de medición.
 
-Para evitar falsos positivos, y que se lleve a cabo adaptaciones provocadas por errores de medición, deberemos filtrar estos datos. Por ejemplo, podría darse el caso que el termómetro nos provea una temperatura que fluctúa más de los esperado o algo por el estilo. Descartaremos medidas erróneas usando un monitor, que filtrará los datos.
+\begin{table}[htb]
+  \centering
+
+  \begin{tabular}{|p{3.7cm} p{10.7cm}|}
+    \hline
+
+    \textbf{Monitor:} & \emph{climatisation.monitor.temperature}  \\
+    \textbf{Descripción:} & Recibe los reportes de temperatura de los termómetros. También filtra estos datos para detectar casos donde se sospecha un error de lectura. \\
+    \textbf{Afecta a propiedades de adaptación:} & \emph{temperature} \\
+    \multirow{3}*{\textbf{Acciones:}}
+        & \textbf{SI} |\emph{new-temperature} - \emph{temperature}| <= 5.0 \\
+        & \textbf{O} request.DateTime - previousMeasurement.DateTime > 60s \\
+        & \textbf{ACTUALIZA-KNOWLEDGE} \emph{temperature} = \emph{new-temperature} \\
+    \hline
+
+    \textbf{Monitor:} & \emph{climatisation.monitor.configuration}  \\
+    \textbf{Descripción:} & Recibe la configuración del aire acondicionado y la registra en el \emph{knowledge}. \\
+    \textbf{Afecta a propiedades de adaptación:} & \emph{airconditioner.is-deployed}, \emph{airconditioner-mode}, \emph{target-temperature}, \emph{cold-temperature-threshold}, \emph{hot-temperature-threshold} \\
+    \multirow{2}*{\textbf{Acciones:}}
+        & \textbf{SI} \emph{property} != \emph{new-value} \\
+        & \textbf{ACTUALIZA-KNOWLEDGE} \emph{property} = \emph{new-value} \\
+    \hline
+  \end{tabular}
+
+  \caption{Monitores del bucle MAPE-K del sistema de climatización.}
+  \label{tab:climatisation-monitors}
+\end{table}
+
+\subsection{Reglas de adaptación}
 
 En base a cambios de la temperatura local, deberemos decidir si es necesario llevar a cabo una acción correctiva. Por ejemplo, que si la temperatura es inferior al umbral de temperatura fría, el aparato se enciende en modo calentador. Para ello, deberemos definir una serie de reglas que se disparen cuando cambie una de nuestras propiedades de adaptación. En este caso, la temperatura.
 
-Definimos 4 reglas distintas:
-\begin{itemize}
-  \item Una para activar el aire condicionado en modo enfriar cuando se supere el umbral de calor.
-  \item Una para desactivar el aire acondicionado cuando esté en modo enfriar y se alcance la temperatura de confort.
-  \item Una para activar el aire acondicionad en modo calor cuando la temperatura sea inferior al umbral de frío.
-  \item Una para desactivar el aire acondicionado cuando esté en modo calentar y
-\end{itemize}
-
 Como comentamos en el capitulo anterior, en nuestro ejemplo de bucle MAPE-K, nos limitamos a implementar las adaptaciones de tipo set-parameter. Por tanto, no tendremos reglas de despliegue o de binding.
+
+En la tabla \ref{tab:adaption-rules-climatisation} definimos las cuatro reglas necesarias:
+
+\begin{table}[htb]
+  \centering
+
+  \begin{tabular}{|r p{12.8cm}|}
+    \hline
+    \textbf{Regla:} & \emph{EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceeded}  \\
+    \textbf{Descripción:} & Activa el aire acondicionado en modo calefacción cuando la temperatura sea inferior al umbral de frío.  \\
+    \textbf{Condición:} & \emph{airconditioner-mode} != \emph{Heating} \textbf{AND} \emph{temperature} <= \emph{cold-temperature-threshold}  \\
+    \textbf{Cuerpo:}   &  \\
+    & \includegraphics[scale=0.675]{04_caso-estudio/images/adaption-loop-rule-heat} \\
+    \hline
+
+    \textbf{Regla:} & \emph{DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchieved}  \\
+    \textbf{Descripción:} & Apaga el aire acondicionado cuando el modo calefacción está activo y se ha alcanzado la temperatura de confort.  \\
+    \textbf{Condición:} & \emph{airconditioner-mode} == \emph{Heating} \textbf{AND} \emph{temperature} >= \emph{target-temperature}  \\
+    \textbf{Cuerpo:} &  \\
+    & \includegraphics[scale=0.675]{04_caso-estudio/images/adaption-loop-rule-off} \\
+    \hline
+
+    \textbf{Regla:} & \emph{EnableAirConditionerCoolingModeWhenTemperatureThresholdExceeded}  \\
+    \textbf{Descripción:} & Activa el aire acondicionado en modo enfriar cuando la temperatura sea superior al umbral de calor.  \\
+    \textbf{Condición:} & \emph{airconditioner-mode} != \emph{Cooling} \textbf{AND} \emph{temperature} >= \emph{hot-temperature-threshold}  \\
+    \textbf{Cuerpo:} &  \\
+    & \includegraphics[scale=0.675]{04_caso-estudio/images/adaption-loop-rule-cooling} \\
+    \hline
+
+    \textbf{Regla:} & \emph{DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchieved}  \\
+    \textbf{Descripción:} & Apaga el aire acondicionado cuando el modo enfiar está activo y se ha alcanzado la temperatura de confort.  \\
+    \textbf{Condición:} & \emph{airconditioner-mode} == \emph{Cooling} \textbf{AND} \emph{temperature} <= \emph{target-temperature}  \\
+    \textbf{Cuerpo:} &  \\
+    & \includegraphics[scale=0.675]{04_caso-estudio/images/adaption-loop-rule-off} \\
+    \hline
+  \end{tabular}
+
+  \caption{Reglas de adaptación del sistema de climatización.}
+  \label{tab:adaption-rules-climatisation}
+\end{table}
+
 
 Una vez se disparan estas reglas, solicitamos un cambio en la configuración del sistema. El módulo de planificación comprobará contra el conocimiento y el estado actual del sistema cuáles de los cambios solicitados es necesario aplicar. Si por ejemplo la propiedad ya tiene el valor solicitado, no hará falta ejecutarla.
 
@@ -132,6 +199,7 @@ El modulo de ejecución recibirá la petición y se la redirigirá a los efector
 
 Hecho esto, el sistema se adapta a a la nueva situación, y reportará una nueva temperatura en cuanto corresponda. La temperatura variará dependiendo de si está apagado o no.
 
-Para nuestra implementación, hemos decidido implementar un aire acondicionado ficticio, que reporta las medidas periodicamente. Cuando está apagado, la temperatura aumenta o
 
 \section{Implementación}
+
+Para nuestra implementación, hemos decidido implementar un aire acondicionado ficticio, que reporta las medidas periodicamente. Cuando está apagado, la temperatura aumenta o
