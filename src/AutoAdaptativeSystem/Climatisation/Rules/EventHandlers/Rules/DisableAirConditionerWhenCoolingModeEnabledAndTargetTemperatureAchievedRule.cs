@@ -16,18 +16,18 @@ using Microsoft.Extensions.DependencyInjection;
     ClimatisationAirConditionerConstants.AppName,
     ClimatisationConstants.Configuration.TargetTemperature,
     ClimatisationAirConditionerConstants.Configuration.Mode)]
-public class DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchievedRule : RuleBase
+public class DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule : RuleBase
 {
-    private const string RuleName = nameof(DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchievedRule);
+    private const string RuleName = nameof(DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule);
 
     private const string TargetTemperatureAchieved = "target-temperature-achieved";
 
     private static readonly IEnumerable<string> propertyNames =
-        typeof(DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchievedRule)
+        typeof(DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule)
             .GetRulePropertyDependencies();
 
     private static readonly IDictionary<string, IEnumerable<string>> configurationNames =
-        typeof(DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchievedRule)
+        typeof(DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule)
             .GetRuleConfigurationDependencies();
 
     private readonly IConfigurationService _configurationService;
@@ -36,7 +36,7 @@ public class DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchi
 
     private readonly ISystemService _systemService;
 
-    public DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchievedRule(
+    public DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule(
         ClimatisationRulesDiagnostics diagnostics,
         IConfigurationService configurationService,
         IPropertyService propertyService,
@@ -68,7 +68,7 @@ public class DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchi
             ClimatisationConstants.Configuration.TargetTemperature,
             CancellationToken.None);
 
-        return airConditionerMode == AirConditioningMode.Heating && currentTemperature.Value >= targetTemperature;
+        return airConditionerMode == AirConditioningMode.Cooling && currentTemperature.Value <= targetTemperature;
     }
 
     protected override async Task Execute()
