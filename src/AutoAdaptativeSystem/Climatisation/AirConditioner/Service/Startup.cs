@@ -58,7 +58,7 @@ public class Startup
         services.Configure<AirConditionerConfiguration>(
             Configuration.GetSection(AirConditionerConfiguration.ConfigurationName));
 
-        services.AddHostedService<AirConditionerBackgroundService>();
+        services.AddHostedService<ThermometerBackgroundService>();
 
         services.AddHostedService<AdaptionLoopRegistrationHostedService>();
     }

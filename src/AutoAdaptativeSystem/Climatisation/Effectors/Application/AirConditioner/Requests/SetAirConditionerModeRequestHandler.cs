@@ -27,7 +27,7 @@ public class SetAirConditionerModeRequestHandler
 
         switch (mode)
         {
-            case AirConditioningMode.Disabled:
+            case AirConditioningMode.Off:
                 await _airConditionerApi.AirConditionerTurnOffPostAsync(cancellationToken);
                 break;
 
