@@ -45,30 +45,6 @@ Para implementar el sistema, requerimos de las siguientes sondas:
     \label{tab:climatisation-probes}
 \end{longtable}
 
-\subsection{Efectores:}
-
-Para implementar el sistema, requerimos de capaces de cambiar el modo de funcionamiento del aire acondicionado:
-
-\begin{table}[htb]
-  \centering
-
-  \begin{tabular}{|r p{11.5cm}|}
-    \hline
-    \textbf{Efector:} & \emph{airconditioner.heat}  \\
-    \textbf{Descripción:} & Activa el modo calentar del aire acondicionado. \\
-    \hline
-    \textbf{Efector:} & \emph{airconditioner.cool}  \\
-    \textbf{Descripción:} & Activa el modo enfriar del aire acondicionado. \\
-    \hline
-    \textbf{Efector:} & \emph{airconditioner.turn-off}  \\
-    \textbf{Descripción:} & Apaga el aire acondicionado. \\
-    \hline
-  \end{tabular}
-
-  \caption{Efectores del sistema de climatización.}
-    \label{tab:climatisation-effectors}
-\end{table}
-
 \subsection{Propiedades de adaptación:}
 
 También podemos deducir cuáles son nuestras propiedades de adaptación:
@@ -176,13 +152,70 @@ En la tabla \ref{tab:adaption-rules-climatisation} definimos las cuatro reglas n
   \label{tab:adaption-rules-climatisation}
 \end{longtable}
 
-Una vez se disparan estas reglas, solicitamos un cambio en la configuración del sistema. El módulo de planificación comprobará contra el conocimiento y el estado actual del sistema cuáles de los cambios solicitados es necesario aplicar. Si por ejemplo la propiedad ya tiene el valor solicitado, no hará falta ejecutarla.
+\subsection{Efectores:}
 
-El modulo de ejecución recibirá la petición y se la redirigirá a los efectores del sistema de climatización. En este caso, cambiarán el modo del aire acondicionado según corresponda.
+Una vez se evaluén estas reglas, solicitamos un cambio en la configuración del sistema. El módulo de planificación comprobará contra el conocimiento y el estado actual del sistema cuáles de los cambios solicitados es necesario aplicar. Si por ejemplo la propiedad ya tiene el valor solicitado, no hará falta ejecutarla.
+
+El modulo de ejecución recibirá la petición y se la redirigirá a los efectores del sistema de climatización. En este caso, requerimos de efectores que cambien el modo del aire acondicionado según corresponda.
+
+\begin{table}[htb]
+  \centering
+
+  \begin{tabular}{|r p{11.5cm}|}
+    \hline
+    \textbf{Efector:} & \emph{airconditioner.heat}  \\
+    \textbf{Descripción:} & Activa el modo calentar del aire acondicionado. \\
+    \hline
+    \textbf{Efector:} & \emph{airconditioner.cool}  \\
+    \textbf{Descripción:} & Activa el modo enfriar del aire acondicionado. \\
+    \hline
+    \textbf{Efector:} & \emph{airconditioner.turn-off}  \\
+    \textbf{Descripción:} & Apaga el aire acondicionado. \\
+    \hline
+  \end{tabular}
+
+  \caption{Efectores del sistema de climatización.}
+    \label{tab:climatisation-effectors}
+\end{table}
 
 Hecho esto, el sistema se adapta a a la nueva situación, y reportará una nueva temperatura en cuanto corresponda. La temperatura variará dependiendo de si está apagado o no.
 
+\subsection{Configuración del sistema}
+
+Requerimos entonces 4 servicios para implementar la solución: Servicio de aire acondicionado, monitor de climatización, el servicio de reglas y el servicio de efectores. Con ellos, podemos adaptarnos al bucle MAPE-K descrito en el capítulo %TODO: Capítulo.
 
 \section{Implementación}
 
-Para nuestra implementación, hemos decidido implementar un aire acondicionado ficticio, que reporta las medidas periodicamente. Cuando está apagado, la temperatura aumenta o
+Para la implementación, hemos utilizado las mismas tecnologías que en los servicios del bucle MAPE-K: microservicios en ASP.NET Core, empaquetados en contenedores de Docker. Generamos los API Clients con OpenAPI y demás.
+
+Como no disponemos de un aire acondicionado real, hemos optado por implementar uno ficticio. Cuando está apagado, la temperatura aumenta o disminuye según una configuración del fake. De esta forma, podemos simular los cambios de temperatura más rápido y ver si se aplican las adaptaciones pertinentes.
+
+\subsection{Observabilidad}
+
+Un punto en el que queremos hacer hincapié es en la solución de observabilidad. Debido a que estamos tratando con un sistema distribuido es complicado conocer el estado del sistema en determinado momento. Especialmente en este caso, que participan más de diez servicios distintos.
+
+Por defecto, solo contábamos con los \emph{logs} de consola que mostramos en la figura \ref{fig:console-logs}. Como podemos ver, aparecen en una única ventana, intercalados, los registros de todos los servicios. Aunque nos pueden resultar útil, es una aproximación ineficiente y según aumente la escala de peticiones simultáneamente se volverá más difícil de interpretar.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=1.45]{04_caso-estudio/images/console-logs}
+  \caption{Extracto de \emph{logs} de una ejecución habitual.}
+  \label{fig:console-logs}
+\end{figure}
+
+Por ello, para que resultara más sencillo trabajar en la implementación de los servicios y diagnosticar qué ocurre con el sistema, decidimos implementar una solución de observabilidad. La observabilidad es... y consta de tres partes distintas: %TODO CITA
+\begin{itemize}
+  \item \textbf{Logs}:
+  \item \textbf{Métricas}:
+  \item \textbf{Trazas distribuidas}:
+\end{itemize}
+
+Para poder capturar todos estos elementos, optamos por usar el estándar OpenTelemetry.
+Gracias a él pudimos capturar la telemetría de la siguiente forma implementar usando tres servicios distintos:
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.75]{04_caso-estudio/images/observability-telemetry-collection}
+  \caption{Extracto de \emph{logs} de una ejecución habitual.}
+  \label{fig:observability-telemetry-collection}
+\end{figure}
