@@ -23,10 +23,7 @@ Para describir el diseño usaremos la notación de sistemas autoadaptativos desc
 
 Para implementar el sistema, requerimos de las siguientes sondas:
 
-\begin{table}[htb]
-  \centering
-
-  \begin{tabular}{|r p{11.5cm}|}
+\begin{longtable}{|r p{11.5cm}|}
     \hline
     \textbf{Sonda:} & \emph{thermometer}  \\
     \textbf{Descripción:} & Reporta la temperatura actual de la habitación (en ºc). \\
@@ -43,11 +40,10 @@ Para implementar el sistema, requerimos de las siguientes sondas:
     \textbf{Monitor:} & \emph{Climatisation.Monitor} \\
     \textbf{Datos:} & \emph{airconditioner.is-deployed}, \emph{airconditioner-mode}, \emph{target-temperature}, \emph{cold-temperature-threshold}, \emph{hot-temperature-threshold} \\
     \hline
-  \end{tabular}
 
-  \caption{Sondas del sistema de climatización.}
-  \label{tab:climatisation-probes}
-\end{table}
+    \caption{Sondas del sistema de climatización.}
+    \label{tab:climatisation-probes}
+\end{longtable}
 
 \subsection{Efectores:}
 
@@ -77,10 +73,7 @@ Para implementar el sistema, requerimos de capaces de cambiar el modo de funcion
 
 También podemos deducir cuáles son nuestras propiedades de adaptación:
 
-\begin{table}[htb]
-  \centering
-
-  \begin{tabular}{|r p{11.5cm}|}
+\begin{longtable}{|r p{11.5cm}|}
     \hline
     \textbf{Propiedad:} & \emph{temperature}  \\
     \textbf{Descripción:} & Representa la temperatura actual de la habitación (en ºC).  \\
@@ -106,11 +99,10 @@ También podemos deducir cuáles son nuestras propiedades de adaptación:
     \textbf{Descripción:} & Representa el modo de operación actual del aire acondicionado: \emph{Off} = 0, \emph{Cooling} = 1, \emph{Heating} = 2  \\
     \textbf{Tipo de dato:} & Enumerado \\
     \hline
-  \end{tabular}
 
   \caption{Propiedades de adaptación del sistema de climatización.}
   \label{tab:climatisation-adaption-properties}
-\end{table}
+\end{longtable}
 
 \subsection{Monitores:}
 
@@ -118,10 +110,7 @@ Necesitaremos definir varios monitores para capturar los datos de las sondas. En
 
 Por ejemplo, en el monitor de las temperaturas, \emph{climatisation.monitor.temperature}. Como en el ejemplo trabajamos con un aire acondicionado ficticio, le hemos establecido un margen de error grande: Si la nueva medida de temperatura está a 5ºc de diferencia o más, y hay menos de un minuto de diferencia entre ellas; la descartaremos. De esta forma, evitamos que el aire acondicionado se active o desactive por un error de medición.
 
-\begin{table}[htb]
-  \centering
-
-  \begin{tabular}{|p{3.7cm} p{10.7cm}|}
+\begin{longtable}{|p{3.7cm} p{10.7cm}|}
     \hline
 
     \textbf{Monitor:} & \emph{climatisation.monitor.temperature}  \\
@@ -140,58 +129,52 @@ Por ejemplo, en el monitor de las temperaturas, \emph{climatisation.monitor.temp
         & \textbf{SI} \emph{property} != \emph{new-value} \\
         & \textbf{ACTUALIZA-KNOWLEDGE} \emph{property} = \emph{new-value} \\
     \hline
-  \end{tabular}
 
   \caption{Monitores del bucle MAPE-K del sistema de climatización.}
   \label{tab:climatisation-monitors}
-\end{table}
+\end{longtable}
 
 \subsection{Reglas de adaptación}
 
-En base a cambios de la temperatura local, deberemos decidir si es necesario llevar a cabo una acción correctiva. Por ejemplo, que si la temperatura es inferior al umbral de temperatura fría, el aparato se enciende en modo calentador. Para ello, deberemos definir una serie de reglas que se disparen cuando cambie una de nuestras propiedades de adaptación. En este caso, la temperatura.
+En base a cambios de la temperatura local, deberemos decidir si es necesario llevar a cabo una acción correctiva. Por ejemplo, que si la temperatura es inferior al umbral de temperatura fría, el aparato se enciende en modo calentador. Para ello, deberemos implementar un servicio de reglas (\emph{Climatisation.Rules.Service}). En él, incluiremos una serie de reglas que se disparen cuando cambie una de nuestras propiedades de adaptación. En este caso, la temperatura.
 
 Como comentamos en el capitulo anterior, en nuestro ejemplo de bucle MAPE-K, nos limitamos a implementar las adaptaciones de tipo set-parameter. Por tanto, no tendremos reglas de despliegue o de binding.
 
 En la tabla \ref{tab:adaption-rules-climatisation} definimos las cuatro reglas necesarias:
 
-\begin{table}[htb]
-  \centering
-
-  \begin{tabular}{|r p{12.8cm}|}
+\begin{longtable}{|r p{12.8cm}|}
     \hline
     \textbf{Regla:} & \emph{EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceeded}  \\
     \textbf{Descripción:} & Activa el aire acondicionado en modo calefacción cuando la temperatura sea inferior al umbral de frío.  \\
     \textbf{Condición:} & \emph{airconditioner-mode} != \emph{Heating} \textbf{AND} \emph{temperature} <= \emph{cold-temperature-threshold}  \\
     \textbf{Cuerpo:}   &  \\
-    & \includegraphics[scale=0.675]{04_caso-estudio/images/adaption-loop-rule-heat} \\
+    & \includegraphics[scale=0.75]{04_caso-estudio/images/adaption-loop-rule-heat} \\
     \hline
 
     \textbf{Regla:} & \emph{DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchieved}  \\
     \textbf{Descripción:} & Apaga el aire acondicionado cuando el modo calefacción está activo y se ha alcanzado la temperatura de confort.  \\
     \textbf{Condición:} & \emph{airconditioner-mode} == \emph{Heating} \textbf{AND} \emph{temperature} >= \emph{target-temperature}  \\
     \textbf{Cuerpo:} &  \\
-    & \includegraphics[scale=0.675]{04_caso-estudio/images/adaption-loop-rule-off} \\
+    & \includegraphics[scale=0.75]{04_caso-estudio/images/adaption-loop-rule-off} \\
     \hline
 
     \textbf{Regla:} & \emph{EnableAirConditionerCoolingModeWhenTemperatureThresholdExceeded}  \\
     \textbf{Descripción:} & Activa el aire acondicionado en modo enfriar cuando la temperatura sea superior al umbral de calor.  \\
     \textbf{Condición:} & \emph{airconditioner-mode} != \emph{Cooling} \textbf{AND} \emph{temperature} >= \emph{hot-temperature-threshold}  \\
     \textbf{Cuerpo:} &  \\
-    & \includegraphics[scale=0.675]{04_caso-estudio/images/adaption-loop-rule-cooling} \\
+    & \includegraphics[scale=0.75]{04_caso-estudio/images/adaption-loop-rule-cooling} \\
     \hline
 
     \textbf{Regla:} & \emph{DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchieved}  \\
     \textbf{Descripción:} & Apaga el aire acondicionado cuando el modo enfiar está activo y se ha alcanzado la temperatura de confort.  \\
     \textbf{Condición:} & \emph{airconditioner-mode} == \emph{Cooling} \textbf{AND} \emph{temperature} <= \emph{target-temperature}  \\
     \textbf{Cuerpo:} &  \\
-    & \includegraphics[scale=0.675]{04_caso-estudio/images/adaption-loop-rule-off} \\
+    & \includegraphics[scale=0.75]{04_caso-estudio/images/adaption-loop-rule-off} \\
     \hline
-  \end{tabular}
 
   \caption{Reglas de adaptación del sistema de climatización.}
   \label{tab:adaption-rules-climatisation}
-\end{table}
-
+\end{longtable}
 
 Una vez se disparan estas reglas, solicitamos un cambio en la configuración del sistema. El módulo de planificación comprobará contra el conocimiento y el estado actual del sistema cuáles de los cambios solicitados es necesario aplicar. Si por ejemplo la propiedad ya tiene el valor solicitado, no hará falta ejecutarla.
 
