@@ -111,7 +111,7 @@ Este servicio implementa un \textbf{bucle de control}, útil para dotar a un sis
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.6]{01_introduccion/images/bucle-mape-k.png}
+  \includegraphics[scale=0.6]{01_introduccion/images/bucle-mape-k}
   \caption[Arquitectura de un Bucle MAPE-K.]{Arquitectura de un Bucle MAPE-K.\footnotemark}
   \label{fig:bucle-mapek2}
 \end{figure}
@@ -515,7 +515,7 @@ En el \textcolor{red}{fragmento} \ref{ls:csharp-get}, podemos observar que se tr
 
 Aparte de la implementación, podemos comprobar que el método se ha decorado con una serie de comentarios (líneas 1-8) y atributos (10-12). Esta documentación describe qué hace el método, sus entradas y posibles respuestas. OpenAPI es capaz de utilizar estos elementos opcionales para generar una especificación más completa. Por tanto, resulta muy recomendable utilizarlos.
 
-\begin{lstlisting}[language=C++,caption={Implementación del método GetProperty decorado para generar la especificación OpenAPI.},captionpos=b, label=ls:csharp-get]
+\begin{lstlisting}[language={[Sharp]C},caption={Implementación del método GetProperty decorado para generar la especificación OpenAPI.},captionpos=b, label=ls:csharp-get]
 /// <summary>
 ///    Gets a property given its name.
 /// </summary>
@@ -590,6 +590,58 @@ Haciendo uso de las librerías de OpenAPI, generamos la especificación a partir
 \end{lstlisting}
 
 Podemos apreciar que en la ruta (\emph{/Property/\{propertyName\}}) está disponible una operación de tipo \emph{get} y que acepta determinados parámetros y ofrece unas posibles respuestas. Aparece una referencia a otro esquema (línea 25), que representa la estructura de la respuesta en ese caso concreto. También aparecen los comentarios opcionales que indicamos en el \textcolor{red}{fragmento} \ref{ls:csharp-get}. Encontramos grandes similitudes con la especificación presentada en la tabla \ref{tab:especificacion-get-property}.
+
+Los convenios de los generadores de código de OpenAPI pueden no ser de nuestro agrado. Por ejemplo, pueden resultar muy verbosos o puede resultar muy pesado trabajar con DTOs directamente. Por suerte, tenemos dos opciones para solventar esto: Modificar las plantillas de generación de código. Al ser de código abierto, podríamos modificar las existentes o crear nuestras propias plantillas con nuestros propios convenios.
+
+Otra opción, más fácil de implementar, es desarrollar código por encima del API Client Generado. Es el caso del servicio de Análisis. Como trabajar con DTOs directamente se hacía muy pesado, optamos por implementar un `system configuration request` builder. Esto nos permitia configurar la petición de una forma más descriptiva para el usuario:
+
+\begin{lstlisting}[language={[Sharp]C},caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.},captionpos=b, label=ls:api-cliente-request-builder]
+var changeRequests = new List<ServiceConfigurationDTO>
+{
+  new()
+  {
+    ServiceName = ClimatisationAirConditionerConstants.AppName,
+    IsDeployed = true,
+    ConfigurationProperties = new List<ConfigurationProperty>()
+    {
+      new()
+      {
+          Name = ClimatisationAirConditionerConstants.Configuration.Mode,
+          Value = AirConditioningMode.Cooling.ToString(),
+      },
+    },
+  },
+};
+
+var symptoms = new List<SymptomDTO> { new(SymptomName, "true") };
+
+var systemConfigurationChangeRequest = new SystemConfigurationChangeRequestDTO()
+{
+  ServiceConfiguration = changeRequests,
+  Symptoms = symptoms,
+  Timestamp = DateTime.UtcNow,
+};
+
+await _systemApi.SystemRequestChangePostAsync(
+  systemConfigurationChangeRequest,
+  CancellationToken.None);
+\end{lstlisting}
+
+
+\begin{lstlisting}[language={[Sharp]C},caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.},captionpos=b, label=ls:api-cliente-request-builder]
+await _systemService.RequestChangeAsync(changeRequest =>
+{
+  changeRequest
+    .ForSymptom(TemperatureGreaterThanHotThreshold)
+    .WithService(ClimatisationAirConditionerConstants.AppName, service =>
+    {
+      service.MustBePresent()
+        .WithParameter(
+          ClimatisationAirConditionerConstants.Configuration.Mode,
+          AirConditioningMode.Cooling.ToString());
+    });
+});
+\end{lstlisting}
 
 Finalmente, la arquitectura del conector que emplearemos para implementar las peticiones aparece en la figura \ref{fig:monitor-knowledge-connector-architecture}. La figura muestra como el servicio de monitorización contacta al de conocimiento para asignarle un valor a la propiedad \emph{Temp}.
 
