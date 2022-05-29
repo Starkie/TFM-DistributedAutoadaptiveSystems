@@ -2,40 +2,59 @@
 %                                  INTRODUCCIO                                %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{\textcolor{red}{Introducción}}
+\chapter{Introducción}
 \label{chap:introduccion}
 
-%% TODO: Descripción de sistemas autónomos.
+Debido al avance de las tecnologías en las últimas décadas, y a la penetración del \emph{software} en todos los ámbitos de nuestras vidas, cada vez tenemos sistemas más complejos y con requisitos de disponibilidad más altos. Por ejemplo, en caso de tener una tienda online, necesitamos asegurar que la tienda está disponible el mayor tiempo posible. Cuanto más tiempo pase ''caída'', menos potenciales clientes nos comprarán, y perderemos ingresos.
 
-La computación autónoma
+Por otro lado, queremos también querremos que nuestro sistema sea capaz de adaptarse a picos de demanda, aumentando su capacidad de cómputo cuando tengamos mayor afluencia de clientes. Por ejemplo, en temporadas de rebajas como \emph{black friday}. Operar sistemas capaces de escalar, deriva en sistemas complejos. Como no es viable tener a operarios pendientes del estado del sistema para llevar a cabo estas adaptaciones. Deben hacerse automáticamente.
 
-La autoadaptación de los sistemas \emph{software} se caracteriza por mover a tiempo de ejecución decisiones de configuración y funcionalidad para permitir un comportamiento dinámico del sistema. \cite{brunEngineeringSelfAdaptiveSystems2009} Los bucles de control (o \emph{feedback loops}) nos proporcionan un mecanismo genérico para la autoadaptación.
+En el ámbito de la computación autónoma encontramos el concepto de sistemas \textbf{autoadaptativos}: aquellos capaces de ajustar su propio comportamiento en base a cambios en su entorno de operación. En sistemas \emph{software}, se caracteriza por dotarlos con capacidades para razonar sobre su estado de operación y su entorno. En base a estos parámetros, el sistema debe elegir su siguiente configuración entre las estrategias disponibles. \cite{garlanIncreasingSystemDependability2003}. Esto conlleva mover a tiempo de ejecución las decisiones de arquitectura y funcionalidad. Con ello, buscamos permitir un comportamiento dinámico del sistema. \cite{brunEngineeringSelfAdaptiveSystems2009}.
 
-Un bucle de control realiza cuatro actividades de forma secuencial:
+Siguiendo con el ejemplo de la página web, podría definirse una acción correctiva que por ejemplo desplegar nuevas instancias del servicio cuando haya muchos accesos concurrentes. Cuando la carga de los servicios baje, podemos eliminarlas.
+
+Los sistemas adaptativos se basan principalmente en bucles de control. trabajan sobre system models - and in particular, architectural models - are maintained at run time
+and used as a basis for system reconfiguration and repair \cite{garlanIncreasingSystemDependability2003}
+
+La autoadaptación se basa en el concepto de bucle de control (o \emph{feedback loops}). Se trata de una secuencia de cuatro actividades que recaban información del entorno y del sistema, la analizan y deciden si es necesario ejecutar una acción correctiva.  Este tipo de bucles está presente en gran variedad de contextos, no solo en sistemas software como la operación de plantas industriales, procesos naturales, etc
+
+El bucle del control trabaja con un modelo del sistema de alto nivel \cite{garlanIncreasingSystemDependability2003}. Esto le permite definir las adaptaciones desacoplándose de los elementos.
+
+Un bucle de control está compuesto por cuatro actividades, que se ejecutan de forma secuencial (figura \ref{fig:bucle-control}):
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.07]{01_introduccion/images/feedback-loop}
+  \caption[Un bucle de control genérico. Consta de cuatro actividades: Recopilar información, analizarla, decidir y actuar si procede.]{Un bucle de control genérico. Consta de cuatro actividades: Recopilar información, analizarla, decidir y actuar si procede. \cite{dobsonSurveyAutonomicCommunications2006}}
+  \label{fig:bucle-control}
+\end{figure}
+
 
 \begin{itemize}
-  \item \textbf{Recolectar}: El bucle \textbf{monitoriza} las diversas fuentes de información que tenga a su disposición. Puede ser información del entorno, métricas del rendimiento del sistema, etc. Estos datos servirán para informar las siguientes etapas del bucle.
+  \item \textbf{Recopilar información}: El bucle \textbf{monitoriza} el sistema a través de \textbf{sondas}. Estas reportan información del sistema y del entorno de ejecución. Estos datos en bruto deben ser limpiados, filtrados y agregados. Posteriormente, se traducirán a propiedades de un modelo del estado del sistema.  Puede ser información del entorno de ejecución, métricas del rendimiento del sistema, etc. Estos datos servirán para informar las siguientes etapas del bucle.
 
-  \item \textbf{Analizar}: La información capturada son datos en bruto. Debemos procesarla, agregarla \textcolor{red}{y demás} para poder sacarle partido. El objetivo es identificar \textbf{síntomas}, indicadores de una situación que requiera de nuestra atención.
+  \item \textbf{Analizar}: A partir de las propiedades de adaptación, la etapa de análisis debe identificar \textbf{síntomas}: indicadores de una situación que requiera de nuestra atención.
 
-  \item \textbf{Decidir}: A partir de los síntomas, el bucle determina si es necesario tomar alguna acción. En base a \textbf{políticas} de operación, \textbf{planifica} las acciones a ejecutar.
+  \item \textbf{Decidir}: A partir de los síntomas, el bucle debe determinar si es necesario tomar alguna acción. En base \textbf{políticas} de operación, \textbf{planifica} las acciones a ejecutar para que el sistema se adapte a los cambios en el entorno y alcance una configuración deseable.
 
   \item \textbf{Actuar}: El bucle intenta \textbf{ejecutar} las acciones planificadas. Dependiendo del éxito de esta etapa, la adaptación se lleva a cabo o no. Es la etapa final antes de volver al paso inicial.
 \end{itemize}
 
-En concreto, se trata de un servicio que implementa un bucle de control MAPE-K \cite{ArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}, una para la implementación de sistemas autónomos propuesta inicialmente por IBM. El bucle se encarga de gestionar un \textbf{recurso manejado} en base a unas \textbf{políticas} definidas por el administrador del sistema. Las políticas
+Los bucles de control pueden ser implícitos, dentro del código y las condiciones, o explicitos. Lo ideal es contar con bucles externos, esto nos permite separar la funcionalidad de las capacidades de adaptación. Esto facilita la implementación.
+
+Garlan et al. also advocate to make self-adaptation external, as opposed to internal or hard-wired, to separate the concerns of system
+functionality from the concerns of self-adaptation [9,16].
+
+Una aplicación práctica de los \emph{feedback loops} en la ingenieria de \emph{software}, es el bucle MAPE-K \cite{ArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}, una propuesta de IBM para la implementación de sistemas autónomos. El bucle se encarga de gestionar un \textbf{recurso manejado} en base a unas \textbf{políticas} definidas por el administrador del sistema. Las políticas son una serie de objetivos definidos que nos ayudan a guiar las adaptaciones que puede realizar el sistema.
 
 En la figura \ref{fig:bucle-mapek} tenemos una representación de la arquitectura del bucle.
 
 \begin{figure}[h]
   \centering
-  \includegraphics{01_introduccion/images/bucle-mape-k.png}
-  \caption[Representación del Bucle MAPE-K]{Representación del Bucle MAPE-K.\footnotemark}
+  \includegraphics[scale=0.6]{01_introduccion/images/bucle-mape-k}
+  \caption[Representación del Bucle MAPE-K]{Representación del Bucle MAPE-K. \cite{brunEngineeringSelfAdaptiveSystems2009}}
   \label{fig:bucle-mapek}
 \end{figure}
-
-% TODO: Cambiar por otra imagen sin typos.
-\footnotetext{Obtenido de: \url{https://wwwvs.cs.hs-rm.de/vs-wiki/index.php/(WS12-01)_Cloud/Dokumentation}}
 
 
 El recurso manejado puede ser un sistema \emph{hardware} o \emph{software} cualquiera. El único requisito es que debe implementar los \textbf{\emph{touchpoints}} (\textcolor{red}{puntos de contacto?}): interfaces que permiten al bucle de control obtener información del estado del sistema y cambiar su configuración en base a las políticas. Hay dos tipos de \emph{touchpoints}: \textbf{sondas} y \textbf{efectores}.
@@ -62,6 +81,8 @@ En la figura \ref{fig:bucle-mapek} podemos apreciar que el bucle puede dividirse
 
 
 En este trabajo se quiere abordar la división de un servicio monolítico y adaptarlo para su funcionamiento en entornos en la nube. Para ello, se quiere extraer su funcionalidad en distintos microservicios. Es decir, se quiere \textbf{cambiar la topología} de la solución. Se trata de un cambio importante en la arquitectura de la solución.
+
+En concreto, se trata de un servicio que implementa un bucle de control MAPE-K \cite{ArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}, una para la implementación de sistemas autónomos propuesta inicialmente por IBM. El bucle se encarga de gestionar un \textbf{recurso manejado} en base a unas \textbf{políticas} definidas por el administrador del sistema. Las políticas
 
 %% TODO: ¿Multi-tennant? ¿Solución inicial muy acoplada y ad-hoc a una solución concreta? Se quiere independizar del programa.
 
