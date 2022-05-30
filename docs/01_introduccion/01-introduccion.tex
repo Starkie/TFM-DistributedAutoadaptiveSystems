@@ -29,33 +29,36 @@ Un bucle de control está compuesto por cuatro actividades, que se ejecutan de f
   \label{fig:bucle-control}
 \end{figure}
 
-
 \begin{itemize}
-  \item \textbf{Recopilar información}: El bucle \textbf{monitoriza} el sistema a través de \textbf{sondas}. Estas reportan información del sistema y del entorno de ejecución. Estos datos en bruto deben ser limpiados, filtrados y agregados. Posteriormente, se traducirán a propiedades de un modelo del estado del sistema.  Puede ser información del entorno de ejecución, métricas del rendimiento del sistema, etc. Estos datos servirán para informar las siguientes etapas del bucle.
+  \item \textbf{Recopilar información}: El bucle \textbf{monitoriza} el estado del sistema a través de \textbf{sondas}. Estas reportan información del sistema y del entorno de ejecución. Pueden ser métricas del rendimiento del sistema, estado de los componentes, etc.
 
-  \item \textbf{Analizar}: A partir de las propiedades de adaptación, la etapa de análisis debe identificar \textbf{síntomas}: indicadores de una situación que requiera de nuestra atención.
+  Estos datos en bruto deben ser limpiados, filtrados y agregados. Si se considera que son relevantes, se almacenan para informar las siguientes etapas del bucle.
 
-  \item \textbf{Decidir}: A partir de los síntomas, el bucle debe determinar si es necesario tomar alguna acción. En base \textbf{políticas} de operación, \textbf{planifica} las acciones a ejecutar para que el sistema se adapte a los cambios en el entorno y alcance una configuración deseable.
+  \item \textbf{Analizar}: A partir de las propiedades de adaptación, la etapa de análisis debe identificar \textbf{síntomas}: indicadores de una situación que requiera de nuestra atención. Puede ser mediante heurísticas que hayamos configurado, análisis estadístico \textcolor{red}{y cosas así}. Un ejemplo de síntoma sería ''uso de CPU elevado'', número elevado de mensajes encolados en un sistema de mensajería \textcolor{red}{y demás}.
 
-  \item \textbf{Actuar}: El bucle intenta \textbf{ejecutar} las acciones planificadas. Dependiendo del éxito de esta etapa, la adaptación se lleva a cabo o no. Es la etapa final antes de volver al paso inicial.
+  \item \textbf{Decidir}: A partir de los síntomas, el bucle debe determinar si es necesario tomar alguna acción. \textbf{Planifica} las acciones correctivas que se llevarán a cabo para que el sistema se adapte y alcance una configuración deseable. Por ejemplo, si hay muchos mensajes encolados, se podría solicitar el iniciar otra instancia del servicio que los procese en paralelo.
+
+  \item \textbf{Actuar}: Si el bucle ha planificado alguna acción, se intentará \textbf{ejecutar} en esta etapa final. Mediante \textbf{efectores} en el sistema, el bucle es capaz de cambiar la configuración actual del mismo. Dependiendo del éxito de esta etapa, la adaptación se lleva a cabo o no. Finalizada esta, se vuelve a recopilar información y el bucle continúa iterando.
 \end{itemize}
 
-Los bucles de control pueden ser implícitos, dentro del código y las condiciones, o explicitos. Lo ideal es contar con bucles externos, esto nos permite separar la funcionalidad de las capacidades de adaptación. Esto facilita la implementación.
+En la ingeniería de \emph{software}, encontramos diversas aplicaciones de los bucles de control. Pero normalmente están implícitos en la implementación. \cite{brunEngineeringSelfAdaptiveSystems2009}
+los bucles de control pueden ser implícitos, dentro del código y las condiciones, o explicitos. \cite{brunEngineeringSelfAdaptiveSystems2009} Lo ideal es contar con bucles externos, esto nos permite separar la funcionalidad de las capacidades de adaptación. \ Esto facilita la implementación.
 
 Garlan et al. also advocate to make self-adaptation external, as opposed to internal or hard-wired, to separate the concerns of system
 functionality from the concerns of self-adaptation [9,16].
 
-Una aplicación práctica de los \emph{feedback loops} en la ingenieria de \emph{software}, es el bucle MAPE-K \cite{ArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}, una propuesta de IBM para la implementación de sistemas autónomos. El bucle se encarga de gestionar un \textbf{recurso manejado} en base a unas \textbf{políticas} definidas por el administrador del sistema. Las políticas son una serie de objetivos definidos que nos ayudan a guiar las adaptaciones que puede realizar el sistema.
+Un arquitectura basada en los bucles de control es el bucle MAPE-K \cite{ArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021} de IBM. Se trata de un bucle de control externo, utilizado para dotar de capacidades autónomas a sistemas. La arquitectura está compuesta por \textbf{elementos autónomos}: Para ello, a partir de dos componentes: un \textbf{manejador autónomo} (el bucle de control) y un \textbf{recurso manejado}.
+
+El bucle se encarga de gestionar un \textbf{recurso manejado} en base a unas \textbf{políticas} definidas por el administrador del sistema. Las políticas son una serie de objetivos definidos que nos ayudan a guiar las adaptaciones que puede realizar el sistema.
 
 En la figura \ref{fig:bucle-mapek} tenemos una representación de la arquitectura del bucle.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.6]{01_introduccion/images/bucle-mape-k}
-  \caption[Representación del Bucle MAPE-K]{Representación del Bucle MAPE-K. \cite{brunEngineeringSelfAdaptiveSystems2009}}
+  \includegraphics[scale=1.35]{01_introduccion/images/bucle-mape-k}
+  \caption[Representación del Bucle MAPE-K (Monitor, Analysis, Planification, Execution and Knowledge)]{Representación del Bucle MAPE-K (Monitor, Analysis, Planification, Execution and Knowledge). Obtenido de \cite{fonsEspecificacionSistemasAutoadaptativos2021}}
   \label{fig:bucle-mapek}
 \end{figure}
-
 
 El recurso manejado puede ser un sistema \emph{hardware} o \emph{software} cualquiera. El único requisito es que debe implementar los \textbf{\emph{touchpoints}} (\textcolor{red}{puntos de contacto?}): interfaces que permiten al bucle de control obtener información del estado del sistema y cambiar su configuración en base a las políticas. Hay dos tipos de \emph{touchpoints}: \textbf{sondas} y \textbf{efectores}.
 
@@ -72,11 +75,14 @@ En la figura \ref{fig:bucle-mapek} podemos apreciar que el bucle puede dividirse
 
   \item \textbf{Monitor}: Recibe mediciones de las sondas del recurso manejado. Se encarga de recoger, agregar y filtrar estas mediciones para determinar si ha ocurrido un evento relevante que deba ser reportado. Por ejemplo, si la temperatura de una habitación supera un umbral definido por el usuario.
 
+  Estos datos en bruto deben ser limpiados, filtrados y agregados. Si se considera que son relevantes, se traducen a \textbf{propiedades de adaptación}: conjunto de propiedades que describen el modelo del estado pasado y actual de nuestro sistema \cite{garlanIncreasingSystemDependability2003}. Su principal función es informar las siguientes etapas del bucle.
+
+
   \item \textbf{Analizador}: Conjunto de \textbf{reglas de adaptación} que se suscriben a las propiedades de adaptación. Están compuestas una condición y una acción. Cada vez que cambie alguna de las propiedades de las que dependen, se evalua su condición. Si esta se cumple, se ejecuta la acción asociada, que suele ser una propuesta de cambio en la configuración del sistema.
 
-  \item \textbf{Planificador}: Si se ha llegado a ejecutar alguna regla de apdatación, el planificador recoge sus propuestas de cambio y determina las acciones necesarias para cumplir el objetivo.
+  \item \textbf{Planificador}: Si se ha llegado a ejecutar alguna regla de apdatación, el planificador recoge sus propuestas de cambio y determina las acciones necesarias para cumplir el objetivo. Basándose en las \textbf{políticas} de operación y los \textbf{objetivos} del sistema,
 
-  \item \textbf{Ejecutor}: Recibe
+  \item \textbf{Ejecutor}: Recibe se traducen las acciones de alto nivel solicitadas en el modelo a acciones de bajo nivel.
 \end{itemize}
 
 
