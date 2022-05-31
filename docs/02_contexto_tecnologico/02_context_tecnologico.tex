@@ -57,13 +57,15 @@ Los \textbf{recursos manejados} son las unidades de funcionalidad del sistema. P
 
 Para poder monitorizar el recurso, y poder evaluar métricas cómo su estado o su desempeño, debemos \textbf{instrumentar} el recurso manejado. Debemos implementar \textbf{sondas} en nuestro servicio que reporten datos relevantes a los monitores del bucle.
 
-En la figura \ref{fig:bucle-mapek} tenemos una representación de la arquitectura del bucle.
+En la figura \ref{fig:autonomic-element} tenemos una representación de un elemento autónomo. Distinguimos las dos partes: el manejador y el recurso. El manejador está acoplado al recurso a través de sus sensores y efectores. Además, podemos observar que el propio manejador expone sensores y efectores, lo que permiten ser controlador por manejadores autónomos orquestadores.
+
+Estos gestionan a un nivel superior uno o más elementos autonómicos.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=1.35]{01_introduccion/images/bucle-mape-k}
-  \caption[Representación del Bucle MAPE-K (Monitor, Analysis, Planification, Execution and Knowledge)]{Representación del Bucle MAPE-K (Monitor, Analysis, Planification, Execution and Knowledge). Obtenido de \cite{fonsEspecificacionSistemasAutoadaptativos2021}}
-  \label{fig:bucle-mapek}
+  \includegraphics[scale=2]{02_contexto_tecnologico/images/autonomic-element}
+  \caption[Representación de un elemento autónomo. Distinguimos el recurso manejado y el manejador autónomo. Bucle MAPE-K (Monitor, Analysis, Planification, Execution and Knowledge)]{Representación de un elemento autónomo. Distinguimos el recurso manejado y el manejador autónomo. Bucle MAPE-K (Monitor, Analysis, Planification, Execution and Knowledge). Basada en imagen de \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}.}
+  \label{fig:autonomic-element}
 \end{figure}
 
 El recurso manejado puede ser un sistema \emph{hardware} o \emph{software} cualquiera. El único requisito es que debe implementar los \textbf{\emph{touchpoints}} (\textcolor{red}{puntos de contacto?}): interfaces que permiten al bucle de control obtener información del estado del sistema y cambiar su configuración en base a las políticas. Hay dos tipos de \emph{touchpoints}: \textbf{sondas} y \textbf{efectores}.
@@ -72,7 +74,7 @@ Las sondas reportan al bucle información del estado del sistema. Puede ser cual
 
 Por otro lado, los efectores, nos ayudan a modificar el estado del sistema manejado. Pueden ser ficheros de configuración, comandos, etc.
 
-En la figura \ref{fig:bucle-mapek} podemos apreciar que el bucle puede dividirse en 5 componentes distintos: \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}
+En la figura \ref{fig:autonomic-element} podemos apreciar que el bucle puede dividirse en 5 componentes distintos: \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}
 
 \begin{itemize}
   \item \textbf{Base de conocimiento}: almacena el conocimiento relevante para la operación del bucle de control. Es tanto información del sistema como información del entorno de operación. Cada una de las claves almacenadas se conoce también como \textbf{propiedad de adaptación}.
