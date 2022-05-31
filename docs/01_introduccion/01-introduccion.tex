@@ -9,7 +9,7 @@ Debido al avance de las tecnologías en las últimas décadas, y a la penetraci�
 
 Por otro lado, queremos también querremos que nuestro sistema sea capaz de adaptarse a picos de demanda, aumentando su capacidad de cómputo cuando tengamos mayor afluencia de clientes. Por ejemplo, en temporadas de rebajas como \emph{black friday}. Operar sistemas capaces de escalar, deriva en sistemas complejos. Como no es viable tener a operarios pendientes del estado del sistema para llevar a cabo estas adaptaciones. Deben hacerse automáticamente.
 
-En el ámbito de la computación autónoma encontramos el concepto de sistemas \textbf{autoadaptativos}: aquellos capaces de ajustar su propio comportamiento en base a cambios en su entorno de operación. En sistemas \emph{software}, se caracteriza por dotarlos con capacidades para razonar sobre su estado de operación y su entorno. En base a estos parámetros, el sistema debe elegir su siguiente configuración entre las estrategias disponibles. \cite{garlanIncreasingSystemDependability2003}. Esto conlleva mover a tiempo de ejecución las decisiones de arquitectura y funcionalidad. Con ello, buscamos permitir un comportamiento dinámico del sistema. \cite{brunEngineeringSelfAdaptiveSystems2009}.
+En el ámbito de la computación autónoma encontramos el concepto de sistemas \textbf{autoadaptativos}: aquellos capaces de ajustar su propio comportamiento en base a cambios en su entorno de operación. Se caracteriza por dotarlos con capacidades para razonar sobre su estado de operación y su entorno. En base a estos parámetros, el sistema puede intuir que debe reconfigurarse para cumplir con los objetivos que tiene marcados. Para ello, en base a una serie de estrategias predefinidas, es capaz de elegir su siguiente configuración. \cite{garlanIncreasingSystemDependability2003}. Esto conlleva mover a tiempo de ejecución las decisiones de arquitectura y funcionalidad. Con ello, buscamos permitir un comportamiento dinámico del sistema. \cite{brunEngineeringSelfAdaptiveSystems2009}.
 
 Siguiendo con el ejemplo de la página web, podría definirse una acción correctiva que por ejemplo desplegar nuevas instancias del servicio cuando haya muchos accesos concurrentes. Cuando la carga de los servicios baje, podemos eliminarlas.
 
@@ -47,7 +47,16 @@ los bucles de control pueden ser implícitos, dentro del código y las condicion
 Garlan et al. also advocate to make self-adaptation external, as opposed to internal or hard-wired, to separate the concerns of system
 functionality from the concerns of self-adaptation [9,16].
 
-Un arquitectura basada en los bucles de control es el bucle MAPE-K \cite{ArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021} de IBM. Se trata de un bucle de control externo, utilizado para dotar de capacidades autónomas a sistemas. La arquitectura está compuesta por \textbf{elementos autónomos}: Para ello, a partir de dos componentes: un \textbf{manejador autónomo} (el bucle de control) y un \textbf{recurso manejado}.
+\textcolor{red}{Hablar de agentes autónomos como aplicación práctica. \cite{savaglioAgentbasedInternetThings2020}}
+
+\subsection{Bucles MAPE-K}
+
+Un estilo arquitectónico muy representativo de este tipo de sistemas es el basado en bucles MAPE-K \cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021} de IBM. Se trata de una arquitectura para sistemas distribuidos autónomos, que requieran del mínimo de intervención humana para operar. Nace con el objetivo de definir e implementar sistemas autoadaptativos. Estos deben ser capaces de auto-gestionarse en base a \textbf{políticas}. Las políticas son un conjunto de objetivos de alto nivel que definen los usuarios encargados del sistema. Definen los objetivos que el sistema debe tratar de alcanzar. Estos motivan los cambios en el sistema, que trata de adaptarse para alacanzarlos.
+
+Su componentes principales son los \textbf{elementos autónomos}. Cada uno de estos es capaz de autogestionarse, y colaborar en conjunto con el resto de elementos autónomos de la arquitectura para alcanzar los objetivos. ¿Agent based?
+
+
+Se trata de un bucle de control externo, utilizado para dotar de capacidades autónomas a sistemas. La arquitectura está compuesta por \textbf{elementos autónomos}: Para ello, a partir de dos componentes: un \textbf{manejador autónomo} (el bucle de control) y un \textbf{recurso manejado}.
 
 El bucle se encarga de gestionar un \textbf{recurso manejado} en base a unas \textbf{políticas} definidas por el administrador del sistema. Las políticas son una serie de objetivos definidos que nos ayudan a guiar las adaptaciones que puede realizar el sistema.
 
@@ -66,7 +75,7 @@ Las sondas reportan al bucle información del estado del sistema. Puede ser cual
 
 Por otro lado, los efectores, nos ayudan a modificar el estado del sistema manejado. Pueden ser ficheros de configuración, comandos, etc.
 
-En la figura \ref{fig:bucle-mapek} podemos apreciar que el bucle puede dividirse en 5 componentes distintos: \cite{ArchitecturalBlueprintAutonomic2006}
+En la figura \ref{fig:bucle-mapek} podemos apreciar que el bucle puede dividirse en 5 componentes distintos: \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}
 
 \begin{itemize}
   \item \textbf{Base de conocimiento}: almacena el conocimiento relevante para la operación del bucle de control. Es tanto información del sistema como información del entorno de operación. Cada una de las claves almacenadas se conoce también como \textbf{propiedad de adaptación}.
@@ -86,9 +95,11 @@ En la figura \ref{fig:bucle-mapek} podemos apreciar que el bucle puede dividirse
 \end{itemize}
 
 
+-----------------------------------------------------------------
+
 En este trabajo se quiere abordar la división de un servicio monolítico y adaptarlo para su funcionamiento en entornos en la nube. Para ello, se quiere extraer su funcionalidad en distintos microservicios. Es decir, se quiere \textbf{cambiar la topología} de la solución. Se trata de un cambio importante en la arquitectura de la solución.
 
-En concreto, se trata de un servicio que implementa un bucle de control MAPE-K \cite{ArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}, una para la implementación de sistemas autónomos propuesta inicialmente por IBM. El bucle se encarga de gestionar un \textbf{recurso manejado} en base a unas \textbf{políticas} definidas por el administrador del sistema. Las políticas
+En concreto, se trata de un servicio que implementa un bucle de control MAPE-K \cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}, una para la implementación de sistemas autónomos propuesta inicialmente por IBM. El bucle se encarga de gestionar un \textbf{recurso manejado} en base a unas \textbf{políticas} definidas por el administrador del sistema. Las políticas
 
 %% TODO: ¿Multi-tennant? ¿Solución inicial muy acoplada y ad-hoc a una solución concreta? Se quiere independizar del programa.
 
