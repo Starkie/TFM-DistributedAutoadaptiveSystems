@@ -1,14 +1,4 @@
 
-@techreport{ArchitecturalBlueprintAutonomic2006,
-  title = {An {{Architectural Blueprint}} for {{Autonomic Computing}}},
-  year = {2006},
-  institution = {{IBM}},
-  url = {https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.150.1011&rep=rep1&type=pdf},
-  urldate = {2021-12-11},
-  langid = {english},
-  file = {/home/adriano/Zotero/storage/I395HKBZ/download.pdf;/home/adriano/Zotero/storage/P5C8NX9R/AC Blueprint White Paper V7.pdf}
-}
-
 @incollection{brunEngineeringSelfAdaptiveSystems2009,
   title = {Engineering {{Self-Adaptive Systems}} through {{Feedback Loops}}},
   booktitle = {Software {{Engineering}} for {{Self-Adaptive Systems}}},
@@ -24,7 +14,7 @@
   abstract = {To deal with the increasing complexity of software systems and uncertainty of their environments, software engineers have turned to self-adaptivity. Self-adaptive systems are capable of dealing with a continuously changing environment and emerging requirements that may be unknown at design-time. However, building such systems cost-effectively and in a predictable manner is a major engineering challenge. In this paper, we explore the state-of-the-art in engineering self-adaptive systems and identify potential improvements in the design process.},
   isbn = {978-3-642-02161-9},
   langid = {english},
-  file = {/home/adriano/Zotero/storage/CICVGI37/Brun et al. - 2009 - Engineering Self-Adaptive Systems through Feedback.pdf}
+  file = {/home/adriano/Zotero/storage/WXMRWM9B/Brun09_EngineeringSelfAdaptiveSystemsThrougFeedbackLoops.pdf}
 }
 
 @book{burnsDesigningDistributedSystems2018,
@@ -53,6 +43,24 @@
   abstract = {Software architectures promote development focused on modular building blocks and their interconnections. Since architecture-level components often contain complex functionality, it is reasonable to expect that their interactions will also be complex. Modeling and implementing software connectors thus becomes a key aspect of architecture-based development. Software interconnection and middleware technologies such as RMI, CORBA, ILU, and ActiveX provide a valuable service in building applications from components. The relation of such services to software connectors in the context of software architectures, however, is not well understood. To understand the tradeoffs among these technologies with respect to architectures, we have evaluated several off-the-shelf middleware technologies and identified key techniques for utilizing them in implementing software connectors. Our platform for investigation was C2, a component- and message-based architectural style. By encapsulating middleware functionality within software connectors, we have coupled C2's existing benefits such as component interchangeability, substrate independence and structural guidance with new capabilities of multi-lingual, multi-process and distributed application development in a manner that is transparent to architects.},
   keywords = {Application software,Computer architecture,Computer languages,Computer science,Connectors,LAN interconnection,Middleware,Object oriented modeling,Protocols,Software architecture},
   file = {/home/adriano/Zotero/storage/TBAB45EA/Dashofy et al. - 1999 - Using off-the-shelf middleware to implement connec.pdf;/home/adriano/Zotero/storage/IM635ALX/840990.html}
+}
+
+@article{dobsonSurveyAutonomicCommunications2006,
+  title = {A Survey of Autonomic Communications},
+  author = {Dobson, Simon and Denazis, Spyros and Fern{\'a}ndez, Antonio and Ga{\"i}ti, Dominique and Gelenbe, Erol and Massacci, Fabio and Nixon, Paddy and Saffre, Fabrice and Schmidt, Nikita and Zambonelli, Franco},
+  year = {2006},
+  month = dec,
+  journal = {ACM Transactions on Autonomous and Adaptive Systems},
+  volume = {1},
+  number = {2},
+  pages = {223--259},
+  issn = {1556-4665},
+  doi = {10.1145/1186778.1186782},
+  url = {https://doi.org/10.1145/1186778.1186782},
+  urldate = {2022-05-29},
+  abstract = {Autonomic communications seek to improve the ability of network and services to cope with unpredicted change, including changes in topology, load, task, the physical and logical characteristics of the networks that can be accessed, and so forth. Broad-ranging autonomic solutions require designers to account for a range of end-to-end issues affecting programming models, network and contextual modeling and reasoning, decentralised algorithms, trust acquisition and maintenance---issues whose solutions may draw on approaches and results from a surprisingly broad range of disciplines. We survey the current state of autonomic communications research and identify significant emerging trends and techniques.},
+  keywords = {Autonomic communication},
+  file = {/home/adriano/Zotero/storage/XFQEBDLR/Dobson et al. - 2006 - A survey of autonomic communications.pdf}
 }
 
 @misc{EventDrivenArchitecturesAsyncAPI,
@@ -97,6 +105,24 @@
   file = {/home/adriano/Zotero/storage/ULEPICQE/mud.html}
 }
 
+@inproceedings{garlanIncreasingSystemDependability2003,
+  title = {Increasing {{System Dependability}} through {{Architecture-Based Self-Repair}}},
+  booktitle = {Architecting {{Dependable Systems}}},
+  author = {Garlan, David and Cheng, Shang-Wen and Schmerl, Bradley},
+  editor = {{de Lemos}, Rog{\'e}rio and Gacek, Cristina and Romanovsky, Alexander},
+  year = {2003},
+  series = {Lecture {{Notes}} in {{Computer Science}}},
+  pages = {61--89},
+  publisher = {{Springer}},
+  address = {{Berlin, Heidelberg}},
+  doi = {10.1007/3-540-45177-3_3},
+  abstract = {One increasingly important technique for improving system dependability is to provide mechanisms for a system to adapt at run time in order to accommodate varying resources, system errors, and changing requirements. For such ``self-repairing'' systems one of the hard problems is determining when a change is needed, and knowing what kind of adaptation is required. In this paper we describe a partial solution in which stylized architectural design models are maintained at run time as a vehicle for automatically monitoring system behavior, for detecting when that behavior falls outside of acceptable ranges, and for deciding on a high-level repair strategy. The main innovative feature of the approach is the ability to specialize a generic run time adaptation framework to support particular architectural styles and properties of interest. Specifically, a formal description of an architectural style defines for a family of related systems the conditions under which adaptation should be considered, provides an analytic basis for detecting anomalies, and serves as a basis for developing sound repair strategies.},
+  isbn = {978-3-540-45177-8},
+  langid = {english},
+  keywords = {Architectural Model,Architectural Style,Constraint Violation,Server Group,Software Architecture},
+  file = {/home/adriano/Zotero/storage/G88LPWIC/2003_Book_ArchitectingDependableSystems.pdf}
+}
+
 @inbook{garlanINTRODUCTIONSOFTWAREARCHITECTURE1993,
   title = {{{AN INTRODUCTION TO SOFTWARE ARCHITECTURE}}},
   booktitle = {Series on {{Software Engineering}} and {{Knowledge Engineering}}},
@@ -135,6 +161,17 @@
   abstract = {Chapter 4 - Reliable Request-Reply Patterns \#   Chapter 3 - Advanced Request-Reply Patterns covered advanced uses of ZeroMQ's request-reply pattern with working examples. This chapter looks at the general question of reliability and builds a set of reliable messaging patterns on top of ZeroMQ's core request-reply pattern. In this chapter, we focus heavily on user-space request-reply patterns, reusable models that help you design your own ZeroMQ architectures:  The Lazy Pirate pattern: reliable request-reply from the client side The Simple Pirate pattern: reliable request-reply using load balancing The Paranoid Pirate pattern: reliable request-reply with heartbeating The Majordomo pattern: service-oriented reliable queuing The Titanic pattern: disk-based/disconnected reliable queuing The Binary Star pattern: primary-backup server failover The Freelance pattern: brokerless reliable request-reply  What is ``Reliability''?},
   langid = {english},
   file = {/home/adriano/Zotero/storage/YRGMXKTR/chapter4.html}
+}
+
+@techreport{ibmcorporationArchitecturalBlueprintAutonomic2006,
+  title = {An {{Architectural Blueprint}} for {{Autonomic Computing}}},
+  author = {IBM Corporation},
+  year = {2006},
+  institution = {{IBM}},
+  url = {https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.150.1011&rep=rep1&type=pdf},
+  urldate = {2021-12-11},
+  langid = {english},
+  file = {/home/adriano/Zotero/storage/P5C8NX9R/AC Blueprint White Paper V7.pdf;/home/adriano/Zotero/storage/RHQKTYDF/download.pdf}
 }
 
 @techreport{ieeeStandard420102011Systems2011,
@@ -391,6 +428,25 @@
   isbn = {978-1-61729-100-5},
   langid = {english},
   file = {/home/adriano/Zotero/storage/8J5HVYXR/9781617291005.html}
+}
+
+@article{savaglioAgentbasedInternetThings2020,
+  title = {Agent-Based {{Internet}} of {{Things}}: {{State-of-the-art}} and Research Challenges},
+  shorttitle = {Agent-Based {{Internet}} of {{Things}}},
+  author = {Savaglio, Claudio and Ganzha, Maria and Paprzycki, Marcin and B{\u a}dic{\u a}, Costin and Ivanovi{\'c}, Mirjana and Fortino, Giancarlo},
+  year = {2020},
+  month = jan,
+  journal = {Future Generation Computer Systems},
+  volume = {102},
+  pages = {1038--1053},
+  issn = {0167-739X},
+  doi = {10.1016/j.future.2019.09.016},
+  url = {https://www.sciencedirect.com/science/article/pii/S0167739X19312282},
+  urldate = {2022-05-31},
+  abstract = {The disruptive potentials of the Internet of Things (IoT) entails multifaceted requirements and development issues (large scale deployments, heterogeneity, cyberphysicality, interoperability, distributed smartness, self-management, etc.). To adequately tackle them and to comprehensively support the development of the IoT ecosystem, the Agent-Based Computing (ABC) represents a proper and solid modeling, programming and simulation paradigm. Indeed, abstractions, design methods, technology and frameworks related to the ABC have been widely exploited, possibly jointly with other well-established/emerging computing paradigms, to actually develop advanced IoT ecosystem. This survey, an extension of our previous work, reports most relevant contemporary contributions in the field, aiming at assessing suitability of the ABC paradigm for the (current and future) IoT development.},
+  langid = {english},
+  keywords = {Internet of Things,IoT,Software agents},
+  file = {/home/adriano/Zotero/storage/DP8VL4HY/S0167739X19312282.html}
 }
 
 @misc{ServiceDesignPatterns,

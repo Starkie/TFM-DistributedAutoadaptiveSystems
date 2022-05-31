@@ -58,7 +58,7 @@ Dependiendo de las características de nuestro sistema (y del nivel de abstracci
 
 \begin{wrapfigure}{r}{0.40\linewidth}
   \centering
-  \includegraphics[scale=0.8]{02_arquitectura/images/componente-ejemplo}
+  \includegraphics[scale=0.8]{03_arquitectura/images/componente-ejemplo}
   \caption{El servicio de monitorización representado como un componente. Ofrece una interfaz (\emph{IMonitoringService}) y depende de otra para funcionar (\emph{IKnowledgeService}).}
   \label{fig:componenteEjemplo}
 \end{wrapfigure}
@@ -74,7 +74,7 @@ Para que dos o más componentes puedan interactuar, necesitamos definir un mecan
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[scale=0.78]{02_arquitectura/images/conector}
+  \includegraphics[scale=0.78]{03_arquitectura/images/conector}
   \caption{Ejemplo de comunicación de dos componentes a través de un conector.}
   \label{fig:componentesYConectorEjemplo}
 \end{figure}
@@ -107,7 +107,7 @@ Es decir, requerimos de un concepto adicional para describirlos en nuestra arqui
 
 Como comentamos en el \autoref{chap:introduccion}: \nameref{chap:introduccion}, el objetivo del trabajo es adaptar un servicio monolítico para que funcione como un sistema distribuido basado en microservicios. Se trata de un cambio arquitectonico importante. Por ello, queremos diseñar una solución ingenieril teniendo en cuenta las particularidades del sistema.
 
-Este servicio implementa un \textbf{bucle de control}, útil para dotar a un sistema con capacidades de computación autonoma. Especificamente, sigue la arquitectura del bucle MAPE-K\cite{ArchitecturalBlueprintAutonomic2006,fonsServiciosAdaptivereadyPara2021}, que mostramos en la figura \ref{fig:bucle-mapek2}. El objetivo de partida fue separar cada uno de los componentes del bucle en microservicios independientes.
+Este servicio implementa un \textbf{bucle de control}, útil para dotar a un sistema con capacidades de computación autonoma. Especificamente, sigue la arquitectura del bucle MAPE-K\cite{ibmcorporationArchitecturalBlueprintAutonomic2006,fonsServiciosAdaptivereadyPara2021}, que mostramos en la figura \ref{fig:bucle-mapek2}. El objetivo de partida fue separar cada uno de los componentes del bucle en microservicios independientes.
 
 \begin{figure}[htb]
   \centering
@@ -128,7 +128,7 @@ Por la descripción de ambos componentes, vemos que existe una clara división d
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.3]{02_arquitectura/images/mape-k-microservices}
+  \includegraphics[scale=0.3]{03_arquitectura/images/mape-k-microservices}
   \caption{Diagrama con los componentes que forman nuestra arquitectura distribuida}
   \label{fig:mape-k-microservices}
 \end{figure}
@@ -145,8 +145,8 @@ He encontrado una imagen que lo describe más o menos:
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.45]{02_arquitectura/images/c2SampleArch}
-  \caption{Ejemplo del estilo arquitectónico C2 (\emph{Components and Connectors}). \cite{UCISoftwareArchitecture}}
+  \includegraphics[scale=0.45]{03_arquitectura/images/c2SampleArch}
+  \caption[Ejemplo del estilo arquitectónico C2 (\emph{Components and Connectors})]{Ejemplo del estilo arquitectónico C2 (\emph{Components and Connectors}). \cite{UCISoftwareArchitecture}}
   \label{fig:C2-arch-example}
 \end{figure}
 
@@ -173,7 +173,7 @@ Me he basado en el diagrama típico de Clean Architecture para representar un po
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.45]{02_arquitectura/images/clean-arch-2-MAPEK-style}
+  \includegraphics[scale=0.45]{03_arquitectura/images/clean-arch-2-MAPEK-style}
   \caption[Representación de nuestra propuesta arquitectónica. Inspirado en Arquitectura Limpia (\emph{Clean Architecture}).]{Representación de nuestra propuesta arquitectónica. Inspirado en Arquitectura Limpia (\emph{Clean Architecture}). \footnotemark }
   \label{fig:clean-mapek-architecture}
 \end{figure}
@@ -215,7 +215,7 @@ Tomemos por ejemplo la comunicación entre el servicio de monitorización (\emph
 % TODO: Cambiar por imagen de componentes, que ofrezcan y requieran interfaces.
 \begin{figure}[htb]
   \centering
-  \includegraphics{02_arquitectura/images/Monitor-Knowledge-Initial-Connector}
+  \includegraphics{03_arquitectura/images/Monitor-Knowledge-Initial-Connector}
   \caption{Boceto inicial: queremos conectar el servicio de monitorización con la base de conocimiento para poder leer propiedades de adaptación.}
   \label{fig:monitor-knowledge-initial}
 \end{figure}
@@ -235,7 +235,7 @@ Sabiendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonom
 
   \begin{figure}[htb]
     \centering
-    \includegraphics[scale=1.5]{02_arquitectura/images/rpc-distributedobjects}
+    \includegraphics[scale=1.5]{03_arquitectura/images/rpc-distributedobjects}
     \caption[Funcionamiento del sistema de objetos distribuidos]{Funcionamiento del sistema de objetos distribuidos. \cite{tanenbaumChapter10Distributed2007}}
     \label{fig:rpc-distributedobjects}
   \end{figure}
@@ -318,7 +318,7 @@ Sabiendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonom
 
   \begin{figure}[htb]
     \centering
-    \includegraphics[scale=0.5]{02_arquitectura/images/publish_subscribe}
+    \includegraphics[scale=0.5]{03_arquitectura/images/publish_subscribe}
     \caption[Estrategia \emph{publish/suscribe}: el \emph{broker} actúa como intermediario en la comunicación \emph{multicast}.]{Estrategia \emph{publish/suscribe}: el \emph{broker} actúa como intermediario en la comunicación \emph{multicast}. Imagen obtenida de \footnotemark}
     \label{fig:publish-subscribe}
   \end{figure}
@@ -487,7 +487,7 @@ Una vez definida la interfaz que expondrá el servicio de conocimiento, nos qued
 
 \begin{wrapfigure}{r}{0.3\linewidth}
   \vspace{5pt}
-  \includegraphics[scale=0.32]{02_arquitectura/images/openapi-logo}
+  \includegraphics[scale=0.32]{03_arquitectura/images/openapi-logo}
   \centering
   \vspace{5pt}
 \end{wrapfigure}
@@ -647,7 +647,7 @@ El conector, delimitado por una línea discontinua roja, está compuesto por dos
 %%% TODO: Actualizar la imagen para que aparezca PUT en vez de POST.
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.8]{02_arquitectura/images/Monitor-Knowledge-Connector}
+  \includegraphics[scale=0.8]{03_arquitectura/images/Monitor-Knowledge-Connector}
   \caption{Diseño del conector usando implementación Cliente - Servidor}
   \label{fig:monitor-knowledge-connector-architecture}
 \end{figure}
