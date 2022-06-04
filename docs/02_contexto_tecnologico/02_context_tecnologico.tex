@@ -3,23 +3,16 @@
 
 \section{Computación autónoma y bucles de control}
 
-The goal of autonomic computing is to dramatically reduce the cost and perceived complexity of these systems by enabling them to manage themselves in accordance with high-level guidance from humans. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}
+Según \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}, la \textbf{computación autónoma} tiene como objetivo dotar a los sistemas de \textbf{autonomía} en su operación; capacidades para gestionarse a si mismos. Es decir, deberán adaptarse a los distintos escenarios que puedan darse durante su ejecución. Con esto, buscamos alcanzar una reducción en el coste de operación y hacer más gestionable la complejidad de los sistemas.
 
-Siguiendo con el ejemplo de la página web, podría definirse una acción correctiva que por ejemplo desplegar nuevas instancias del servicio cuando haya muchos accesos concurrentes. Cuando la carga de los servicios baje, podemos eliminarlas.
+Estas adaptaciones se realizan en base a directivas de alto nivel proporcionadas por un humano: el humano fija los objetivos que el sistema debe alcanzar; y este deberá adaptarse para lograrlo, si es posible. Siguiendo con el ejemplo de la página web, el operador humano podría definir un máximo de carga por cada instancia. Entonces, cuando se supera el umbral, el sistema podría decidir que se requiere una acción correctiva que consista en desplegar nuevas instancias del servicio cuando haya muchos accesos concurrentes. Cuando la carga de los servicios baje, podemos eliminarlas.
 
-Los sistemas adaptativos se basan principalmente en bucles de control. trabajan sobre system models - and in particular, architectural models - are maintained at run time
-and used as a basis for system reconfiguration and repair \cite{garlanIncreasingSystemDependability2003}
-
-La autoadaptación se basa en el concepto de bucle de control (o \emph{feedback loops}). Se trata de una secuencia de cuatro actividades que recaban información del entorno y del sistema, la analizan y deciden si es necesario ejecutar una acción correctiva.  Este tipo de bucles está presente en gran variedad de contextos, no solo en sistemas software como la operación de plantas industriales, procesos naturales, etc
-
-El bucle del control trabaja con un modelo del sistema de alto nivel \cite{garlanIncreasingSystemDependability2003}. Esto le permite definir las adaptaciones desacoplándose de los elementos.
-
-Un bucle de control está compuesto por cuatro actividades, que se ejecutan de forma secuencial (figura \ref{fig:bucle-control}):
+Para implementar estas capacidades de adaptación, recurriremos a la teoría de control y el \textbf{bucle de control} (o \emph{feedback loop}). \cite{brunEngineeringSelfAdaptiveSystems2009} Se trata de un proceso iterativo compuesto por cuatro actividades (figura \ref{fig:bucle-control}):
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.07]{01_introduccion/images/feedback-loop}
-  \caption[Un bucle de control genérico. Consta de cuatro actividades: Recopilar información, analizarla, decidir y actuar si procede.]{Un bucle de control genérico. Consta de cuatro actividades: Recopilar información, analizarla, decidir y actuar si procede. \cite{dobsonSurveyAutonomicCommunications2006}}
+  \includegraphics[scale=0.065]{01_introduccion/images/feedback-loop}
+  \caption[Un bucle de control genérico. Consta de cuatro actividades: Recopilar información, analizarla, decidir y actuar si procede.]{Un bucle de control genérico. Consta de cuatro actividades: Recopilar información, analizarla, decidir y actuar si procede. Obtenida de \cite{dobsonSurveyAutonomicCommunications2006}.}
   \label{fig:bucle-control}
 \end{figure}
 
@@ -28,12 +21,17 @@ Un bucle de control está compuesto por cuatro actividades, que se ejecutan de f
 
   Estos datos en bruto deben ser limpiados, filtrados y agregados. Si se considera que son relevantes, se almacenan para informar las siguientes etapas del bucle.
 
-  \item \textbf{Analizar}: A partir de las propiedades de adaptación, la etapa de análisis debe identificar \textbf{síntomas}: indicadores de una situación que requiera de nuestra atención. Puede ser mediante heurísticas que hayamos configurado, análisis estadístico \textcolor{red}{y cosas así}. Un ejemplo de síntoma sería ''uso de CPU elevado'', número elevado de mensajes encolados en un sistema de mensajería \textcolor{red}{y demás}.
+  \item \textbf{Analizar}: A partir de las propiedades de adaptación, la etapa de análisis debe identificar \textbf{síntomas}: indicadores de una situación que requiera de nuestra atención. Puede ser mediante heurísticas que hayamos configurado, análisis estadístico \textcolor{red}{y cosas así}. Un ejemplo de síntoma sería ''uso de CPU elevado'', ''número elevado de mensajes encolados en un sistema de mensajería'' \textcolor{red}{entre otras}.
 
-  \item \textbf{Decidir}: A partir de los síntomas, el bucle debe determinar si es necesario tomar alguna acción. \textbf{Planifica} las acciones correctivas que se llevarán a cabo para que el sistema se adapte y alcance una configuración deseable. Por ejemplo, si hay muchos mensajes encolados, se podría solicitar el iniciar otra instancia del servicio que los procese en paralelo.
+  \item \textbf{Decidir}: A partir de los síntomas, el bucle debe determinar si es necesario tomar alguna acción correctiva. \textbf{Planifica} las acciones que se llevarán a cabo para que el sistema se adapte y alcance una configuración deseable. Por ejemplo, si hay muchos mensajes encolados, se podría solicitar el iniciar otra instancia del servicio que los consuma y procese en paralelo.
 
   \item \textbf{Actuar}: Si el bucle ha planificado alguna acción, se intentará \textbf{ejecutar} en esta etapa final. Mediante \textbf{efectores} en el sistema, el bucle es capaz de cambiar la configuración actual del mismo. Dependiendo del éxito de esta etapa, la adaptación se lleva a cabo o no. Finalizada esta, se vuelve a recopilar información y el bucle continúa iterando.
 \end{itemize}
+
+Este tipo de proceso está presente en gran variedad de contextos como puede ser operación de plantas industriales, en procesos naturales, etc. \textcolor{red}{Citar TFM planta embalaje}.
+
+El bucle del control trabaja con un modelo del sistema de alto nivel \cite{garlanIncreasingSystemDependability2003}. Esto le permite definir las adaptaciones desacoplándose de los elementos. Los sistemas adaptativos se basan principalmente en bucles de control. trabajan sobre system models - and in particular, architectural models - are maintained at run time
+and used as a basis for system reconfiguration and repair \cite{garlanIncreasingSystemDependability2003}
 
 En la ingeniería de \emph{software}, encontramos diversas aplicaciones de los bucles de control. Pero normalmente están implícitos en la implementación. \cite{brunEngineeringSelfAdaptiveSystems2009}
 los bucles de control pueden ser implícitos, dentro del código y las condiciones, o explicitos. \cite{brunEngineeringSelfAdaptiveSystems2009} Lo ideal es contar con bucles externos, esto nos permite separar la funcionalidad de las capacidades de adaptación. \ Esto facilita la implementación.
@@ -43,7 +41,7 @@ functionality from the concerns of self-adaptation [9,16].
 
 \textcolor{red}{Hablar de agentes autónomos como aplicación práctica. \cite{savaglioAgentbasedInternetThings2020}}
 
-\subsection{Bucles MAPE-K}
+\subsection{Arquitectura para sistemas autónomos: Bucles MAPE-K}
 
 Un estilo arquitectónico muy representativo de este tipo de sistemas es el basado en bucles MAPE-K \cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021} de IBM. Se trata de una arquitectura para sistemas distribuidos autónomos, que requieran del mínimo de intervención humana para operar. Nace con el objetivo de definir e implementar sistemas autoadaptativos.
 
