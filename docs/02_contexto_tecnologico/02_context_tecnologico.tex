@@ -49,7 +49,7 @@ Los \textbf{recursos manejados} son las unidades de funcionalidad del sistema. P
 
 Para poder ser gestionado externamente, el recurso debe implementar \textbf{\emph{touchpoints}} (\textcolor{red}{¿puntos de contacto?}): interfaces que permiten al bucle de control obtener información del estado del sistema y cambiar su configuración Existen dos tipos de \emph{touchpoints}: sondas y efectores.
 
-En la figura \ref{fig:autonomic-element} tenemos una representación de un elemento autónomo. Distinguimos las dos partes: el manejador y el recurso. El manejador está acoplado al recurso a través de sus sensores y efectores. Podemos apreciar en el bucle inver en \textcolor{red}{7} componentes distintos: \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}
+En la figura \ref{fig:autonomic-element} tenemos una representación de un elemento autónomo. Distinguimos las dos partes: el manejador y el recurso. El manejador está acoplado al recurso a través de sus sensores y efectores. Podemos apreciar que \textcolor{red}{siete} componentes distintos conforman el bucle: \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}
 
 \begin{figure}[h]
   \centering
@@ -59,45 +59,46 @@ En la figura \ref{fig:autonomic-element} tenemos una representación de un eleme
 \end{figure}
 
 \subsubsection{Sondas}
-Para poder monitorizar el recurso, y poder evaluar métricas como su estado o su desempeño, debemos \textbf{instrumentarlo}. Debemos implementar \textbf{sondas} en nuestro servicio que expongan datos relevantes a los monitores del bucle. Puede ser cualquier tipo de métrica que queramos controlar. Por ejemplo, \emph{health checks}, información de salud de la aplicación; propiedades del sistema que queramos controlar.
-
-\textcolor{red}{También puede interesarnos obtener información del entorno.}
+Para poder monitorizar el recurso y su entorno deberemos \textbf{instrumentarlos}. Consiste en implementar \textbf{sondas} que expongan datos relevantes a los monitores del bucle. Pueden capturar y transmitir cualquier métrica que queramos controlar: \emph{health checks}, rendimiento del servicio u otras propiedades del sistema.
 
 \subsubsection{Monitor}
-El monitor recibe mediciones de las sondas. Se encarga de recoger, agregar y filtrar estas mediciones para determinar si ha ocurrido un evento relevante que deba ser reportado. Por ejemplo, en un sistema de climatización, si la temperatura de una habitación supera un umbral definido por el usuario.
+El monitor recibe las mediciones de las sondas. Se encarga de recogerlas, agregarlas y filtrarlas para determinar si ha ocurrido un evento relevante que deba ser reportado. Si se considera que lo son, estos valores se almacenan como propiedades de adaptación en la base de conocimiento. \cite{fonsEspecificacionSistemasAutoadaptativos2021} Por ejemplo, en un sistema de climatización, si la temperatura de una habitación cambia.
 
-Si se considera que son relevantes, estos valores se almacenan como propiedades de adaptación en la base de conocimiento. \cite{fonsEspecificacionSistemasAutoadaptativos2021}
 
 \subsubsection{Base de conocimiento}
 
-La base de conocimiento (\emph{knowledge base}) está compuesta por una o más fuentes de información que el bucle tiene a su disposición. En ellas, se almacenan las \textbf{propiedades de adaptación}. En conjunto, estas propiedades conforman un modelo abstracto del sistema, que describe su estado pasado y actual: componentes, conexiones entre ellos y su configuración. \cite{garlanIncreasingSystemDependability2003} Sirve para informar el resto de etapas del proceso.
-
-
-El conocimiento se comparte entre todos los componentes del bucle de control. Por tanto, se trata de un componente transversal.
-
-\subsubsection{Analizador}
-
-Conjunto de \textbf{reglas de adaptación} que se suscriben a cambios de las propiedades de adaptación. Están compuestas una condición y una acción. Cada vez que cambie alguna de las propiedades de las que dependen, se evalúa su condición. Si esta se cumple, se ejecuta la acción asociada.
-
-La acción es una \textbf{propuesta de cambio} en la configuración del sistema. Estas se describen en base a \textbf{operadores arquitectónicos}. \cite{garlanIncreasingSystemDependability2003}. Si nuestro recurso manejado está definido como un sistema de microservicios, estos operadores podrían consistir en desplegar o eliminar servicios, establecer conexiones entre los servicios, eliminarlas, o cambiar las propiedades de configuración del servicio.
-
-Estos operadores son de alto nivel, referidos a la arquitectura. No están en ''términos'' del sistema. Necesitarán ser traducidos para que sean efectivos.
-
-\subsubsection{Planificador}
-Si se ha llegado a ejecutar alguna regla de apdatación, el planificador recoge sus propuestas de cambio y determina las acciones necesarias para cumplir el objetivo. Basándose en las \textbf{políticas} de operación y los \textbf{objetivos} del sistema,
-
-\subsubsection{Ejecutor}
-
-: Recibe se traducen las acciones de alto nivel solicitadas en el modelo a acciones de bajo nivel.
+La base de conocimiento (\emph{knowledge base}) está compuesta por una o más fuentes de información que el bucle tiene a su disposición. En ellas, se almacenan las \textbf{propiedades de adaptación}. En conjunto, estas propiedades conforman un modelo abstracto del sistema, que describe su estado pasado y actual: componentes, conexiones entre ellos y su configuración. \cite{garlanIncreasingSystemDependability2003}
 
 El bucle del control trabaja con un modelo del sistema de alto nivel \cite{garlanIncreasingSystemDependability2003}. Esto le permite definir las adaptaciones desacoplándose de los elementos. Los sistemas adaptativos se basan principalmente en bucles de control. trabajan sobre system models - and in particular, architectural models - are maintained at run time
 and used as a basis for system reconfiguration and repair \cite{garlanIncreasingSystemDependability2003}
 
 Es una arquitectura knowledge-driven \cite{taylorSoftwareArchitectureFoundations2009}.
 
+El conocimiento informa a todas las etapas del bucle de control. Por tanto, se trata de un componente transversal.
+
+\subsubsection{Analizador}
+
+En base a las propiedades de adaptación, podemos razonar sobre el estado actual del sistema y detectar situaciones que requieran de una acción correctiva. Para ello contamos con el módulo de análisis.
+
+Una aproximación para implementarlo es mediante \textbf{reglas de adaptación}, compuestas por una condición y una acción. Las reglas se suscriben a cambios de las propiedades de adaptación. Cuando ocurra alguno, se evalúa su condición. Si esta se cumple, se ejecuta la acción asociada. En caso contrario, no hará nada.
+
+\textcolor{red}{Siguiendo con el ejemplo del sistema de climatización, un ejemplo de regla sería...}
+
+La acción de la regla describe una \textbf{propuesta de cambio} en la configuración del sistema. Estas se formulan en base a \textbf{operadores arquitectónicos}. \cite{garlanIncreasingSystemDependability2003} Dependiendo del estilo arquitectónico de nuestro sistema, tendremos disponibles una serie de operaciones para alterar su arquitectura.
+
+Por ejemplo, nuestro recurso manejado podría estar implementado como microservicios. En este caso, los operadores podrían consistir en desplegar o eliminar servicios, establecer conexiones entre los servicios, eliminarlas, o cambiar las propiedades de configuración del servicio. \cite{fonsServiciosAdaptivereadyPara2021}
+
+\subsubsection{Planificador}
+
+Si alguna regla se dispara, el planificador recibe los cambios propuestos. Comparando sus acciones con el modelo que tenemos del estado del sistema (las propiedades de adaptación), determina si todavía es necesario ejecutar estas acciones. También comprobará si es seguro aplicarlas, ya que no deben dejar el sistema en un estado inconsistente. En caso de que las propuestas sean válidas, estas se agruparán en un \textbf{plan de adaptación}.
+
+\subsubsection{Ejecutor}
+
+En la etapa final del bucle tenemos al ejecutor. Este se encarga de ejecutar las acciones del plan de adaptación. Para ello, traduce estas acciones de alto nivel (nivel de arquitectura) a acciones de más bajo nivel (en términos del propio sistema). \cite{garlanIncreasingSystemDependability2003} El ejecutor determina a qué efectores debe llamar, y dirige las acciones planificadas al que corresponda.
+
 \subsubsection{Efectores}
 
-Por otro lado, los \textbf{efectores}, nos ayudan a modificar el estado del sistema manejado. Pueden ser ficheros de configuración, comandos, etc. Se definen en base a operadores capaces de modifiar la arquitectura \cite{garlanIncreasingSystemDependability2003}.
+Los \textbf{efectores} sirven para modificar el estado del sistema manejado. Pueden ser ficheros de configuración, comandos, \emph{endpoints}, etc.
 
 \textcolor{red}{The second factor is the feasibility of carrying out the change. To evaluate feasibil-
 ity requires some knowledge of the target implementation infrastructure. It makes no
