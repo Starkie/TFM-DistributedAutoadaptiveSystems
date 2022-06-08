@@ -1,6 +1,6 @@
 \chapter{Arquitectura de la solución}
 
-En este capítulo vamos a describir la arquitectura que hemos diseñado para distribuir el bucle MAPE-K. Como partimos de un sistema existente, del cual ya conocemos sus componentes, el principal foco de este capítulo son los \textbf{conectores de \emph{software}}. Tenemos que determinar qué estrategias de comunicación utilizaremos para comunicarlos.
+En este capítulo vamos a describir la arquitectura que hemos diseñado para distribuir el bucle MAPE-K. Partimos de un sistema con una \textcolor{red}{división funcional ya definida}, por lo que será sencillo delimitar los componentes. El foco de este capítulo serán entonces los \textbf{conectores de \emph{software}}. Necesitamos establecer qué estrategias de comunicación utilizaremos para comunicar los componentes.
 
 Comenzaremos dando una breve introducción a las arquitecturas de \emph{software} y los elementos que las componen. Después, describiremos la arquitectura de nuestra solución y el proceso que hemos seguido para llegar hasta ella.
 
@@ -8,53 +8,29 @@ Comenzaremos dando una breve introducción a las arquitecturas de \emph{software
 
 Según \cite{taylorSoftwareArchitectureFoundations2009}, la \textbf{arquitectura de un sistema \emph{software}} es el conjunto de todas las \textbf{decisiones principales de diseño} que se toman durante su ciclo de vida; aquellas que sientan las bases del sistema. Estas afectan a todos sus apartados: la funcionalidad que debe ofrecer, la tecnología para su implementación, cómo se desplegará, etc. En conjunto, definen una pauta que guía (y a la vez refleja) el diseño, la implementación, la operación y la evolución del sistema.
 
-Estudiar la arquitectura de un sistema nos permite conocerlo en profundidad. Nos permite descubrir qué \textbf{componentes} la conforman, cómo están \textbf{relacionados} y el por qué de esta composición. \cite{perryFoundationsStudySoftware1992} \textcolor{red}{Además, nos provee de un vocabulario común para que los \emph{stakeholders} o interesados puedan comunicarse: ayuda a los clientes a articular sus necesidades; a los diseñadores a capturar los requisitos y definir el sistema; a los desarrolladores a comprender mejor cómo implementarlo\dots}
+Todos los sistemas \emph{software} cuentan con una. La diferencia radica en si esta ha sido diseñada y descrita explícitamente o ha quedado implícita en su implementación. \cite{taylorSoftwareArchitectureFoundations2009} En el segundo caso es probable que, con el paso del tiempo, se ``erosione`` su arquitectura: se implementan funcionalidades sin respetar la estructura. También se olvida el por qué de ciertas decisiones. En general, se vuelve más difícil de mantener. Se convierte en una ''gran bola de barro''. \cite{footeBigBallMud1997}
 
-Todos los sistemas \emph{software} cuentan con una arquitectura. La diferencia radica en si esta ha sido diseñada y descrita explícitamente o ha quedado implícita en su implementación. \cite{taylorSoftwareArchitectureFoundations2009} En el segundo caso es probable que, con el paso del tiempo, se ``erosione`` su arquitectura: se implementan funcionalidades sin respetar la estructura. También se olvida el por qué de ciertas decisiones. En general, se vuelve más difícil de mantener. Se convierte en una ''gran bola de barro''. \cite{footeBigBallMud1997}
-
-Por tanto, es vital dedicar tiempo para definirla atendiendo a las necesidades de nuestro sistema. Una buena arquitectura es capaz dotar de estructura a nuestro sistema. \cite{martinCleanArchitectureCraftsman2018} Mientras se respete la arquitectura, y se mantenga actualizada, esta estructura Una buena arquitectura nos ofrece una serie de ventajas, como facilitar su desarrollo, mayor extensibilidad.
-
-\subsection{Decisiones principales de diseño}
-
-Las \textbf{decisiones principales de diseño} son todas aquellas decisiones importantes que afectan a los fundamentos de nuestro sistema. Son principales o importantes porque comienzan a ``asentarse`` cuando avanza el desarrollo. Se vuelven más difíciles de cambiar o rectificar. \cite{taylorSoftwareArchitectureFoundations2009} Estas decisiones no solo se toman durante la concepción del sistema, si no que también pueden surgir durante el desarrollo y posterior evolución.
-
-Normalmente se resumen en comparativas entre distintas alternativas, cada una de ellas con sus ventajas e inconvenientes. Por ejemplo, una decisión de diseño principal que se suele tomar en las fases tempranas del desarrollo es la elección de la topología para la solución. Optar entre desarrollar un servicio monolítico, o un sistema formado por microservicios, va a condicionar prácticamente todo el desarrollo.
-
-Aun así, no todas las decisiones de diseño tienen por qué ser consideradas como principales. Hay detalles de implementación que pueden dejarse ambiguos a nivel de la arquitectura. Se concretarán durante en el momento en que se implementen.
-
- Pueden tomarse en base a distintos criterios. Entre ellos podemos destacar: \textcolor{red}{[Citation needed]}
-
-    \begin{itemize}
-        \item \textbf{Requisitos del sistema:} a partir del dominio y las necesidades de nuestros usuarios, podemos deducir: la funcionalidad a implementar, las restricciones que debemos respetar y otras propiedades que debe poseer el sistema.
-
-        \item \textbf{Arquitectura actual:} las decisiones tomadas previamente también condicionan las elecciones que se tomen más adelante. Cuanto más avanza el desarrollo, más se asientan las decisiones previas, y más dificil es rectificarlas.
-
-        \item \textbf{Experiencia previa:} del desarrollo de este u otros sistemas. Podemos obtener métricas del funcionamiento y uso de nuestro sistema para informar decisiones futuras. \textcolor{red}{[Cita devops]}
-    \end{itemize}
+Por tanto, es vital dedicar tiempo para definirla atendiendo a las necesidades de nuestro sistema. Una buena arquitectura es capaz dotar de estructura a nuestro sistema. \cite{martinCleanArchitectureCraftsman2018} Mientras se respete la arquitectura, y se mantenga actualizada, esta estructura. Una buena arquitectura nos ofrece una serie de ventajas, como facilitar su desarrollo, mayor extensibilidad.
 
 \subsection{Componentes de una arquitectura}
 
 Otra posible definición de arquitectura la encontramos en el estándar IEEE 42010-2011 \cite{ieeeStandard420102011Systems2011}: es "\emph{un conjunto de conceptos o propiedades fundamentales, personificados por sus elementos, sus relaciones, y los principios que guían su diseño y evolución}".
 
-Podemos describirlas usando tres conceptos: \cite{perryFoundationsStudySoftware1992}
+Podemos describirlas entonces usando tres conceptos: \cite{perryFoundationsStudySoftware1992}
 
     \begin{itemize}
-        \item \textbf{Elementos}: Son las piezas fundamentales que conforman el sistema. Implementan la funcionalidad de la aplicación. Se utilizan para describir \emph{qué} partes componen el sistema. Por ejemplo: un módulo, un servicio web...
+        \item \textbf{Componentes} (o elementos): Son las piezas fundamentales que conforman el sistema. Representan las unidades de funcionalidad de la aplicación. Se utilizan para describir \textbf{\emph{qué}} partes componen el sistema. Por ejemplo: un módulo, un servicio web...
 
-        \item \textbf{Forma}: El conjunto de propiedades y relaciones entre los elementos o el entorno de operación. Describe \emph{cómo} está organizado el sistema. Por ejemplo: un servicio contacta con otro a través de una API.
+        \item \textbf{Forma}: El conjunto de propiedades y relaciones de un elemenento con otros o con el entorno de operación. Describe \textbf{\emph{cómo}} está organizado el sistema. Por ejemplo: un servicio A contacta con otro, B, usando una llamada HTTP.
 
-        \item \textbf{Justificación}: Razonamiento o motivación de las decisiones que se han tomado. Responden al \emph{por qué} algo se hace de determinada forma. Normalmente no pueden deducirse a partir de los elementos y la forma, por lo que es necesario describirlos.
+        \item \textbf{Justificación}: Razonamiento o motivación de las decisiones que se han tomado. Responden al \textbf{\emph{por qué}} algo se hace de una manera determinada. Normalmente no pueden deducirse a partir de los elementos y la forma, por lo que es necesario describirlos explícitamente.
 
     \end{itemize}
 
-\pagebreak
-
 \subsubsection{Elementos}
 
-Durante el diseño del sistema, para lidiar con la complejidad que pudiera alcanzar, recurrimos a dos herramientas: la abstracción y la separación de responsabilidades. \cite{martinCleanArchitectureCraftsman2018} Aplicándolas repetidamente mientras estudiamos el espacio del problema pueden sernos de gran ayuda para identificar distintas unidades de funcionalidad. Se trata de los componentes.
-
-Según \cite{taylorSoftwareArchitectureFoundations2009}, los \textbf{componentes} son ``elementos arquitectónicos que encapsulan un subconjunto de la funcionalidad y/o de los datos del sistema``.
-Dependiendo de las características de nuestro sistema (y del nivel de abstracción que usemos) pueden tomar distintas formas: módulos dentro un mismo proceso, servicios distribuidos, etc.
+El primer tipo de elemento que debemos tratar son los componentes. Según \cite{taylorSoftwareArchitectureFoundations2009}, los \textbf{componentes} son ``elementos arquitectónicos que encapsulan un subconjunto de la funcionalidad y/o de los datos del sistema``.
+Dependiendo de las características de nuestro sistema (y del nivel de abstracción que usemos) pueden tomar distintas formas: objetos, módulos dentro un mismo proceso, servicios distribuidos, etc.
 
 \begin{wrapfigure}{r}{0.40\linewidth}
   \centering
@@ -63,11 +39,11 @@ Dependiendo de las características de nuestro sistema (y del nivel de abstracci
   \label{fig:componenteEjemplo}
 \end{wrapfigure}
 
-Los componentes exponen una \textbf{interfaz} que permite acceso a esa funcionalidad o datos que encapsulan. A su vez, también declaran una serie de \textbf{dependencias} con interfaces de otros componentes que requieren para operar. En la figura \ref{fig:componenteEjemplo} tenemos un ejemplo.
+Los componentes exponen una \textbf{interfaz} que permite acceder a la funcionalidad o datos que encapsulan. A su vez, también declaran una serie de \textbf{dependencias} con interfaces de otros. Allí se incluyen todos los elementos que requieren para poder funcionar. En la figura \ref{fig:componenteEjemplo} tenemos un ejemplo. \emph{Monitoring Service} expone la interfaz \emph{IMonitoringService}. Para poder funcionar, depende de un componente que ofrezca \emph{IKnowledgeService}.
 
-Por si solos, estos componentes independientes no aportan mucho valor. En lugar de eso, son la unidad básica de composición. Podemos conectar distintos componentes para que trabajen conjuntamente y realicen tareas más complejas. De esta forma podemos \textbf{componer sistemas}. Un aspecto clave es la integración y la interacción entre componentes. \cite{mehtaTaxonomySoftwareConnectors2000}
+Por si solos, estos componentes independientes no aportan mucho valor. Más bien son la unidad básica de composición: podemos combinar varios de ellos para que trabajen conjuntamente y realicen tareas más complejas. Así, podemos \textbf{componer sistemas}. \cite{mehtaTaxonomySoftwareConnectors2000} La integración y la interacción entre ellos son aspectos clave que debemos abordar.
 
-Para que dos o más componentes puedan interactuar, necesitamos definir un mecanismo de comunicación. Recurrimos entonces a los \textbf{conectores}: se trata de elementos arquitectónicos que nos ayudan a definir y razonar sobre la comunicación entre componentes. Representan la transferencia de datos y de control entre ellos. En la figura \ref{fig:componentesYConectorEjemplo} mostramos una representación de la necesidad de comunicación entre dos componentes a través de un conector. No se ha especificado todavía ningún detalle sobre cómo se implementará. Así, podemos estudiar la arquitectura y elegir los mecanismos adecuados para cada interacción del sistema. \cite{taylorSoftwareArchitectureFoundations2009}.
+Para que dos o más componentes puedan interactuar, necesitamos definir un mecanismo de comunicación. Recurrimos entonces a los \textbf{conectores}. Se trata de elementos arquitectónicos que nos ayudan a definir y razonar sobre la comunicación entre componentes. En la figura \ref{fig:componentesYConectorEjemplo} mostramos una representación de la necesidad de comunicación entre dos componentes a través de un conector. No se ha especificado todavía ningún detalle sobre cómo se implementará. Así, podemos estudiar la arquitectura y elegir los mecanismos adecuados para cada interacción del sistema. \cite{taylorSoftwareArchitectureFoundations2009}.
 
 %% TODO: Los conectores son application-independent. No dependen de la funcionalidad de la aplicación.
 %% TODO: Hablar de la cardinalidad de los conectores.
@@ -133,7 +109,7 @@ Por la descripción de ambos componentes, vemos que existe una clara división d
   \label{fig:mape-k-microservices}
 \end{figure}
 
-\textcolor{red}{En este caso, ponian como ejemplo un estilo arquitectónico que se llama C2 (components and connectors, creo) . La idea era tener capas o niveles de microservicios. Un microservicio en una capa concreta solo pueden contactar con sus vecinos (inmediatamente superior e inmediatamente inferior). Dentro del mismo nivel no pueden contactar entre ellos. Según la dirección de la comunicación, se utilizan mecanismos distintos:}
+\textcolor{red}{En este caso, ponian como ejemplo un estilo arquitectónico que se llama C2 (components and connectors, creo) . La idea era tener capas o niveles de microservicios. Un microservicio en una capa concreta solo pueden contactar con sus vecinos (inmediatamente superior e inmediRepresentan la transferencia de datos y de control entre ellos.atamente inferior). Dentro del mismo nivel no pueden contactar entre ellos. Según la dirección de la comunicación, se utilizan mecanismos distintos:}
 
 \begin{itemize}
   \item \textbf{Peticiones}: Un microservicio de más abajo en la jerarquía (o más externo), se comunica con un vecino que está más arriba. Por ejemplo, sería el caso de cuando el servicio de monitorización escribe una propiedad en el servicio de conocimiento.
@@ -479,8 +455,6 @@ Response: 204 (No content)
 \end{table}
 
 Una vez definida la interfaz que expondrá el servicio de conocimiento, nos queda definir cómo se contactará desde el servicio de monitorización. ¿Implementamos las llamadas manualmente con un cliente HTTP? Aunque no sería muy complicado, tendríamos que mantenerlo manualmente cuando evolucione el sistema. Optamos entonces por una alternativa: el estándar OpenAPI.
-
-\pagebreak
 
 \subsection{Open API}
 \label{chap:OpenAPI}
