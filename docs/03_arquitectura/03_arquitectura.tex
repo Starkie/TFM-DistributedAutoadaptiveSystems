@@ -57,19 +57,23 @@ Para que dos o más componentes puedan interactuar, necesitamos definir un mecan
 
 Internamente, los conectores están compuestos por uno o más \textbf{conductos} o canales. A través de estos se lleva a cabo la comunicación entre los componentes. Hay una gran variedad de conductos posibles: comunicación interproceso, a través de la red, etc. Clasificamos los conectores según la complejidad de los canales que utilizan \cite{mehtaTaxonomySoftwareConnectors2000}:
 
+\pagebreak
+
 \begin{itemize}
     \item \textbf{Conectores simples}: solo cuentan con un conducto, sin lógica asociada. Son conectores sencillos. Suelen estar ya implementados en los lenguajes de programación. Por ejemplo: una llamada a función en un programa o el sistema de entrada / salida de ficheros.
 
     \item \textbf{Conectores complejos}: cuentan con uno o más conductos. Se definen por composición a partir de múltiples conectores simples. Además, pueden contar con funcionalidad para manejar el flujo de datos y/o control. Suelen utilizarse importando \emph{frameworks} o librerias. Por ejemplo: un balanceador de carga que redirige peticiones a los nodos.
 \end{itemize}
 
-Por tanto, cuando hayamos decidido qué dos componentes deben comunicarse, es momento de evaluar cuál es el mecanismo de comunicación más adecuado. Basándonos en nuestros requisitos, la arquitectura ya definida, y los mecanismos de despliegue que queremos usar, elegimos el conector apropiado. Podemos ayudarnos de taxonomías como la de \cite{mehtaTaxonomySoftwareConnectors2000} o encontrar otras fuentes de inspiración.
+Por tanto, cuando hayamos decidido que dos componentes necesitan comunicarse, es momento de evaluar qué mecanismo de comunicación es más adecuado. Basándonos en nuestros requisitos, la arquitectura ya definida, y los mecanismos de despliegue que queremos usar, elegimos el conector apropiado. Podemos orientarnos con taxonomías como la de \cite{mehtaTaxonomySoftwareConnectors2000}.
 
 \subsubsection{Forma}
 
-\textcolor{red}{TODO}
+\textcolor{red}{TODO:  - ¿Borrar?  Innecesario}
 
 \subsubsection{Justificación}
+
+\textcolor{red}{TODO:  - ¿Borrar?  Innecesario}
 
 Una vez definidos los componentes, los conectores y las relaciones entre ellos, tendremos una representación del sistema. Pero se trata de una imagen incompleta. No cuenta con ciertos detalles del contexto que nos ayudan a entenderlo mejor. Un ejemplo podría ser qué alternativas se consideraron y por qué se descartaron en favor de la elegida. Tampoco contamos con detalles minuciosos que puedan guiar mejor la implementación.
 
@@ -77,28 +81,34 @@ Es decir, requerimos de un concepto adicional para describirlos en nuestra arqui
 
 \subsection{Estilos arquitectónicos}
 
+\textcolor{red}{TODO:  - ¿Borrar?  Innecesario}
+
 \textcolor{red}{Podemos agrupar decisiones principales.}
 
 \section{Arquitectura de la solución}
 
-Como comentamos en el \autoref{chap:introduccion}: \nameref{chap:introduccion}, el objetivo del trabajo es adaptar un servicio monolítico para que funcione como un sistema distribuido basado en microservicios. Se trata de un cambio arquitectonico importante. Por ello, queremos diseñar una solución ingenieril teniendo en cuenta las particularidades del sistema.
+Como comentamos en el capítulo \ref{chap:introduccion}, el objetivo del trabajo es transformar un servicio monolítico en un sistema distribuido basado en microservicios. Se trata de un cambio arquitectónico importante. Queremos por tanto diseñar una estrategia ingenieril para llevar a a cabo la migración; teniendo en cuenta las particularidades del sistema.
 
-Este servicio implementa un \textbf{bucle de control}, útil para dotar a un sistema con capacidades de computación autonoma. Especificamente, sigue la arquitectura del bucle MAPE-K\cite{ibmcorporationArchitecturalBlueprintAutonomic2006,fonsServiciosAdaptivereadyPara2021}, que mostramos en la figura \ref{fig:bucle-mapek2}. El objetivo de partida fue separar cada uno de los componentes del bucle en microservicios independientes.
+El servicio en cuestión implementa un \textbf{bucle de control MAPE-K}\cite{ibmcorporationArchitecturalBlueprintAutonomic2006,fonsServiciosAdaptivereadyPara2021}, que ya describimos en la sección \ref{sub:bucles-mapek}. En la figura \ref{fig:bucle-mapek2} presentamos otra vista de la arquitectura del bucle. Como veremos a continuación, cada uno de sus componentes es candidato a convertirse en un microservicio individual.
 
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=1.15]{01_introduccion/images/bucle-mape-k}
-  \caption[Arquitectura de un Bucle MAPE-K.]{Arquitectura de un Bucle MAPE-K. \cite{fonsEspecificacionSistemasAutoadaptativos2021}}
+  \caption[Arquitectura de un Bucle MAPE-K. Podemos apreciar el flujo de información y de control a lo largo de las etapas del bucle.]{Arquitectura de un Bucle MAPE-K. Podemos apreciar el flujo de información y de control a lo largo de las etapas del bucle. Obtenida de \cite{fonsEspecificacionSistemasAutoadaptativos2021}}
   \label{fig:bucle-mapek2}
 \end{figure}
 
-\textcolor{red}{Actualmente, el sistema es un servicio monolitico que está muy acoplado a la solución. Queremos desacoplarlo para que pueda usarse la misma infraestructura para varios sistemas (\emph{multi-tennancy}). Buscar libros de descomposición de monolitos en microservicios.}
+\textcolor{red}{Actualmente, el bucle es un servicio monolitico que está muy acoplado al recurso manejado. Todo corre bajo el mismo proceso: el bucle, el recurso, los monitores, reglas y demás específicos de la solución\dots  }
+
+Partimos entonces el objetivo de desacoplarlo. Así podremos desplegarlo y usarlo de forma agnóstica al recurso manejado. La misma infraestructura podrá aprovecharse para manejar varios sistemas simultaneamente (\emph{multi-tennancy}). La idea es implementarlo a nivel de sistema\cite{mendoncaGeneralityVsReusability2018}, por lo que se desplegará con los microservicios del recurso manejado.
+
+\textcolor{red}{Buscar libros de descomposición de monolitos en microservicios.}
 
 \subsection{\textcolor{red}{Distribución de los componentes}}
 
-Por suerte, partimos de un sistema existente, con una arquitectura bien definida y documentada. Conociamos el rol de los componentes del servicio y sus requisitos. Asi que, el primer problema al que nos enfrentamos estaba relacionado con la distribución de los servicios. ¿Cómo definimos las fronteras entre cada uno de ellos?
+Por suerte, partimos de un sistema existente, con una arquitectura bien definida y documentada. Conocíamos el rol de cada uno de los componentes del servicio y sus requisitos. Asi que, el primer problema al que nos enfrentamos estaba relacionado con la distribución de los servicios. ¿Cómo definimos las fronteras entre cada uno de ellos? ¿Qué componentes debe abarcar cada microservicio?
 
-Una vez determinadas las "fronteras" entre los microservicios, hemos definido los componentes de nuestro sistema. Asi que, el primer problema al que nos enfrentamos estaba relacionado con la comunicación: si separamos las distintas etapas del bucle en microservicios, ¿cómo hacemos para que se comuniquen? Hay que tener en cuenta que estos pueden estar desplegados y replicados en distintas máquinas.
+Una vez determinadas las ''fronteras'' entre los microservicios, hemos definido los componentes de nuestro sistema. Asi que, el primer problema al que nos enfrentamos estaba relacionado con la comunicación: si separamos las distintas etapas del bucle en microservicios, ¿cómo hacemos para que se comuniquen? Hay que tener en cuenta que estos pueden estar desplegados y replicados en distintas máquinas.
 
 Por la descripción de ambos componentes, vemos que existe una clara división de dominios y responsabilidades. Esto nos ayuda a determinar que ambos componentes pueden desplegarse por separado. \textcolor{red}{REFERENCIA 'Building Microservices' Sam Newman}
 
