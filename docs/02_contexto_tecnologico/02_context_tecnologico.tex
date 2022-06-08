@@ -72,7 +72,7 @@ La base de conocimiento (\emph{knowledge base}) está compuesta por una o más f
 El bucle del control trabaja con un modelo del sistema de alto nivel \cite{garlanIncreasingSystemDependability2003}. Esto le permite definir las adaptaciones desacoplándose de los elementos. Los sistemas adaptativos se basan principalmente en bucles de control. trabajan sobre system models - and in particular, architectural models - are maintained at run time
 and used as a basis for system reconfiguration and repair \cite{garlanIncreasingSystemDependability2003}
 
-Es una arquitectura knowledge-driven \cite{taylorSoftwareArchitectureFoundations2009}.
+\textcolor{red}{Es una arquitectura knowledge-driven \cite{taylorSoftwareArchitectureFoundations2009}.}
 
 El conocimiento informa a todas las etapas del bucle de control. Por tanto, se trata de un componente transversal.
 
@@ -94,26 +94,18 @@ Si alguna regla se dispara, el planificador recibe los cambios propuestos. Compa
 
 \subsubsection{Ejecutor}
 
-En la etapa final del bucle tenemos al ejecutor. Este se encarga de ejecutar las acciones del plan de adaptación. Para ello, traduce estas acciones de alto nivel (nivel de arquitectura) a acciones de más bajo nivel (en términos del propio sistema). \cite{garlanIncreasingSystemDependability2003} El ejecutor determina a qué efectores debe llamar, y dirige las acciones planificadas al que corresponda.
+En la etapa final del bucle tenemos al ejecutor. El ejecutor interactúa con los efectores del sistema manejado para llevar a cabo las acciones planificadas. Para ello, traduce las acciones de alto nivel (nivel de arquitectura) a acciones de más bajo nivel (en términos del propio sistema). \cite{garlanIncreasingSystemDependability2003}
 
 \subsubsection{Efectores}
 
 Los \textbf{efectores} sirven para modificar el estado del sistema manejado. Pueden ser ficheros de configuración, comandos, \emph{endpoints}, etc.
 
-\textcolor{red}{The second factor is the feasibility of carrying out the change. To evaluate feasibil-
-ity requires some knowledge of the target implementation infrastructure. It makes no
-sense to prescribe an architectural operator that has no hope of ever being carried out
-on the rurming system. For some styles, the relation is defined by construction (since
-implementations are generated from architectures). More generally, however, the
-style designer may have to make certain assumptions about the availability of imple-
-mentation-changing operators that will be provided by the run time environment of
-the system. (We return to this issue in Section 7.)
-It is important to note that, while it is necessary to write adaptation operators for
-each style, we anticipate that this will only need to be done once for each style. A
-style should provide all operations that make sense in changing the style, regardless of
-any particular adaptation that might occur\cite{garlanIncreasingSystemDependability2003}}
-
-
 ----------------------------------------
 
-Además, podemos observar que el propio manejador expone sensores y efectores, lo que permite que sean controlados por \textbf{manejadores autónomos orquestadores}. Estos gestionan a un nivel superior uno o más elementos autonómicos. Son por tanto, elementos componibles.
+\textcolor{red}{Además, podemos observar que el propio manejador expone sensores y efectores, lo que permite que sean controlados por \textbf{manejadores autónomos orquestadores}. Estos gestionan a un nivel superior uno o más elementos autonómicos. Son por tanto, elementos componibles.}
+
+\textcolor{red}{¿Hablar del nivel en el que se encuentra el bucle de control? Sistema, infraestructura, mixto, mesh \cite{mendoncaGeneralityVsReusability2018}}
+
+\textcolor{red}{Hablar del \emph{human manager}, la capa superior al sistema. Emite las políticas y monitoriza su funcionamiento a través de las sondas del bucle orquestador.}
+
+\textcolor{red}{Hablar de human in the loop: solicitamos la intervención del humano cuando no contamos con suficiente información para tomar una acción correctiva.}
