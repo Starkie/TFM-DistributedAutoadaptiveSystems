@@ -89,7 +89,15 @@ Es decir, requerimos de un concepto adicional para describirlos en nuestra arqui
 
 Como comentamos en el capítulo \ref{chap:introduccion}, el objetivo del trabajo es transformar un servicio monolítico en un sistema distribuido basado en microservicios. Se trata de un cambio arquitectónico importante. Queremos por tanto diseñar una estrategia ingenieril para llevar a a cabo la migración; teniendo en cuenta las particularidades del sistema.
 
-El servicio en cuestión implementa un \textbf{bucle de control MAPE-K}\cite{ibmcorporationArchitecturalBlueprintAutonomic2006,fonsServiciosAdaptivereadyPara2021}, que ya describimos en la sección \ref{sub:bucles-mapek}. En la figura \ref{fig:bucle-mapek2} presentamos otra vista de la arquitectura del bucle. Como veremos a continuación, cada uno de sus componentes es candidato a convertirse en un microservicio individual.
+El servicio en cuestión implementa un \textbf{bucle de control MAPE-K}\cite{ibmcorporationArchitecturalBlueprintAutonomic2006,fonsServiciosAdaptivereadyPara2021}, que ya describimos en la sección \ref{sub:bucles-mapek}.
+
+En esta sección presentaremos nuestra propuesta arquitectónica para adaptar el bucle para entornos en la nube.
+
+\textcolor{red}{Buscar libros de descomposición de monolitos en microservicios.}
+
+\subsection{Distribución de los componentes}
+
+Actualmente, el bucle está muy acoplado a los modelos de sus recursos manejados. Todo corre bajo el mismo proceso: el bucle, los monitores, sus reglas de adaptación y demás elementos específicos de la solución\dots Ese proceso solo podrá manejar aquellos sistemas cuyos módulos tenga cargados. En la figura \ref{fig:bucle-mapek2} presentamos otra vista de la arquitectura del bucle.
 
 \begin{figure}[htb]
   \centering
@@ -98,19 +106,17 @@ El servicio en cuestión implementa un \textbf{bucle de control MAPE-K}\cite{ibm
   \label{fig:bucle-mapek2}
 \end{figure}
 
-\textcolor{red}{Actualmente, el bucle es un servicio monolitico que está muy acoplado al recurso manejado. Todo corre bajo el mismo proceso: el bucle, el recurso, los monitores, reglas y demás específicos de la solución\dots  }
+Partimos entonces el objetivo de desacoplarlo. Así, podremos desplegarlo y usarlo de forma agnóstica al recurso manejado. La misma infraestructura podrá aprovecharse para manejar varios sistemas simultáneamente (\emph{multi-tennancy}). La idea es implementarlo a nivel de sistema\cite{mendoncaGeneralityVsReusability2018}, por lo que se desplegará al mismo con los microservicios del recurso manejado.
 
-Partimos entonces el objetivo de desacoplarlo. Así podremos desplegarlo y usarlo de forma agnóstica al recurso manejado. La misma infraestructura podrá aprovecharse para manejar varios sistemas simultaneamente (\emph{multi-tennancy}). La idea es implementarlo a nivel de sistema\cite{mendoncaGeneralityVsReusability2018}, por lo que se desplegará con los microservicios del recurso manejado.
-
-\textcolor{red}{Buscar libros de descomposición de monolitos en microservicios.}
-
-\subsection{\textcolor{red}{Distribución de los componentes}}
+Como veremos a continuación, cada uno de sus componentes es candidato a convertirse en un microservicio individual.
 
 Por suerte, partimos de un sistema existente, con una arquitectura bien definida y documentada. Conocíamos el rol de cada uno de los componentes del servicio y sus requisitos. Asi que, el primer problema al que nos enfrentamos estaba relacionado con la distribución de los servicios. ¿Cómo definimos las fronteras entre cada uno de ellos? ¿Qué componentes debe abarcar cada microservicio?
 
-Una vez determinadas las ''fronteras'' entre los microservicios, hemos definido los componentes de nuestro sistema. Asi que, el primer problema al que nos enfrentamos estaba relacionado con la comunicación: si separamos las distintas etapas del bucle en microservicios, ¿cómo hacemos para que se comuniquen? Hay que tener en cuenta que estos pueden estar desplegados y replicados en distintas máquinas.
+La primera decisión que tomamos fue desacoplar el bucle de los sistemas. Buscábamos desarrollar microservicios agnósticos a la solución manejada. Por ello, vamos a identificar distintos \textbf{niveles de componentes} \textcolor{red}{Imagen que separa el bucle de la lógica de la solución.} Esto nos permitiría dar servicio a varios sistemas distintos con la misma infraestructura. Multi-tennancy.
 
-Por la descripción de ambos componentes, vemos que existe una clara división de dominios y responsabilidades. Esto nos ayuda a determinar que ambos componentes pueden desplegarse por separado. \textcolor{red}{REFERENCIA 'Building Microservices' Sam Newman}
+Otra decisión que tomamos fue separar cada etapa del bucle en su propio servicio. Así podríamos independizarlas y escalarlas individualmente.
+
+Una vez determinadas las fronteras entre los microservicios, hemos definido los componentes de nuestro sistema.
 
 \begin{figure}[htb]
   \centering
@@ -119,7 +125,13 @@ Por la descripción de ambos componentes, vemos que existe una clara división d
   \label{fig:mape-k-microservices}
 \end{figure}
 
-\textcolor{red}{En este caso, ponian como ejemplo un estilo arquitectónico que se llama C2 (components and connectors, creo) . La idea era tener capas o niveles de microservicios. Un microservicio en una capa concreta solo pueden contactar con sus vecinos (inmediatamente superior e inmediRepresentan la transferencia de datos y de control entre ellos.atamente inferior). Dentro del mismo nivel no pueden contactar entre ellos. Según la dirección de la comunicación, se utilizan mecanismos distintos:}
+\subsection{Conectando los servicios}
+
+Asi que, el primer problema al que nos enfrentamos estaba relacionado con la comunicación: si separamos las distintas etapas del bucle en microservicios, ¿cómo hacemos para que se comuniquen? Hay que tener en cuenta que estos pueden estar desplegados y replicados en distintas máquinas.
+
+Por la descripción de ambos componentes, vemos que existe una clara división de dominios y responsabilidades. Esto nos ayuda a determinar que ambos componentes pueden desplegarse por separado. \textcolor{red}{REFERENCIA 'Building Microservices' Sam Newman}
+
+\textcolor{red}{En este caso, ponían como ejemplo un estilo arquitectónico que se llama C2 (components and connectors, creo) . La idea era tener capas o niveles de microservicios. Un microservicio en una capa concreta solo pueden contactar con sus vecinos (inmediatamente superior e inmediRepresentan la transferencia de datos y de control entre ellos.atamente inferior). Dentro del mismo nivel no pueden contactar entre ellos. Según la dirección de la comunicación, se utilizan mecanismos distintos:}
 
 \begin{itemize}
   \item \textbf{Peticiones}: Un microservicio de más abajo en la jerarquía (o más externo), se comunica con un vecino que está más arriba. Por ejemplo, sería el caso de cuando el servicio de monitorización escribe una propiedad en el servicio de conocimiento.
