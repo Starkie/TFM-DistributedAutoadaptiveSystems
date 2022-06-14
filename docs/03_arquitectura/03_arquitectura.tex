@@ -184,37 +184,25 @@ Basándonos en la descripción anterior, nuestra capa central será la del conoc
 
 \subsubsection{Definiendo los mecanismos de comunicación}
 
-Como comentamos antes, vamos a inspirarnos en los mecanismos de comunicación descritos por C2: las peticiones y notificaciones. Pero estos no cubren todas nuestras necesidades. Hay dos casos que no están contemplados: la comunicación del módulo de análisis con el planificador, y la del planificador con el ejecutor. Estos módulos se encuentran en la misma capa. Y, como dependen del conocimiento, no podemos moverlos a una capa superior para utilizar notificaciones. Por ello, requerimos de un tercer patrón de comunicación: \textbf{colas de trabajo}. \cite{royChapterMessagePatterns2017}
+Como comentamos antes, vamos a inspirarnos en los mecanismos de comunicación descritos por C2: las peticiones y notificaciones. Pero estos no cubren todas nuestras necesidades. Hay dos casos que no están contemplados: la comunicación del módulo de análisis con el planificador, y la del planificador con el ejecutor. Ambos módulos se encuentran en la misma capa. Y, como dependen del conocimiento, no podemos moverlos a una superior para utilizar notificaciones.
 
-Las colas de trabajo consisten en un servicio enviando el publicador, que genera peticiones de trabajo y las publica en una cola. Por defecto, un consumidor, a la escucha de tareas en a cola, irá consumiendo esos mensajes.
-
-\begin{figure}
-  \centering
-  \includegraphics[scale=0.75]{03_arquitectura/images/work-queues}
-  \caption[Representación de las colas de trabajo. Ejemplo de comunicación \emph{publish}-\emph{subscribe}.]{Representación de las colas de trabajo. Ejemplo de comunicación \emph{publish}-\emph{subscribe}. \footnotemark }
-  \label{fig:clean-mapek-architecture}
-\end{figure}
-
-\footnotetext{Imagen obtenida de: \url{https://www.rabbitmq.com/tutorials/tutorial-two-dotnet.html}}
-
-
-Las notificaciones no nos sirven, ya que la comunicación es entre dos módulos específicos. Aunque nos interesa el desacoplamiento entre módulos que ofrecen. Las peticiones tampoco casan del todo, aunque la comunicación es dirigida ya que no queremos acoplar los módulos. Deberían mantener su independencia en el mayor grado posible.
+\textcolor{red}{Las notificaciones no nos sirven, ya que la comunicación es entre dos módulos específicos. Aunque nos interesa el desacoplamiento entre módulos que ofrecen. Las peticiones tampoco casan del todo, ya que requerimos desacoplar los módulos. Deberían mantener su independencia en el mayor grado posible.} Por ello, requerimos de un tercer patrón de comunicación. Una combinación de ambos: las peticiones asíncronas.
 
 Los tres patrones de comunicaciones que usaremos entonces son:
 
 \begin{itemize}
   \item \textbf{Peticiones síncronas}: Comunicaciones síncronas dirigidas a un servicio determinado. Solo permitidas entre servicios de una capa más externa a un servicio en la capa interior adyacente.
-  \item \textbf{Peticiones asíncronas}: Comunicaciones asíncronas dirigidas a un servicio determinado. Solo están permitidas entre elementos del mismo nivel. Se trata de peticiones de trabajo de los cuales no requerimos una respuesta. Se envían y ya se procesarán cuando corresponda.
+
+  \item \textbf{Peticiones asíncronas}: Comunicaciones asíncronas dirigidas a un servicio determinado. Solo están permitidas entre elementos del mismo nivel. Se trata de peticiones de trabajo de las cuales no requerimos una respuesta. Se envían y el destinatario lo procesará cuando pueda.
+
   \item \textbf{Notificaciones}: Comunicaciones asíncronas no dirigidas. El servicio publica un evento que potencialmente recibirán todos los servicios en la capa exterior adyacente. Tampoco esperamos ninguna respuesta.
 \end{itemize}
 
 \subsubsection{Conectores}
 
-Una vez determinadas las ''fronteras'' entre los microservicios, hemos definido los componentes de nuestro sistema. El siguiente problema al que nos enfrentamos fue la comunicación: si separamos las distintas etapas del bucle en microservicios, ¿cómo hacemos para que se comuniquen? Debemos tener en cuenta que estos pueden estar desplegados en máquinas distintas.
+Una vez determinadas las necesidades de comunicación de nuestra arquitectura, debemos buscar los conectores adecuados. Seguimos la estrategia descrita en \cite{taylorSoftwareArchitectureFoundations2009} y consultamos patrones de comunicación en sistemas distribuidos descritos en \cite{newmanBuildingMicroservicesDesigning2021}.
 
-Comenzamos entonces la búsqueda de los conectores más apropiados para cada par de componentes. Seguimos la estrategia descrita en \cite{taylorSoftwareArchitectureFoundations2009} y consultando patrones de comunicación en sistemas distribuidos descritos en \cite{newmanBuildingMicroservicesDesigning2021}. \textcolor{red}{AMPLIAR} Comenzamos eligiendo qué dos componentes queremos conectar.
-
-Tomemos por ejemplo la comunicación entre el servicio de monitorización (\emph{monitoring service}) y el servicio de conocimiento (\emph{knowledge service}). Recordemos que el servicio de conocimiento almacena todas las propiedades de adaptación. El resto de servicios necesitan consultar y actualizarlas durante su funcionamiento. En la figura \ref{fig:monitor-knowledge-initial} representamos inicialmente ambos componentes y un conector, sin especificar de qué tipo será.
+Comenzamos investigando las peticiones síncronas. Tomemos por ejemplo la comunicación entre el servicio de monitorización (\emph{monitoring service}) y el servicio de conocimiento (\emph{knowledge service}). Recordemos que el servicio de conocimiento almacena todas las propiedades de adaptación. El resto de servicios necesitan consultarlas y actualizarlas durante su funcionamiento. En la figura \ref{fig:monitor-knowledge-initial} representamos inicialmente ambos componentes y un conector, sin especificar de qué tipo será.
 
 % TODO: Cambiar por imagen de componentes, que ofrezcan y requieran interfaces.
 \begin{figure}[htb]
@@ -223,30 +211,6 @@ Tomemos por ejemplo la comunicación entre el servicio de monitorización (\emph
   \caption{Boceto inicial: queremos conectar el servicio de monitorización con la base de conocimiento para poder leer propiedades de adaptación.}
   \label{fig:monitor-knowledge-initial}
 \end{figure}
-
-En el dibujo, las flechas de "fuera hacia adentro" representarían las Peticiones (o requests). Las notificaciones irían en sentido contrario.
-
-Mi idea entonces es definir dos tipos de conectores:
-
-\begin{itemize}
-  \item \textbf{Peticiones}: Utilizamos la estrategia que ya definimos en el hito anterior. Los servicios ofrecen APIs REST con una serie de operaciones. Las peticiones fluyen de microservicios más externos a los más internos, mediante llamadas HTTP.
-
-  \begin{itemize}
-    \item Por ejemplo, en el hito anterior: Probe -> Monitor -> Monitoring Service -> Knowledge
-
-    \item Utilizamos OpenAPI para autogenerar clientes, así facilitamos la implementación de los clientes en cualquier lenguaje
-  \end{itemize}
-
-  \item \textbf{Notificaciones}: En este caso optaría por usar brokers de mensajería (o algo parecido), de forma que los microservicios de capas más internos notifican a las más externas, sin necesidad de acoplarse directamente. Cada capa estaría suscrita a los eventos de la que esté por debajo de ella. Por ejemplo: Analysis Service se suscribe a Knowledge, las Reglas de Adaptación se suscriben al Analysis Service, etc.
-
-  \begin{itemize}
-    \item Seguiría un poco la filosofía que comentamos hace un tiempo para independizar el módulo de análisis del de monitorización.
-
-    \item Podríamos investigar la idea que has comentado, de un conector que abstraiga al cliente de esta suscripción a una cola de mensajería. A esto no le he dado muchas vueltas aun.
-  \end{itemize}
-
-\end{itemize}
-
 
 El siguiente paso es identificar qué interacciones debe existir entre ambos componentes. En este caso, el servicio de monitorización debe contactar con el servicio de conocimiento para leer y actualizar el valor de las propiedades. Por tanto, existen operaciones de lectura y escritura de los datos.
 
@@ -677,3 +641,40 @@ El conector, delimitado por una línea discontinua roja, está compuesto por dos
   \caption{Diseño del conector usando implementación Cliente - Servidor}
   \label{fig:monitor-knowledge-connector-architecture}
 \end{figure}
+
+\subsection{Peticiones asíncronas}
+
+\textbf{colas de trabajo}. \cite{royChapterMessagePatterns2017}
+
+Las colas de trabajo consisten en un servicio enviando el publicador, que genera peticiones de trabajo y las publica en una cola. Por defecto, un consumidor, a la escucha de tareas en a cola, irá consumiendo esos mensajes.
+
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.75]{03_arquitectura/images/work-queues}
+  \caption[Representación de las colas de trabajo. Ejemplo de comunicación \emph{publish}-\emph{subscribe}.]{Representación de las colas de trabajo. Ejemplo de comunicación \emph{publish}-\emph{subscribe}. \footnotemark }
+  \label{fig:work-queues}
+\end{figure}
+
+\footnotetext{Imagen obtenida de: \url{https://www.rabbitmq.com/tutorials/tutorial-two-dotnet.html}}
+
+Mi idea entonces es definir dos tipos de conectores:
+
+\begin{itemize}
+  \item \textbf{Peticiones}: Utilizamos la estrategia que ya definimos en el hito anterior. Los servicios ofrecen APIs REST con una serie de operaciones. Las peticiones fluyen de microservicios más externos a los más internos, mediante llamadas HTTP.
+
+  \begin{itemize}
+    \item Por ejemplo, en el hito anterior: Probe -> Monitor -> Monitoring Service -> Knowledge
+
+    \item Utilizamos OpenAPI para autogenerar clientes, así facilitamos la implementación de los clientes en cualquier lenguaje
+  \end{itemize}
+
+  \item \textbf{Notificaciones}: En este caso optaría por usar brokers de mensajería (o algo parecido), de forma que los microservicios de capas más internos notifican a las más externas, sin necesidad de acoplarse directamente. Cada capa estaría suscrita a los eventos de la que esté por debajo de ella. Por ejemplo: Analysis Service se suscribe a Knowledge, las Reglas de Adaptación se suscriben al Analysis Service, etc.
+
+  \begin{itemize}
+    \item Seguiría un poco la filosofía que comentamos hace un tiempo para independizar el módulo de análisis del de monitorización.
+
+    \item Podríamos investigar la idea que has comentado, de un conector que abstraiga al cliente de esta suscripción a una cola de mensajería. A esto no le he dado muchas vueltas aun.
+  \end{itemize}
+
+\end{itemize}
+
