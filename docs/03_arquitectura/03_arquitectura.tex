@@ -193,14 +193,18 @@ Los tres patrones de comunicaciones que usaremos entonces son:
 \begin{itemize}
   \item \textbf{Peticiones síncronas}: Comunicaciones síncronas dirigidas a un servicio determinado. Solo permitidas entre servicios de una capa más externa a un servicio en la capa interior adyacente.
 
-  \item \textbf{Peticiones asíncronas}: Comunicaciones asíncronas dirigidas a un servicio determinado. Solo están permitidas entre elementos del mismo nivel. Se trata de peticiones de trabajo de las cuales no requerimos una respuesta. Se envían y el destinatario lo procesará cuando pueda.
+  \item \textbf{Peticiones asíncronas}: Comunicaciones asíncronas dirigidas a un tipo de servicio determinado. Se trata de peticiones de trabajo asíncronas: se envían y el destinatario lo procesará cuando pueda. El cliente continuará su ejecución, sin esperar respuesta. \emph{fire and forget}.
 
-  \item \textbf{Notificaciones}: Comunicaciones asíncronas no dirigidas. El servicio publica un evento que potencialmente recibirán todos los servicios en la capa exterior adyacente. Tampoco esperamos ninguna respuesta.
+  Para evitar el acoplamiento entre los componentes, deberemos buscar un conector que permita enviar el mensaje sin conocer específicamente al destinatario.
+
+  Este mecanismo de comunicación solo está permitido entre elementos del mismo nivel.
+
+  \item \textbf{Notificaciones}: Comunicaciones asíncronas no dirigidas. El servicio publica un evento que potencialmente recibirán todos los servicios en la capa exterior adyacente. El cliente lo envía y continua su ejecución, sin esperar respuesta.
 \end{itemize}
 
 \subsubsection{Conectores}
 
-Una vez determinadas las necesidades de comunicación de nuestra arquitectura, debemos buscar los conectores adecuados. Seguimos la estrategia descrita en \cite{taylorSoftwareArchitectureFoundations2009} y consultamos patrones de comunicación en sistemas distribuidos descritos en \cite{newmanBuildingMicroservicesDesigning2021}.
+Una vez determinadas las necesidades de comunicación de nuestro sistema, debemos buscar los conectores adecuados. Seguimos la estrategia descrita en \cite{taylorSoftwareArchitectureFoundations2009} para elegir conectores; y nos basamos en los patrones de comunicación en sistemas distribuidos descritos en \cite{newmanBuildingMicroservicesDesigning2021}.
 
 Comenzamos investigando las peticiones síncronas. Tomemos por ejemplo la comunicación entre el servicio de monitorización (\emph{monitoring service}) y el servicio de conocimiento (\emph{knowledge service}). Recordemos que el servicio de conocimiento almacena todas las propiedades de adaptación. El resto de servicios necesitan consultarlas y actualizarlas durante su funcionamiento. En la figura \ref{fig:monitor-knowledge-initial} representamos inicialmente ambos componentes y un conector, sin especificar de qué tipo será.
 
@@ -212,135 +216,168 @@ Comenzamos investigando las peticiones síncronas. Tomemos por ejemplo la comuni
   \label{fig:monitor-knowledge-initial}
 \end{figure}
 
-El siguiente paso es identificar qué interacciones debe existir entre ambos componentes. En este caso, el servicio de monitorización debe contactar con el servicio de conocimiento para leer y actualizar el valor de las propiedades. Por tanto, existen operaciones de lectura y escritura de los datos.
+El siguiente paso es identificar qué interacciones debe existir entre ambos componentes. En este caso, el servicio de monitorización debe contactar con el servicio de conocimiento para leer y actualizar el valor de las propiedades.Por tanto, existen operaciones de lectura y escritura de los datos. Además, como es una comunicación ''descendente'' (\emph{monitoring service} está en la capa superior), el patrón a utilizar serán las peticiones síncronas.
 
-Ahora, debemos identificar qué \textbf{tipos de conector} serían adecuados para nuestros componentes. Sabiendo que hemos optado por una arquitectura distribuida, la elección se simplifica: los servicios pueden estar desplegados en máquinas distintas, por tanto el paso de mensajes será a través de la red.
+Ahora, debemos identificar qué \textbf{tipos de conector} serían adecuados para este patrón. Sabiendo que hemos optado por una arquitectura distribuida, la elección se simplifica: los servicios pueden estar desplegados en máquinas distintas, por tanto el paso de mensajes será a través de la red.
 
-Sabiendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonomySoftwareConnectors2000}, optamos por consultar las estrategias de comunicación habituales para sistemas distribuidos descritas en \cite{newmanBuildingMicroservicesDesigning2021}. Se trata de cuatro mecanismos distintos: Invocación a métodos remotos (\emph{Remote Procedure Call}), APIs REST, consultas con GraphQL o \emph{brokers} de mensajería. Tuvimos que evaluarlos mediante un análisis de \emph{trade-offs} para determinar las ventajas y desventajas de cada uno.
+Conociendo esto, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonomySoftwareConnectors2000}, optamos por consultar las estrategias de comunicación habituales para sistemas distribuidos descritas en \cite{newmanBuildingMicroservicesDesigning2021}. Se trata de cuatro mecanismos distintos: Invocación a métodos remotos (\emph{Remote Procedure Call}), APIs REST, consultas con GraphQL o \emph{brokers} de mensajería. Tuvimos que evaluarlos mediante un análisis de \emph{trade-offs} para determinar las ventajas y desventajas de cada uno.
+
+\textbf{Invocación de métodos remotos} o (\emph{\textbf{Remote Procedure Call}}): Esta patrón se basa en el estilo cliente-servidor. Un servidor expone una serie de funciones que el cliente puede invocar mediante peticiones a través de la red. Estas peticiones incluyen el nombre de la función a ejecutar y sus parámetros. Al finalizar la ejecución, el servidor puede devolver su resultado, si lo hubiera. Existen varios protocolos que implementan este mecanismo como gRPC o SOAP.
+
+Una evolución de RPC suele emplearse en la programación orientada a objetos: el paradigma de \textbf{objetos distribuidos}. \cite{tanenbaumChapter10Distributed2007} En este caso, el programa cliente puede interactuar con objetos en servidores remotos como si fueran locales. Esta interacción se realiza a través de objetos que actúan como \emph{proxies}, abstrayendo de la llamada al servidor.
+
+Los \emph{proxies} ofrecen una interfaz para que el cliente invoque sus métodos localmente. Internamente, estos métodos realizan una llamada al servicio remoto donde se encuentra el objeto realmente. El servidor remoto procesa la petición y nos devolverá un resultado. Así, abstraen al cliente de todo este proceso de comunicación. En la figura \ref{fig:rpc-distributedobjects} tenemos un esquema de este mecanismo.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[scale=1.5]{03_arquitectura/images/rpc-distributedobjects}
+  \caption[Funcionamiento del sistema de objetos distribuidos]{Funcionamiento del sistema de objetos distribuidos. \cite{tanenbaumChapter10Distributed2007}}
+  \label{fig:rpc-distributedobjects}
+\end{figure}
 
 \begin{itemize}
-  \item \textbf{Invocación de métodos remotos} o (\emph{\textbf{Remote Procedure Call}}): Esta aproximación se basa en el estilo cliente-servidor. En ella, un servidor expone una serie de funciones que el cliente puede invocar mediante peticiones a través de la red. Estas peticiones incluyen el nombre de la función a ejecutar y sus parámetros. Al finalizar la ejecución, el servidor es capaz de devolver su resultado, si lo hubiera. Existen varios protocolos que implementan este mecanismo como gRPC o SOAP.
-
-  Una evolución de RPC suele emplearse en la programación orientada a objetos: el paradigma de objetos distribuidos. \cite{tanenbaumChapter10Distributed2007} En este caso, el programa cliente interactúa con objetos que se encuentran en servidores remotos. Esta interacción se realiza a través de objetos que actúan como \emph{proxies}, abstrayendo de la llamada al servidor.
-
-  Los \emph{proxies} ofrecen una interfaz para que el cliente invoque sus métodos localmente. Internamente, estos métodos realizan una llamada al servicio remoto donde se encuentra el objeto realmente. El servidor remoto procesa la petición y nos devolverá un resultado. Así, abstraen al cliente de todo este proceso de comunicación. En la figura \ref{fig:rpc-distributedobjects} tenemos un esquema de este mecanismo.
-
-  \begin{figure}[htb]
-    \centering
-    \includegraphics[scale=1.5]{03_arquitectura/images/rpc-distributedobjects}
-    \caption[Funcionamiento del sistema de objetos distribuidos]{Funcionamiento del sistema de objetos distribuidos. \cite{tanenbaumChapter10Distributed2007}}
-    \label{fig:rpc-distributedobjects}
-  \end{figure}
-
+  \item \textbf{Ventajas}:
   \begin{itemize}
-    \item \textbf{Ventajas}:
-    \begin{itemize}
-      \item Permite la distribución del procesamiento del sistema.
+    \item Permite distribuir la carga de procesamiento del sistema. Esto puede ayudar para escalar la aplicación.
 
-      \item Abstrae al cliente de esta interacción con un servidor remoto. Para el cliente es prácticamente indistinguible de un objeto local.
+    \item Abstrae al cliente de la interacción con un servidor remoto. Le resulta prácticamente indistinguible de un objeto local.
 
-      \item Los \emph{proxies} o (\emph{stubs} en la terminología de RPC) suelen generarse a partir de un contrato que define qué operaciones ofrecen estos objetos. Por ejemplo: SOAP con WDSL, gRPC; o en el caso de objetos distribuidos, Java RMI.
-    \end{itemize}
-
-    \item \textbf{Desventajas}:
-    \begin{itemize}
-      \item No se puede abstraer completamente al cliente de las llamadas a través de la red. Pueden darse errores que no ocurrirían durante una invocación de un método sobre un objeto local. Por ejemplo, que el servidor no esté disponible. \cite{jausovecFallaciesDistributedSystems2020}
-
-      \item Dificulta la integración. Cada servicio ofrece sus propias funciones distintas.
-
-      \item Si adoptamos sistemas como Java RMI, nuestro sistema se acopla a esa tecnología concreta. \cite{newmanBuildingMicroservicesDesigning2021}. Nos resta flexibilidad en cuanto a qué otras tecnologías podemos utilizar en nuestra arquitectura.
-
-      \item El cliente debe actualizarse y recompilarse con cada cambio en el esquema del servidor. Esto puede ser problemático para casos donde tenemos que desplegar una actualización para que nuestros clientes puedan continuar utilizando la aplicación.
-    \end{itemize}
+    \item \textcolor{red}{Los \emph{proxies} o (\emph{stubs} en la terminología de RPC) suelen generarse a partir de un contrato que define qué operaciones ofrecen estos objetos. Por ejemplo: SOAP con WDSL, gRPC; o en el caso de objetos distribuidos, Java RMI.} ¿Y la ventaja?
   \end{itemize}
 
-  \item \textbf{\emph{Representational State Transfer} (REST)}: Se basa también en el estilo arquitectónico cliente-servidor, pero con ciertas restricciones adicionales. \cite{taylorSoftwareArchitectureFoundations2009} Su concepto principal son los \textbf{recursos}: cualquier elemento del cual la API puede ofrecernos información y que pueda tener asociado un identificador único (una URI). \cite{richardsonRESTfulWebServices2007} Por ejemplo, podrían ser las entidades del dominio que gestiona nuestro servicio: Usuarios, Temperaturas\dots
-
-  Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \dots) las define el protocolo de comunicación sobre el que se implemente. Gracias a esto, la API que pueden ofrecer los servicios REST es común. Solo cambia el ``esquema de los datos``, los tipos de recursos que ofrecen. Esto facilita enormemente la integración con otros servicios. \cite{nallyRESTVsRPC2018} La implementación más común de REST es sobre el protocolo HTTP.
-
+  \item \textbf{Desventajas}:
   \begin{itemize}
-    \item \textbf{Ventajas}:
+    \item No se puede abstraer completamente al cliente de las llamadas a través de la red. Pueden darse errores que no ocurrirían durante una invocación de un método sobre un objeto local. Por ejemplo, que el servidor no esté disponible. \cite{jausovecFallaciesDistributedSystems2020}
 
-    \begin{itemize}
-      \item \textbf{\emph{Stateless}}: El servidor no mantiene el estado de la sesión. Esto permite que cada petición sea independiente de las demás.
+    \item Dificulta la integración con otras aplicaciones. Cada servicio ofrece sus propias funciones distintas. No están estandarizadas.
 
-      \item \textbf{Escalable}: Como las sesiones deben ser \emph{stateless}, podremos replicar nuestro servicio y que distintas instancias puedan atender las peticiones que surjan durante la sesión.
+    \item Si adoptamos sistemas como Java RMI, nuestro sistema se acopla a esa tecnología concreta. \cite{newmanBuildingMicroservicesDesigning2021}. Nos quita flexibilidad en cuanto a qué otras tecnologías podemos utilizar en nuestra arquitectura.
 
-      \item \textbf{API Sencilla}: Solo hay que implementar unos pocos métodos estándar para interactuar con la API.
-
-      \item \textbf{Comunicación síncrona}: Es el mecanismo ideal para comunicaciones síncronas, donde el cliente requiere la respuesta del servicio para poder continuar con su procesamiento. También podemos dar soporte a para comunicaciones \emph{fire and forget}, donde el cliente envía un mensaje y no espera ninguna respuesta a su petición.
-
-      \item \textbf{Interoperabilidad}: Ampliamente utilizado en servicios de Internet. Es ideal para que clientes externos contacten con nuestro sistema mediante peticiones síncronas. \cite{newmanBuildingMicroservicesDesigning2021}
-
-      \item \textbf{Generación de clientes}: Para facilitar la comunicación con APIs REST, podemos generar librerias cliente utilizando el estándar OpenAPI. Lo explicaremos con maś detalle en la sección \ref{chap:OpenAPI}.
-    \end{itemize}
-
-    \item \textbf{Desventajas}:
-
-    \begin{itemize}
-      \item \textbf{Rendimiento}: El rendimiento es peor comparado con mecanismos RPC. El tamaño de un mensaje HTTP serializado en XML o JSON es mayor que si estuviera en un formato binario.
-
-      \item \textbf{API Sencilla}: También es una desventaja. Hay operaciones complejas que es difícil representar con los métodos ofrecidos por el protocolo de comunicación. Pueden requerir más tiempo de diseño, o incluso ser implementados siguiendo RPC.
-    \end{itemize}
-  \end{itemize}
-
-  \item \textbf{GraphQL}\footnote{Página oficial: \url{https://graphql.org/}} \textcolor{red}{AMPLIAR}: Se trata de un protocolo para que un cliente pueda hacer consultas personalizadas sobre los datos de un servidor. No necesitan que haya sido implementado con lógica asociada. De esta forma, se puede reducir la cantidad de peticiones a través de la red que se necesita ejecutar para obtener la misma información.
-
-  \begin{itemize}
-    \item \textbf{Ventajas}:
-
-    \begin{itemize}
-      \item \textbf{Ideal para móviles}: Gracias a que reduce la cantidad de llamadas, es ideal para entornos donde queremos optimizar el uso de datos.
-
-      \item \textbf{Rendimiento}: Ofrece un mayor rendimiento comparado con otras alternativas que no ofrezcan un endpoint ya implementado. Y debamos obtener la misma información por composición, haciendo varias llamadas.
-    \end{itemize}
-
-    \item \textbf{Desventajas}:
-
-    \begin{itemize}
-      \item \textbf{Exponemos datos a la red}:
-
-      \item \textbf{Problemas de rendimiento}: El cliente puede hacer consultas muy pesadas que penalicen el rendimiento de la base de datos sobre la que opera nuestro servicio.
-    \end{itemize}
-  \end{itemize}
-
-  \item \textbf{\emph{Brokers} de mensajería}: Es un mecanismo de \textbf{comunicación asíncrona} muy popular. Sobre todo en arquitecturas basadas en eventos. Contamos con un servicio que actúa como intermediario, el \emph{broker}. Este gestiona la comunicación entre los servicios del sistema. \cite{newmanBuildingMicroservicesDesigning2021} Hay varias estrategias de comunicación posibles: punto a punto, \emph{publish-suscribe}, híbrida\dots
-
-  Tomemos por ejemplo \emph{publish-suscribe}: es una estrategia para implementar comunicación \emph{multicast}. Se basa en el uso de \textbf{temas} o \textbf{\emph{topics}}, categorías de mensajes que pueden resultar de interés. Un servicio (el productor) envía un mensaje al \emph{broker}, indicando que pertenece a un tema determinado. El \emph{broker} recibe el mensaje y se encarga de reenviarlo a todos los servicios subscritos a este tema en cuanto sea posible. \cite{rabbitmqPublishSubscribeDocumentation} En la figura \ref{fig:publish-subscribe} tenemos un ejemplo de esta estrategia.
-
-  \begin{figure}[htb]
-    \centering
-    \includegraphics[scale=0.5]{03_arquitectura/images/publish_subscribe}
-    \caption[Estrategia \emph{publish/suscribe}: el \emph{broker} actúa como intermediario en la comunicación \emph{multicast}.]{Estrategia \emph{publish/suscribe}: el \emph{broker} actúa como intermediario en la comunicación \emph{multicast}. Imagen obtenida de \footnotemark}
-    \label{fig:publish-subscribe}
-  \end{figure}
-
-  \footnotetext{Java Messaging Service: \url{https://docs.oracle.com/cd/E19509-01/820-5892/ref_jms/index.html}}
-
-  La mayor ventaja de este estilo de comunicación es el \textbf{desacoplamiento} entre los servicios. \cite{korabUnderstandingMessageBrokers2017}
-  Ninguno de ellos necesita conocer detalles sobre cómo están desplegado los otros: su dirección, el número de instancias, si están activos en este momento, etc. Solo necesitan conocer la dirección del \emph{broker} para enviar o recibir mensajes.
-
-  \begin{itemize}
-    \item \textbf{Ventajas}:
-
-    \begin{itemize}
-      \item \textbf{Comunicación asíncrona}: El servicio no necesita quedarse a la espera de una respuesta del servidor. Puede procesar otras operaciones hasta que se le notifique del resultado, si lo hubiera.
-
-      \item \textbf{Desacoplamiento de los servicios}: Ni los productores ni los consumidores necesitan conocer el origen o destino de sus mensajes.
-
-      \item \textbf{Envío garantizado de mensajes}: El \emph{broker} garantiza que el mensaje será entregado \emph{al menos} una vez.
-
-    \end{itemize}
-
-    \item \textbf{Desventajas}:
-
-    \begin{itemize}
-      \item \textbf{Requisitos de infraestructura}: Utilizar un \emph{broker} de mensajería implica tener ciertas consideraciones a la hora de diseñar nuestro plan de despliegue. Estos sistemas requieren de replicación para alcanzar la alta disponibilidad necesaria para que sea fiable. \cite{newmanBuildingMicroservicesDesigning2021} Por tanto, aumenta la complejidad de operar el sistema.
-
-      \item \textbf{Envío garantizado de mensajes}: Para poder garantizar el envío de un mensaje, el \emph{broker} puede recurrir a reenviarlo. Debemos diseñar nuestros sistemas de forma que estos mensajes duplicados, si ya han sido procesados, deben ser descartados.
-    \end{itemize}
+    \item El cliente debe actualizarse y recompilarse con cada cambio en el esquema del servidor. Esto puede ser problemático para casos donde tenemos que desplegar una actualización para que nuestros clientes puedan continuar utilizando la aplicación.
   \end{itemize}
 \end{itemize}
+
+\textbf{\emph{Representational State Transfer} (REST)}: Se basa también en el estilo arquitectónico cliente-servidor, pero con ciertas restricciones adicionales. \cite{taylorSoftwareArchitectureFoundations2009} Su concepto principal son los \textbf{recursos}: cualquier elemento sobre el que la API pueda ofrecernos información; y que pueda tener asociado un identificador único (una URI). \cite{richardsonRESTfulWebServices2007} Por ejemplo, podrían ser las entidades del dominio que gestiona nuestro servicio: usuarios, mediciones de temperaturas\dots
+
+Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \dots) las define el protocolo de comunicación sobre el que se implemente. Gracias a esto, la API que pueden ofrecer los servicios REST es común. Solo cambia el ``esquema de los datos``, los tipos de recursos que ofrecen. Esto facilita enormemente la integración con otros servicios. \cite{nallyRESTVsRPC2018} La implementación más habitual es sobre el protocolo HTTP. Define métodos estandarizados como \emph{GET} para las lecturas, \emph{PUT} para las actualizaciones, etc.
+
+\begin{itemize}
+  \item \textbf{Ventajas}:
+
+  \begin{itemize}
+    \item \textbf{\emph{Stateless}}: El servidor no mantiene el estado de la sesión del cliente. Esto permite que cada petición sea independiente de las demás.
+
+    \item \textbf{Escalable}: Como las sesiones deben ser \emph{stateless}, podremos replicar nuestro servicio y que distintas instancias puedan atender las peticiones que surjan durante una misma sesión.
+
+    \item \textbf{API Sencilla}: Solo hay que implementar unos pocos métodos estándar para interactuar con la API.
+
+    \item \textbf{Comunicación síncrona}: Es el mecanismo ideal para comunicaciones síncronas, donde el cliente requiere la respuesta del servicio para poder continuar con su procesamiento. También podemos dar soporte a para comunicaciones \emph{fire and forget}, donde el cliente envía un mensaje y no espera ninguna respuesta a su petición.
+
+    \item \textbf{Interoperabilidad}: Ampliamente utilizado en servicios de Internet. Es ideal para que clientes externos contacten con nuestro sistema mediante peticiones síncronas. \cite{newmanBuildingMicroservicesDesigning2021}
+
+    \item \textbf{Generación de clientes}: Para facilitar la comunicación con APIs REST, podemos generar librerias cliente utilizando el estándar OpenAPI. Lo explicaremos con maś detalle en la sección \ref{chap:OpenAPI}.
+  \end{itemize}
+
+  \item \textbf{Desventajas}:
+
+  \begin{itemize}
+    \item \textbf{Dirigida}: Necesitamos conocer de antemano la ubicación del servidor al que queremos hacer una petición.
+
+    \item \textbf{Rendimiento}: El rendimiento es peor comparado con mecanismos RPC. El tamaño de un mensaje HTTP serializado en XML o JSON es mayor que si estuviera en un formato binario.
+
+    \item \textbf{API Sencilla}: También es una desventaja. Hay operaciones complejas que pueden ser difíciles de representar con los métodos ofrecidos por el protocolo de comunicación. Pueden requerir más tiempo de diseño, o incluso, ser implementados siguiendo el patrón RPC.
+  \end{itemize}
+\end{itemize}
+
+\textbf{GraphQL}\footnote{Página oficial: \url{https://graphql.org/}} \textcolor{red}{AMPLIAR}: Se trata de un protocolo de consultas. Permite a los clientes ejecutar consultas personalizadas sobre los datos de un servidor. No necesitan de lógica específica para ejecutarla. De esta forma, el cliente puede obtener toda la información que necesita. Reduce el número de peticiones ejecutadas. También evita traerse datos innecesarios.
+
+\begin{itemize}
+  \item \textbf{Ventajas}:
+
+  \begin{itemize}
+    \item \textbf{Ideal para móviles}: Gracias a que reduce la cantidad de llamadas, es ideal para entornos donde queremos optimizar el uso de red.
+
+    \item \textbf{Rendimiento}: Ofrece un mayor rendimiento comparado con otras alternativas que no ofrezcan un endpoint ya implementado. Y debamos obtener la misma información por composición, haciendo varias llamadas.
+  \end{itemize}
+
+  \item \textbf{Desventajas}:
+
+  \begin{itemize}
+    \item \textbf{Solo permite lecturas}: Es un lenguaje de consultas. No tiene comandos que permita escrituras.
+
+    \item \textbf{Solo permite lecturas síncronas}:
+
+    \item \textbf{Exponemos datos a la red}:
+
+    \item \textbf{Problemas de rendimiento}: El cliente puede hacer consultas muy pesadas que penalicen el rendimiento de la base de datos sobre la que opera nuestro servicio.
+  \end{itemize}
+\end{itemize}
+
+\textbf{\emph{Brokers} de mensajería}: Es un mecanismo de \textbf{comunicación asíncrona} muy popular. Sobre todo en arquitecturas basadas en eventos. Contamos con un servicio que actúa como intermediario, el \emph{broker}. Este gestiona la comunicación entre los servicios del sistema. \cite{newmanBuildingMicroservicesDesigning2021} Hay varias estrategias de comunicación posibles: colas de trabajo, \emph{publish-suscribe}, híbrida\dots
+
+Tomemos por ejemplo las \textbf{colas de trabajo}. \cite{royChapterMessagePatterns2017} Es una estrategia para implementar comunicaciones asíncronas dirigidas. Nos permiten desacoplar la comunicación entre dos servicios usando colas de mensajería como intermediarias. Para ello, un servicio, el productor, publica mensajes directamente a la cola. Estos mensajes representan tareas que pueden ser costosas de procesar. Un servicio, el trabajador, estará la escucha de los mensajes que llegan en la cola, y los irá consumiendo y procesando siguiendo un orden FIFO (\emph{first in, first out}). En la figura \ref{fig:work-queues} mostramos un ejemplo con dos consumidores, a la escucha de la misma cola.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[scale=0.65]{03_arquitectura/images/work-queues}
+  \caption[Representación de las colas de trabajo. Ejemplo de comunicación asíncrona dirigida.]{Representación de las colas de trabajo. Ejemplo de comunicación comunicación asíncrona dirigida. \footnotemark }
+  \label{fig:work-queues}
+\end{figure}
+
+\footnotetext{Imagen obtenida de: \url{https://www.rabbitmq.com/tutorials/tutorial-two-dotnet.html}}
+
+Otra estrategia disponible es \emph{publish-suscribe}: sirve para implementar comunicación \emph{multicast}. Se basa en el uso de \textbf{temas} o \textbf{\emph{topics}}, categorías de mensajes que pueden resultar de interés. Un servicio (el productor) envía un mensaje al \emph{broker}, indicando que pertenece a un tema determinado. El \emph{broker} recibe el mensaje y se encarga de reenviarlo a todos los servicios subscritos a este tema en cuanto sea posible. \cite{rabbitmqPublishSubscribeDocumentation} En la figura \ref{fig:publish-subscribe} tenemos un ejemplo de esta estrategia.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[scale=0.5]{03_arquitectura/images/publish_subscribe}
+  \caption[Estrategia \emph{publish/suscribe}: el \emph{broker} actúa como intermediario en la comunicación \emph{multicast}.]{Estrategia \emph{publish/suscribe}: el \emph{broker} actúa como intermediario en la comunicación \emph{multicast}. Imagen obtenida de \footnotemark}
+  \label{fig:publish-subscribe}
+\end{figure}
+
+\footnotetext{Java Messaging Service: \url{https://docs.oracle.com/cd/E19509-01/820-5892/ref_jms/index.html}}
+
+La mayor ventaja de este estilo de comunicación es el \textbf{desacoplamiento} entre los servicios. \cite{korabUnderstandingMessageBrokers2017}
+Ninguno de ellos necesita conocer detalles sobre cómo están desplegado los otros: su dirección, el número de instancias, si están activos en este momento, etc. Solo necesitan conocer la dirección del \emph{broker} para enviar o recibir mensajes.
+
+\begin{itemize}
+  \item \textbf{Ventajas}:
+
+  \begin{itemize}
+    \item \textbf{Comunicación asíncrona}: El servicio no necesita quedarse a la espera de una respuesta del servidor. Puede procesar otras operaciones hasta que se le notifique del resultado, si lo hubiera.
+
+    \item \textbf{Desacoplamiento de los servicios}: Ni los productores ni los consumidores necesitan conocer el origen o destino de sus mensajes.
+
+    \item \textbf{Envío garantizado de mensajes}: El \emph{broker} garantiza que el mensaje será entregado \emph{al menos} una vez al consumidor.
+
+  \end{itemize}
+
+  \item \textbf{Desventajas}:
+
+  \begin{itemize}
+    \item \textbf{Requisitos de infraestructura}: Utilizar un \emph{broker} de mensajería implica ciertos requisitos a la hora de diseñar nuestro plan de despliegue. Estos sistemas requieren de replicación para alcanzar la alta disponibilidad necesaria para que sea fiable. \cite{newmanBuildingMicroservicesDesigning2021} Por tanto, aumenta la complejidad de operar el sistema.
+
+    \item \textbf{Envío garantizado de mensajes}: Para poder garantizar el envío de un mensaje, el \emph{broker} puede recurrir a reenviarlo. Debemos diseñar nuestros sistemas de forma que estos mensajes duplicados, si ya han sido procesados, deben ser descartados.
+  \end{itemize}
+\end{itemize}
+
+En resumen: \textcolor{red}{work in progress...}
+
+\begin{longtable}{|r | c | c | c | c|}
+  \hline
+  & \textbf{RPC} & \textbf{REST} & \textbf{GraphQL} & \textbf{Broker} \\
+  \hline
+  \textbf{Tipo de comunicación} & Dirigida & Dirigida & Dirigida & Ambas \\
+  \textbf{Permite comunicación síncrona} & Dirigida & Dirigida & Dirigida & Ambas \\
+  \textbf{Comunicación síncrona} & Sí & Sí & Sí & No \\
+  \textbf{Comunicación asíncrona} & No & Sí & No & Si \\
+  \hline
+  \caption{Comparativa de los mecanismos de comunicación.}
+  \label{tab:comparativa-mecanismos-comunicacion}
+\end{longtable}
+
+
+--------------------------------------------------------------
 
 De estas cuatro opciones, podemos descartar inmediatamente la opción de GraphQL. Se trata de un conector más orientado a las consultas de datos. En nuestro caso, necesitamos ejecutar también escrituras de los valores de las propiedades. Siguiendo también este razonamiento nos llevó a descartar el \emph{broker} de mensajería. Para obtener propiedades del conocimiento, resultaba más sencillo de implementar mediante comunicación síncrona.
 
@@ -644,18 +681,6 @@ El conector, delimitado por una línea discontinua roja, está compuesto por dos
 
 \subsection{Peticiones asíncronas}
 
-\textbf{colas de trabajo}. \cite{royChapterMessagePatterns2017}
-
-Las colas de trabajo consisten en un servicio enviando el publicador, que genera peticiones de trabajo y las publica en una cola. Por defecto, un consumidor, a la escucha de tareas en a cola, irá consumiendo esos mensajes.
-
-\begin{figure}
-  \centering
-  \includegraphics[scale=0.75]{03_arquitectura/images/work-queues}
-  \caption[Representación de las colas de trabajo. Ejemplo de comunicación \emph{publish}-\emph{subscribe}.]{Representación de las colas de trabajo. Ejemplo de comunicación \emph{publish}-\emph{subscribe}. \footnotemark }
-  \label{fig:work-queues}
-\end{figure}
-
-\footnotetext{Imagen obtenida de: \url{https://www.rabbitmq.com/tutorials/tutorial-two-dotnet.html}}
 
 Mi idea entonces es definir dos tipos de conectores:
 
