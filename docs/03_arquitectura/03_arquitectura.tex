@@ -700,18 +700,26 @@ El conector, delimitado por una línea discontinua roja, está compuesto por dos
 
 \subsection{Notificaciones}
 
-El siguiente mecanismo de comunicación a implementar son las notificaciones asíncronas. Recordemos que esta comunicación es desde un servicio ''a la capa superior''. Esta comunicación no debe estar acoplada a ningún servicio concreto.
+El siguiente mecanismo de comunicación a definir son las notificaciones. Recordemos que esta comunicación es desde un servicio a todos los que se encuentren en la capa superior (\emph{multicast}). No debe estar acoplada a ningún servicio concreto. Potencialmente, todos deberían recibir el mensaje y decidir si procesarlo o no.
 
-Mi idea entonces es definir dos tipos de conectores:
+Como ejemplo, tomaremos la comunicación entre el servicio de conocimiento y los servicios en la capa superior (el nivel del bucle). Cada vez que se modifique una propiedad o una configuración de un servicio, el conocimiento emitirá un evento notificando del cambio a la capa superior. Así, por ejemplo, el análisis sabrá que debe reevaluar las reglas de adaptación.
 
-\begin{itemize}
-  \item \textbf{Notificaciones}: En este caso optaría por usar brokers de mensajería (o algo parecido), de forma que los microservicios de capas más internos notifican a las más externas, sin necesidad de acoplarse directamente. Cada capa estaría suscrita a los eventos de la que esté por debajo de ella. Por ejemplo: Analysis Service se suscribe a Knowledge, las Reglas de Adaptación se suscriben al Analysis Service, etc.
+Sabiendo esto, podemos descartar de entrada GraphQL. Es un protocolo basado en lecturas. Como el objetivo es enviar información a otros servicios, no nos sirve. Respecto a RPC y REST, tampoco nos sirven, no tienen un buen soporte de multicast. Además de que tenemos el requisito de bajo acoplamiento.
 
-  \begin{itemize}
-    \item Seguiría un poco la filosofía que comentamos hace un tiempo para independizar el módulo de análisis del de monitorización.
+Por tanto, optamos por implementarlo usando un \emph{broker} de mensajería. Concretamente, siguiendo el patrón \emph{publish}-\emph{subscribe}. El servicio de conocimiento publicará el evento a través del \emph{broker} de mensajería. Este evento tendrá un \emph{topic} asociado. Todos los servicios interesados deberán suscribirse a este \emph{topic}. El \emph{broker} reenviará el mensaje a una cola específica para cada uno de los servicios suscritos al tema. Así podrán procesarlo cuando puedan, de forma asíncrona.
 
-    \item Podríamos investigar la idea que has comentado, de un conector que abstraiga al cliente de esta suscripción a una cola de mensajería. A esto no le he dado muchas vueltas aun.
-  \end{itemize}
+De esta manera logramos el desacoplamiento de los componentes y permitimos el procesamiento asíncrono de estos eventos.
 
-\end{itemize}
+El evento que publicaría el módulo de conocimiento cuando cambia una propiedad podría ser como el siguiente:
 
+\begin{verbatim}
+  {"$type":"Knowledge.Contracts.IntegrationEvents.PropertyChangedIntegrationEvent, Knowledge.Contracts","PropertyName":"Temperature"}
+\end{verbatim}
+
+Los eventos incluirán la información mínima indispensable. En este caso, el nombre de la propiedad que ha cambiado. Esta decisión la tomamos así debido a que es una comunicación asíncrona. Si el evento incluyera el valor de la propiedad y se procesa mucho más tarde, podría derivar en adaptaciones Así evitamos una adaptación incorrecta del sistema. Para evitarlo, incluyendo solo el nombre de la propiedad, obligamos a las reglas a que soliciten el valor de la propiedad en el momento en que se evaluen. Así siempre se ejecutaran con la información actualizada.
+
+Aunque potencialmente otros servicios podrían suscribirse a estos cambios, vamos a describir solo la suscripción del módulo de análisis.
+
+Para definir esta comunicación investigamos si había algún estándar equivalente a OpenAPI. Y así es. Se llama AsyncAPI. Por desgracia, todavía está en fases preliminares de desarrollo, y no tiene la implantación que ha tenido OpenAPI. Por ejemplo, no tiene el nivel de generación de código que tiene el primero.
+
+Aun así, lo utilizaremos para describir los mensajes en un formato estándar.
