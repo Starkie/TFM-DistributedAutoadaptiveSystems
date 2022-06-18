@@ -184,7 +184,7 @@ Basándonos en la descripción anterior, nuestra capa central será la del conoc
 
 \subsubsection{Definiendo los mecanismos de comunicación}
 
-Como comentamos antes, vamos a inspirarnos en los mecanismos de comunicación descritos por C2: las peticiones y notificaciones. Pero estos no cubren todas nuestras necesidades. Hay dos casos que no están contemplados: la comunicación del módulo de análisis con el planificador, y la del planificador con el ejecutor. Ambos módulos se encuentran en la misma capa. Y, como dependen del conocimiento, no podemos moverlos a una superior para utilizar notificaciones.
+Como comentamos antes, vamos a inspirarnos en los mecanismos de comunicación descritos por C2: las peticiones y notificaciones. Pero, durante nuestra etapa de prototipado, nos dimos cuenta que estos no cubren todas nuestras necesidades. Hay dos casos que no están contemplados: la comunicación del módulo de análisis con el planificador, y la del planificador con el ejecutor. Ambos módulos se encuentran en la misma capa. Y, como dependen del conocimiento, no podemos moverlos a una superior para utilizar notificaciones.
 
 \textcolor{red}{Las notificaciones no nos sirven, ya que la comunicación es entre dos módulos específicos. Aunque nos interesa el desacoplamiento entre módulos que ofrecen. Las peticiones tampoco casan del todo, ya que requerimos desacoplar los módulos. Deberían mantener su independencia en el mayor grado posible.} Por ello, requerimos de un tercer patrón de comunicación. Una combinación de ambos: las peticiones asíncronas.
 
@@ -315,7 +315,7 @@ Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \
   \end{itemize}
 \end{itemize}
 
-\textbf{\emph{Brokers} de mensajería}: Es un mecanismo de \textbf{comunicación asíncrona} muy popular. Sobre todo en arquitecturas basadas en eventos. Contamos con un servicio que actúa como intermediario, el \emph{broker}. Este gestiona la comunicación entre los servicios del sistema. \cite{newmanBuildingMicroservicesDesigning2021} Hay varias estrategias de comunicación posibles: colas de trabajo, \emph{publish-suscribe}, híbrida\dots
+\textbf{\foreign{english}{Brokers} de mensajería}: Es un mecanismo de \textbf{comunicación asíncrona} muy popular. Sobre todo en arquitecturas basadas en eventos. Contamos con un servicio que actúa como intermediario, el \emph{broker}. Este gestiona la comunicación entre los servicios del sistema. \cite{newmanBuildingMicroservicesDesigning2021} Hay varias estrategias de comunicación posibles: colas de trabajo, \emph{publish-suscribe}, híbrida\dots
 
 Tomemos por ejemplo las \textbf{colas de trabajo}. \cite{royChapterMessagePatterns2017} Es una estrategia para implementar comunicaciones asíncronas dirigidas. Nos permiten desacoplar la comunicación entre componentes usando colas de mensajería como intermediarias. Para ello, un servicio, el productor, publica mensajes en la cola. Estos mensajes representan peticiones de trabajo que pueden ser costosas de procesar. Un servicio, el trabajador, estará la escucha de los mensajes que llegan y los irá consumiendo. Estos mensajes se procesan siguiendo un orden FIFO (\emph{first in, first out}). En la figura \ref{fig:work-queues} mostramos un ejemplo con dos consumidores, a la escucha de la misma cola.
 
@@ -328,8 +328,9 @@ Tomemos por ejemplo las \textbf{colas de trabajo}. \cite{royChapterMessagePatter
 
 \footnotetext{Imagen obtenida de: \url{https://www.rabbitmq.com/tutorials/tutorial-two-dotnet.html}}
 
-Otra estrategia posible es \emph{publish-suscribe}: sirve para implementar comunicación \emph{multicast}. Se basa en el uso de \textbf{temas} o \textbf{\emph{topics}}: categorías de mensajes que pueden resultar de interés. Un servicio (el productor) envía un mensaje al \emph{broker}, indicando que pertenece a un tema determinado. El \emph{broker} recibe el mensaje y se encarga de reenviarlo a todos los servicios subscritos a este tema en concreto. \cite{rabbitmqPublishSubscribeDocumentation} En la figura \ref{fig:publish-subscribe} tenemos un ejemplo de esta estrategia.
+Otra estrategia posible es \foreign{english}{publish-suscribe}: sirve para implementar comunicación \emph{multicast}. Se basa en el uso de \textbf{temas} o \textbf{\foreign{english}{topics}}: categorías de mensajes que pueden resultar de interés. Un servicio (el productor) envía un mensaje al \foreign{english}{broker}, indicando que pertenece a un tema determinado. El \emph{broker} recibe el mensaje y se encarga de reenviarlo a todos los servicios subscritos a este tema en concreto. \cite{rabbitmqPublishSubscribeDocumentation} En la figura \ref{fig:publish-subscribe} tenemos un ejemplo de esta estrategia.
 
+\textcolor{red}{Describir fanout}
 \textcolor{red}{Describir exchanges}
 
 \begin{figure}[htb]
@@ -712,6 +713,8 @@ Por tanto, optamos por implementarlo usando un \emph{broker} de mensajería. Con
 
 De esta manera logramos el desacoplamiento de los componentes y permitimos el procesamiento asíncrono de estos eventos.
 
+Aunque potencialmente otros servicios podrían suscribirse a estos cambios, vamos a centrarnos en la suscripción del módulo de análisis.
+
 Los eventos incluirán la información mínima indispensable. En este caso, el nombre de la propiedad que ha cambiado. Esta decisión la tomamos así debido a que es una comunicación asíncrona. Si el evento incluyera el valor de la propiedad y se procesa mucho más tarde, podría derivar en adaptaciones Así evitamos una adaptación incorrecta del sistema. Para evitarlo, incluyendo solo el nombre de la propiedad, obligamos a las reglas a que soliciten el valor de la propiedad en el momento en que se evaluen. Así siempre se ejecutaran con la información actualizada.
 
 El evento que publicaría el módulo de conocimiento cuando cambia una propiedad podría ser como el siguiente (tabla \ref{tab:especificacion-property-changed-integrationevent}):
@@ -754,8 +757,53 @@ El evento que publicaría el módulo de conocimiento cuando cambia una propiedad
 \end{table}
 
 
-Aunque potencialmente otros servicios podrían suscribirse a estos cambios, vamos a describir solo la suscripción del módulo de análisis.
+Para definir esta comunicación investigamos si había algún estándar equivalente a OpenAPI. Y así es, se llama AsyncAPI\footnote{Página oficial: \url{https://www.asyncapi.com/}}. Es un estándar para especificar la comunicación a través de eventos.Por desgracia, todavía no ha alcanzado el grado de madurez de su homónimo. No tiene el mismo número de herramientas disponible. Por ejemplo, no tiene un catálogo tan amplio de generadores de código que tiene el primero. Tampoco podemos tomar la aproximación de extraer la especificación a partir de una implementación existente.
 
-Para definir esta comunicación investigamos si había algún estándar equivalente a OpenAPI. Y así es. Se llama AsyncAPI. Por desgracia, todavía está en fases preliminares de desarrollo, y no tiene la implantación que ha tenido OpenAPI. Por ejemplo, no tiene el nivel de generación de código que tiene el primero.
+Aun así, lo utilizaremos para describir nuestros eventos en un formato estándar. En el listing \ref{ls:asyncapi-propertychanged-integrationevent} hemos descrito el mensaje de la tabla \ref{tab:especificacion-property-changed-integrationevent}. Podemos apreciar que es muy parecido a la especificación del método get del listing \ref{ls:openapi-get}.
 
-Aun así, lo utilizaremos para describir los mensajes en un formato estándar.
+Aparece la descripción de la estructura del mensaje \texttt{PropertyChangedIntegrationEvent} y su documentación. La mayor diferencia es la mención del canal (el exchange en nuestro caso) y el método (subscribe). Esto indica que los consumidores podrán suscribirse a este evento a partir de este canal.
+
+% TODO: Pintar bien los YAML.
+\begin{lstlisting}[language={C++},caption={Ejemplo del evento de integración \emph{builder}.},captionpos=b, label=ls:asyncapi-propertychanged-integrationevent]
+asyncapi: 2.4.0
+info:
+  title: Knowledge Service
+  version: 1.0.0
+  description: This service contains all the knowledge properties to inform the rest of the loop.
+channels:
+  AdaptionLoop.Knowledge:
+    subscribe:
+      message:
+        $ref: '#/components/messages/PropertyChangedIntegrationEvent'
+components:
+  messages:
+    PropertyChangedIntegrationEvent:
+      description: >-
+        Integration event about a change in an adaption property.
+      payload:
+        type: object
+        properties:
+          propertyName:
+            type: string
+            description: The name of the property that changed
+\end{lstlisting}
+
+Para implementar este patrón, nuestro conector estará compuesto por tres elementos: un publicador, el \foreign{english}{broker} y un consumidor. El funcionamiento será el siguiente: el servicio de conocimiento recibe una petición para actualizar una propiedad de adaptación. Si esta actualización se lleva a cabo, deberá crear el evento e invocar al publicador, que es un componente que se despliega con este servicio. El publicador recibirá el evento y lo publicará al \foreign{english}{broker} de mensajería en el \foreign{english}{exchange}.
+
+El topic que usaremos es el nombre de la propiedad que ha cambiado.
+
+El broker, que conoce todos los servicios que están subscritos a tema, lo añadirá en la cola de mensajería de cada uno de ellos. Los consumidores, desplegados en cada servicio cliente que se subscribe a estos mensajes, serán notificados de esto. Los procesarán en cuanto puedan. En la \textcolor{red}{figura X} mostramos cómo sería este nuevo conector.
+
+\subsubsection{Peticiones asíncronas}
+
+El último mecanismo de comunicación a diseñar son las \textbf{peticiones asíncronas}. Se trata de aquellas peticiones de trabajo que un microservicio del mismo nivel de la jerarquía le lanza a otro, sin esperar la respuesta. Como comentamos, tenemos dos casos en nuestra arquitectura que requieren de este patrón: la comunicación entre el módulo de análisis y el planificador, y entre el planificador y el ejecutor. Nos centraremos en el primer caso.
+
+Recordemos que, una vez se evalúan las reglas de adaptación, si alguna de ellas se ejecuta, propone un cambio en la configuración del sistema. El módulo de análisis recibirá esta propuesta y se la pasará al planificador, para que este genere el plan de adaptación. Esta comunicación se realiza entre servicios en el mismo nivel de la jerarquía.
+
+A la hora de escoger el mecanismo de comunicación, el razonamiento fue muy similar al de las notificaciones. Optamos por implementarlas usando un broker de mensajería, siguiendo el patrón de colas de trabajo. La arquitectura del comunicador es muy similar a la de las notificaciones: un publicador, un broker y un consumidor. La mayor diferencia es que la comunicación es más directa a una cola de mensajería, en lugar de hacer fanout a través de un exchange.
+
+\textcolor{red}{Tabla con las especificación de la comunicación}
+
+\textcolor{red}{Las peticiones asíncronas no están soportadas por AsyncAPI, están todavía debatiendo cómo hacerlo \url{https://github.com/asyncapi/spec/issues/94} \url{https://github.com/asyncapi/spec/pull/594} Está propuesta para implementación en la versión 3 de la especificación. A día de hoy es 2.4.0}
+
+Su funcionamiento sería el siguiente:
