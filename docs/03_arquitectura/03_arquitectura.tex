@@ -330,6 +330,8 @@ Tomemos por ejemplo las \textbf{colas de trabajo}. \cite{royChapterMessagePatter
 
 Otra estrategia posible es \emph{publish-suscribe}: sirve para implementar comunicación \emph{multicast}. Se basa en el uso de \textbf{temas} o \textbf{\emph{topics}}: categorías de mensajes que pueden resultar de interés. Un servicio (el productor) envía un mensaje al \emph{broker}, indicando que pertenece a un tema determinado. El \emph{broker} recibe el mensaje y se encarga de reenviarlo a todos los servicios subscritos a este tema en concreto. \cite{rabbitmqPublishSubscribeDocumentation} En la figura \ref{fig:publish-subscribe} tenemos un ejemplo de esta estrategia.
 
+\textcolor{red}{Describir exchanges}
+
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=0.5]{03_arquitectura/images/publish_subscribe}
@@ -702,7 +704,7 @@ El conector, delimitado por una línea discontinua roja, está compuesto por dos
 
 El siguiente mecanismo de comunicación a definir son las notificaciones. Recordemos que esta comunicación es desde un servicio a todos los que se encuentren en la capa superior (\emph{multicast}). No debe estar acoplada a ningún servicio concreto. Potencialmente, todos deberían recibir el mensaje y decidir si procesarlo o no.
 
-Como ejemplo, tomaremos la comunicación entre el servicio de conocimiento y los servicios en la capa superior (el nivel del bucle). Cada vez que se modifique una propiedad o una configuración de un servicio, el conocimiento emitirá un evento notificando del cambio a la capa superior. Así, por ejemplo, el análisis sabrá que debe reevaluar las reglas de adaptación.
+Como ejemplo, tomaremos la comunicación entre el servicio de conocimiento y los servicios en la capa superior (el nivel del bucle). Cada vez que se modifique una propiedad o una configuración de un servicio, el servicio emitirá un evento notificando del cambio a la capa superior. Así, por ejemplo, el servicio de análisis sabrá que debe reevaluar las reglas de adaptación.
 
 Sabiendo esto, podemos descartar de entrada GraphQL. Es un protocolo basado en lecturas. Como el objetivo es enviar información a otros servicios, no nos sirve. Respecto a RPC y REST, tampoco nos sirven, no tienen un buen soporte de multicast. Además de que tenemos el requisito de bajo acoplamiento.
 
@@ -710,13 +712,47 @@ Por tanto, optamos por implementarlo usando un \emph{broker} de mensajería. Con
 
 De esta manera logramos el desacoplamiento de los componentes y permitimos el procesamiento asíncrono de estos eventos.
 
-El evento que publicaría el módulo de conocimiento cuando cambia una propiedad podría ser como el siguiente:
-
-\begin{verbatim}
-  {"$type":"Knowledge.Contracts.IntegrationEvents.PropertyChangedIntegrationEvent, Knowledge.Contracts","PropertyName":"Temperature"}
-\end{verbatim}
-
 Los eventos incluirán la información mínima indispensable. En este caso, el nombre de la propiedad que ha cambiado. Esta decisión la tomamos así debido a que es una comunicación asíncrona. Si el evento incluyera el valor de la propiedad y se procesa mucho más tarde, podría derivar en adaptaciones Así evitamos una adaptación incorrecta del sistema. Para evitarlo, incluyendo solo el nombre de la propiedad, obligamos a las reglas a que soliciten el valor de la propiedad en el momento en que se evaluen. Así siempre se ejecutaran con la información actualizada.
+
+El evento que publicaría el módulo de conocimiento cuando cambia una propiedad podría ser como el siguiente (tabla \ref{tab:especificacion-property-changed-integrationevent}):
+
+\newsavebox\propertychangedeventbox
+\begin{lrbox}{\propertychangedeventbox}
+  \begin{minipage}[t]{2in}
+    \begin{verbatim}
+{
+  "PropertyName":"Temperature"
+}
+        \end{verbatim}
+  \end{minipage}
+\end{lrbox}
+
+\begin{table}[htb]
+  \centering
+
+  \begin{tabular}{|m{2.3cm}|p{2.5cm}|p{2.6cm}|b{1.5cm}|b{1.5cm}|}
+      \hline
+
+      \textbf{Evento} & \multicolumn{2}{|b{0.35\linewidth}|}{\emph{PropertyChangedIntegrationEvent }} & \textbf{\emph{Exchange}} & \emph{AdaptionLoop.Knowledge}  \\
+      \hline
+
+      \textbf{Descripción} & \multicolumn{4}{|b{0.6\linewidth}|}{Evento de integración que notifica sobre el cambio de una propiedad adaptación.} \\
+      \hline
+
+      \textbf{Propiedades}
+            & \emph{propertyName} & \multicolumn{3}{|b{0.6\linewidth}|}{Nombre de la propiedad que ha cambiado.} \\
+      \hline
+
+      \textbf{Ejemplo} & \multicolumn{4}{|b{0.7\linewidth}|}{Evento que notifica del cambio de la propiedad \emph{Temperature}:\linebreak
+      \usebox\propertychangedeventbox} \\
+
+      \hline
+  \end{tabular}
+
+  \caption{Especificación del evento que notifica sobre el cambio de una propiedad del conocimiento.}
+  \label{tab:especificacion-property-changed-integrationevent}
+\end{table}
+
 
 Aunque potencialmente otros servicios podrían suscribirse a estos cambios, vamos a describir solo la suscripción del módulo de análisis.
 
