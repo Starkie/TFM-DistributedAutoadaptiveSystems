@@ -796,14 +796,92 @@ El broker, que conoce todos los servicios que están subscritos a tema, lo añad
 
 \subsubsection{Peticiones asíncronas}
 
-El último mecanismo de comunicación a diseñar son las \textbf{peticiones asíncronas}. Se trata de aquellas peticiones de trabajo que un microservicio del mismo nivel de la jerarquía le lanza a otro, sin esperar la respuesta. Como comentamos, tenemos dos casos en nuestra arquitectura que requieren de este patrón: la comunicación entre el módulo de análisis y el planificador, y entre el planificador y el ejecutor. Nos centraremos en el primer caso.
+El último mecanismo de comunicación a diseñar son las \textbf{peticiones asíncronas}. Se trata de aquellas peticiones de trabajo que un microservicio del mismo nivel de la jerarquía le lanza a otro, sin esperar la respuesta. Como comentamos, tenemos dos casos en nuestra arquitectura que requieren de este patrón: la comunicación entre el módulo de análisis y el planificador, y entre el planificador y el ejecutor. Nos centraremos en el primero.
 
-Recordemos que, una vez se evalúan las reglas de adaptación, si alguna de ellas se ejecuta, propone un cambio en la configuración del sistema. El módulo de análisis recibirá esta propuesta y se la pasará al planificador, para que este genere el plan de adaptación. Esta comunicación se realiza entre servicios en el mismo nivel de la jerarquía.
+Recordemos que una vez se evalúan las reglas de adaptación, si alguna de ellas se ejecuta, propone un cambio en la configuración del sistema. El módulo de análisis recibirá esta propuesta y se la pasará al planificador. Este generará el plan de adaptación. Esta comunicación se realiza entre servicios en el mismo nivel de la jerarquía.
 
-A la hora de escoger el mecanismo de comunicación, el razonamiento fue muy similar al de las notificaciones. Optamos por implementarlas usando un broker de mensajería, siguiendo el patrón de colas de trabajo. La arquitectura del comunicador es muy similar a la de las notificaciones: un publicador, un broker y un consumidor. La mayor diferencia es que la comunicación es más directa a una cola de mensajería, en lugar de hacer fanout a través de un exchange.
+A la hora de escoger el mecanismo de comunicación, el razonamiento fue muy similar al de las notificaciones. Optamos por implementarlas usando un broker de mensajería, siguiendo el patrón de colas de trabajo. La arquitectura del comunicador es muy similar a la de las notificaciones: un publicador, un broker y un consumidor.
 
-\textcolor{red}{Tabla con las especificación de la comunicación}
+En lugar de ser una comunicación \foreign{english}{fanout} a través de un exchange, como en las notifcaciones, los mensajes van dirigidos a una cola concreta. El servicio consumidor cuenta con una cola de mensajería específica para las peticiones de trabajo. El publicador la conoce y, a través del broker, envía los mensajes allí. EL consumidor los irá recuperando y procesando en cuando esté disponile.
 
-\textcolor{red}{Las peticiones asíncronas no están soportadas por AsyncAPI, están todavía debatiendo cómo hacerlo \url{https://github.com/asyncapi/spec/issues/94} \url{https://github.com/asyncapi/spec/pull/594} Está propuesta para implementación en la versión 3 de la especificación. A día de hoy es 2.4.0}
+En la tabla \ref{tab:especificacion-system-configuration-change-request-box} presentamos la especificación de la petición asíncrona para solicitar un cambio de configuración de sistema. Vemos que es muy similar a \ref{tab:especificacion-property-changed-integrationevent}.
 
-Su funcionamiento sería el siguiente:
+\newsavebox\systemconfigurationchangerequestbox
+\begin{lrbox}{\systemconfigurationchangerequestbox}
+  \begin{minipage}[t]{2in}
+    \begin{verbatim}
+{
+  "Timestamp": "2022-06-19T16:38:30.6092751Z",
+  "Symptoms":[
+    {
+      "Name": "temperature-lesser-than-cold-threshold",
+      "Value": "true"
+    }
+  ],
+  "ConfigurationRequests":  [
+    {
+      "ServiceName": "Climatisation.AirConditioner.Service",
+      "IsDeployed": true,
+      "ConfigurationProperties": [
+        {
+          "Name": "Mode",
+          "Value": "Heating"
+        }
+      ],
+      "Bindings": []
+    }
+  ]
+}
+        \end{verbatim}
+  \end{minipage}
+\end{lrbox}
+
+\begin{table}[htb]
+  \centering
+
+  \begin{tabular}{|m{2cm}|m{2.3cm}|m{10cm}|b{0.85cm}|b{2.75cm}|}
+      \hline
+
+      \textbf{Nombre} & \multicolumn{2}{|b{0.37\linewidth}|}{\emph{SystemConfigurationChangeRequest}} & \textbf{Cola} & \emph{AdaptionLoop.Planification.Requests}  \\
+      \hline
+
+      \textbf{Descripción} & \multicolumn{4}{|b{0.82\linewidth}|}{Petición que representa una propuesta de cambio de la configuración del sistema.} \\
+      \hline
+
+      \textbf{Propiedades}
+            & \emph{Timestamp} & \multicolumn{3}{|m{0.67\linewidth}|}{Fecha y hora de la petición de cambio.} \\
+            \cline{2-5}
+            & \emph{Symptoms} & \multicolumn{3}{|m{0.67\linewidth}|}{Colección de síntomas que han desencadenado la petición de cambio.} \\
+            \cline{2-5}
+            & \emph{Configuration Requests} & \multicolumn{3}{|m{0.67\linewidth}|}{Colección peticiones de configuración de la propuesta de cambio.
+
+            A su vez, está compuesto por:
+            \begin{itemize}
+              \item \textbf{\emph{ServiceName}}: Identificador del servicio cuya configuración queremos cambiar.
+              \item \textbf{\emph{IsDeployed}}: Indica si el servicio debe estar desplegado o no en la siguiente configuración.
+              \item \textbf{\emph{Bindings}}: Colección de conexiones que indican a qué servicios debe estar conectado (o no) este servicio en la siguiente configuración.
+              \item \textbf{\emph{ConfigurationProperties}}: Colección de pares clave-valor que representan valores de configuración que queremos actualizar.
+            \end{itemize}} \\
+      \hline
+
+      \textbf{Ejemplo} & \multicolumn{4}{|b{0.82\linewidth}|}{Solicitud de cambio de configuración para cambiar el modo de un aire acondicionado a modo calefacción (\emph{heating}). Fue desencadenada porque la temperatura es menor que un umbral determinado:\linebreak
+      \usebox\systemconfigurationchangerequestbox} \\
+
+      \hline
+  \end{tabular}
+
+  \caption{Especificación de las peticiones de cambio de configuración del sistema.}
+  \label{tab:especificacion-system-configuration-change-request-box}
+\end{table}
+
+Respecto a la especificación con AsyncAPI, las peticiones asíncronas no están soportadas todavía. El grupo está todavía estudiando cómo implementarlas. \footnotetext{Discusión disponible en: \url{https://github.com/asyncapi/spec/pull/594}}. Está propuesta para incluirla en la versión 3.0.0 de la especificación. Como mencionamos anteriormente, el estándar todavía es muy joven y tiene trabajo por delante.
+
+En cuanto a sus componentes, el conector seguiría la siguiente arquitectura: \textcolor{red}{dibujo de arquitectura}.
+
+\subsubsection{Diseño final}
+
+Añadir diagrama con el diseño final, mostrando el diseño de los componentes con todos los conectores.
+
+\subsection{Implementación}
+
+Una
