@@ -882,6 +882,41 @@ En cuanto a sus componentes, el conector seguiría la siguiente arquitectura: \t
 
 Añadir diagrama con el diseño final, mostrando el diseño de los componentes con todos los conectores.
 
+\pagebreak
+
 \subsection{Implementación}
 
-Una
+La idea no es implementar un sistema production ready, pero si verificar que as comunicaciones funcionan correctamente.
+
+Una vez descrito el diseño del sistema, llegamos a la etapa de implementación. Aunque no era uno de los objetivos del trabajo, optamos por implementar un sistema básico que siga el diseño. De esta forma pudimos verificar la distribución de los componentes, verificar la viabilidad de los conectores y refinar los protocolos de comunicación. La implementación fue incremental, y el diseño fue evolucionando según detectábamos nuevas necesidades o problemas que no resolvía nuestra arquitectura. Así pudimos validar qué funcionaba y que no.
+
+La implementación se llevo a cabo en 4 hitos distintos, cada uno correspondiente a una etapa distinta del bucle:
+\begin{itemize}
+  \item \textbf{Hito 1 - Servicio de monitorización y conocimiento}:
+  \item \textbf{Hito 2 - Servicio de análisis y reglas}
+  \item \textbf{Hito 3 - Planificador}
+  \item \textbf{Hito 4 - Ejecutor y efectores}
+\end{itemize}
+
+En esta primera etapa acordamos implementar: los monitores del caso de estudio (capitulo \ref{chap:caso_estudio}), el componente de monitorización del bucle MAPE-K y la base de conocimiento. Se comenzó también con el prototipado de las que se convertirían en los conectores para comunicaciones descendentes: los conectores de APIs REST.
+
+El objetivo era implementar desde que la sonda reporta una medida hasta que se almacena esta nueva medida en el conocimiento. Para ello tuvimos que implementar la comunicación entre la sonda y el monitor de la solución. Después del monitor de la solución al componente de monitorización del bucle. Y de este último al conocimiento. La implementación de todos ellos fue muy parecida.
+
+Respecto a los servicios, se optó por implementar el sistema con servicios en ASP.NET\footnote{Página oficial: \url{https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core}}. Se trata de un \emph{framework} para implementar servidores web de la plataforma .NET de Microsoft. Como comentamos en la sección \ref{chap:OpenAPI}, estos servicios expondrán \foreign{english}{endpoints} HTTP. En el listing \ref{ls:csharp-get} ya mostramos un ejemplo de la implementación de estos \foreign{english}{endpoints}.
+
+A partir de estos endpoints, gracias al uso de la librería \emph{Swashbuckle.AspNetCore}\footnote{Página oficial: \url{https://github.com/domaindrivendev/Swashbuckle.AspNetCore}}, pudimos generar la especificación de nuestros servicios en el estándar OpenAPI. Esto nos aporta dos cosas: una interfaz de usuario para interactuar con la API y la posibilidad de generar el API client.
+
+Hablemos primero sobre la interfaz de usuario. La librería añade a nuestro servicio el \emph{endpoint} \texttt{/swagger}. Accediendo a esta ruta, el servicio nos presentará una interfaz con un listado de todas las operaciones que ofrece la API Rest. De cada petición nos muestra su documentación (la que añadimos en el código), sus parámetros y nos permite incluso ejecutarla allí mismo. De esta forma, nuestros usuarios pueden hacer pruebas de las peticiones antes de implementar su propio cliente. O para situaciones de emergencia cuando necesitemos ejecutar una petición por algún motivo (depuración?)
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[scale=1.5]{03_arquitectura/images/swagger-knowledge-ui}
+  \caption{Interfaz de usuario ofrecida por Swagger para el servicio de conocimiento. Se genera a partir de las especificación OpenAPI.}
+  \label{fig:swagger-knowledge-ui}
+\end{figure}
+
+Por otro lado, también nos permite generar el API Client. Como comentamos en la sección de OpenAPI, tenemos gran variedad de generadores de código a nuestra disposición. Nosotros optamos por los ofrecidos por la librería \texttt{OpenApi.Generators}\footnote{Página del proyecto: \url{https://github.com/OpenAPITools/openapi-generator}}. En concreto, el generador de código de \verb|C#|. Usándolo, pudimos generar una librería que permite contactar con nuestro servicio, sin necesidad de implementar mucho código.
+
+Por ejemplo, el componente de monitorización del bucle contacta a través del bucle MAPE-K a través del API Client generado.
+
+\textcolor{red}{¿Añadir ejemplo?}
