@@ -9,14 +9,14 @@ using Execute.Contracts.IntegrationEvents;
 using MediatR;
 using Planning.Contracts.IntegrationEvents.AdaptionActions;
 
-public class ExecutionRequestedIntegrationEventHandler
-    : IIntegrationEventHandler<ExecutionRequestedIntegrationEvent>
+public class ExecutionRequestedIntegrationEventConsumer
+    : IIntegrationEventConsumer<ExecutionRequestedIntegrationEvent>
 {
     private readonly ClimatisationEffectorServiceDiagnostics _diagnostics;
 
     private readonly IMediator _mediator;
 
-    public ExecutionRequestedIntegrationEventHandler(ClimatisationEffectorServiceDiagnostics diagnostics, IMediator mediator)
+    public ExecutionRequestedIntegrationEventConsumer(ClimatisationEffectorServiceDiagnostics diagnostics, IMediator mediator)
     {
         _diagnostics = diagnostics;
         _mediator = mediator;

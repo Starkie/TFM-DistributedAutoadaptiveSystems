@@ -11,8 +11,8 @@ using Core.Bus.Handlers;
 
 [RuleKnowledgePropertyDependency]
 public abstract class RuleBase
-    : IIntegrationEventHandler<PropertyChangedIntegrationEvent>,
-    IIntegrationEventHandler<ConfigurationChangedIntegrationEvent>
+    : IIntegrationEventConsumer<PropertyChangedIntegrationEvent>,
+    IIntegrationEventConsumer<ConfigurationChangedIntegrationEvent>
 {
     private readonly ClimatisationRulesDiagnostics _diagnostics;
 

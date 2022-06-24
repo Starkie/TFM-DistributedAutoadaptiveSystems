@@ -51,7 +51,7 @@ public class ExecuteChangePlanRequestHandler
                 Symptoms = symptoms,
             };
 
-            await _mediator.Publish(integrationEvent);
+            await _mediator.Send(integrationEvent);
         }
     }
 }
