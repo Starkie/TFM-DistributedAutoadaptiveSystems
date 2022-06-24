@@ -8,7 +8,7 @@ using Climatisation.Monitor.Service.ApiClient.Model;
 using TemperatureUnit = Climatisation.AirConditioner.Domain.Thermometers.ValueObjects.TemperatureUnit;
 using TemperatureUnitDto = Climatisation.Monitor.Service.ApiClient.Model.TemperatureUnit;
 
-public class AirConditionerBackgroundService : BackgroundService
+public class ThermometerBackgroundService : BackgroundService
 {
     // TODO: Extract to configuration.
     Guid probeId = new Guid("c02234d3-329c-4b4d-aee0-d220dc25276b");
@@ -21,7 +21,7 @@ public class AirConditionerBackgroundService : BackgroundService
 
     private IMeasurementApi _measurementApi;
 
-    public AirConditionerBackgroundService(
+    public ThermometerBackgroundService(
         ClimatisationAirConditionerServiceDiagnostics diagnostics,
         IServiceProvider rootServiceProvider)
     {

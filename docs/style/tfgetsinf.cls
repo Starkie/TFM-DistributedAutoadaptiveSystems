@@ -158,6 +158,8 @@
 \RequirePackage{algorithmic}
 \RequirePackage[within=chapter]{newfloat}
 
+\RequirePackage{longtable}
+
 \DeclareFloatingEnvironment[fileext=loa,
      listname=\listalgorithmname,name=\algorithmname]{algorithm}
      \DeclareCaptionFormat{ruled}{\hrulefill\par#1#2#3\vspace{-.5\baselineskip}\hrulefill}

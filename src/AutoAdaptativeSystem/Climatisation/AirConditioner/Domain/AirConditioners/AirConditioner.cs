@@ -17,7 +17,7 @@ public abstract class AirConditioner
     public AirConditioner(Thermometer thermometer)
     {
         _thermometer = thermometer;
-        CurrentMode = AirConditioningMode.Disabled;
+        CurrentMode = AirConditioningMode.Off;
     }
 
     public AirConditioningMode CurrentMode { get; protected set; }
@@ -41,7 +41,7 @@ public abstract class AirConditioner
 
     public void TurnOff()
     {
-        SetMode(AirConditioningMode.Disabled);
+        SetMode(AirConditioningMode.Off);
     }
 
     private void SetMode(AirConditioningMode mode)

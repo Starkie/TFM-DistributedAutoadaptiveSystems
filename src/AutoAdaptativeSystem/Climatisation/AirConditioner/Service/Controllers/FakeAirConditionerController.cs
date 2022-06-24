@@ -18,7 +18,7 @@ public class FakeAirConditionerController : ControllerBase
 
     /// <summary>
     /// Configures the <see cref="FakeAirConditioner"/> to increase or decrease the
-    /// ambient temperature when it is in <see cref="AirConditioningMode.Disabled"/>
+    /// ambient temperature when it is in <see cref="AirConditioningMode.Off"/>
     /// </summary>
     /// <param name="shouldIncreaseTemperature">
     ///     If true, the ambient temperature will increase when the air conditioner is disabled.

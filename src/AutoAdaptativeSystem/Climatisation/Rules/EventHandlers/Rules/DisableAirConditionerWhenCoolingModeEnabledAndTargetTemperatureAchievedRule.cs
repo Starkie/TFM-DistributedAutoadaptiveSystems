@@ -16,18 +16,18 @@ using Microsoft.Extensions.DependencyInjection;
     ClimatisationAirConditionerConstants.AppName,
     ClimatisationConstants.Configuration.TargetTemperature,
     ClimatisationAirConditionerConstants.Configuration.Mode)]
-public class DisableAirConditionerWhenTargetTemperatureAchievedRule : RuleBase
+public class DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule : RuleBase
 {
-    private const string RuleName = nameof(DisableAirConditionerWhenTargetTemperatureAchievedRule);
+    private const string RuleName = nameof(DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule);
 
     private const string TargetTemperatureAchieved = "target-temperature-achieved";
 
     private static readonly IEnumerable<string> propertyNames =
-        typeof(DisableAirConditionerWhenTargetTemperatureAchievedRule)
+        typeof(DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule)
             .GetRulePropertyDependencies();
 
     private static readonly IDictionary<string, IEnumerable<string>> configurationNames =
-        typeof(DisableAirConditionerWhenTargetTemperatureAchievedRule)
+        typeof(DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule)
             .GetRuleConfigurationDependencies();
 
     private readonly IConfigurationService _configurationService;
@@ -36,7 +36,7 @@ public class DisableAirConditionerWhenTargetTemperatureAchievedRule : RuleBase
 
     private readonly ISystemService _systemService;
 
-    public DisableAirConditionerWhenTargetTemperatureAchievedRule(
+    public DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule(
         ClimatisationRulesDiagnostics diagnostics,
         IConfigurationService configurationService,
         IPropertyService propertyService,
@@ -68,8 +68,7 @@ public class DisableAirConditionerWhenTargetTemperatureAchievedRule : RuleBase
             ClimatisationConstants.Configuration.TargetTemperature,
             CancellationToken.None);
 
-        return (airConditionerMode == AirConditioningMode.Cooling && currentTemperature.Value <= targetTemperature)
-            || (airConditionerMode == AirConditioningMode.Heating && currentTemperature.Value >= targetTemperature);
+        return airConditionerMode == AirConditioningMode.Cooling && currentTemperature.Value <= targetTemperature;
     }
 
     protected override async Task Execute()
@@ -84,7 +83,7 @@ public class DisableAirConditionerWhenTargetTemperatureAchievedRule : RuleBase
                     service.MustBePresent()
                         .WithParameter(
                             ClimatisationAirConditionerConstants.Configuration.Mode,
-                            AirConditioningMode.Disabled.ToString());
+                            AirConditioningMode.Off.ToString());
                 });
         });
     }
