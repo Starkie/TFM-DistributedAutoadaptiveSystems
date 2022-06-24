@@ -34,7 +34,7 @@ Dependiendo de las características de nuestro sistema (y del nivel de abstracci
 
 \begin{wrapfigure}{r}{0.40\linewidth}
   \centering
-  \includegraphics[scale=0.8]{03_arquitectura/images/componente-ejemplo}
+  \includegraphics[scale=0.8]{cap_arquitectura/images/componente-ejemplo}
   \caption{El servicio de monitorización representado como un componente. Ofrece una interfaz (\emph{IMonitoringService}) y depende de otra para funcionar (\emph{IKnowledgeService}).}
   \label{fig:componenteEjemplo}
 \end{wrapfigure}
@@ -50,7 +50,7 @@ Para que dos o más componentes puedan interactuar, necesitamos definir un mecan
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[scale=0.78]{03_arquitectura/images/conector}
+  \includegraphics[scale=0.78]{cap_arquitectura/images/conector}
   \caption{Ejemplo de comunicación de dos componentes a través de un conector.}
   \label{fig:componentesYConectorEjemplo}
 \end{figure}
@@ -101,7 +101,7 @@ Actualmente, el bucle está muy acoplado a los modelos de sus recursos manejados
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=1.15]{01_introduccion/images/bucle-mape-k}
+  \includegraphics[scale=1.15]{cap_introduccion/images/bucle-mape-k}
   \caption[Arquitectura de un Bucle MAPE-K. Podemos apreciar el flujo de información y de control a lo largo de las etapas del bucle.]{Arquitectura de un Bucle MAPE-K. Podemos apreciar el flujo de información y de control a lo largo de las etapas del bucle. Obtenida de \cite{fonsEspecificacionSistemasAutoadaptativos2021}}
   \label{fig:bucle-mapek2}
 \end{figure}
@@ -122,7 +122,7 @@ Una vez determinadas las fronteras entre los microservicios, hemos definido los 
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.3]{03_arquitectura/images/mape-k-microservices}
+  \includegraphics[scale=0.3]{cap_arquitectura/images/mape-k-microservices}
   \caption{Diagrama con los componentes que forman nuestra arquitectura distribuida}
   \label{fig:mape-k-microservices}
 \end{figure}
@@ -149,7 +149,7 @@ En cuanto a la comunicación, un componente solo debe contactar con sus vecinos 
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.45]{03_arquitectura/images/c2SampleArch}
+  \includegraphics[scale=0.45]{cap_arquitectura/images/c2SampleArch}
   \caption[Ejemplo del estilo arquitectónico C2 (\emph{Components and Connectors})]{Ejemplo del estilo arquitectónico C2 (\emph{Components and Connectors}). \cite{UCISoftwareArchitecture}}
   \label{fig:C2-arch-example}
 \end{figure}
@@ -175,7 +175,7 @@ Basándonos en la descripción anterior, nuestra capa central será la del conoc
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.45]{03_arquitectura/images/clean-arch-2-MAPEK-style-small}
+  \includegraphics[scale=0.45]{cap_arquitectura/images/clean-arch-2-MAPEK-style-small}
   \caption[Representación de nuestra propuesta arquitectónica. Inspirado en Arquitectura Limpia (\emph{Clean Architecture}). Las flechas negras representan las peticiones, y las moradas, las notificaciones.]{Representación de nuestra propuesta arquitectónica. Inspirado en Arquitectura Limpia (\emph{Clean Architecture}). Las flechas negras representan las peticiones, y las moradas, las notificaciones. \footnotemark }
   \label{fig:clean-mapek-architecture}
 \end{figure}
@@ -211,7 +211,7 @@ Comenzamos investigando las peticiones síncronas. Tomemos por ejemplo la comuni
 % TODO: Cambiar por imagen de componentes, que ofrezcan y requieran interfaces.
 \begin{figure}[htb]
   \centering
-  \includegraphics{03_arquitectura/images/Monitor-Knowledge-Initial-Connector}
+  \includegraphics{cap_arquitectura/images/Monitor-Knowledge-Initial-Connector}
   \caption{Boceto inicial: queremos conectar el servicio de monitorización con la base de conocimiento para poder leer propiedades de adaptación.}
   \label{fig:monitor-knowledge-initial}
 \end{figure}
@@ -232,7 +232,7 @@ Los \emph{proxies} ofrecen una interfaz para que el cliente invoque sus métodos
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=1.5]{03_arquitectura/images/rpc-distributedobjects}
+  \includegraphics[scale=1.5]{cap_arquitectura/images/rpc-distributedobjects}
   \caption[Funcionamiento del sistema de objetos distribuidos]{Funcionamiento del sistema de objetos distribuidos. \cite{tanenbaumChapter10Distributed2007}}
   \label{fig:rpc-distributedobjects}
 \end{figure}
@@ -321,7 +321,7 @@ Tomemos por ejemplo las \textbf{colas de trabajo}. \cite{royChapterMessagePatter
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.65]{03_arquitectura/images/work-queues}
+  \includegraphics[scale=0.65]{cap_arquitectura/images/work-queues}
   \caption[Representación de las colas de trabajo. Ejemplo de comunicación asíncrona dirigida.]{Representación de las colas de trabajo. Ejemplo de comunicación comunicación asíncrona dirigida. \footnotemark }
   \label{fig:work-queues}
 \end{figure}
@@ -335,7 +335,7 @@ Otra estrategia posible es \foreign{english}{publish-suscribe}: sirve para imple
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.5]{03_arquitectura/images/publish_subscribe}
+  \includegraphics[scale=0.5]{cap_arquitectura/images/publish_subscribe}
   \caption[Estrategia \emph{publish/suscribe}: el \emph{broker} actúa como intermediario en la comunicación \emph{multicast}.]{Estrategia \emph{publish/suscribe}: el \emph{broker} actúa como intermediario en la comunicación \emph{multicast}. Imagen obtenida de \footnotemark}
   \label{fig:publish-subscribe}
 \end{figure}
@@ -536,7 +536,7 @@ Una vez definida la interfaz que expondrá el servicio de conocimiento, nos qued
 
 \begin{wrapfigure}{r}{0.3\linewidth}
   \vspace{5pt}
-  \includegraphics[scale=0.32]{03_arquitectura/images/openapi-logo}
+  \includegraphics[scale=0.32]{cap_arquitectura/images/openapi-logo}
   \centering
   \vspace{5pt}
 \end{wrapfigure}
@@ -696,7 +696,7 @@ El conector, delimitado por una línea discontinua roja, está compuesto por dos
 %%% TODO: Actualizar la imagen para que aparezca PUT en vez de POST.
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.8]{03_arquitectura/images/Monitor-Knowledge-Connector}
+  \includegraphics[scale=0.8]{cap_arquitectura/images/Monitor-Knowledge-Connector}
   \caption{Diseño del conector usando implementación Cliente - Servidor}
   \label{fig:monitor-knowledge-connector-architecture}
 \end{figure}
@@ -881,42 +881,3 @@ En cuanto a sus componentes, el conector seguiría la siguiente arquitectura: \t
 \subsubsection{Diseño final}
 
 Añadir diagrama con el diseño final, mostrando el diseño de los componentes con todos los conectores.
-
-\pagebreak
-
-\subsection{Implementación}
-
-La idea no es implementar un sistema production ready, pero si verificar que as comunicaciones funcionan correctamente.
-
-Una vez descrito el diseño del sistema, llegamos a la etapa de implementación. Aunque no era uno de los objetivos del trabajo, optamos por implementar un sistema básico que siga el diseño. De esta forma pudimos verificar la distribución de los componentes, verificar la viabilidad de los conectores y refinar los protocolos de comunicación. La implementación fue incremental, y el diseño fue evolucionando según detectábamos nuevas necesidades o problemas que no resolvía nuestra arquitectura. Así pudimos validar qué funcionaba y que no.
-
-La implementación se llevo a cabo en 4 hitos distintos, cada uno correspondiente a una etapa distinta del bucle:
-\begin{itemize}
-  \item \textbf{Hito 1 - Servicio de monitorización y conocimiento}:
-  \item \textbf{Hito 2 - Servicio de análisis y reglas}
-  \item \textbf{Hito 3 - Planificador}
-  \item \textbf{Hito 4 - Ejecutor y efectores}
-\end{itemize}
-
-En esta primera etapa acordamos implementar: los monitores del caso de estudio (capitulo \ref{chap:caso_estudio}), el componente de monitorización del bucle MAPE-K y la base de conocimiento. Se comenzó también con el prototipado de las que se convertirían en los conectores para comunicaciones descendentes: los conectores de APIs REST.
-
-El objetivo era implementar desde que la sonda reporta una medida hasta que se almacena esta nueva medida en el conocimiento. Para ello tuvimos que implementar la comunicación entre la sonda y el monitor de la solución. Después del monitor de la solución al componente de monitorización del bucle. Y de este último al conocimiento. La implementación de todos ellos fue muy parecida.
-
-Respecto a los servicios, se optó por implementar el sistema con servicios en ASP.NET\footnote{Página oficial: \url{https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core}}. Se trata de un \emph{framework} para implementar servidores web de la plataforma .NET de Microsoft. Como comentamos en la sección \ref{chap:OpenAPI}, estos servicios expondrán \foreign{english}{endpoints} HTTP. En el listing \ref{ls:csharp-get} ya mostramos un ejemplo de la implementación de estos \foreign{english}{endpoints}.
-
-A partir de estos endpoints, gracias al uso de la librería \emph{Swashbuckle.AspNetCore}\footnote{Página oficial: \url{https://github.com/domaindrivendev/Swashbuckle.AspNetCore}}, pudimos generar la especificación de nuestros servicios en el estándar OpenAPI. Esto nos aporta dos cosas: una interfaz de usuario para interactuar con la API y la posibilidad de generar el API client.
-
-Hablemos primero sobre la interfaz de usuario. La librería añade a nuestro servicio el \emph{endpoint} \texttt{/swagger}. Accediendo a esta ruta, el servicio nos presentará una interfaz con un listado de todas las operaciones que ofrece la API Rest. De cada petición nos muestra su documentación (la que añadimos en el código), sus parámetros y nos permite incluso ejecutarla allí mismo. De esta forma, nuestros usuarios pueden hacer pruebas de las peticiones antes de implementar su propio cliente. O para situaciones de emergencia cuando necesitemos ejecutar una petición por algún motivo (depuración?)
-
-\begin{figure}[htb]
-  \centering
-  \includegraphics[scale=1.5]{03_arquitectura/images/swagger-knowledge-ui}
-  \caption{Interfaz de usuario ofrecida por Swagger para el servicio de conocimiento. Se genera a partir de las especificación OpenAPI.}
-  \label{fig:swagger-knowledge-ui}
-\end{figure}
-
-Por otro lado, también nos permite generar el API Client. Como comentamos en la sección de OpenAPI, tenemos gran variedad de generadores de código a nuestra disposición. Nosotros optamos por los ofrecidos por la librería \texttt{OpenApi.Generators}\footnote{Página del proyecto: \url{https://github.com/OpenAPITools/openapi-generator}}. En concreto, el generador de código de \verb|C#|. Usándolo, pudimos generar una librería que permite contactar con nuestro servicio, sin necesidad de implementar mucho código.
-
-Por ejemplo, el componente de monitorización del bucle contacta a través del bucle MAPE-K a través del API Client generado.
-
-\textcolor{red}{¿Añadir ejemplo?}

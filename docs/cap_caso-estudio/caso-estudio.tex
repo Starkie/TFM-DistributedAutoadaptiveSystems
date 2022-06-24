@@ -124,28 +124,28 @@ En la tabla \ref{tab:adaption-rules-climatisation} definimos las cuatro reglas n
     \textbf{Descripción:} & Activa el aire acondicionado en modo calefacción cuando la temperatura sea inferior al umbral de frío.  \\
     \textbf{Condición:} & \emph{airconditioner-mode} != \emph{Heating} \textbf{AND} \emph{temperature} <= \emph{cold-temperature-threshold}  \\
     \textbf{Cuerpo:}   &  \\
-    & \includegraphics[scale=0.75]{04_caso-estudio/images/adaption-loop-rule-heat} \\
+    & \includegraphics[scale=0.75]{cap_caso-estudio/images/adaption-loop-rule-heat} \\
     \hline
 
     \textbf{Regla:} & \emph{DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchieved}  \\
     \textbf{Descripción:} & Apaga el aire acondicionado cuando el modo calefacción está activo y se ha alcanzado la temperatura de confort.  \\
     \textbf{Condición:} & \emph{airconditioner-mode} == \emph{Heating} \textbf{AND} \emph{temperature} >= \emph{target-temperature}  \\
     \textbf{Cuerpo:} &  \\
-    & \includegraphics[scale=0.75]{04_caso-estudio/images/adaption-loop-rule-off} \\
+    & \includegraphics[scale=0.75]{cap_caso-estudio/images/adaption-loop-rule-off} \\
     \hline
 
     \textbf{Regla:} & \emph{EnableAirConditionerCoolingModeWhenTemperatureThresholdExceeded}  \\
     \textbf{Descripción:} & Activa el aire acondicionado en modo enfriar cuando la temperatura sea superior al umbral de calor.  \\
     \textbf{Condición:} & \emph{airconditioner-mode} != \emph{Cooling} \textbf{AND} \emph{temperature} >= \emph{hot-temperature-threshold}  \\
     \textbf{Cuerpo:} &  \\
-    & \includegraphics[scale=0.75]{04_caso-estudio/images/adaption-loop-rule-cooling} \\
+    & \includegraphics[scale=0.75]{cap_caso-estudio/images/adaption-loop-rule-cooling} \\
     \hline
 
     \textbf{Regla:} & \emph{DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchieved}  \\
     \textbf{Descripción:} & Apaga el aire acondicionado cuando el modo enfiar está activo y se ha alcanzado la temperatura de confort.  \\
     \textbf{Condición:} & \emph{airconditioner-mode} == \emph{Cooling} \textbf{AND} \emph{temperature} <= \emph{target-temperature}  \\
     \textbf{Cuerpo:} &  \\
-    & \includegraphics[scale=0.75]{04_caso-estudio/images/adaption-loop-rule-off} \\
+    & \includegraphics[scale=0.75]{cap_caso-estudio/images/adaption-loop-rule-off} \\
     \hline
 
   \caption{Reglas de adaptación del sistema de climatización.}
@@ -198,7 +198,7 @@ Por defecto, solo contábamos con los \emph{logs} de consola, que mostramos en l
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=1.45]{04_caso-estudio/images/console-logs}
+  \includegraphics[scale=1.45]{cap_caso-estudio/images/console-logs}
   \caption{Extracto de \emph{logs} de una ejecución habitual.}
   \label{fig:console-logs}
 \end{figure}
@@ -216,7 +216,7 @@ Gracias a él pudimos capturar la telemetría de la siguiente forma implementar 
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.75]{04_caso-estudio/images/observability-telemetry-collection}
+  \includegraphics[scale=0.75]{cap_caso-estudio/images/observability-telemetry-collection}
   \caption{Extracto de \emph{logs} de una ejecución habitual.}
   \label{fig:observability-telemetry-collection}
 \end{figure}
