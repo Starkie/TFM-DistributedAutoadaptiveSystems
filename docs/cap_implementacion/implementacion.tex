@@ -8,11 +8,13 @@ Una vez descrito el diseño del sistema, llegamos a la etapa de implementación.
 
 La implementación se llevo a cabo en 4 hitos distintos, cada uno correspondiente a una etapa distinta del bucle:
 \begin{itemize}
-  \item \textbf{Hito 1 - Servicio de monitorización y conocimiento}:
+  \item \textbf{Hito 1 - Servicio de monitorización y conocimiento}
   \item \textbf{Hito 2 - Servicio de análisis y reglas}
   \item \textbf{Hito 3 - Planificador}
   \item \textbf{Hito 4 - Ejecutor y efectores}
 \end{itemize}
+
+\section{Servicio de monitorización y conocimiento}
 
 En esta primera etapa acordamos implementar el proceso de registro de las medidas de una sonda, hasta que se graba en el conocimiento. Esto implicó implementar las sondas y monitores del caso de estudio (capitulo \ref{chap:caso_estudio}), el componente de monitorización del bucle MAPE-K y la base de conocimiento. Se comenzó también con el prototipado de los que se convertirían en los conectores para comunicaciones descendentes: los conectores de APIs REST.
 
@@ -39,13 +41,57 @@ Por encima de este, tenemos el módulo de monitorización. Actúa como intermedi
 
 \textcolor{red}{¿Añadir ejemplo? ¿Desribir los componentes implementados? ¿Debería describirse el caso de uso con la implementación del bucle MAPE-K?}
 
-\subsubsection{Hito 2: Servicio de análisis y reglas.}
+\section{Servicio de análisis y reglas}
 
 En el segundo hito, acordamos implementar la evaluación de reglas de adaptación. Esto requería de implementar el módulo de análisis del bucle MAPE-K y los módulos de reglas de la solución. Además, fue cuando empezamos a plantearnos el diseño de las notificaciones, las comunicaciones ascendentes. Así evitábamos que se acoplaran los componentes entre sí.
 
-Primero describiremos este mecanismo de notificación. Una vez se confirma la escritura de una propiedad o configuración en el conocimiento, este publica un \textbf{evento de integración} (fanout) que llega a todos los suscriptores de estén en la capa superior. Optamos por implementar estas operaciones con \texttt{RabbitMQ}\footnote{Página oficial: \url{https://www.rabbitmq.com/}}. Se trata de un broker de mensajería ''sencillo'' ampliamente utilizado. Nos permite implementar los dos patrones que necesitamos: las notificaciones y las peticiones asíncronas.
+Primero describiremos este mecanismo de notificación. Optamos por implementar estas operaciones con \texttt{RabbitMQ}\footnote{Página oficial: \url{https://www.rabbitmq.com/}}. Se trata de un broker de mensajería ''sencillo'' ampliamente utilizado. Nos permite implementar los dos patrones que necesitamos: las notificaciones y las peticiones asíncronas.
 
-Además, para implementar nuestro conector de forma agnóstica a la tecnología usada, utilizamos una librería llamada \texttt{Rebus}\footnote{Página oficial: \url{https://github.com/rebus-org/Rebus}}. Esta nos permite implementar comunicaciones con un bus, abstrayéndonos de la tecnología concreta utilizada para la comunicación.
+Además, para implementar nuestro conector de forma agnóstica a la tecnología usada, utilizamos una librería llamada \texttt{Rebus}\footnote{Página oficial: \url{https://github.com/rebus-org/Rebus}}. Esta nos permite implementar comunicaciones con un bus, abstrayéndonos de la tecnología concreta utilizada para la comunicación. Esto nos permitiría cambiar en cualquier momento de nivel de transporte por uno que se ajuste más a nuestros requisitos.
+
+Tomemos por ejemplo la comunicación entre el módulo de conocimiento y el servicio de análisis. Una vez se confirma la escritura de una propiedad o configuración en el conocimiento, este propaga internamente un \textbf{evento de integración} (línea 11 del fragmento \ref{ls:knowledge-set-property}) a través de un mediador\footnote{Página oficial: \url{https://github.com/jbogard/MediatR}}. que llega a todos los suscriptores de estén en la capa superior (capa del bucle).
+
+
+\begin{lstlisting}[language={[Sharp]C},caption={Implementación del método que asigna valor a una propiedad. Muestra un ejemplo de propagación interna de eventos de integración.},captionpos=b, label=ls:knowledge-set-property]
+private async Task SetProperty(SetPropertyDTO propertyDto)
+{
+    var newValue = new()
+    {
+        Value = propertyDto.Value,
+        LastModification = DateTime.UtcNow,
+    };
+
+    properties.AddOrUpdate(propertyDto.Name, newValue, (_, _) => newValue);
+
+    await _mediator.Publish(
+      new PropertyChangedIntegrationEvent(propertyDto.Name));
+}
+
+\end{lstlisting}
+
+\begin{lstlisting}[language={[Sharp]C},caption={El publicador de eventos captura el evento de integración que se propaga internamente, y lo publica en el bus.},captionpos=b, label=ls:knowledge-set-property]
+public class PropertyChangedIntegrationEventPublisher
+  : IIntegrationEventPublisher<PropertyChangedIntegrationEvent>
+{
+  private readonly IBus _bus;
+
+  public PropertyChangedIntegrationEventPublisher(IBus bus)
+  {
+      _bus = bus;
+  }
+
+  public async Task<Unit> Handle(
+      PropertyChangedIntegrationEvent notification,
+      CancellationToken cancellationToken)
+  {
+      await _bus.Publish(notification);
+
+      return Unit.Value;
+  }
+}
+\end{lstlisting}
+
+Una vez se publica el mensaje en el bus, el consumidor, que está suscrito al al mismo en el message queue. Y hará d que está suscrito al mismo, lo capturara.
 
 \textcolor{red}{Dibujo que represente RabbitMQ y rebus.}
 
