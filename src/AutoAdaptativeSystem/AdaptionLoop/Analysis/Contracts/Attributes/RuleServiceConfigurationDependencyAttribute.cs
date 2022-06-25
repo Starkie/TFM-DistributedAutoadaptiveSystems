@@ -1,14 +1,14 @@
 namespace Analysis.Contracts.Attributes;
 
-public class RuleKnowledgeConfigurationDependencyAttribute : Attribute
+public class RuleServiceConfigurationDependencyAttribute : Attribute
 {
-    public RuleKnowledgeConfigurationDependencyAttribute(string serviceName, params string[] configurationKeys)
+    public RuleServiceConfigurationDependencyAttribute(string serviceName, params string[] configurationKeys)
     {
         ServiceName = serviceName;
         ConfigurationKeys = configurationKeys;
     }
 
-    private RuleKnowledgeConfigurationDependencyAttribute()
+    private RuleServiceConfigurationDependencyAttribute()
     {
         ConfigurationKeys = Enumerable.Empty<string>();
     }

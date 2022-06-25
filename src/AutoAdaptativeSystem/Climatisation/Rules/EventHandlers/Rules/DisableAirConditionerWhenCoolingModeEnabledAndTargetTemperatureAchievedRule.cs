@@ -12,22 +12,22 @@ using Climatisation.Rules.Service.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 [RuleKnowledgePropertyDependency(ClimatisationConstants.Property.Temperature)]
-[RuleKnowledgeConfigurationDependency(
+[RuleServiceConfigurationDependency(
     ClimatisationAirConditionerConstants.AppName,
     ClimatisationConstants.Configuration.TargetTemperature,
     ClimatisationAirConditionerConstants.Configuration.Mode)]
-public class DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule : RuleBase
+public class DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedAdaptionRule : AdaptionRuleBase
 {
-    private const string RuleName = nameof(DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule);
+    private const string RuleName = nameof(DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedAdaptionRule);
 
     private const string TargetTemperatureAchieved = "target-temperature-achieved";
 
     private static readonly IEnumerable<string> propertyNames =
-        typeof(DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule)
+        typeof(DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedAdaptionRule)
             .GetRulePropertyDependencies();
 
     private static readonly IDictionary<string, IEnumerable<string>> configurationNames =
-        typeof(DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule)
+        typeof(DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedAdaptionRule)
             .GetRuleConfigurationDependencies();
 
     private readonly IConfigurationService _configurationService;
@@ -36,7 +36,7 @@ public class DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchi
 
     private readonly ISystemService _systemService;
 
-    public DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule(
+    public DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedAdaptionRule(
         ClimatisationRulesDiagnostics diagnostics,
         IConfigurationService configurationService,
         IPropertyService propertyService,

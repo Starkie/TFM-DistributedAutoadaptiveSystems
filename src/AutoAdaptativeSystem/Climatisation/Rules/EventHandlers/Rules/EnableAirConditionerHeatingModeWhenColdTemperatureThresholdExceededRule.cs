@@ -12,22 +12,22 @@ using Climatisation.Rules.Service.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 [RuleKnowledgePropertyDependency(ClimatisationConstants.Property.Temperature)]
-[RuleKnowledgeConfigurationDependency(
+[RuleServiceConfigurationDependency(
     ClimatisationAirConditionerConstants.AppName,
     ClimatisationConstants.Configuration.ColdTemperatureThreshold,
     ClimatisationAirConditionerConstants.Configuration.Mode)]
-public class EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceededRule : RuleBase
+public class EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceededAdaptionRule : AdaptionRuleBase
 {
-    private const string RuleName = nameof(EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceededRule);
+    private const string RuleName = nameof(EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceededAdaptionRule);
 
     private const string TemperatureLesserThanColdThreshold = "temperature-lesser-than-cold-threshold";
 
     private static readonly IEnumerable<string> propertyNames =
-        typeof(EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceededRule)
+        typeof(EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceededAdaptionRule)
             .GetRulePropertyDependencies();
 
     private static readonly IDictionary<string, IEnumerable<string>> configurationNames =
-        typeof(EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceededRule)
+        typeof(EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceededAdaptionRule)
             .GetRuleConfigurationDependencies();
 
     private readonly IConfigurationService _configurationService;
@@ -36,7 +36,7 @@ public class EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceeded
 
     private readonly ISystemService _systemService;
 
-    public EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceededRule(
+    public EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceededAdaptionRule(
         ClimatisationRulesDiagnostics diagnostics,
         IConfigurationService configurationService,
         IPropertyService propertyService,
