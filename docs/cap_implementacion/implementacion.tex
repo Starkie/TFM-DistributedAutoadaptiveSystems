@@ -130,7 +130,7 @@ Respecto a la implementación de los módulos de reglas, ofrecemos una implement
 
 En el fragmento \ref{ls:adaption-rule-base} mostramos la clase base para implementar reglas de adaptación. Vemos que esta clase está suscrita a los eventos de integración de cambio de propiedad de adaptación y cambio en la configuración del sistema (lineas 2-3). Cuando el consumidor capture uno de estos eventos, lo propagará internamente y todas las reglas afectadas lo capturarán.
 
-La regla base está implementada según el patrón plantilla (o \foreign{english}{template})\footnote{\url{https://refactoring.guru/design-patterns/template-method}}. Estas reglas afectadas se evaluarán para determinar si es necesario ejecutarse (línea 11). Si es así, se ejecutarán ()
+Esta clase base se desarrolló siguiendo el patrón plantilla (o \foreign{english}{template})\footnote{\url{https://refactoring.guru/design-patterns/template-method}}. Ofrece un método que evalúa la condición de la regla (\texttt{EvaluateCondition}) y, si esta se cumple, la ejecuta (\texttt{Execute}). Las reglas que hereden de esta deberán implementar ambos métodos.
 
 \begin{lstlisting}[language={[Sharp]C},caption={Clase base para implementar reglas de adaptación. Se evalúa la condición, y si esta se cumple, se ejecuta.},captionpos=b, label=ls:adaption-rule-base]
 public abstract class RuleBase
@@ -163,3 +163,48 @@ public abstract class RuleBase
     // ..
 }
 \end{lstlisting}
+
+Respecto a las suscripciones, las herederas deberán indicar de qué propiedades o claves de configuración dependen. En base a ellas, deberemos suscribirnos a las notificaciones que emite el módulo de análisis. Para ello, hemos implementado una serie de atributos que permiten declarar estas dependencias.
+
+En el fragmento \ref{ls:adaption-rule-dependencies} mostramos un ejemplo. En la línea 1 tenemos el atributo que describe las dependencias con la propiedad de adaptación \texttt{Temperature}. Por otro lado, en las líneas 2-5 tenemos la declaración de dependencias con dos claves de configuración del servicio \texttt{Climatisation.AirConditioner}: \texttt{TargetTemperature} y \texttt{Mode}.
+\begin{lstlisting}[language={[Sharp]C},caption={Las reglas declaran sus dependencias sobre propiedades de adaptación usando atributos. Estos se utilizarán para las suscripciones a los temas de los eventos.},captionpos=b, label=ls:adaption-rule-dependencies]
+[RuleKnowledgePropertyDependency(ClimatisationConstants.Property.Temperature)]
+[RuleServiceConfigurationDependency(
+    ClimatisationAirConditionerConstants.AppName,
+    ClimatisationAirConditionerConstants.Configuration.TargetTemperature,
+    ClimatisationAirConditionerConstants.Configuration.Mode)]
+public class DisableAirConditionerWhenCoolingAndTargetTemperatureAchievedAdaptionRule
+  : AdaptionRuleBase
+{
+    // ...
+}
+\end{lstlisting}
+
+Para suscribirnos a las notificaciones de cambio de las dependencias de las reglas utilizaremos la \textbf{reflexión}: analizaremos el ensamblado del servicio buscando todas las reglas y obtendremos los valores de sus atributos. En base a ellos, nos suscribiremos a los \foreign{english}{topics} en el \foreign{english}{broker} de mensajería.
+
+\begin{lstlisting}[language={[Sharp]C},caption={Para suscribirnos a los \foreign{english}{topics} de las notificaciones obtenemos las dependencias de las reglas mediante reflexión},captionpos=b, label=ls:rules]
+public static IServiceCollection AddAdaptionLoopAnalysisServices(
+  this IServiceCollection services,
+  IConfiguration configuration,
+  Assembly rulesAssembly)
+{
+    // ...
+
+    services.AddBus(
+        configuration,
+        rulesAssembly,
+        registerSubscriptions: async bus =>
+        {
+            var subscriptions = GetRulesBusTopicNames(rulesAssembly);
+
+            foreach (var subscription in subscriptions)
+            {
+                await bus.Advanced.Topics.Subscribe(subscription);
+            }
+        });
+
+    return services;
+}
+\end{lstlisting}
+
+\section{Planificador}
