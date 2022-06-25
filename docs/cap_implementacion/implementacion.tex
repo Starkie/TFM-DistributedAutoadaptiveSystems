@@ -43,13 +43,15 @@ Por encima de este, tenemos el módulo de monitorización. Actúa como intermedi
 
 \section{Servicio de análisis y reglas}
 
-En el segundo hito, acordamos implementar la evaluación de reglas de adaptación. Esto requería de implementar el módulo de análisis del bucle MAPE-K y los módulos de reglas de la solución. Además, fue cuando empezamos a plantearnos el diseño de las notificaciones, las comunicaciones ascendentes. Así evitábamos que se acoplaran los componentes entre sí.
+En el segundo hito, acordamos implementar la evaluación de reglas de adaptación. Esto requería de implementar el módulo de análisis del bucle MAPE-K y los módulos de reglas de la solución. En este hito empezamos a plantearnos el diseño de las comunicaciones ascendentes: las notificaciones. Con ellas, evitaríamos que se los componentes se acoplaran a la capa superior.
 
-Primero describiremos este mecanismo de notificación. Optamos por implementar estas operaciones con \texttt{RabbitMQ}\footnote{Página oficial: \url{https://www.rabbitmq.com/}}. Se trata de un broker de mensajería ''sencillo'' ampliamente utilizado. Nos permite implementar los dos patrones que necesitamos: las notificaciones y las peticiones asíncronas.
+Primero describiremos las notificaciones. Optamos por implementar estas operaciones con \texttt{RabbitMQ}\footnote{Página oficial: \url{https://www.rabbitmq.com/}}. Se trata de un \foreign{english}{broker} de mensajería ''sencillo'' ampliamente utilizado. \cite{newmanBuildingMicroservicesDesigning2021} Nos permitió implementar los dos patrones de comunicación que necesitamos: las notificaciones y las peticiones asíncronas.
 
-Además, para implementar nuestro conector de forma agnóstica a la tecnología usada, utilizamos una librería llamada \texttt{Rebus}\footnote{Página oficial: \url{https://github.com/rebus-org/Rebus}}. Esta nos permite implementar comunicaciones con un bus, abstrayéndonos de la tecnología concreta utilizada para la comunicación. Esto nos permitiría cambiar en cualquier momento de nivel de transporte por uno que se ajuste más a nuestros requisitos.
+Para implementar nuestro conector, utilizamos una librería llamada \texttt{Rebus}\footnote{Página oficial: \url{https://github.com/rebus-org/Rebus}}. Esta nos permite interactuar con un bus, abstrayéndonos de la tecnología concreta utilizada para la comunicación. Así, podríamos cambiar de tecnología de transporte en cualquier momento por otra que se ajuste más a nuestros requisitos.
 
-Tomemos por ejemplo la comunicación entre el módulo de conocimiento y el servicio de análisis. Una vez se confirma la escritura de una propiedad o configuración en el conocimiento, este propaga internamente un \textbf{evento de integración} (línea 11 del fragmento \ref{ls:knowledge-set-property}) a través de un mediador\footnote{Página oficial: \url{https://github.com/jbogard/MediatR}}. que llega a todos los suscriptores de estén en la capa superior (capa del bucle).
+Finalmente, para desacoplar la funcionalidad de los servicios de la publicación y consumición de mensajes del bus, empleamos \texttt{MediatR}\footnote{Página oficial: \url{https://github.com/jbogard/MediatR}}. Esta librería ofrece un mediador que nos permite propagar eventos dentro de un servicio. El emisor no necesita tener referencias a los receptores. Es similar a un \foreign{english}{broker} de mensajería, pero interproceso.
+
+Comentado esto, describiremos la implementación de la comunicación entre el módulo de conocimiento y el servicio de análisis. Una vez se confirma la escritura de una propiedad o configuración en el conocimiento, este propaga internamente un \textbf{evento de integración} (línea 11 del fragmento \ref{ls:knowledge-set-property}) a través del mediador.
 
 
 \begin{lstlisting}[language={[Sharp]C},caption={Implementación del método que asigna valor a una propiedad. Muestra un ejemplo de propagación interna de eventos de integración.},captionpos=b, label=ls:knowledge-set-property]
@@ -63,13 +65,15 @@ private async Task SetProperty(SetPropertyDTO propertyDto)
 
     properties.AddOrUpdate(propertyDto.Name, newValue, (_, _) => newValue);
 
-    await _mediator.Publish(
+    await _mediator.Send(
       new PropertyChangedIntegrationEvent(propertyDto.Name));
 }
 
 \end{lstlisting}
 
-\begin{lstlisting}[language={[Sharp]C},caption={El publicador de eventos captura el evento de integración que se propaga internamente, y lo publica en el bus.},captionpos=b, label=ls:knowledge-set-property]
+El mediador le pasará el evento a nuestro publicador. Este publicará en el exchange el evento  (línea 15 del fragmento \ref{ls:knowledge-property-changed-publisher}). Lo recibirán todos los suscriptores ubicados en la capa superior.
+
+\begin{lstlisting}[language={[Sharp]C},caption={El publicador de eventos captura el evento de integración que se propaga internamente, y lo publica en el bus.},captionpos=b, label=ls:knowledge-property-changed-publisher]
 public class PropertyChangedIntegrationEventPublisher
   : IIntegrationEventPublisher<PropertyChangedIntegrationEvent>
 {
@@ -91,10 +95,71 @@ public class PropertyChangedIntegrationEventPublisher
 }
 \end{lstlisting}
 
-Una vez se publica el mensaje en el bus, el consumidor, que está suscrito al al mismo en el message queue. Y hará d que está suscrito al mismo, lo capturara.
+Finalmente, en el servicio de análisis, tenemos el consumidor (fragmento \ref{ls:analysis-property-changed-consumer}). Este recibirá el evento del bus y lo propagará internamente en el servicio. De esta forma, todos los manejadores (\foreign{english}{handlers}) del evento lo recibirán y podrán tratarlo.
 
-\textcolor{red}{Dibujo que represente RabbitMQ y rebus.}
+\begin{lstlisting}[language={[Sharp]C},caption={El consumidor recibe el evento de integración del bus y lo propaga internamente. Todos los manejadores de este evento lo recibirán.},captionpos=b, label=ls:analysis-property-changed-consumer]
+public class PropertyChangedIntegrationEventConsumer
+  : IIntegrationEventConsumer<PropertyChangedIntegrationEvent>
+{
+  private readonly AnalysisServiceDiagnostics _diagnostics;
 
-En cuanto a la implementación del módulo de análisis, este realmente no tiene mucha lógica. Participa como intermediario entre el conocimiento y los módulos de reglas. Esto nos permitía abstraer a las reglas del acceso al conocimiento, y en un futuro, añadir mecanismos de autenticación y autorización para protegerlos.
+  private readonly IMediator _mediator;
 
-Por otro lado, también traducen las notificaciones del módulo de conocimiento
+  public PropertyChangedIntegrationEventConsumer(
+      AnalysisServiceDiagnostics diagnostics,
+      IMediator mediator)
+  {
+      _diagnostics = diagnostics;
+      _mediator = mediator;
+  }
+
+  public async Task Handle(PropertyChangedIntegrationEvent message)
+  {
+      using var activity = _diagnostics.PropertyChangeEventReceived(message);
+
+      await _mediator.Publish(message);
+  }
+}
+\end{lstlisting}
+
+En cuanto a la implementación del módulo de análisis, este realmente no tiene mucha lógica. Participa como intermediario entre el conocimiento y los módulos de reglas. Recibe los eventos de cambios en las propiedades y los propaga a la capa superior, usando el tópico correspondiente. Esto nos permitió abstraer a las reglas del acceso al conocimiento, y limitar su acceso solo a lecturas de propiedades y configuración.
+
+En trabajos posteriores, este servicio podría ampliarse añadiendo autenticación y autorización. Así, se podría evitar que servicios no autorizados accedan al conocimiento o soliciten adaptaciones maliciosas.
+
+Respecto a la implementación de los módulos de reglas, ofrecemos una implementación de referencia. Como estos se encuentran a nivel de la solución, el desarrollador es libre de elegir la que considere más conveniente.
+
+En el fragmento \ref{ls:adaption-rule-base} mostramos la clase base para implementar reglas de adaptación. Vemos que esta clase está suscrita a los eventos de integración de cambio de propiedad de adaptación y cambio en la configuración del sistema (lineas 2-3). Cuando el consumidor capture uno de estos eventos, lo propagará internamente y todas las reglas afectadas lo capturarán.
+
+La regla base está implementada según el patrón plantilla (o \foreign{english}{template})\footnote{\url{https://refactoring.guru/design-patterns/template-method}}. Estas reglas afectadas se evaluarán para determinar si es necesario ejecutarse (línea 11). Si es así, se ejecutarán ()
+
+\begin{lstlisting}[language={[Sharp]C},caption={Clase base para implementar reglas de adaptación. Se evalúa la condición, y si esta se cumple, se ejecuta.},captionpos=b, label=ls:adaption-rule-base]
+public abstract class RuleBase
+    : IIntegrationEventHandler<PropertyChangedIntegrationEvent>,
+      IIntegrationEventHandler<ConfigurationChangedIntegrationEvent>
+{
+    // ..
+
+    private async Task Handle()
+    {
+        try
+        {
+            if (await EvaluateCondition())
+            {
+                await Execute();
+            }
+        }
+        catch (Exception e)
+        {
+            _diagnostics.RuleEvaluationError(_ruleName, e);
+
+            throw;
+        }
+    }
+
+    protected abstract Task<bool> EvaluateCondition();
+
+    protected abstract Task Execute();
+
+    // ..
+}
+\end{lstlisting}
