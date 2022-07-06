@@ -182,7 +182,7 @@ public class DisableAirConditionerWhenCoolingAndTargetTemperatureAchievedAdaptio
 
 Para suscribirnos a las notificaciones de cambio de las dependencias de las reglas utilizaremos la \textbf{reflexión}: analizaremos el ensamblado del servicio buscando todas las reglas y obtendremos los valores de sus atributos. En base a ellos, nos suscribiremos a los \foreign{english}{topics} en el \foreign{english}{broker} de mensajería.
 
-\begin{lstlisting}[language={[Sharp]C},caption={Para suscribirnos a los \foreign{english}{topics} de las notificaciones obtenemos las dependencias de las reglas mediante reflexión},captionpos=b, label=ls:rules]
+\begin{lstlisting}[language={[Sharp]C},caption={Para suscribirnos a los \foreign{english}{topics} de las notificaciones obtenemos las dependencias de las reglas mediante reflexión},captionpos=b, label=ls:rules-registration]
 public static IServiceCollection AddAdaptionLoopAnalysisServices(
   this IServiceCollection services,
   IConfiguration configuration,
@@ -208,3 +208,56 @@ public static IServiceCollection AddAdaptionLoopAnalysisServices(
 \end{lstlisting}
 
 \section{Planificador}
+
+En el tercer hito implementamos las peticiones de cambio de las reglas y el servicio de planificación. Aquí surge también la necesidad de un tercer patrón de comunicación: las peticiones asíncronas.
+
+Continuando por donde nos quedamos, una vez se evalúa la condición de la regla y esta estima que debe ejecutarse, necesitamos un mecanismo para solicitar cambios en la implementación del sistema. En el cuerpo de la regla se solicitarán cambios a la configuración actual del sistema en base a los síntomas que haya detectado la regla.
+
+Las reglas comunicarán esta solicitud de cambio al módulo de análisis. Esta solicitud de cambio deberá comunicársela al módulo de análisis, que la redirigirá al planificador. Este deberá generar un \textbf{plan de cambio} a partir de las solicitudes. En el fragmento \ref{ls:change-request-builder}.
+
+\begin{lstlisting}[language={[Sharp]C},caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.},captionpos=b, label=ls:change-request-builder]
+protected override async Task Execute()
+{
+  await _systemService.RequestConfigurationChange(changeRequest =>
+  {
+      changeRequest
+          .ForSymptom(TemperatureGreaterThanHotThreshold)
+          .WithService(ClimatisationAirConditionerConstants.AppName, service =>
+          {
+              service.MustBePresent()
+                  .WithParameter(
+                      ClimatisationAirConditionerConstants.Configuration.Mode,
+                      AirConditioningMode.Cooling.ToString());
+          });
+  });
+}
+\end{lstlisting}
+
+Para redirigir esta petición de cambio, usaremos las peticiones asíncronas. Su implementación es muy similar a la de las notificaciones, explicada en detalle en el apartado anterior. La única diferencia radica en la cardinalidad de la comunicación: el módulo de análisis publicará el mensaje directamente en la cola de trabajo, en lugar de publicarlo en un exchange para que lo reciba cualquier subscriptor. Por tanto, la implementación será muy similar. Sólo cambia la implementación del publicador:
+
+\begin{lstlisting}[language={[Sharp]C},caption={Para suscribirnos a los \foreign{english}{topics} de las notificaciones obtenemos las dependencias de las reglas mediante reflexión},captionpos=b, label=ls:rules]
+public class SystemConfigurationChangeRequestPublisher
+  : IRequestPublisher<SystemConfigurationChangeRequest>
+  where TRequest : Request
+{
+  public SystemConfigurationChangeRequestPublisher(IBus bus)
+  {
+      _bus = bus;
+  }
+
+  public async Task<Unit> Handle(
+      SystemConfigurationChangeRequest request,
+      CancellationToken cancellationToken)
+  {
+      await _bus.Advanced.Routing.Send(
+          AdaptionLoopPlanningConstants.Queues.PlanningServiceQueue,
+          request);
+
+      return Unit.Value;
+  }
+}
+  \end{lstlisting}
+
+El resto de la implementación será muy similar. Solo cambiará las interfaces que debamos implementar (\texttt{IRequestConsumer} en lugar de \texttt{IIntegrationEventConsumer}, etc.).
+
+El planificador recibirá esta petición de cambio y la
