@@ -186,9 +186,32 @@ Requerimos entonces 4 servicios para implementar la solución: Servicio de aire 
 
 \section{Implementación}
 
-Para la implementación, hemos utilizado las mismas tecnologías que en los servicios del bucle MAPE-K: microservicios en ASP.NET Core, empaquetados en contenedores de Docker para facilitar su despliegue. Generamos los API Clients con OpenAPI y demás.
+Para la implementación, hemos utilizado las mismas tecnologías descritas en el capítulo \ref{chap:implementación}: microservicios \texttt{ASP.NET}, comunicación mediante APIs REST y \foreign{english}{brokers} de mensajería \texttt{RabbitMQ}. Generamos los API Clients con OpenAPI y demás.
 
-Como no disponemos de un aire acondicionado real, hemos optado por implementar uno ficticio. Cuando está apagado, la temperatura aumenta o disminuye según una configuración del fake. De esta forma, podemos simular los cambios de temperatura más rápido y ver si se aplican las adaptaciones pertinentes.
+A continuación describiremos todos los servicios implementados:
+
+\subsection{Servicio de aire acondicionado}
+
+El servicio de aire acondicionado será nuestro sistema manejado. Como no disponemos de un aire acondicionado real, hemos optado por implementar uno ficticio. Este cuenta con tres estados de operación: apagado (\texttt{OFF}), enfriando (\texttt{COOLING}) o calentando (\texttt{HEATING}). Según el modo, aumentará o disminuirá la temperatura que reporta un termómetro interno. Además, cuando está apagado, la temperatura aumenta o disminuye según una configuración. De esta forma, podemos simular los cambios de temperatura más rápido y ver si se aplican correctamente las adaptaciones correspondientes.
+
+Este servicio además expone tres endpoints HTTP, que nos permiten cambiar el modo del aire acondicionado. Serán estos los endpoints que invocará el servicio de efectores para manipular su estado.
+
+Por otro lado, para simplificar la configuración del sistema, optamos por registrar las propiedades del aire acondicionado durante su arranque. Tenemos para ello un servicio en segundo plano (un \foreign{english}{background service} de \texttt{ASP.NET}) que registra la configuración inicial durante el arranque. Así le daremos valor a las propiedades como los umbrales de temperatura o las variables como is-deployed.
+
+
+\subsection{Monitor}
+
+El monitor de la solución expone endpoints para recabar las métricas. En este caso, las mediciones de temperatura del aire acondicionado. Estos endpoints
+
+\subsection{Reglas}
+
+\subsection{Efectores}
+
+
+
+\section{Despliegue y Pruebas}
+
+Debido a la gran cantidad de microservicios que componen la solución, optamos por empaquetarlos en contenedores \texttt{Docker}. Para ello, definimos un plan de despliegue con Docker Compose, que nos permitía definir el número de instancias y las dependencias entre ellas. Por ejemplo, todos los servicios que requieran de un bus de mensajería, dependen de la instancia de RabbitMQ desplegada. Por simplicidad, optamos por desplegar una única instancia para toda la solución. Lo ideal sería que cada que requiriera de emitir sus propias notificaciones dispongan de la suya propia, que se adapte más a sus necesidades.
 
 \subsection{Telemetría}
 
@@ -234,3 +257,4 @@ Gracias a las trazas distribuidas, podemos ver todas las actividades por las que
 \subsubsection{Grafana: Visualización}
 
 Desarrollamos un panel de monitorización con Grafana. Esto nos permitía consultar en un solo lugar las métricas, los logs y las trazas.
+
