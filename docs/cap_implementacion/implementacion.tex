@@ -211,31 +211,32 @@ public static IServiceCollection AddAdaptionLoopAnalysisServices(
 
 En el tercer hito implementamos las peticiones de cambio de las reglas y el servicio de planificación. Aquí surge también la necesidad de un tercer patrón de comunicación: las peticiones asíncronas.
 
-Continuando por donde nos quedamos, una vez se evalúa la condición de la regla y esta estima que debe ejecutarse, necesitamos un mecanismo para solicitar cambios en la implementación del sistema. En el cuerpo de la regla se solicitarán cambios a la configuración actual del sistema en base a los síntomas que haya detectado la regla.
-
-Las reglas comunicarán esta solicitud de cambio al módulo de análisis. Esta solicitud de cambio deberá comunicársela al módulo de análisis, que la redirigirá al planificador. Este deberá generar un \textbf{plan de cambio} a partir de las solicitudes. En el fragmento \ref{ls:change-request-builder}.
+Continuando por donde nos quedamos, una vez se evalúa la condición de la regla y esta estima que debe ejecutarse, necesitamos un mecanismo para solicitar cambios en la configuración del sistema. En el cuerpo de la regla se solicitarán cambios a la configuración actual del sistema en base a los síntomas que haya detectado la regla. En el fragmento \ref{ls:change-request-builder} mostramos un ejemplo de esta solicitud de cambio. Para un síntoma determinado, \texttt{TemperatureGreaterThanHotThreshold} (línea 6), requerimos que el servicio \texttt{Climatisation.AirConditionerService} esté presente (lineas 7-10) con la configuración \texttt{Mode} con el valor \texttt{Cooling} (lineas 11-13).
 
 \begin{lstlisting}[language={[Sharp]C},caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.},captionpos=b, label=ls:change-request-builder]
 protected override async Task Execute()
 {
   await _systemService.RequestConfigurationChange(changeRequest =>
   {
-      changeRequest
-          .ForSymptom(TemperatureGreaterThanHotThreshold)
-          .WithService(ClimatisationAirConditionerConstants.AppName, service =>
-          {
-              service.MustBePresent()
-                  .WithParameter(
-                      ClimatisationAirConditionerConstants.Configuration.Mode,
-                      AirConditioningMode.Cooling.ToString());
-          });
+    changeRequest
+      .ForSymptom(TemperatureGreaterThanHotThreshold)
+      .WithService(ClimatisationAirConditionerConstants.AppName, service =>
+      {
+        service
+          .MustBePresent()
+          .WithParameter(
+            ClimatisationAirConditionerConstants.Configuration.Mode,
+            AirConditioningMode.Cooling.ToString());
+      });
   });
 }
 \end{lstlisting}
 
-Para redirigir esta petición de cambio, usaremos las peticiones asíncronas. Su implementación es muy similar a la de las notificaciones, explicada en detalle en el apartado anterior. La única diferencia radica en la cardinalidad de la comunicación: el módulo de análisis publicará el mensaje directamente en la cola de trabajo, en lugar de publicarlo en un exchange para que lo reciba cualquier subscriptor. Por tanto, la implementación será muy similar. Sólo cambia la implementación del publicador:
+Las reglas comunicarán esta solicitud de cambio al módulo de análisis. Esta solicitud de cambio deberá comunicársela al módulo de análisis, que la redirigirá al planificador. Este deberá generar un \textbf{plan de cambio} a partir de las solicitudes.
 
-\begin{lstlisting}[language={[Sharp]C},caption={Para suscribirnos a los \foreign{english}{topics} de las notificaciones obtenemos las dependencias de las reglas mediante reflexión},captionpos=b, label=ls:rules]
+Para redirigir esta petición de cambio, usaremos las peticiones asíncronas. Su implementación es muy similar a la de las notificaciones, explicada en detalle en el apartado anterior. La única diferencia radica en la cardinalidad de la comunicación: el módulo de análisis publicará el mensaje directamente en la cola de trabajo, en lugar de publicarlo en un exchange para que lo reciba cualquier subscriptor. Entonces, sólo cambia la implementación del publicador. En la línea 14 del fragmento \ref{ls:request-publisher} vemos que el mensaje se enruta directamente a la cola \texttt{PlanningServiceQueue}.
+
+\begin{lstlisting}[language={[Sharp]C},caption={Para suscribirnos a los \foreign{english}{topics} de las notificaciones obtenemos las dependencias de las reglas mediante reflexión},captionpos=b, label=ls:request-publisher]
 public class SystemConfigurationChangeRequestPublisher
   : IRequestPublisher<SystemConfigurationChangeRequest>
   where TRequest : Request
@@ -258,6 +259,49 @@ public class SystemConfigurationChangeRequestPublisher
 }
   \end{lstlisting}
 
-El resto de la implementación será muy similar. Solo cambiará las interfaces que debamos implementar (\texttt{IRequestConsumer} en lugar de \texttt{IIntegrationEventConsumer}, etc.).
+El resto de la implementación será muy similar. Solo cambiará las interfaces que debamos implementar para cada tipo de componente (\texttt{IRequestConsumer} en lugar de \texttt{IIntegrationEventConsumer}, etc.).
 
-El planificador recibirá esta petición de cambio y la
+El planificador recibirá esta petición de cambio y deberá elaborar un plan de adaptación. Para ello, verificará que el plan de cambio es viable. En nuestro prototipo, para reducir el ámbito del proyecto, nos limitamos a comprobar que la configuración sea distinta a la configuración actual. Si el sistema ya se encuentra en el estado solicitado, el plan de cambio se queda vacío y no se propaga.
+
+Para ello, el servicio de planificación compara la configuración actual con la solicitada, y añade al plan de adaptación las \textbf{acciones de adaptación} requeridas para alcanzar el estado deseado. Ya comentamos que los operadores arquitectónicos con los que operaremos serán del ámbito de los microservicios: activar servicio, eliminar servicio, vincular servicios, desvincularlos y cambiar su configuración.
+
+Por ejemplo, un plan de adaptación para la regla evaluada anteriormente sería:
+
+\begin{lstlisting}[language=python,caption={Plan de adaptación generado. Solo contiene una acción de adaptación: cambiar la configuración \texttt{Mode} del servicio \texttt{AirConditioner}.},captionpos=b, label=ls:adaption-change-plan]
+{
+  "ChangePlan": {
+    "Timestamp": "2022-07-09T09:53:01.1868834Z",
+    "Actions":
+    [
+      {
+        "Type": 3, // Set Parameter
+        "ServiceName": "Climatisation.AirConditioner.Service",
+        "PropertyName": "Mode",
+        "PropertyValue": "Cooling"
+      }
+    ]
+  },
+  "Symptoms":
+  [
+    {
+      "Name": "temperature-lesser-than-cold-threshold",
+      "Value": "true"
+    }
+  ]
+}
+\end{lstlisting}
+
+\section{Ejecutor y efectores}
+
+En el hito final implementamos el módulo ejecutor y los efectores. Este módulo recibirá el plan de adaptación del planificador. A partir de este, deberá distribuir las acciones de adaptación que contiene entre sus servicios de efectores.
+
+Para transmitirle el plan de adaptación del planificador al ejecutor, volvemos a recurrir a las peticiones asíncronas. De forma similar al servicio de análisis y el planificador, estos se encuentran en la misma capa. El plan de adaptación que se le pasa como evento de integración es el que ya mostramos en el fragmento \ref{ls:adaption-change-plan}.
+
+Una vez captura la petición, el ejecutor deberá determinar qué servicios debe cambiar, y manipular sus efectores. Para nuestra implementación, simplemente agrupamos las acciones por el nombre del servicio afectado. Las publicaremos como notificaciones usando el nombre del servicio como tema.
+
+Estas notificaciones las capturan los servicios de efectores.
+La comunicación entre el módulo de planificación  y el ejecutor. El efector actúa como un traductor del modelo de alto nivel al nivel del sistema: \textcolor{red}{citar paper de garlan} para cada acción de adaptación, deberá determinar cómo ejecutarla en el sistema manejado. Estos servicios son los que manipularán el estado del sistema. Actúan como envoltorios del mismo. La comunicación entre este servicio y el sistema es un tanto especial: dependerá del sistema manejado; de si tenemos control sobre su implementación. Si no es así, tendremos que adaptarnos a la implementación que ofrezca este (HTTP, mensajería...).
+
+Dependiendo de la acción, el efector hará una acción u otra: deplegar un servicio, o eliminarlo, cambiar la configuración, etc.
+
+Continuando con nuestro ejemplo del modo del aire acondicionado, el sistema modificaría la configuración del mismo. Una vez se confime el cambio, si se ha llevado a cabo, se ejecutará actualizará su valor en la base de conocimiento. Dependerá de si el sistema es capaz de hacerlo o debe recaer la responsabilidad en el efector.
