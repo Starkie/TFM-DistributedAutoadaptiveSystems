@@ -42,6 +42,7 @@ Por encima de este, tenemos el módulo de monitorización. Actúa como intermedi
 \textcolor{red}{¿Añadir ejemplo? ¿Desribir los componentes implementados? ¿Debería describirse el caso de uso con la implementación del bucle MAPE-K?}
 
 \section{Servicio de análisis y reglas}
+\label{sec:implementacion-modulo-reglas}
 
 En el segundo hito, acordamos implementar la evaluación de reglas de adaptación. Esto requería de implementar el módulo de análisis del bucle MAPE-K y los módulos de reglas de la solución. En este hito empezamos a plantearnos el diseño de las comunicaciones ascendentes: las notificaciones. Con ellas, evitaríamos que se los componentes se acoplaran a la capa superior.
 
@@ -167,6 +168,7 @@ public abstract class RuleBase
 Respecto a las suscripciones, las herederas deberán indicar de qué propiedades o claves de configuración dependen. En base a ellas, deberemos suscribirnos a las notificaciones que emite el módulo de análisis. Para ello, hemos implementado una serie de atributos que permiten declarar estas dependencias.
 
 En el fragmento \ref{ls:adaption-rule-dependencies} mostramos un ejemplo. En la línea 1 tenemos el atributo que describe las dependencias con la propiedad de adaptación \texttt{Temperature}. Por otro lado, en las líneas 2-5 tenemos la declaración de dependencias con dos claves de configuración del servicio \texttt{Climatisation.AirConditioner}: \texttt{TargetTemperature} y \texttt{Mode}.
+
 \begin{lstlisting}[language={[Sharp]C},caption={Las reglas declaran sus dependencias sobre propiedades de adaptación usando atributos. Estos se utilizarán para las suscripciones a los temas de los eventos.},captionpos=b, label=ls:adaption-rule-dependencies]
 [RuleKnowledgePropertyDependency(ClimatisationConstants.Property.Temperature)]
 [RuleServiceConfigurationDependency(

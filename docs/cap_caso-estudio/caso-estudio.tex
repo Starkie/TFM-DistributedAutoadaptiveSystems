@@ -111,6 +111,7 @@ Por ejemplo, en el monitor de las temperaturas, \emph{climatisation.monitor.temp
 \end{longtable}
 
 \subsection{Reglas de adaptación}
+\label{sec:caso-estudio-diseño-reglas}
 
 En base a cambios de la temperatura local, deberemos decidir si es necesario llevar a cabo una acción correctiva. Por ejemplo, que si la temperatura es inferior al umbral de temperatura fría, el aparato se enciende en modo calentador. Para ello, deberemos implementar un servicio de reglas (\emph{Climatisation.Rules.Service}). En él, incluiremos una serie de reglas que se disparen cuando cambie una de nuestras propiedades de adaptación. En este caso, la temperatura.
 
@@ -141,7 +142,7 @@ En la tabla \ref{tab:adaption-rules-climatisation} definimos las cuatro reglas n
     & \includegraphics[scale=0.75]{cap_caso-estudio/images/adaption-loop-rule-cooling} \\
     \hline
 
-    \textbf{Regla:} & \emph{DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchieved}  \\
+    \textbf{Regla:} & \emph{DisableAirConditionerWhenCoolingAndTargetTemperatureAchievedAdaptionRule}  \\
     \textbf{Descripción:} & Apaga el aire acondicionado cuando el modo enfiar está activo y se ha alcanzado la temperatura de confort.  \\
     \textbf{Condición:} & \emph{airconditioner-mode} == \emph{Cooling} \textbf{AND} \emph{temperature} <= \emph{target-temperature}  \\
     \textbf{Cuerpo:} &  \\
@@ -192,22 +193,60 @@ A continuación describiremos todos los servicios implementados:
 
 \subsection{Servicio de aire acondicionado}
 
-El servicio de aire acondicionado será nuestro sistema manejado. Como no disponemos de un aire acondicionado real, hemos optado por implementar uno ficticio. Este cuenta con tres estados de operación: apagado (\texttt{OFF}), enfriando (\texttt{COOLING}) o calentando (\texttt{HEATING}). Según el modo, aumentará o disminuirá la temperatura que reporta un termómetro interno. Además, cuando está apagado, la temperatura aumenta o disminuye según una configuración. De esta forma, podemos simular los cambios de temperatura más rápido y ver si se aplican correctamente las adaptaciones correspondientes.
+El servicio de aire acondicionado será nuestro sistema manejado. Como no disponemos de un aire acondicionado real, hemos optado por implementar uno ficticio. Este cuenta con tres estados de operación: apagado (\texttt{OFF}), enfriando (\texttt{COOLING}) o calentando (\texttt{HEATING}). Según el modo, aumentará o disminuirá la temperatura que reporta un termómetro interno. Además, cuando está apagado, la temperatura ficticia aumenta o disminuye gradualmente según una configuración. De esta forma, podemos simular los cambios de temperatura más rápido y ver si se aplican correctamente las adaptaciones correspondientes.
 
-Este servicio además expone tres endpoints HTTP, que nos permiten cambiar el modo del aire acondicionado. Serán estos los endpoints que invocará el servicio de efectores para manipular su estado.
+Además, este servicio expone tres endpoints HTTP, que nos permiten cambiar el modo del aire acondicionado. Serán estos los que invocará el servicio de efectores para manipular su estado.
 
-Por otro lado, para simplificar la configuración del sistema, optamos por registrar las propiedades del aire acondicionado durante su arranque. Tenemos para ello un servicio en segundo plano (un \foreign{english}{background service} de \texttt{ASP.NET}) que registra la configuración inicial durante el arranque. Así le daremos valor a las propiedades como los umbrales de temperatura o las variables como is-deployed.
-
+Por otro lado, para simplificar la configuración del sistema, optamos por registrar las propiedades del aire acondicionado durante su arranque. Tenemos para ello un servicio en segundo plano (un \foreign{english}{background service} de \texttt{ASP.NET}) que registra la configuración inicial durante el arranque. Así le daremos valor a las propiedades como los umbrales de temperatura o las variables como is-deployed. \textcolor{red}{Es necesario un fragmento de código?}
 
 \subsection{Monitor}
 
-El monitor de la solución expone endpoints para recabar las métricas. En este caso, las mediciones de temperatura del aire acondicionado. Estos endpoints
+El monitor de la solución expone endpoints para recabar las mediciones de las sondas. En este caso, las mediciones de temperatura del aire acondicionado: \texttt{POST Measurement/Temperature}. Este endpoint recibe la temperatura y ejecuta las validaciones del monitor descritas en el apartado anterior. Si el valor es válido, lo manda al servicio de monitorización.
+
+También ofrece endpoints para actualizar la configuración del servicio de aire acondicionado. Así podrá registra su configuración inicial o los modos de operación cuando cambien. Son un
 
 \subsection{Reglas}
 
+En cuanto al servicio de reglas, este contiene las cuatro reglas definidas en el apartado \ref{sec:caso-estudio-diseño-reglas}. Se han implementado siguiendo la estructura descrita en el apartado \ref{sec:implementacion-modulo-reglas}: Todas ellas heredan de las clase abstracta \texttt{AdaptionRuleBase}. Deben implementar los métodos para evaluar la condición y ejecutar su acción; y deben declarar las propiedades de adaptación de las que dependen.
+
+Mediante atributos las reglas describen las propiedades de las que dependen, aquellas que aparecen en su condición. Tomemos por ejemplo el fragmento \ref{ls:adaption-rule-dependencies}. Vemos que la declaración de \texttt{DisableAirConditionerWhenCoolingAndTargetTemperatureAchievedAdaptionRule} depende de tres propiedades o configuraciones: \texttt{airconditioner-mode}, \texttt{temperature} y \texttt{hot-temperature-threshold}.
+
+Nos centraremos en la regla \texttt{DisableAirConditionerWhenCoolingAndTargetTemperatureAchievedAdaptionRule}, que ya habíamos mencionado en apartados anteriores. Ya habíamos mostrado su método \texttt{Execute} en el fragmento \ref{ls:change-request-builder}.
+
+Solo nos queda exponer la implementación de referencia del método \texttt{EvaluateCondition}. En el fragmento \ref{ls:adaption-rule-evaluate-condition} ofrecemos la implementación de la condición \emph{airconditioner-mode} == \emph{Cooling} \textbf{AND} \emph{temperature} <= \emph{target-temperature}. Observamos que en las líneas 3-5, 12-15 y 17-20 se obtienen las propiedades de adaptación o claves de configuración desde el servicio de análisis. En base a ellas, en las líneas 22-23 se evalúa la condición descrita.
+
+\begin{lstlisting}[language={[Sharp]C},caption={Implementación de referencia del método \texttt{EvaluateCondition}. La regla obtiene del conocimiento el estado actual del sistema y determina si debe ejecutarse.},captionpos=b, label=ls:adaption-rule-evaluate-condition]
+protected override async Task<bool> EvaluateCondition()
+{
+  var currentTemperature =
+    await _propertyService.GetProperty<TemperatureMeasurementDTO>(
+      ClimatisationConstants.Property.Temperature);
+
+  if (currentTemperature is null)
+  {
+      return false;
+  }
+
+  var airConditionerMode = await _configurationService
+    .GetConfigurationKey<AirConditioningMode?>(
+        ClimatisationAirConditionerConstants.AppName,
+        ClimatisationAirConditionerConstants.Configuration.Mode);
+
+  var targetTemperature = await _configurationService
+      .GetConfigurationKey<float?>(
+        ClimatisationAirConditionerConstants.AppName,
+        ClimatisationConstants.Configuration.TargetTemperature);
+
+  return airConditionerMode == AirConditioningMode.Cooling
+      && currentTemperature.Value <= targetTemperature;
+}
+\end{lstlisting}
+
 \subsection{Efectores}
 
+Finalmente, tenemos el servicio de efectores. Este servicio captura las solicitudes de ejecución emitidas por el módulo de ejecución y determina cómo deberán llevarse a cabo. Para el caso de estudio, por restricciones de tiempo, nos limitamos a implementar las adaptaciones que implicaban cambios en los parámetros del sistema.
 
+Este tipo de adaptaciones son muy dependientes del sistema manejado. Por ejemplo, para el servicio de aire acondicionado, cambiar el modo de operación supone invocar a los endpoints descritos anteriormente. Por ejemplo: (\texttt{POST /airconditioner/turn-off}).
 
 \section{Despliegue y Pruebas}
 
