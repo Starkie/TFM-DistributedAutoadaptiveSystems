@@ -374,8 +374,7 @@ Universitat Polit\`ecnica de Val\`encia
 \newpage
 \if@twocolumn\hbox{}\newpage\fi\fi\fi}
 
-\AtBeginDocument{%
-    \frontmatter\m@ketitle\cleardoublepage\thispagestyle{plain}}
+\AtBeginDocument{\thispagestyle{plain}}
 
 \newcounter{appendix}
 \AtEndDocument{%
