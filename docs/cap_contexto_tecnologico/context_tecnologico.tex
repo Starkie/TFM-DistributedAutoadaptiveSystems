@@ -3,11 +3,13 @@
 
 \section{Computación autónoma y bucles de control}
 
-Según \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}, la \textbf{computación autónoma} tiene como objetivo dotar a los sistemas de \textbf{autonomía} en su operación; capacidades para gestionarse a si mismos. Es decir, deberán adaptarse a los distintos escenarios que puedan darse durante su ejecución. Con esto, buscamos alcanzar una reducción en el coste de operación y hacer más gestionable la complejidad de los sistemas.
+Según \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}, la \textbf{computación autónoma} tiene como objetivo dotar a los sistemas de \textbf{autonomía} en su operación. Es decir, capacidades para gestionarse a si mismos. Los sistemas deberán adaptarse a los cambios en su entorno de ejecución. Con esto, buscamos alcanzar una reducción en el coste de operación y hacer más manejable la complejidad de los sistemas.
 
-Estas adaptaciones se realizan en base a directivas de alto nivel proporcionadas por un humano: el humano fija los objetivos que el sistema debe alcanzar; y este deberá adaptarse para lograrlo, si es posible. Siguiendo con el ejemplo de la página web, el operador humano podría definir un máximo de carga por cada instancia. Entonces, cuando se supera el umbral, el sistema podría decidir que se requiere una acción correctiva que consista en desplegar nuevas instancias del servicio cuando haya muchos accesos concurrentes. Cuando la carga de los servicios baje, podemos eliminarlas.
+Las adaptaciones pueden ser de distintos tipos: cambios en sus parámetros de configuración, habilitar o deshabilitar funcionalidades, etc. Estas se realizan en base a directivas de alto nivel, los objetivos. Un operario humano define las metas que el sistema debe alcanzar, y este intentará planificar acciones correctivas para alcanzarlo.
 
-Para implementar estas capacidades de adaptación, recurriremos a la teoría de control y el \textbf{bucle de control} (o \emph{feedback loop}). \cite{brunEngineeringSelfAdaptiveSystems2009} Se trata de un proceso iterativo compuesto por cuatro actividades (figura \ref{fig:bucle-control}):
+Siguiendo con el ejemplo de la tienda \foreign{english}{on-line}, el operario podría definir un umbral máximo de carga por cada instancia. Cuando se supere, el sistema podría decidir que se requiere una acción correctiva. Por ejemplo, esta acción podría consistir en desplegar nuevas instancias del servicio. Cuando la carga de los servicios baje, podrá optar por eliminarlas.
+
+Para implementar estas capacidades de adaptación se recurre a la teoría de control y al \textbf{bucle de control} (o \emph{feedback loop}). \cite{brunEngineeringSelfAdaptiveSystems2009} Se trata de un proceso iterativo para la gestión de sistemas. A partir de información sobre el estado del sistema y su entorno, pauta acciones correctivas. Estas se basan en heurísticas definidas por los administradores del sistema. Puede dividirse en cuatro etapas (figura \ref{fig:bucle-control}):
 
 \begin{figure}[h]
   \centering
@@ -17,96 +19,113 @@ Para implementar estas capacidades de adaptación, recurriremos a la teoría de 
 \end{figure}
 
 \begin{itemize}
-  \item \textbf{Recopilar información}: El bucle \textbf{monitoriza} el estado del sistema a través de \textbf{sondas}. Estas reportan información del sistema y del entorno de ejecución. Pueden ser métricas del rendimiento del sistema, estado de los componentes, etc.
+  \item \textbf{Recopilar información}: El bucle \textbf{monitoriza} el estado del sistema a través de \textbf{sondas}. Estas reportan información del sistema y del entorno de ejecución. Pueden ser métricas de rendimiento, estado de los componentes, cambios en en el entorno, etc.
 
-  Estos datos en bruto deben ser limpiados, filtrados y agregados. Si se considera que son relevantes, se almacenan para informar las siguientes etapas del bucle.
+  Estos datos en bruto deben ser limpiados, filtrados y agregados para sintetizarlos en propiedades de nuestro interés. Si se considera que son relevantes, se almacenan para informar las siguientes etapas del bucle.
 
-  \item \textbf{Analizar}: A partir de las propiedades de adaptación, la etapa de análisis debe identificar \textbf{síntomas}: indicadores de una situación que requiera de nuestra atención. Puede ser mediante heurísticas que hayamos configurado, análisis estadístico \textcolor{red}{y cosas así}. Un ejemplo de síntoma sería ''uso de CPU elevado'', ''número elevado de mensajes encolados en un sistema de mensajería'' \textcolor{red}{entre otras}.
+  \item \textbf{Analizar}: Basándose en la información considerada de interés, la etapa de análisis debe identificar \textbf{síntomas}: indicadores de una situación que requiera de nuestra atención. Puede ser mediante heurísticas predefinidas, análisis estadístico u otros métodos. Un ejemplo de síntoma sería ''uso de CPU elevado'', ''número elevado de mensajes encolados en un sistema de mensajería'', etc.
 
-  \item \textbf{Decidir}: A partir de los síntomas, el bucle debe determinar si es necesario tomar alguna acción correctiva. \textbf{Planifica} las acciones que se llevarán a cabo para que el sistema se adapte y alcance una configuración deseable. Por ejemplo, si hay muchos mensajes encolados, se podría solicitar el iniciar otra instancia del servicio que los consuma y procese en paralelo.
+  \item \textbf{Decidir}: \textcolor{red}{A partir de los síntomas, el bucle debe determinar si es necesario tomar alguna acción. Si detecta que no estamos cumpliendo los objetivos, o que puede mejorarse la configuración actual, .} \textbf{Planifica} qué acciones deben llevarse a cabo para que el sistema se adapte y alcance una configuración deseable. Por ejemplo, si hay muchos mensajes encolados, se podría solicitar el iniciar otra instancia del servicio que los consuma y procese en paralelo.
 
-  \item \textbf{Actuar}: Si el bucle ha planificado alguna acción, se intentará \textbf{ejecutar} en esta etapa final. Mediante \textbf{efectores} en el sistema, el bucle es capaz de cambiar la configuración actual del mismo. Dependiendo del éxito de esta etapa, la adaptación se lleva a cabo o no. Finalizada esta, se vuelve a recopilar información y el bucle continúa iterando.
+  \item \textbf{Actuar}: Si se ha planificado alguna acción, se intentará \textbf{ejecutar} en esta etapa final. Mediante \textbf{efectores} en el sistema, el bucle es capaz de modificar su configuración. Dependiendo del éxito de ejecución, la adaptación se lleva a cabo o no. Finalizada esta etapa, se vuelve a recopilar información y arranca de nuevo el proceso.
 \end{itemize}
 
-Este tipo de proceso está presente en gran variedad de contextos como puede ser operación de plantas industriales, en procesos naturales, etc. \textcolor{red}{Citar TFM planta embalaje}. En la ingeniería de \emph{software}, encontramos diversas aplicaciones de los bucles de control. Pero normalmente están implícitos en la implementación. \cite{brunEngineeringSelfAdaptiveSystems2009}
 
-los bucles de control pueden ser implícitos, dentro del código y las condiciones, o explícitos. \cite{brunEngineeringSelfAdaptiveSystems2009} Lo ideal es contar con bucles externos, esto nos permite separar la funcionalidad de las capacidades de adaptación. \ Esto facilita la implementación.
+\textcolor{red}{Hablar de human in the loop: solicitamos la intervención del humano cuando no contamos con suficiente información para tomar una acción correctiva.}
 
-Garlan et al. also advocate to make self-adaptation external, as opposed to internal or hard-wired, to separate the concerns of system
-functionality from the concerns of self-adaptation [9,16].
+Este tipo de proceso está presente en gran variedad de contextos como puede ser operación de plantas industriales, \cite{climentpenadesDissenyPrototipatSolucions2020a}  en procesos naturales, etc. \textcolor{red}{ampliar}
 
 \textcolor{red}{Hablar de agentes autónomos como aplicación práctica. \cite{savaglioAgentbasedInternetThings2020}}
 
-\subsection{Arquitectura para sistemas autónomos: Bucles MAPE-K}
-\label{sub:bucles-mapek}
+En la ingeniería de \emph{software}, encontramos los bucles de control en dos variantes distintas: bucles de control implícitos o explícitos. La más habitual es la primera: se encuentran implícitos en la implementación de los procesos del sistema. \cite{brunEngineeringSelfAdaptiveSystems2009} No son componentes externos dedicados.
 
-Un estilo arquitectónico muy representativo de este tipo de sistemas es el basado en bucles MAPE-K \cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021} propuesto por IBM. Se trata de una arquitectura para sistemas distribuidos autónomos que requieran del mínimo de intervención humana para operar. Nace con el objetivo reducir en el coste de operación y hacer más gestionable la complejidad de los sistemas.
+Por otro lado, aproximaciones como las de \cite{garlanIncreasingSystemDependability2003} o \cite{ibmcorporationArchitecturalBlueprintAutonomic2006} optan por la segunda: bucles como componentes externos. Esto permite separar la funcionalidad de las capacidades de adaptación.  Al dividirse estas responsabilidades, se puede reducir la complejidad de la implementación. En este trabajo nos centraremos en esta segunda variante.
 
-Estos sistemas son capaces de auto-gestionarse en base a \textbf{políticas}. Las políticas son un conjunto de objetivos de alto nivel que definen los usuarios encargados del sistema. El sistema debe tratar de alcanzarlos durante su funcionamiento. Además, estos motivan los cambios en el sistema, que trata de adaptarse para alcanzarlos.
+\section{Arquitecturas para sistemas autónomos: Bucles MAPE-K}
+\label{sec:bucles-mapek}
+
+%% TODO: Buscar sinonimos de sistema..
+
+Un estilo arquitectónico muy representativo es el basado en bucles MAPE-K \cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021} propuesto por IBM. Se trata de una referencia arquitectónica para desarrollar sistemas distribuidos autónomos. Nace con el objetivo hacer más manejable la complejidad de estos sistemas; y reducir sus costes de operación, requiriendo de la minima intervención humana.
 
 Su componentes principales son los \textbf{elementos autónomos}. Cada uno de estos es capaz de autogestionarse, y colaborar en conjunto con el resto de elementos autónomos del sistema  para alcanzar los objetivos. \textcolor{red}{¿Agent based?} A su vez, estos pueden dividirse en dos partes: los recursos manejados y un manejador autónomo (el bucle de control).
 
-Los \textbf{recursos manejados} son las unidades de funcionalidad del sistema. Puede ser cualquier tipo de recurso, \emph{hardware} o \emph{software}. Para dotarlas de capacidad de autoadaptación, las emparejamos con un \textbf{manejador autónomo}, el bucle de control. Como es un componente distinto al que implementa la funcionalidad, es entonces de tipo externo. Gestiona al recurso en base a la información que recoge del entorno de ejecución y las políticas que guían su adaptación.
+Los \textbf{recursos manejados} son las unidades de funcionalidad. Puede ser cualquier tipo de recurso, \emph{hardware} o \emph{software}. Para dotarlos de capacidad de autoadaptación, los emparejamos con un \textbf{manejador autónomo}: el bucle de control. Gestiona al recurso en base a la información que recoge del entorno de ejecución y las políticas que guían su adaptación.
 
-Para poder ser gestionado externamente, el recurso debe implementar \textbf{\emph{touchpoints}} (\textcolor{red}{¿puntos de contacto?}): interfaces que permiten al bucle de control obtener información del estado del sistema y cambiar su configuración Existen dos tipos de \emph{touchpoints}: sondas y efectores.
+El bucle es de tipo externo, ya que es un componente distinto al que implementa la funcionalidad. Por tanto, el recurso debe implementar puntos de contacto (\textbf{\emph{touchpoints}}): interfaces que permitan obtener información de su estado (sondas) y cambiar su configuración (efectores).
 
-En la figura \ref{fig:autonomic-element} tenemos una representación de un elemento autónomo. Distinguimos las dos partes: el manejador y el recurso. El manejador está acoplado al recurso a través de sus sensores y efectores. Podemos apreciar que \textcolor{red}{siete} componentes distintos conforman el bucle: \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}
+Estos elementos autónomos se auto-gestionan en base a \textbf{políticas}: un conjunto de objetivos de alto nivel definidos por sus administradores. El sistema tratará de mantener su cumplimiento durante su ejecución. Para alcanzarlos, el manejador autónomo planifica cambios en la configuración del recurso manejado.
+
+\subsection{Estructura del bucle MAPE-K}
+
+En la figura \ref{fig:autonomic-element} mostramos una representación de un elemento autónomo. Distinguimos las dos partes principales: el manejador y el recurso. El manejador contacta con el recurso a través de sus sensores y efectores. Podemos apreciar los componentes que conforman el bucle, y que describimos a continuación: \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}
 
 \begin{figure}[h]
   \centering
   \includegraphics[scale=2]{cap_contexto_tecnologico/images/autonomic-element}
-  \caption[Representación de un elemento autónomo. Distinguimos el recurso manejado y el manejador autónomo. El manejador es un bucle MAPE-K (\emph{Monitor}, \emph{Analysis}, \emph{Planification}, \emph{Execution} y \emph{Knowledge})]{Representación de un elemento autónomo. Distinguimos el recurso manejado y el manejador autónomo. El manejador es un bucle MAPE-K (\emph{Monitor}, \emph{Analysis}, \emph{Planification}, \emph{Execution} y \emph{Knowledge}). Basada en imagen de \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}.}
-  \label{fig:autonomic-element}arquitectura/
+  \caption[Representación de un elemento autónomo. Distinguimos el recurso manejado y el manejador autónomo. El manejador es un bucle MAPE-K (\emph{Monitor}, \emph{Analysis}, \emph{Planification}, \emph{Execution} y \emph{Knowledge})]{Representación de un elemento autónomo. Distinguimos el recurso manejado y el manejador autónomo. El manejador es un bucle MAPE-K. Basada en imagen de \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}.}
+  \label{fig:autonomic-element}
 \end{figure}
 
 \subsubsection{Sondas}
-Para poder monitorizar el recurso y su entorno deberemos \textbf{instrumentarlos}. Consiste en implementar \textbf{sondas} que expongan datos relevantes a los monitores del bucle. Pueden capturar y transmitir cualquier métrica que queramos controlar: \emph{health checks}, rendimiento del servicio u otras propiedades del sistema.
+
+Para monitorizar el recurso y su entorno debemos \textbf{instrumentarlos}. Consiste en implementar \textbf{sondas} que expongan datos relevantes a los monitores del bucle. Pueden capturar y transmitir cualquier aspecto que queramos controlar: \emph{health checks}, rendimiento del servicio u otras propiedades del sistema.
 
 \subsubsection{Monitor}
-El monitor recibe las mediciones de las sondas. Se encarga de recogerlas, agregarlas y filtrarlas para determinar si ha ocurrido un evento relevante que deba ser reportado. Si se considera que lo son, estos valores se almacenan como propiedades de adaptación en la base de conocimiento. \cite{fonsEspecificacionSistemasAutoadaptativos2021} Por ejemplo, en un sistema de climatización, si la temperatura de una habitación cambia.
 
+El monitor recibe las mediciones de las sondas. Se encarga de recogerlas, agregarlas y filtrarlas para extraer información relevante. La información se almacenará como propiedades de adaptación en la base de conocimiento.\cite{fonsEspecificacionSistemasAutoadaptativos2021} Por ejemplo, en un sistema de climatización, si la temperatura de una habitación cambia, deberemos actualizar el vlor de la temperatura que tenemos registrado.
+
+El monitor y las sondas componen la etapa de recopilar información de los bucles de control.
 
 \subsubsection{Base de conocimiento}
 
-La base de conocimiento (\emph{knowledge base}) está compuesta por una o más fuentes de información que el bucle tiene a su disposición. En ellas, se almacenan las \textbf{propiedades de adaptación}. En conjunto, estas propiedades conforman un modelo abstracto del sistema, que describe su estado pasado y actual: componentes, conexiones entre ellos y su configuración. \cite{garlanIncreasingSystemDependability2003}
+La base de conocimiento (\emph{knowledge base}) es el componente base de toda la arquitectura. Informa a todas las etapas del bucle de control. Por lo que se trata de un componente transversal. \textcolor{red}{Es una arquitectura knowledge-driven \cite{taylorSoftwareArchitectureFoundations2009}.}
 
-El bucle del control trabaja con un modelo del sistema de alto nivel \cite{garlanIncreasingSystemDependability2003}. Esto le permite definir las adaptaciones desacoplándose de los elementos. Los sistemas adaptativos se basan principalmente en bucles de control. trabajan sobre system models - and in particular, architectural models - are maintained at run time
-and used as a basis for system reconfiguration and repair \cite{garlanIncreasingSystemDependability2003}
+Está compuesta por una o más fuentes de información que el bucle tiene a su disposición. A partir de ellas, se almacenan las \textbf{propiedades de adaptación}. Estas describen el estado pasado y presente del sistema y su entorno: métricas, componentes, conexiones entre ellos, parámetros de configuración\dots
 
-\textcolor{red}{Es una arquitectura knowledge-driven \cite{taylorSoftwareArchitectureFoundations2009}.}
+En conjunto, estas propiedades conforman un modelo abstracto del estado del recurso manejado que se mantiene en tiempo de ejecución. \cite{garlanIncreasingSystemDependability2003}. Las demás etapas del bucle operan en base a él. Como veremos más adelante, los efectores se encargan de traducir las acciones correctivas del modelo de alto nivel a términos del recurso manejado.
 
-El conocimiento informa a todas las etapas del bucle de control. Por tanto, se trata de un componente transversal.
 
 \subsubsection{Analizador}
 
-En base a las propiedades de adaptación, podemos razonar sobre el estado actual del sistema y detectar situaciones que requieran de una acción correctiva. Para ello contamos con el módulo de análisis.
+En base al modelo abstracto del sistema, podemos razonar sobre el estado actual sin acoplarnos al recurso manejado. Podemos definir heurísticas que nos permitan detectar situaciones que requieran de una acción correctiva. Esta es la función del analizador.
 
-Una aproximación para implementarlo es mediante \textbf{reglas de adaptación}, compuestas por una condición y una acción. Las reglas se suscriben a cambios de las propiedades de adaptación. Cuando ocurra alguno, se evalúa su condición. Si esta se cumple, se ejecuta la acción asociada. En caso contrario, no hará nada.
-
-\textcolor{red}{Siguiendo con el ejemplo del sistema de climatización, un ejemplo de regla sería...}
+Para implementarlo, una posible aproximación es mediante \textbf{reglas de adaptación}. Estas pueden dividirse en dos partes: la condición y la acción. La condición se define a partir de las propiedades de adaptación y evalúa si es necesario ejecutar la acción correctiva.
 
 La acción de la regla describe una \textbf{propuesta de cambio} en la configuración del sistema. Estas se formulan en base a \textbf{operadores arquitectónicos}. \cite{garlanIncreasingSystemDependability2003} Dependiendo del estilo arquitectónico de nuestro sistema, tendremos disponibles una serie de operaciones para alterar su arquitectura.
 
 Por ejemplo, nuestro recurso manejado podría estar implementado como microservicios. En este caso, los operadores podrían consistir en desplegar o eliminar servicios, establecer conexiones entre los servicios, eliminarlas, o cambiar las propiedades de configuración del servicio. \cite{fonsServiciosAdaptivereadyPara2021}
 
+Las reglas se suscriben a cambios de las propiedades de las que dependen. Cuando ocurra alguno, se evalúa su condición. Si esta se cumple, se ejecuta la acción asociada. En caso contrario, no hará nada.
+
+\textcolor{red}{Siguiendo con el ejemplo del sistema de climatización, un ejemplo de regla sería...}
+
 \subsubsection{Planificador}
 
-Si alguna regla se dispara, el planificador recibe los cambios propuestos. Comparando sus acciones con el modelo que tenemos del estado del sistema (las propiedades de adaptación), determina si todavía es necesario ejecutar estas acciones. También comprobará si es seguro aplicarlas, ya que no deben dejar el sistema en un estado inconsistente. En caso de que las propuestas sean válidas, estas se agruparán en un \textbf{plan de adaptación}.
+Si alguna regla se dispara, el planificador recibe su propuesta de cambio. Este módulo se encarga de validar las acciones propuestas y agruparlas en un \textbf{plan de adaptación}. Para ello, recurre al conocimiento y compara el estado actual del sistema con las acciones solicitadas.
+
+Deberá verificar si estas acciones siguen siendo necesarias. Podría ocurrir que desde que se solicitaron hasta que se genera el plan de adaptación, haya cambiado el estado del sistema. También comprobará si es seguro aplicarlas, ya que no deben dejar el sistema en un estado inconsistente.
 
 \subsubsection{Ejecutor}
 
-En la etapa final del bucle tenemos al ejecutor. El ejecutor interactúa con los efectores del sistema manejado para llevar a cabo las acciones planificadas. Para ello, traduce las acciones de alto nivel (nivel de arquitectura) a acciones de más bajo nivel (en términos del propio sistema). \cite{garlanIncreasingSystemDependability2003}
+En la etapa final del bucle tenemos al ejecutor. Recibe el plan de adaptación del planificador y, como su nombre indica, es el encargado de ejecutarlo. Para ello, manipula los efectores del recurso manejado. Deberá identificar a cuáles debe transmitir el comando para realizar la adaptación.
+
+Si una adaptación se lleva a cabo correctamente, deberá reflejarse en el conocimiento el nuevo estado, una vez se confirme. En caso de error, deberemos tener mecanismos de compensación que reviertan las acciones ejecutadas. Así, evitamos que el sistema quede en un estado inconsistente.
 
 \subsubsection{Efectores}
 
-Los \textbf{efectores} sirven para modificar el estado del sistema manejado. Pueden ser ficheros de configuración, comandos, \emph{endpoints}, etc.
+Los \textbf{efectores} son el segundo tipo de \foreign{english}{touchpoint} que debe implementar el recurso manejado. Son aquellos que al bucle modificar su configuración o estado.  Pueden implementarse de distintas formas: mediante ficheros de configuración, comandos, \emph{endpoints} HTTP, etc.
 
-----------------------------------------
+Mediante una interfaz común, reciben órdenes del ejecutor. Los efectores interpretan estas acciones, descritas en conceptos de alto nivel (nivel de arquitectura) y las traducen a acciones de más bajo nivel (en términos del propio sistema). \cite{garlanIncreasingSystemDependability2003}
+
+Por ejemplo, en el caso del sistema de climatización, la acción correspondiente sería activar el aire acondicionado para bajar la temperatura de la estancia. El efector conocerá cómo manipular el recurso manejado para activar este modo.
+
+\subsection{Sistemas distribuidos basados en elementos autónomos}
 
 \textcolor{red}{Además, podemos observar que el propio manejador expone sensores y efectores, lo que permite que sean controlados por \textbf{manejadores autónomos orquestadores}. Estos gestionan a un nivel superior uno o más elementos autonómicos. Son por tanto, elementos componibles.}
 
-\textcolor{red}{¿Hablar del nivel en el que se encuentra el bucle de control? Sistema, infraestructura, mixto, mesh \cite{mendoncaGeneralityVsReusability2018}}
 
 \textcolor{red}{Hablar del \emph{human manager}, la capa superior al sistema. Emite las políticas y monitoriza su funcionamiento a través de las sondas del bucle orquestador.}
 
-\textcolor{red}{Hablar de human in the loop: solicitamos la intervención del humano cuando no contamos con suficiente información para tomar una acción correctiva.}
+
+\textcolor{red}{¿Hablar del nivel en el que se encuentra el bucle de control? Sistema, infraestructura, mixto, mesh \cite{mendoncaGeneralityVsReusability2018}}
