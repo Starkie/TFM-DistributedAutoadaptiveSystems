@@ -122,9 +122,11 @@ Por ejemplo, en el caso del sistema de climatización, la acción correspondient
 
 \subsection{Sistemas distribuidos basados en elementos autónomos}
 
-\textcolor{red}{Además, podemos observar que el propio manejador expone sensores y efectores, lo que permite que sean controlados por \textbf{manejadores autónomos orquestadores}. Estos gestionan a un nivel superior uno o más elementos autonómicos. Son por tanto, elementos componibles.}
+Si nos fijamos en la figura \ref{fig:autonomic-element}, veremos que en la parte superior del elemento autónomo figuran sondas y efectores. Esto nos indica que a su vez, pueden actuar también como recursos manejados. Esto nos permite poner por encima de este otro manejador autónomo que actúe como un \textbf{orquestador}. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}. Estos gestionan a un nivel superior uno o más elementos autonómicos. Son por tanto, elementos componibles.
 
+Este orquestador podría estar responsabilizado de otras tareas de más alto nivel. Como el balanceo de carga o cosas por el estilo.
 
+Por encima de estos orquestadores, finalmente, tendríamos al administrador u operario humano. 
 \textcolor{red}{Hablar del \emph{human manager}, la capa superior al sistema. Emite las políticas y monitoriza su funcionamiento a través de las sondas del bucle orquestador.}
 
 
