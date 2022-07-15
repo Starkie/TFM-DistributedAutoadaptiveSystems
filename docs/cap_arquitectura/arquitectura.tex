@@ -1,5 +1,13 @@
 \chapter{Arquitectura de la solución}
 
+Este capitulo es relevante por dos motivos:
+
+\begin{itemize}
+  \item En el trabajo tratamos la migración de un sistema monolítico a uno basado en microservicios. Trabajamos con conceptos como los componentes, los conectores software y otros elementos arquitectónicos. Por tanto es conveniente contar con este marco teórico.
+
+  \item Por otro lado, nuestro bucle MAPE-K es capaz de cambiar la arquitectura del recurso manejado en tiempo de ejecución. Sus adaptaciones se describen en base a operadores arquitectónicos que las modifican. Por tanto el interés es doble.
+\end{itemize}
+
 En este capítulo vamos a describir la arquitectura que hemos diseñado para distribuir el bucle MAPE-K. Partimos de un sistema con una \textcolor{red}{división funcional ya definida}, por lo que será sencillo delimitar los componentes. El foco de este capítulo serán entonces los \textbf{conectores de \emph{software}}. Necesitamos establecer qué estrategias de comunicación utilizaremos para comunicar los componentes.
 
 Comenzaremos dando una breve introducción a las arquitecturas de \emph{software} y los elementos que las componen. Después, describiremos la arquitectura de nuestra solución y el proceso que hemos seguido para llegar hasta ella.
