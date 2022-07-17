@@ -96,22 +96,19 @@ Basándonos en la descripción anterior, nuestra capa central será la del conoc
 
 \subsection{Definiendo los mecanismos de comunicación}
 
-Como comentamos antes, vamos a inspirarnos en los mecanismos de comunicación descritos por C2: las peticiones y notificaciones. Pero, durante nuestra etapa de prototipado, nos dimos cuenta que estos no cubren todas nuestras necesidades. Hay dos casos que no están contemplados: la comunicación del módulo de análisis con el planificador, y la del planificador con el ejecutor. Ambos módulos se encuentran en la misma capa. Y, como dependen del conocimiento, no podemos moverlos a una superior para utilizar notificaciones.
+Como comentamos antes, nos inspiramos en los mecanismos de comunicación descritos por C2: las peticiones y notificaciones. Pero, durante nuestra etapa de prototipado, nos dimos cuenta que estos no cubren todas nuestras necesidades. Hay dos casos que no están contemplados: la comunicación del módulo de análisis con el planificador, y la del planificador con el ejecutor. Ambos módulos se encuentran en la misma capa. Y, como dependen del conocimiento para funcionar, no podíamos moverlos a una capa superior para emplear las notificaciones.
 
-\textcolor{red}{Las notificaciones no nos sirven, ya que la comunicación es entre dos módulos específicos. Aunque nos interesa el desacoplamiento entre módulos que ofrecen. Las peticiones tampoco casan del todo, ya que requerimos desacoplar los módulos. Deberían mantener su independencia en el mayor grado posible.} Por ello, requerimos de un tercer patrón de comunicación. Una combinación de ambos: las peticiones asíncronas.
-
-Los tres patrones de comunicaciones que usaremos entonces son:
+Requeríamos por tanto de un tercer patrón de comunicación. Detectamos que este conector debería ser dirigido: los mensajes van dirigidos a un componente determinado. Además, como los elementos están en el mismo nivel, no queremos que se acoplen entre ellos. Surgió entonces la idea de utilizar las peticiones asíncronas, una combinación de los dos patrones existentes. A continuación lo presentamos junto al resto de patrones de comunicaciones que empleamos:
 
 \begin{itemize}
-  \item \textbf{Peticiones síncronas}: Comunicaciones síncronas dirigidas a un servicio determinado. Solo permitidas entre servicios de una capa más externa a un servicio en la capa interior adyacente.
+  \item \textbf{Peticiones síncronas}: Comunicaciones síncronas dirigidas a un servicio determinado. Un servicio contacta con otro con una petición o comando, y espera al resultado. Sólo están permitidas desde servicios de una capa más externa a un servicio en la capa interior adyacente.
 
-  \item \textbf{Peticiones asíncronas}: Comunicaciones asíncronas dirigidas a un tipo de servicio determinado. Se trata de peticiones de trabajo asíncronas: se envían y el destinatario lo procesará cuando pueda. El cliente continuará su ejecución, sin esperar respuesta. \emph{fire and forget}.
+  \item \textbf{Notificaciones}: Comunicaciones asíncronas no dirigidas. El servicio publica un evento que potencialmente recibirán todos los servicios en la capa externa adyacente. El cliente lo envía y continua su ejecución, sin esperar una respuesta.
 
-  Para evitar el acoplamiento entre los componentes, deberemos buscar un conector que permita enviar el mensaje sin conocer específicamente al destinatario.
+  \item \textbf{Peticiones asíncronas}: Comunicaciones asíncronas dirigidas a un servicio determinado. Ideal para solicitar peticiones de trabajo asíncronas: se envían y el destinatario lo procesará cuando pueda. El cliente continuará su ejecución, sin esperar respuesta.
 
-  Este mecanismo de comunicación solo está permitido entre elementos del mismo nivel.
+  Este mecanismo de comunicación solo está permitido entre elementos del mismo nivel. Para evitar el acoplamiento entre los componentes, deberemos buscar un conector que permita enviar el mensaje sin conocer específicamente al destinatario.
 
-  \item \textbf{Notificaciones}: Comunicaciones asíncronas no dirigidas. El servicio publica un evento que potencialmente recibirán todos los servicios en la capa exterior adyacente. El cliente lo envía y continua su ejecución, sin esperar respuesta.
 \end{itemize}
 
 \subsection{Conectores}
