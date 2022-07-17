@@ -67,15 +67,19 @@ En la figura \ref{fig:autonomic-element} mostramos una representación de un ele
   \label{fig:autonomic-element}
 \end{figure}
 
+Para presentar estos componentes, describiremos un ejemplo de cómo se manejaría un servicio web. Nos centraremos en escalar este servicio en base a la carga del sistema. Deseamos que, en caso de carga elevada, se desplieguen nuevas instancias. Si la carga bajara, el sistema debería eliminar las instancias redundantes.
+
 \subsubsection{Sondas}
 
 Para monitorizar el recurso y su entorno debemos \textbf{instrumentarlos}. Consiste en implementar \textbf{sondas} que expongan datos relevantes a los monitores del bucle. Pueden capturar y transmitir cualquier aspecto que queramos controlar: \emph{health checks}, rendimiento del servicio u otras propiedades del sistema.
 
+Para nuestro servicio web, una métrica relevante sería el número de peticiones por segundo que está atendiendo. La sonda reportaría el número de peticiones que se han atendido hasta un determinado momento.
+
 \subsubsection{Monitor}
 
-El monitor recibe las mediciones de las sondas. Se encarga de recogerlas, agregarlas y filtrarlas para extraer información relevante. La información se almacenará como propiedades de adaptación en la base de conocimiento.\cite{fonsEspecificacionSistemasAutoadaptativos2021} Por ejemplo, en un sistema de climatización, si la temperatura de una habitación cambia, deberemos actualizar el vlor de la temperatura que tenemos registrado.
+El monitor recibe las mediciones de las sondas. Se encarga de recogerlas, agregarlas y filtrarlas para extraer información relevante. La información se almacenará como propiedades de adaptación en la base de conocimiento.\cite{fonsEspecificacionSistemasAutoadaptativos2021} El monitor y las sondas componen la etapa de recopilar información de los bucles de control.
 
-El monitor y las sondas componen la etapa de recopilar información de los bucles de control.
+Siguiendo con nuestro ejemplo, el monitor recibiría el número de peticiones atendidas, y las agregaría en una métrica de serie temporal de peticiones por segundo. Esta sería una de nuestras propiedades de adaptación. En base a ella, las siguientes etapas tomarán las decisiones convenientes para escalar nuestro servicio.
 
 \subsubsection{Base de conocimiento}
 
@@ -84,7 +88,6 @@ La base de conocimiento (\emph{knowledge base}) es el componente base de toda la
 Está compuesta por una o más fuentes de información que el bucle tiene a su disposición. A partir de ellas, se almacenan las \textbf{propiedades de adaptación}. Estas describen el estado pasado y presente del sistema y su entorno: métricas, componentes, conexiones entre ellos, parámetros de configuración\dots
 
 En conjunto, estas propiedades conforman un modelo abstracto del estado del recurso manejado que se mantiene en tiempo de ejecución. \cite{garlanIncreasingSystemDependability2003}. Las demás etapas del bucle operan en base a él. Como veremos más adelante, los efectores se encargan de traducir las acciones correctivas del modelo de alto nivel a términos del recurso manejado.
-
 
 \subsubsection{Analizador}
 
@@ -98,7 +101,7 @@ Por ejemplo, nuestro recurso manejado podría estar implementado como microservi
 
 Las reglas se suscriben a cambios de las propiedades de las que dependen. Cuando ocurra alguno, se evalúa su condición. Si esta se cumple, se ejecuta la acción asociada. En caso contrario, no hará nada.
 
-\textcolor{red}{Siguiendo con el ejemplo del sistema de climatización, un ejemplo de regla sería...}
+Respecto al servicio web, definiremos reglas tomando el valor del número de peticiones por segundo. Podemos definirlas con umbrales para este valor: si es muy alto, la regla solicita el despliegue de una nueva instancia. Cuando la carga baje, y si el servicio está replicado, podremos eliminarlas.
 
 \subsubsection{Planificador}
 
@@ -118,15 +121,15 @@ Los \textbf{efectores} son el segundo tipo de \foreign{english}{touchpoint} que 
 
 Mediante una interfaz común, reciben órdenes del ejecutor. Los efectores interpretan estas acciones, descritas en conceptos de alto nivel (nivel de arquitectura) y las traducen a acciones de más bajo nivel (en términos del propio sistema). \cite{garlanIncreasingSystemDependability2003}
 
-Por ejemplo, en el caso del sistema de climatización, la acción correspondiente sería activar el aire acondicionado para bajar la temperatura de la estancia. El efector conocerá cómo manipular el recurso manejado para activar este modo.
+En el caso del servicio web, la acción correspondiente sería desplegar una nueva instancia. El efector conocerá el sistema de despliegue (p.e. Docker) y cómo solicitar la activación de un nuevo servicio.
 
 \subsection{Sistemas distribuidos basados en elementos autónomos}
 
-Si nos fijamos en la figura \ref{fig:autonomic-element}, veremos que en la parte superior del elemento autónomo figuran sondas y efectores. Esto nos indica que a su vez, pueden actuar también como recursos manejados. Esto nos permite poner por encima de este otro manejador autónomo que actúe como un \textbf{orquestador}. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}. Estos gestionan a un nivel superior uno o más elementos autonómicos. Son por tanto, elementos componibles.
+\textcolor{red}{Si nos fijamos en la figura \ref{fig:autonomic-element}, veremos que en la parte superior del elemento autónomo figuran sondas y efectores. Esto nos indica que a su vez, pueden actuar también como recursos manejados. Esto nos permite poner por encima de este otro manejador autónomo que actúe como un \textbf{orquestador}. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}. Estos gestionan a un nivel superior uno o más elementos autonómicos. Son por tanto, elementos componibles.}
 
-Este orquestador podría estar responsabilizado de otras tareas de más alto nivel. Como el balanceo de carga o cosas por el estilo.
+\textcolor{red}{Este orquestador podría estar responsabilizado de otras tareas de más alto nivel.}
 
-Por encima de estos orquestadores, finalmente, tendríamos al administrador u operario humano. 
+\textcolor{red}{Por encima de estos orquestadores, finalmente, tendríamos al administrador u operario humano.}
 \textcolor{red}{Hablar del \emph{human manager}, la capa superior al sistema. Emite las políticas y monitoriza su funcionamiento a través de las sondas del bucle orquestador.}
 
 
