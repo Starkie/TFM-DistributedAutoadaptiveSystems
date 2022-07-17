@@ -125,14 +125,16 @@ Por ello, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonomySoft
 
 \textbf{Invocación de métodos remotos} o (\foreign{english}{\textbf{Remote Procedure Call}}): Este patrón se basa en el estilo cliente-servidor. Un servidor expone una serie de funciones que el cliente puede invocar mediante peticiones a través de la red. Estas peticiones incluyen el nombre de la función a ejecutar y sus parámetros. Al finalizar la ejecución, el servidor puede devolver un resultado, si lo hubiera. Existen varios protocolos que implementan este mecanismo como gRPC o SOAP.
 
-Una evolución de RPC suele emplearse en la programación orientada a objetos: el paradigma de \textbf{objetos distribuidos}. \cite{tanenbaumChapter10Distributed2007} En este caso, el programa cliente puede interactuar con objetos en servidores remotos como si fueran locales. Esta interacción se realiza a través de objetos que actúan como \foreign{english}{proxies}, abstrayendo de la llamada al servidor.
+En la programación orientada a objetos suele emplearse una evolución de RPC: el paradigma de \textbf{objetos distribuidos}. \cite{tanenbaumChapter10Distributed2007} En este caso, el programa cliente puede interactuar con objetos que se encuentran en servidores remotos como si fueran locales. Esta interacción se realiza a través de objetos que actúan como \foreign{english}{proxies}, abstrayendo de la llamada al servidor.
 
-Los \foreign{english}{proxies} ofrecen una interfaz para que el cliente invoque sus métodos localmente. Internamente, estos métodos realizan una llamada al servicio remoto donde se encuentra el objeto realmente. El servidor remoto procesa la petición y nos devolverá un resultado. Así, abstraen al cliente de todo este proceso de comunicación. En la figura \ref{fig:rpc-distributedobjects} tenemos un esquema de este mecanismo.
+Los \foreign{english}{proxies} ofrecen una interfaz para que el cliente invoque sus métodos localmente. Por debajo, estos métodos realizan una llamada al servicio remoto donde se encuentra realmente. El servidor remoto procesa la petición y nos devolverá un resultado. En la figura \ref{fig:rpc-distributedobjects} tenemos un esquema de este mecanismo.
+
+Los \foreign{english}{proxies} o (\foreign{english}{stubs} en la terminología de RPC) suelen generarse a partir de un contrato que define qué operaciones ofrecen los objetos. Por ejemplo: SOAP con WDSL, gRPC; o en el caso de objetos distribuidos, Java RMI.
 
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=1.5]{cap_diseño/images/rpc-distributedobjects}
-  \caption[Funcionamiento del sistema de objetos distribuidos]{Funcionamiento del sistema de objetos distribuidos. \cite{tanenbaumChapter10Distributed2007}}
+  \caption[Funcionamiento del sistema de objetos distribuidos.]{Funcionamiento del sistema de objetos distribuidos. Obtenido de \cite{tanenbaumChapter10Distributed2007}}
   \label{fig:rpc-distributedobjects}
 \end{figure}
 
@@ -141,26 +143,27 @@ Los \foreign{english}{proxies} ofrecen una interfaz para que el cliente invoque 
   \begin{itemize}
     \item Permite distribuir la carga de procesamiento del sistema. Esto puede ayudar para escalar la aplicación.
 
-    \item Abstrae al cliente de la interacción con un servidor remoto. Le resulta prácticamente indistinguible de un objeto local.
+    \item Abstrae al cliente de la interacción con un servidor remoto. Le resulta prácticamente indistinguible de un objeto local. Esto facilita la implementación.
 
-    \item \textcolor{red}{Los \foreign{english}{proxies} o (\foreign{english}{stubs} en la terminología de RPC) suelen generarse a partir de un contrato que define qué operaciones ofrecen estos objetos. Por ejemplo: SOAP con WDSL, gRPC; o en el caso de objetos distribuidos, Java RMI.} ¿Y la ventaja?
   \end{itemize}
 
   \item \textbf{Desventajas}:
   \begin{itemize}
-    \item No se puede abstraer completamente al cliente de las llamadas a través de la red. Pueden darse errores que no ocurrirían durante una invocación de un método sobre un objeto local. Por ejemplo, que el servidor no esté disponible. \cite{jausovecFallaciesDistributedSystems2020}
+    \item \textbf{Dirigida}: Necesitamos conocer de antemano la ubicación del servidor al que queremos hacer una petición.
 
-    \item Dificulta la integración con otras aplicaciones. Cada servicio ofrece sus propias funciones distintas. No están estandarizadas.
-
-    \item Si adoptamos sistemas como Java RMI, nuestro sistema se acopla a esa tecnología concreta. \cite{newmanBuildingMicroservicesDesigning2021}. Nos quita flexibilidad en cuanto a qué otras tecnologías podemos utilizar en nuestra arquitectura.
+    \item Dificulta la integración con otras aplicaciones. Cada servicio ofrece sus propias funciones. No están estandarizadas.
 
     \item El cliente debe actualizarse y recompilarse con cada cambio en el esquema del servidor. Esto puede ser problemático para casos donde tenemos que desplegar una actualización para que nuestros clientes puedan continuar utilizando la aplicación.
+
+    \item Respecto a los objetos distribuidos, no se puede abstraer completamente al cliente de las llamadas a través de la red. Pueden darse errores que no ocurrirían durante una invocación de un método sobre un objeto local. Por ejemplo, que el servidor no esté disponible. \cite{jausovecFallaciesDistributedSystems2020}
+
+    \item \textcolor{red}{Si adoptamos sistemas como Java RMI, nuestro sistema se acopla a esa tecnología concreta. \cite{newmanBuildingMicroservicesDesigning2021}. Nos quita flexibilidad en cuanto a qué otras tecnologías podemos emplear en nuestra arquitectura.} ¿A Java o a Java RMI?
   \end{itemize}
 \end{itemize}
 
-\textbf{\emph{Representational State Transfer} (REST)}: Se basa también en el estilo arquitectónico cliente-servidor, pero con ciertas restricciones adicionales. \cite{taylorSoftwareArchitectureFoundations2009} Su concepto principal son los \textbf{recursos}: cualquier elemento sobre el que la API pueda ofrecernos información; y que pueda tener asociado un identificador único (una URI). \cite{richardsonRESTfulWebServices2007} Por ejemplo, podrían ser las entidades del dominio que gestiona nuestro servicio: usuarios, mediciones de temperaturas\dots
+\textbf{\emph{Representational State Transfer} (REST)}: Se basa también en RPC, pero con ciertas restricciones adicionales. \cite{taylorSoftwareArchitectureFoundations2009} Su concepto principal son los \textbf{recursos}: cualquier elemento sobre el que el servicio pueda ofrecernos información; y que pueda tener asociado un identificador único (una URI). \cite{richardsonRESTfulWebServices2007} Por ejemplo, las entidades del dominio que gestiona nuestro servicio podrían ser recursos: usuarios, mediciones de temperaturas\dots
 
-Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \dots) las define el protocolo de comunicación sobre el que se implemente. Gracias a esto, la API que pueden ofrecer los servicios REST es común. Solo cambia el ``esquema de los datos``, los tipos de recursos que ofrecen. Esto facilita enormemente la integración con otros servicios. \cite{nallyRESTVsRPC2018} La implementación más habitual es sobre el protocolo HTTP. Define métodos estandarizados como \emph{GET} para las lecturas, \emph{PUT} para las actualizaciones, etc.
+Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \dots) las define el protocolo de comunicación sobre el que se implemente. Gracias a esto, la interfaz que pueden exponer los servicios REST es común. Solo cambia el ``esquema de los datos``, los tipos de recursos que sirven a los clientes. Esto facilita enormemente la integración con otros servicios. \cite{nallyRESTVsRPC2018} La implementación más habitual es sobre el protocolo HTTP. Este define métodos estandarizados como \emph{GET} para las lecturas, \emph{PUT} para las actualizaciones, etc.
 
 \begin{itemize}
   \item \textbf{Ventajas}:
@@ -170,13 +173,13 @@ Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \
 
     \item \textbf{Escalable}: Como las sesiones deben ser \foreign{english}{stateless}, podremos replicar nuestro servicio y que distintas instancias puedan atender las peticiones que surjan durante una misma sesión.
 
-    \item \textbf{API Sencilla}: Solo hay que implementar unos pocos métodos estándar para interactuar con la API.
-
-    \item \textbf{Comunicación síncrona}: Es el mecanismo ideal para comunicaciones síncronas, donde el cliente requiere la respuesta del servicio para poder continuar con su procesamiento. También podemos dar soporte a para comunicaciones \foreign{english}{fire and forget}, donde el cliente envía un mensaje y no espera ninguna respuesta a su petición.
+    \item \textbf{API Sencilla}: Los métodos que exponen estos servicios están estandarizados y son sencillos. Un servidor solo debe implementar unos pocos métodos estándar que consumirán los clientes.
 
     \item \textbf{Interoperabilidad}: Ampliamente utilizado en servicios de Internet. Es ideal para que clientes externos contacten con nuestro sistema mediante peticiones síncronas. \cite{newmanBuildingMicroservicesDesigning2021}
 
-    \item \textbf{Generación de clientes}: Para facilitar la comunicación con APIs REST, podemos generar librerias cliente utilizando el estándar OpenAPI. Lo explicaremos con maś detalle en la sección \ref{chap:OpenAPI}.
+    \item \textbf{Comunicación síncrona}: Es el mecanismo ideal para comunicaciones síncronas. En ellas, el cliente requiere la respuesta del servicio para poder continuar con su procesamiento. Aunque también podemos dar soporte a comunicaciones \foreign{english}{fire and forget}: el cliente envía un mensaje y no espera ninguna respuesta a su petición.
+
+    \item \textbf{Generación de clientes}: De forma similar a RPC, podemos generar clientes para facilitar la comunicación con APIs REST. Lo explicaremos con más detalle en la sección \ref{chap:OpenAPI} cuando hablemos de OpenAPI.
   \end{itemize}
 
   \item \textbf{Desventajas}:
@@ -184,13 +187,13 @@ Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \
   \begin{itemize}
     \item \textbf{Dirigida}: Necesitamos conocer de antemano la ubicación del servidor al que queremos hacer una petición.
 
-    \item \textbf{Rendimiento}: El rendimiento es peor comparado con mecanismos RPC. El tamaño de un mensaje HTTP serializado en XML o JSON es mayor que si estuviera en un formato binario.
+    \item \textbf{Rendimiento}: El rendimiento es peor comparado con mecanismos RPC binarios. El tamaño de un mensaje HTTP serializado en XML o JSON es mayor que si estuviera en un formato binario.
 
-    \item \textbf{API Sencilla}: También es una desventaja. Hay operaciones complejas que pueden ser difíciles de representar con los métodos ofrecidos por el protocolo de comunicación. Pueden requerir más tiempo de diseño, o incluso, ser implementados siguiendo el patrón RPC.
+    \item \textbf{API Sencilla}: También es una desventaja. Hay operaciones complejas que pueden ser difíciles de representar con los métodos ofrecidos por el protocolo de comunicación. Pueden requerir más tiempo de diseño, o incluso, ser implementados como métodos RPC (que no siguen REST).
   \end{itemize}
 \end{itemize}
 
-\textbf{GraphQL}\footnote{Página oficial: \url{https://graphql.org/}} \textcolor{red}{AMPLIAR}: Se trata de un protocolo de consultas. Permite a los clientes ejecutar consultas personalizadas sobre los datos de un servidor. No necesitan de lógica específica para ejecutarla. De esta forma, el cliente puede obtener toda la información que necesita. Reduce el número de peticiones ejecutadas. También evita traerse datos innecesarios.
+\textbf{GraphQL}\footnote{Página oficial: \url{https://graphql.org/}} \textcolor{red}{AMPLIAR}: Se trata de un protocolo para consultas de datos. Permite a los clientes ejecutar consultas personalizadas sobre los datos de un servidor. No se requiere de lógica específica para ejecutarla. De esta forma, el cliente puede obtener toda la información que necesita. Así se puede reducir el número de peticiones ejecutadas. También evita traerse datos innecesarios.
 
 \begin{itemize}
   \item \textbf{Ventajas}:
@@ -206,17 +209,15 @@ Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \
   \begin{itemize}
     \item \textbf{Solo permite lecturas}: Es un lenguaje de consultas. No tiene comandos que permita escrituras.
 
-    \item \textbf{Solo permite lecturas síncronas}:
-
-    \item \textbf{Exponemos datos a la red}:
+    \item \textbf{Exponemos datos a la red}: \textcolor{red}{Se expone todos los datos a la red. Toda la información estará accesible para los clientes con permisos para acceder al EP.}
 
     \item \textbf{Problemas de rendimiento}: El cliente puede hacer consultas muy pesadas que penalicen el rendimiento de la base de datos sobre la que opera nuestro servicio.
   \end{itemize}
 \end{itemize}
 
-\textbf{\foreign{english}{Brokers} de mensajería}: Es un mecanismo de \textbf{comunicación asíncrona} muy popular. Sobre todo en arquitecturas basadas en eventos. Contamos con un servicio que actúa como intermediario, el \foreign{english}{broker}. Este gestiona la comunicación entre los servicios del sistema. \cite{newmanBuildingMicroservicesDesigning2021} Hay varias estrategias de comunicación posibles: colas de trabajo, \foreign{english}{publish-suscribe}, híbrida\dots
+\textbf{\foreign{english}{Brokers} de mensajería}: Es un mecanismo de \textbf{comunicación asíncrona} muy popular. Sobre todo en arquitecturas basadas en eventos. Contamos con un servicio, el \foreign{english}{broker}, que actúa como intermediario. Gestiona la comunicación entre los servicios del sistema. \cite{newmanBuildingMicroservicesDesigning2021} Existen varias estrategias de comunicación posibles: colas de trabajo, \foreign{english}{publish-suscribe}, híbrida\dots
 
-Tomemos por ejemplo las \textbf{colas de trabajo}. \cite{royChapterMessagePatterns2017} Es una estrategia para implementar comunicaciones asíncronas dirigidas. Nos permiten desacoplar la comunicación entre componentes usando colas de mensajería como intermediarias. Para ello, un servicio, el productor, publica mensajes en la cola. Estos mensajes representan peticiones de trabajo que pueden ser costosas de procesar. Un servicio, el trabajador, estará la escucha de los mensajes que llegan y los irá consumiendo. Estos mensajes se procesan siguiendo un orden FIFO (\foreign{english}{first in, first out}). En la figura \ref{fig:work-queues} mostramos un ejemplo con dos consumidores, a la escucha de la misma cola.
+Tomemos por ejemplo las \textbf{colas de trabajo}. \cite{royChapterMessagePatterns2017} Es una estrategia para implementar comunicaciones asíncronas dirigidas. Nos permiten desacoplar la comunicación entre componentes usando colas de mensajería como intermediarias. Para ello, un servicio, el productor, publica mensajes en la cola. Estos mensajes representan peticiones de trabajo que pueden ser costosas de procesar. Un servicio, el trabajador, estará la escucha de los mensajes que llegan y los irá consumiendo. Estos mensajes se procesan siguiendo un orden FIFO (\foreign{english}{first in, first out}). En la figura \ref{fig:work-queues} mostramos un ejemplo con dos consumidores (C1 y C2) a la escucha de la misma cola.
 
 \begin{figure}[htb]
   \centering
@@ -227,7 +228,7 @@ Tomemos por ejemplo las \textbf{colas de trabajo}. \cite{royChapterMessagePatter
 
 \footnotetext{Imagen obtenida de: \url{https://www.rabbitmq.com/tutorials/tutorial-two-dotnet.html}}
 
-Otra estrategia posible es \foreign{english}{publish-suscribe}: sirve para implementar comunicación \foreign{english}{multicast}. Se basa en el uso de \textbf{temas} o \textbf{\foreign{english}{topics}}: categorías de mensajes que pueden resultar de interés. Un servicio (el productor) envía un mensaje al \foreign{english}{broker}, indicando que pertenece a un tema determinado. El \foreign{english}{broker} recibe el mensaje y se encarga de reenviarlo a todos los servicios subscritos a este tema en concreto. \cite{rabbitmqPublishSubscribeDocumentation} En la figura \ref{fig:publish-subscribe} tenemos un ejemplo de esta estrategia.
+Otra estrategia posible es \foreign{english}{publish-suscribe}: sirve para implementar comunicación \foreign{english}{multicast}. Se basa en el uso de \textbf{temas} o \textbf{\foreign{english}{topics}}: categorías de mensajes que pueden resultar de interés. Un servicio (el productor) envía un mensaje al \foreign{english}{broker}, indicando que pertenece a un tema determinado. El \foreign{english}{broker} recibe el mensaje y se encarga de reenviarlo a todos los servicios suscritos a este tema en concreto. \cite{rabbitmqPublishSubscribeDocumentation} En la figura \ref{fig:publish-subscribe} tenemos un ejemplo. El mensaje ''A'' llega a todos los servicios suscritos a al tema ''Topic''.
 
 \textcolor{red}{Describir fanout}
 \textcolor{red}{Describir exchanges}
@@ -235,14 +236,14 @@ Otra estrategia posible es \foreign{english}{publish-suscribe}: sirve para imple
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=0.5]{cap_diseño/images/publish_subscribe}
-  \caption[Estrategia \foreign{english}{publish/suscribe}: el \foreign{english}{broker} actúa como intermediario en la comunicación \foreign{english}{multicast}.]{Estrategia \foreign{english}{publish/suscribe}: el \foreign{english}{broker} actúa como intermediario en la comunicación \foreign{english}{multicast}. Imagen obtenida de \footnotemark}
+  \caption[Estrategia \foreign{english}{publish/suscribe}: el \foreign{english}{broker} actúa como intermediario en la comunicación \foreign{english}{multicast}.]{Estrategia \foreign{english}{publish/suscribe}: el \foreign{english}{broker} actúa como intermediario en la comunicación \foreign{english}{multicast}. Imagen obtenida de \footnotemark.}
   \label{fig:publish-subscribe}
 \end{figure}
 
 \footnotetext{Java Messaging Service: \url{https://docs.oracle.com/cd/E19509-01/820-5892/ref_jms/index.html}}
 
 La mayor ventaja de este estilo de comunicación es el \textbf{desacoplamiento} entre los servicios. \cite{korabUnderstandingMessageBrokers2017}
-Ninguno de ellos necesita conocer detalles sobre cómo están desplegado los otros: su dirección, el número de instancias, si están activos en este momento, etc. Solo necesitan conocer el formato de los mensajes y la dirección del \foreign{english}{broker} para enviarlos o recibirlos.
+Ninguno de ellos necesita conocer detalles sobre cómo están desplegado los otros: su dirección, el número de instancias, si están activos en este momento, etc. Para enviar o recibir mensajes solo necesitan conocer su formato, las colas o temas y la dirección del \foreign{english}{broker}.
 
 \begin{itemize}
   \item \textbf{Ventajas}:
@@ -250,7 +251,7 @@ Ninguno de ellos necesita conocer detalles sobre cómo están desplegado los otr
   \begin{itemize}
     \item \textbf{Comunicación asíncrona}: El servicio no necesita quedarse a la espera de una respuesta del servidor. Puede procesar otras operaciones hasta que se le notifique del resultado, si lo hubiera.
 
-    \item \textbf{Desacoplamiento de los servicios}: Ni los productores ni los consumidores necesitan conocer el origen o destino de sus mensajes. Solo su formato y la dirección del \foreign{english}{broker}.
+    \item \textbf{Desacoplamiento de los servicios}: Ni los productores ni los consumidores necesitan conocer el origen o destino de sus mensajes. Solo su formato, las colas o temas y la dirección del \foreign{english}{broker}.
 
     \item \textbf{Envío garantizado de mensajes}: El \foreign{english}{broker} garantiza que el mensaje será entregado \emph{al menos} una vez al consumidor. Reintentará el reenvío hasta que se confirme su recepción.
 
@@ -259,7 +260,7 @@ Ninguno de ellos necesita conocer detalles sobre cómo están desplegado los otr
   \item \textbf{Desventajas}:
 
   \begin{itemize}
-    \item \textbf{Requisitos de infraestructura}: Utilizar un \foreign{english}{broker} de mensajería puede incrementar la dificultad de nuestros despliegues. El \foreign{english}{broker} puede convertirse en un punto de fallo. Para operar de forma fiable, estos sistemas requieren de replicación. \cite{newmanBuildingMicroservicesDesigning2021}
+    \item \textbf{Requisitos de infraestructura}: Utilizar un \foreign{english}{broker} de mensajería puede incrementar la dificultad de nuestros despliegues. Este puede convertirse en un punto de fallo único. Para operar de forma fiable, estos sistemas requieren de replicación. \cite{newmanBuildingMicroservicesDesigning2021}
 
     \item \textbf{Envío garantizado de mensajes}: Para poder garantizar el envío de un mensaje, el \foreign{english}{broker} puede recurrir a reenviarlo. Debemos diseñar nuestros sistemas de forma que estos mensajes duplicados sean descartados si ya han sido procesados.
   \end{itemize}
@@ -271,13 +272,13 @@ En la tabla \ref{tab:comparativa-mecanismos-comunicacion} presentamos un resumen
   \hline
   & \textbf{RPC} & \textbf{REST} & \textbf{GraphQL} & \textbf{Broker mensajería} \\
   \hline
-  \textbf{Tipo de comunicación entre componentes} & Directa & Directa & Directa & Directa y \foreign{english}{Multicast} \\
+  \textbf{Tipo de comunicación entre componentes} & Dirigida & Dirigida & Dirigida & Dirigida y \foreign{english}{Multicast} \\
   \hline
   \textbf{Acoplamiento entre componentes} & Alto & Medio & Alto & Bajo \\
   \hline
   \textbf{Interoperabilidad} & Baja & Alta & Alta & Alta\footnotemark \\
   \hline
-  \textbf{Comandos de lectura} & Sí & Sí & Sí & Sí \\
+  \textbf{Comandos de lectura} & Sí & Sí & Sí & Sí\footnotemark \\
   \hline
   \textbf{Comandos de escritura} & Si & Sí & No & Sí \\
   \hline
@@ -290,30 +291,31 @@ En la tabla \ref{tab:comparativa-mecanismos-comunicacion} presentamos un resumen
 \end{longtable}
 
 \footnotetext{Depende de si tenemos control sobre los componentes que queremos integrar.}
+\footnotetext{Aunque no es el mecanismo ideal para lecturas. Se recomienda que los mensajes sean ligeros. Los otros protocolos serían más adecuados.}
 
-Ahora analizaremos qué protocolo elegimos para cada mecanismo de comunicación.
+Ahora describiremos qué protocolo elegimos para cada mecanismo de comunicación.
 
 \subsection{Peticiones síncronas}
 
-Comenzamos investigando las peticiones síncronas. Tomemos por ejemplo la comunicación entre el servicio de monitorización (\foreign{english}{monitoring service}) y el servicio de conocimiento (\foreign{english}{knowledge service}). Recordemos que el servicio de conocimiento almacena todas las propiedades de adaptación. El resto de servicios necesitan consultarlas y actualizarlas durante su funcionamiento. En la figura \ref{fig:monitor-knowledge-initial} representamos inicialmente ambos componentes y un conector, sin especificar de qué tipo será.
+Comenzamos investigando las peticiones síncronas. Tomemos por ejemplo la comunicación entre el servicio de monitorización (\foreign{english}{monitoring service}) y el servicio de conocimiento (\foreign{english}{knowledge servic}). Recordemos que el servicio de conocimiento almacena todas las propiedades de adaptación. El resto de servicios del nivel del bucle necesitan consultarlas y actualizarlas durante su funcionamiento. En la figura \ref{fig:monitor-knowledge-initial} representamos inicialmente ambos componentes y un conector, sin especificar de qué tipo será.
 
 % TODO: Cambiar por imagen de componentes, que ofrezcan y requieran interfaces.
 \begin{figure}[htb]
   \centering
   \includegraphics{cap_diseño/images/Monitor-Knowledge-Initial-Connector}
-  \caption{Boceto inicial: queremos conectar el servicio de monitorización con la base de conocimiento para poder leer propiedades de adaptación.}
+  \caption{Representación inicial de la comunicación entre el servicio de monitorización y el de conocimiento. El conector no indica su tipo todavía.}
   \label{fig:monitor-knowledge-initial}
 \end{figure}
 
-El siguiente paso es identificar qué interacciones debe existir entre ambos componentes. En este caso, el servicio de monitorización debe contactar con el servicio de conocimiento para leer y actualizar el valor de las propiedades.Por tanto, existen operaciones de lectura y escritura de los datos. Además, como es una comunicación ''descendente'' (\foreign{english}{monitoring service} está en la capa superior), el patrón a utilizar serán las peticiones síncronas.
+El siguiente paso es identificar qué interacciones debe existir entre ambos componentes. En este caso, el servicio de monitorización debe contactar con el servicio de conocimiento para leer y actualizar el valor de las propiedades. Por tanto, existen operaciones de lectura y escritura de los datos.
 
-De estas cuatro opciones, podemos descartar inmediatamente la opción de GraphQL. Se trata de un conector más orientado a las consultas de datos. En nuestro caso, necesitamos ejecutar también escrituras de los valores de las propiedades. Aunque podría ser interesante para consultas más avanzadas, utilizar dos protocolos de comunicación en paralelo aumentaría la complejidad de la arquitectura.
+Entre las cuatro opciones de tipos de conector podemos descartar inmediatamente la opción de GraphQL. Se trata de un conector más orientado a las consultas de datos. En nuestro caso, necesitamos ejecutar también escrituras. Aunque podría ser interesante para consultas más avanzadas, utilizar dos protocolos de comunicación en paralelo aumentaría la complejidad de la arquitectura.
 
-También optamos por descartar el \foreign{english}{broker} de mensajería. Como requerimos de comunicación directa, nos convenía que esta fuera síncrona. Para obtener propiedades del conocimiento, resultaba más sencillo de implementar mediante comunicación síncrona.
+También descartamos el \foreign{english}{broker} de mensajería. Como requerimos de lecturas de datos, nos convenía más recurrir al resto de patrones. Para obtener propiedades del conocimiento, resultaba más sencillo de implementar mediante comunicación síncrona.
 
-Finalmente, hay que tener en cuenta que una de nuestras prioridades es la \textbf{interoperabilidad}: es una API expuesta ''hacia fuera'', hacia una capa más externa; prima por tanto la compatibilidad con cualquier tipo de cliente. Descartamos entonces RPC, dado que nos acoplaría a una tecnología concreta y a APIs no estándares.
+Finalmente, hay que tener en cuenta que una de nuestras prioridades es la \textbf{interoperabilidad}: esta API estará expuesta ''hacia fuera'', a una capa más externa. Por tanto, tendremos clientes que nos contactarán. Potencialmente, de terceros. Prima por tanto la compatibilidad. Descartamos entonces RPC, dado que nos acoplaría a una tecnología concreta y a APIs no estándares.
 
-Terminamos por tanto decantándonos por implementar la comunicación utilizando un conector REST sobre HTTP. Implementaremos ambas funciones mediante \foreign{english}{endpoints} HTTP. Su especificación se detalla a continuación en las tablas \ref{tab:especificacion-get-property} y \ref{tab:especificacion-put-property}.
+Nos terminamos decantando por el conector REST sobre HTTP. Implementamos ambas funciones mediante \foreign{english}{endpoints} HTTP. Su especificación se detalla a continuación en las tablas \ref{tab:especificacion-get-property} y \ref{tab:especificacion-put-property}.
 
 \newsavebox\getpropertyrequestbox
 \begin{lrbox}{\getpropertyrequestbox}
@@ -326,7 +328,7 @@ Response: 200 Ok
 {
   value: {
     "Value":16.79,
-    "Unit": 1, // Celsius
+    "Unit": "Celsius",
     "ProbeId":"c02234d3-329c-4b4d-aee0-d220dc25276b",
     "DateTime":"2022-01-15T18:19:38.5231231Z"
   },
@@ -336,47 +338,43 @@ Response: 200 Ok
   \end{minipage}
 \end{lrbox}
 
-\begin{table}[htb]
-  \centering
+\begin{longtable}{|m{3.4cm}|p{2.5cm}|p{1cm}|p{3cm}|}
+  \hline
 
-  \begin{tabular}{|m{3.4cm}|p{2.5cm}|p{1cm}|p{3cm}|}
-      \hline
+  \textbf{Operación HTTP} & GET & \textbf{Ruta} & property/\{\emph{propertyName}\} \\
+  \hline
 
-      \textbf{Operación HTTP} & GET & \textbf{Ruta} & property/\{\emph{propertyName}\} \\
-      \hline
+  \textbf{Descripción} & \multicolumn{3}{|l|}{Devuelve el valor de la propiedad, si existe.} \\
+  \hline
 
-      \textbf{Descripción} & \multicolumn{3}{|l|}{Devuelve el valor de la propiedad, si existe.} \\
-      \hline
+  \textbf{Parámetros} & \emph{propertyName} & \multicolumn{2}{|m{0.55\linewidth}|}{El nombre de la propiedad que deseamos obtener. Se lee a partir de la ruta de la petición.}\\
+  \hline
 
-      \textbf{Parámetros} & \emph{propertyName} & \multicolumn{2}{|m{0.55\linewidth}|}{El nombre de la propiedad que deseamos obtener. Se lee a partir de la ruta de la petición.}\\
-      \hline
+  \multirow{3}*{\textbf{Respuestas posibles}}
+        & \textbf{Código 200 (Ok)} & \multicolumn{2}{|m{0.55\linewidth}|}{La propiedad se ha encontrado. Incluye un \foreign{english}{payload} con el siguiente esquema:
 
-      \multirow{3}*{\textbf{Respuestas posibles}}
-            & \textbf{Código 200 (Ok)} & \multicolumn{2}{|m{0.55\linewidth}|}{La propiedad se ha encontrado. Incluye un \foreign{english}{payload} con el siguiente esquema:
+        \begin{itemize}
+          \item \foreign{english}{Value}: Valor de la propiedad serializado en JSON.
+          \item \emph{LastModification}: Fecha y hora de la última modificación de esta propiedad.
+        \end{itemize}}\\
 
-            \begin{itemize}
-              \item \foreign{english}{Value}: Valor de la propiedad serializado en JSON.
-              \item \emph{LastModification}: Fecha y hora de la última modificación de esta propiedad.
-            \end{itemize}}\\
+        \cline{2-4}
 
-            \cline{2-4}
+        & \textbf{Código 400 (Bad request)} & \multicolumn{2}{|m{0.55\linewidth}|}{La petición está mal formada, no es acuerdo al contrato.}\\
 
-            & \textbf{Código 400 (Bad request)} & \multicolumn{2}{|m{0.55\linewidth}|}{La petición está mal formada, no es acuerdo al contrato.}\\
+        \cline{2-4}
 
-            \cline{2-4}
+        & \textbf{Código 404 (Not found)} & \multicolumn{2}{|m{0.55\linewidth}|}{No se ha encontrado ninguna propiedad con el nombre proporcionado.}\\
+  \hline
 
-            & \textbf{Código 404 (Not found)} & \multicolumn{2}{|m{0.55\linewidth}|}{No se ha encontrado ninguna propiedad con el nombre proporcionado.}\\
-      \hline
+  \textbf{Ejemplo} & \multicolumn{3}{|b{0.7\linewidth}|}{Petición para obtener la propiedad \emph{currentTemperature}:
+  \usebox\getpropertyrequestbox} \\
 
-      \textbf{Ejemplo} & \multicolumn{3}{|b{0.7\linewidth}|}{Petición para obtener la propiedad \emph{currentTemperature}:
-      \usebox\getpropertyrequestbox} \\
-
-      \hline
-  \end{tabular}
+  \hline
 
   \caption{Especificación de la operación para obtener una propiedad del servicio de conocimiento.}
   \label{tab:especificacion-get-property}
-\end{table}
+\end{longtable}
 
 \newsavebox\putpropertyrequestbox
 \begin{lrbox}{\putpropertyrequestbox}
@@ -399,45 +397,41 @@ Response: 204 (No content)
   \end{minipage}
 \end{lrbox}
 
-\begin{table}[htb]
-  \centering
+\begin{longtable}{|m{3.4cm}|m{2.5cm}|b{1cm}|b{3cm}|}
+  \hline
 
-  \begin{tabular}{|m{3.4cm}|m{2.5cm}|b{1cm}|b{3cm}|}
-      \hline
+  \textbf{Operación HTTP} & PUT & \textbf{Ruta} & property/\{\emph{propertyName}\} \\
+  \hline
 
-      \textbf{Operación HTTP} & PUT & \textbf{Ruta} & property/\{\emph{propertyName}\} \\
-      \hline
+  \textbf{Descripción} & \multicolumn{3}{|b{0.7\linewidth}|}{ Actualiza (o crea, si no existe) el valor de la propiedad con el nombre dado.} \\
+  \hline
 
-      \textbf{Descripción} & \multicolumn{3}{|b{0.7\linewidth}|}{ Actualiza (o crea, si no existe) el valor de la propiedad con el nombre dado.} \\
-      \hline
+  \multirow{2}*{\textbf{Parámetros}}
+        & \emph{propertyName} & \multicolumn{2}{|b{0.55\linewidth}|}{El nombre de la propiedad que deseamos crear o actualizar. Se lee a partir de la ruta de la petición.}\\
 
-      \multirow{2}*{\textbf{Parámetros}}
-            & \emph{propertyName} & \multicolumn{2}{|b{0.55\linewidth}|}{El nombre de la propiedad que deseamos crear o actualizar. Se lee a partir de la ruta de la petición.}\\
+        \cline{2-4}
 
-            \cline{2-4}
+        & \emph{SetPropertyDTO} & \multicolumn{2}{|b{0.55\linewidth}|}{ Un DTO que contiene el valor a asignar en la propiedad serializado en JSON. El DTO se encuentra en el cuerpo de la petición.} \\
+  \hline
 
-            & \emph{SetPropertyDTO} & \multicolumn{2}{|b{0.55\linewidth}|}{ Un DTO que contiene el valor a asignar en la propiedad serializado en JSON. El DTO se encuentra en el cuerpo de la petición.} \\
-      \hline
+  \multirow{2}*{\textbf{Respuestas posibles}}
+        & \textbf{Código 204 (No content)} & \multicolumn{2}{|b{0.55\linewidth}|}{La propiedad se ha creado o actualizado correctamente. No incluye \emph{payload} en el cuerpo de la respuesta.}\\
 
-      \multirow{2}*{\textbf{Respuestas posibles}}
-            & \textbf{Código 204 (No content)} & \multicolumn{2}{|b{0.55\linewidth}|}{La propiedad se ha creado o actualizado correctamente. No incluye \emph{payload} en el cuerpo de la respuesta.}\\
+        \cline{2-4}
 
-            \cline{2-4}
+        & \textbf{Código 400 (Bad request)} & \multicolumn{2}{|b{0.55\linewidth}|}{La petición está mal formada, no es acuerdo al contrato.}\\
+  \hline
 
-            & \textbf{Código 400 (Bad request)} & \multicolumn{2}{|b{0.55\linewidth}|}{La petición está mal formada, no es acuerdo al contrato.}\\
-      \hline
+  \textbf{Ejemplo} & \multicolumn{3}{|b{0.7\linewidth}|}{Petición para actualizar la propiedad \emph{currentTemperature} con una medición de un termómetro:
+  \usebox\putpropertyrequestbox} \\
 
-      \textbf{Ejemplo} & \multicolumn{3}{|b{0.7\linewidth}|}{Petición para actualizar la propiedad \emph{currentTemperature} con una medición de un termómetro:
-      \usebox\putpropertyrequestbox} \\
-
-      \hline
-  \end{tabular}
+  \hline
 
   \caption{Especificación de la operación para actualizar o crear una propiedad del servicio de conocimiento.}
   \label{tab:especificacion-put-property}
-\end{table}
+\end{longtable}
 
-Una vez definida la interfaz que expondrá el servicio de conocimiento, nos queda definir cómo se contactará desde el servicio de monitorización. ¿Implementamos las llamadas manualmente con un cliente HTTP? Aunque no sería muy complicado, tendríamos que mantenerlo manualmente cuando evolucione el sistema. Optamos entonces por una alternativa: el estándar OpenAPI.
+Una vez definida la interfaz que expondrá el servicio de conocimiento, nos quedaba definir cómo se invocaría desde el servicio de monitorización. ¿Implementamos las llamadas manualmente con un cliente HTTP? Aunque no sería muy complicado, tendríamos que mantenerlo manualmente cuando evolucione el sistema. Optamos entonces por una alternativa: generar clientes a partir del estándar OpenAPI.
 
 \subsubsection{Open API}
 \label{chap:OpenAPI}
@@ -449,23 +443,23 @@ Una vez definida la interfaz que expondrá el servicio de conocimiento, nos qued
   \vspace{5pt}
 \end{wrapfigure}
 
-OpenAPI es un lenguaje estándar para describir APIs RESTful. Nos permite describir de forma estructurada las operaciones que ofrece un servicio HTTP, manteniéndose agnóstico a su implementación. Esta descripción ayuda tanto a humanos como a computadoras a descubrir y utilizar las funcionalidades de la API. La OpenAPI Initiative (OAI) dirige el proyecto bajo el manto de la \emph{Linux Foundation}.
+OpenAPI\footnote{Página oficial: \url{https://www.openapis.org/}} es un lenguaje estándar para describir APIs RESTful. Nos permite describir de forma estructurada las operaciones que ofrece un servicio manteniéndose agnóstico a su implementación. Esta descripción ayuda tanto a humanos como a computadoras a descubrir y utilizar las funcionalidades de la API. La OpenAPI Initiative (OAI) dirige el proyecto bajo el manto de la \emph{Linux Foundation}.
 
-Un documento OpenAPI habitual documenta el funcionamiento de la API y el conjunto de recursos que la componen. Describe las operaciones HTTP que podemos ejecutar sobre estos recursos, incluyendo las estructuras de datos que recibe o envía y los códigos de respuesta. Estos códigos indican al cliente el resultado de la ejecución de la operación. \cite{openapi_initiativeOpenAPISpecificationV3} Más adelante mostraremos un ejemplo, con el \textcolor{red}{fragmento} \ref{ls:openapi-get}.
+Un documento OpenAPI describe el funcionamiento de la API y el conjunto de recursos que la componen. Describe las operaciones HTTP que podemos ejecutar sobre estos recursos, incluyendo las estructuras de datos que recibe o envía y los códigos de respuesta. Estos códigos indican al cliente el resultado de la ejecución de la operación. \cite{openapi_initiativeOpenAPISpecificationV3} Más adelante mostraremos un ejemplo, con el \textcolor{red}{fragmento} \ref{ls:openapi-get}.
 
-La especificación puede escribirse manualmente o puede generarse a partir de una implementación existente. Así, podemos desarrollar nuestro servicio en un determinado lenguaje y obtener su descripción en OpenAPI. Podemos aprovecharla en varios ámbitos del desarrollo, gracias a la gran variedad de herramientas existentes: generación de documentación, generación de casos de prueba, identificar cambios incompatibles, etc. \cite{westerveldChapterOpenAPIAPI2021}
+La especificación puede escribirse manualmente o puede generarse a partir de una implementación existente. Así, podemos desarrollar nuestro servicio en un determinado lenguaje y obtener su descripción en OpenAPI. Además, podemos aprovecharla en varios ámbitos del desarrollo gracias a la variedad de herramientas existentes: generación de documentación, generación de casos de prueba, identificar cambios incompatibles, etc. \cite{westerveldChapterOpenAPIAPI2021}
 
-Uno de los casos de uso más interesantes es la generación de código a partir de la definición. Existen una serie de generadores\footnote{\url{https://github.com/OpenAPITools/openapi-generator}} capaces de generar clientes o servidores conformes a la especificación. Ofrecen soporte a una gran variedad de lenguajes: Java, C\#, JavaScript\dots En el caso de cliente, actúa como un proxy que nos abstrae de la lógica de comunicación con el servidor, similar a lo descrito en el apartado de RPC.
+Uno de los casos de uso más interesantes es la generación de código a partir de la definición. Existen una serie de librerías\footnote{\url{https://github.com/OpenAPITools/openapi-generator}} capaces de generar clientes o servidores conforme a la especificación. Ofrecen soporte a una gran variedad de lenguajes: Java, C\#, JavaScript\dots En el caso del cliente, actúa como un proxy que nos abstrae de la lógica de comunicación con el servidor. Similar a lo descrito en el apartado de RPC.
 
-Para el desarrollo de este trabajo, nos interesaba especialmente debido a las diferencias tecnológicas existentes: el bucle MAPE-K original estaba desarrollado en Java, pero el prototipo se desarrolló con el lenguaje C\# junto con el framework ASP.NET Core. Se tomó esta decisión para reducir el tiempo de aprendizaje y centrar los esfuerzos en la definición de la arquitectura del sistema.
+Para el desarrollo de este trabajo, nos interesaba especialmente debido a las diferencias tecnológicas existentes: el bucle MAPE-K original estaba desarrollado en Java, pero el prototipo se desarrolló con el lenguaje C\# usando el \foreign{english}{framework} ASP.NET Core. Se tomó esta decisión para reducir el tiempo de aprendizaje y centrar los esfuerzos en la definición de la arquitectura del sistema.
 
-\textcolor{red}{Gracias a la generación de código, pudimos obtener la especificación de los servicios desarrollados en ASP.NET Core, y generar clientes o servidores en cualquier lenguaje soportado, Java incluido. El bucle MAPE-K original después podría ser refactorizado usando este código autogenerado.}
+Gracias a la generación de código, se podría obtener la especificación del prototipo y generar los clientes o servidores en cualquier lenguaje soportado. Java incluido. El bucle MAPE-K original después podría ser refactorizado usando este código autogenerado.
 
-A continuación explicaremos brevemente cómo utilizamos OpenAPI para documentar nuestras APIs y generar la especificación estas. Para ello, continuaremos con el ejemplo del servicio de conocimiento que hemos descrito a lo largo de este capítulo. Vamos a centrarnos en la implementación de la operación para obtener una propiedad del conocimiento, que describimos en la tabla \ref{tab:especificacion-get-property}.
+A continuación explicaremos cómo utilizamos OpenAPI. Para ello, continuaremos con el ejemplo del servicio de conocimiento que hemos descrito a lo largo de esta sección. Nos centraremos en la implementación de la operación para obtener una propiedad del conocimiento, descrita en la tabla \ref{tab:especificacion-get-property}.
 
-En el \textcolor{red}{fragmento} \ref{ls:csharp-get}, podemos observar que se trata de un método C\# llamado \emph{GetProperty}. Su implementación es sencilla: busca en un diccionario la propiedad cuyo nombre se le pasa por parámetro. En caso de encontrarla, devuelve su valor con un código 200 OK. En caso contrario, devuelve un código de error que describe qué ha ocurrido exactamente (llamada incorrecta o no se ha encontrado la propiedad).
+En el \textcolor{red}{fragmento} \ref{ls:csharp-get} podemos observar que se trata de un método C\# llamado \emph{GetProperty}. Su implementación es sencilla: busca en un diccionario la propiedad cuyo nombre se le pasa por parámetro. Si la encuentra, devuelve su valor con un código 200 OK. En caso contrario, devuelve un código de error que describe el motivo (formato de la petición incorrecto o no se ha encontrado la propiedad).
 
-Aparte de la implementación, podemos comprobar que el método se ha decorado con una serie de comentarios (líneas 1-8) y atributos (10-12). Esta documentación describe qué hace el método, sus entradas y posibles respuestas. OpenAPI es capaz de utilizar estos elementos opcionales para generar una especificación más completa. Por tanto, resulta muy recomendable utilizarlos.
+Aparte de la implementación, podemos comprobar que el método cuenta con una serie de comentarios (líneas 1-8) y atributos (10-12). Esta documentación describe qué hace el método, sus entradas y posibles respuestas. OpenAPI es capaz de utilizarlos para generar una especificación más completa. Por tanto, resulta muy recomendable incluirlos.
 
 \begin{lstlisting}[language={[Sharp]C},caption={Implementación del método GetProperty decorado para generar la especificación OpenAPI.},captionpos=b, label=ls:csharp-get]
 /// <summary>
@@ -541,13 +535,14 @@ Haciendo uso de las librerías de OpenAPI, generamos la especificación a partir
   }
 \end{lstlisting}
 
-Podemos apreciar que en la ruta (\emph{/Property/\{propertyName\}}) está disponible una operación de tipo \emph{get} y que acepta determinados parámetros y ofrece unas posibles respuestas. Aparece una referencia a otro esquema (línea 25), que representa la estructura de la respuesta en ese caso concreto. También aparecen los comentarios opcionales que indicamos en el \textcolor{red}{fragmento} \ref{ls:csharp-get}. Encontramos grandes similitudes con la especificación presentada en la tabla \ref{tab:especificacion-get-property}.
+Podemos apreciar que en la ruta \emph{/Property/\{propertyName\}} está disponible una operación de tipo \emph{GET}. Esta acepta determinados parámetros y describe unas posibles respuestas. También aparece una referencia a otro esquema (línea 25), que representa la estructura de la respuesta en ese caso concreto. También aparecen los comentarios opcionales que indicamos en el \textcolor{red}{fragmento} \ref{ls:csharp-get}. Encontramos grandes similitudes con la especificación presentada en la tabla \ref{tab:especificacion-get-property}.
 
-Los convenios de los generadores de código de OpenAPI pueden no ser de nuestro agrado. Por ejemplo, pueden resultar muy verbosos o puede resultar muy pesado trabajar con DTOs directamente. Por suerte, tenemos dos opciones para solventar esto: Modificar las plantillas de generación de código. Al ser de código abierto, podríamos modificar las existentes o crear nuestras propias plantillas con nuestros propios convenios.
+%% TODO: ¿Eliminar?
+\textcolor{red}{Los convenios de los generadores de código de OpenAPI pueden no ser de nuestro agrado. Por ejemplo, pueden resultar muy verbosos o puede resultar muy pesado trabajar con DTOs directamente. Por suerte, tenemos varias alternativas para solucionarlo: Modificar las plantillas de generación de código. Al ser de código abierto, podríamos modificar las existentes o crear nuestras propias plantillas con nuestros propios convenios.}
 
-Otra opción, más fácil de implementar, es desarrollar código por encima del API Client Generado. Es el caso del servicio de Análisis. Como trabajar con DTOs directamente se hacía muy pesado, optamos por implementar un `system configuration request` builder. Esto nos permitia configurar la petición de una forma más descriptiva para el usuario:
+\textcolor{red}{Otra opción, más fácil de implementar, es desarrollar código por encima del API Client generado. Es el caso del servicio de Análisis. Como trabajar con DTOs directamente se hacía muy pesado (fragmento \ref{ls:analysis-api-client-original}), optamos por implementar un \foreign{english}{builder} de peticiones. Esto nos permitia configurar la petición de una forma más descriptiva para el usuario (fragmento \ref{ls:analysis-api-cliente-request-builder}):}
 
-\begin{lstlisting}[language={[Sharp]C},caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.},captionpos=b, label=ls:api-cliente-request-builder]
+\begin{lstlisting}[language={[Sharp]C},caption={Implementación de petición original. Trabajar con DTOs era muy verboso.},captionpos=b, label=ls:analysis-api-client-original]
 var changeRequests = new List<ServiceConfigurationDTO>
 {
   new()
@@ -580,7 +575,7 @@ await _systemApi.SystemRequestChangePostAsync(
 \end{lstlisting}
 
 
-\begin{lstlisting}[language={[Sharp]C},caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.},captionpos=b, label=ls:api-cliente-request-builder]
+\begin{lstlisting}[language={[Sharp]C},caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.},captionpos=b, label=ls:analysis-api-cliente-request-builder]
 await _systemService.RequestChangeAsync(changeRequest =>
 {
   changeRequest
@@ -595,20 +590,18 @@ await _systemService.RequestChangeAsync(changeRequest =>
 });
 \end{lstlisting}
 
-Finalmente, la arquitectura del conector que emplearemos para implementar las peticiones aparece en la figura \ref{fig:monitor-knowledge-connector-architecture}. La figura muestra como el servicio de monitorización contacta al de conocimiento para asignarle un valor a la propiedad \emph{Temp}.
+Para terminar, mostramos la estructura del conector que emplearemos para implementar las peticiones aparece en la figura \ref{fig:monitor-knowledge-connector-architecture}. La figura muestra como el servicio de monitorización contacta al de conocimiento para asignarle un valor a la propiedad \emph{Temp}.
 
 El conector, delimitado por una línea discontinua roja, está compuesto por dos elementos: una API REST y un cliente. Los otros dos grupos de elementos representan los procesos de los servicios de monitorización y conocimiento. El servicio de monitorización se comunica a con la API través del API Client, que está en su proceso actuando como \emph{proxy}.
 
 %%% TODO: Actualizar la imagen para que aparezca PUT en vez de POST.
 %%% TODO: ¿Darle la vuelta a los servicios? Monitor arriba y Knowledge abajo.
-\begin{figure}[h!]
+\begin{figure}[htb]
   \centering
   \includegraphics[scale=0.64]{cap_diseño/images/Monitor-Knowledge-Connector}
   \caption{Diseño del conector usando implementación Cliente - Servidor}
   \label{fig:monitor-knowledge-connector-architecture}
 \end{figure}
-
-\pagebreak
 
 \subsection{Notificaciones}
 
