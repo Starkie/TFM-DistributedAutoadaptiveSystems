@@ -3,45 +3,45 @@
 
 Como comentamos en el capítulo \ref{chap:introduccion}, el objetivo del trabajo es transformar un servicio monolítico en un sistema distribuido basado en microservicios. Se trata de un cambio arquitectónico importante. Queremos por tanto diseñar una estrategia ingenieril para llevar a a cabo la migración; teniendo en cuenta las particularidades del sistema.
 
-El servicio en cuestión implementa un \textbf{bucle de control MAPE-K}\cite{ibmcorporationArchitecturalBlueprintAutonomic2006,fonsServiciosAdaptivereadyPara2021}, que ya describimos en la sección \ref{sub:bucles-mapek}.
+El servicio en cuestión implementa un \textbf{bucle de control MAPE-K}\cite{ibmcorporationArchitecturalBlueprintAutonomic2006,fonsServiciosAdaptivereadyPara2021}, que ya describimos en la sección \ref{sec:bucles-mapek}. Por suerte, partimos de un sistema cuyos componentes presentan una división funcional clara (cada etapa del bucle). Nos facilitará definir las fronteras de nuestros servicios.
 
-En esta sección presentaremos nuestra propuesta arquitectónica para adaptar el bucle para entornos en la nube.
+Debido a esto, el foco de este capítulo pasará a los \textbf{conectores de \emph{software}}. Necesitamos establecer qué estrategias de comunicación utilizaremos para comunicar los servicios.
 
 \textcolor{red}{Buscar libros de descomposición de monolitos en microservicios.}
 
 \section{Distribución de los componentes}
 
-Actualmente, el bucle está muy acoplado a los modelos de sus recursos manejados. Todo corre bajo el mismo proceso: el bucle, los monitores, sus reglas de adaptación y demás elementos específicos de la solución\dots Ese proceso solo podrá manejar aquellos sistemas cuyos módulos tenga cargados. En la figura \ref{fig:bucle-mapek2} presentamos otra vista de la arquitectura del bucle.
+El primer paso fue identificar los componentes que compondrían nuestra arquitectura. Por suerte, partíamos de un sistema existente, con una arquitectura bien definida y documentada. Conocíamos el rol de cada uno de sus componentes y sus requisitos. Asi que el primer problema al que nos enfrentamos estaba relacionado con la distribución de los servicios. ¿Cómo definimos las fronteras entre cada uno de ellos? ¿Qué componentes debe abarcar cada microservicio?
+
+En la figura \ref{fig:bucle-mapek2} presentamos otra vista de la arquitectura actual del bucle. Una de las decisiones que tomamos muy temprano en el diseño fue separar cada etapa del bucle en su propio servicio. Esto nos aportaba varios beneficios:
 
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=1.15]{cap_introduccion/images/bucle-mape-k}
-  \caption[Arquitectura de un Bucle MAPE-K. Podemos apreciar el flujo de información y de control a lo largo de las etapas del bucle.]{Arquitectura de un Bucle MAPE-K. Podemos apreciar el flujo de información y de control a lo largo de las etapas del bucle. Obtenida de \cite{fonsEspecificacionSistemasAutoadaptativos2021}}
+  \caption[Arquitectura de un Bucle MAPE-K. El flujo de información y de control entre las etapas del bucle están representados con flechas.]{Arquitectura de un Bucle MAPE-K. El flujo de información y de control entre las etapas del bucle están representados con flechas. Obtenida de \cite{fonsEspecificacionSistemasAutoadaptativos2021}}
   \label{fig:bucle-mapek2}
 \end{figure}
 
-Partimos entonces el objetivo de desacoplarlo. Así, podremos desplegarlo y usarlo de forma agnóstica al recurso manejado. La misma infraestructura podrá aprovecharse para manejar varios sistemas simultáneamente (\emph{multi-tennancy}). La idea es implementarlo a nivel de sistema\cite{mendoncaGeneralityVsReusability2018}, por lo que se desplegará al mismo con los microservicios del recurso manejado.
+El más evidente es que nos permitía independizar la implementación de cada etapa. Si fuera necesario, podríamos emplear distintas tecnologías para cada una. Incluso podríamos ofrecer implementaciones alternativas de algunos componentes. Estos podrían ofrecer distintas estrategias de la misma funcionalidad, como podrían ser distintos planificadores. \textcolor{red}{TODO: cita sam newman}
 
-Como veremos a continuación, cada uno de sus componentes es candidato a convertirse en un microservicio individual.
+Por otro lado, también nos permitirá escalar cada etapa de forma independiente. Si por ejemplo el servicio de análisis estuviera recibiendo más peticiones que las demás, no sería necesario instanciar el bucle completo. En su lugar, podemos limitarnos a desplegar solo una nueva instancia del componente afectado.
 
-Por la descripción de ambos componentes, vemos que existe una clara división de dominios y responsabilidades. Esto nos ayuda a determinar que ambos componentes pueden desplegarse por separado. \textcolor{red}{REFERENCIA 'Building Microservices' Sam Newman}
+\textcolor{red}{Detectamos otra posible división de funcionalidad:} actualmente, el bucle está muy acoplado al dominio de sus recursos manejados. Todo corre bajo el mismo proceso: el bucle, los monitores, sus reglas de adaptación y demás elementos específicos de la solución. Ese proceso solo podrá manejar aquellos sistemas cuyos módulos tenga cargados.
 
-Por suerte, partimos de un sistema existente, con una arquitectura bien definida y documentada. Conocíamos el rol de cada uno de los componentes del servicio y sus requisitos. Asi que, el primer problema al que nos enfrentamos estaba relacionado con la distribución de los servicios. ¿Cómo definimos las fronteras entre cada uno de ellos? ¿Qué componentes debe abarcar cada microservicio?
+Decidimos entonces desacoplarlos. Separar cada etapa del bucle MAPE-K de los elementos específicos de cada solución. Así, tendremos cada etapa como un microservicio agnóstico a una solución concreta; y por otro lado, estarán los servicios específicos para cada solución, con conocimiento del dominio del recurso manejado: monitores, reglas de adaptación, efectores\dots
 
-La primera decisión que tomamos fue desacoplar el bucle de los sistemas. Buscábamos desarrollar microservicios agnósticos a la solución manejada. Por ello, vamos a identificar distintos \textbf{niveles de componentes} \textcolor{red}{Imagen que separa el bucle de la lógica de la solución.} Esto nos permitiría dar servicio a varios sistemas distintos con la misma infraestructura. Multi-tennancy.
+Podremos entonces aprovechar la misma infraestructura para manejar varios sistemas simultáneamente (\emph{multi-tennancy}). \textcolor{red}{ampliar + cita}
 
-Otra decisión que tomamos fue separar cada etapa del bucle en su propio servicio. Así podríamos independizarlas y escalarlas individualmente.
-
-Una vez determinadas las fronteras entre los microservicios, hemos definido los componentes de nuestro sistema.
+En cuanto al despliegue, mantendremos el bucle a nivel de sistema, \cite{mendoncaGeneralityVsReusability2018} como funcionaba hasta ahora. Esto significa que se desplegará conjuntamente con los microservicios del recurso manejado. En la figura \ref{fig:mape-k-microservices} mostramos los microservicios que componen nuestra arquitectura.
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.3]{cap_diseño/images/mape-k-microservices}
+  \includegraphics[scale=0.25]{cap_diseño/images/mape-k-microservices}
   \caption{Diagrama con los componentes que forman nuestra arquitectura distribuida}
   \label{fig:mape-k-microservices}
 \end{figure}
 
-\textcolor{red}{Figura \ref{fig:mape-k-microservices}: Agrupar los servicios para poder aumentar zoom y hacerlo más legible. Añadir línea de divisón entre la capa del bucle y el dominio del recurso manejado.}
+\textcolor{red}{Figura \ref{fig:mape-k-microservices}: Borrar los servicios específicos de planificador y ejecutor. Agrupar los servicios para poder aumentar zoom y hacerlo más legible. Añadir línea de divisón entre la capa del bucle y el dominio del recurso manejado.}
 
 \section{Conectando los servicios}
 
