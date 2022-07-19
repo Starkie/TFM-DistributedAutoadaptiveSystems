@@ -2,11 +2,12 @@
 \chapter{Implementación}
 \label{chap:implementación}
 
-La idea no es implementar un sistema production ready, pero si verificar que as comunicaciones funcionan correctamente. En este capitulo describiremos la implementación de las capas de conocimiento y nivel del bucle. Dejaremos para más adelante, el capitulo \ref{chap:caso_estudio} la descripción de la implementación del nivel de solución y sistema manejado. En este capitulo ofrecemos una vista más concreta de la implementación, y las tecnologías empleadas. EN el otro describiremos cómo encaja todo a nivel general y veremos cómo opera.
+Una vez descrito el diseño del sistema, llegamos a la etapa de implementación. Uno de los objetivos del trabajo era verificar que la arquitectura elegida era viable. Para ello, optamos por implementar un sistema autoadaptativo muy básico. Tanto el diseño como la implementación se desarrollaron de forma incremental. Gracias a esto, el diseño fue evolucionando según detectábamos nuevas necesidades o problemas que no resolvía nuestra arquitectura.
 
-Una vez descrito el diseño del sistema, llegamos a la etapa de implementación. Aunque no era uno de los objetivos del trabajo, optamos por implementar un sistema básico que siga el diseño. De esta forma pudimos verificar la distribución de los componentes, verificar la viabilidad de los conectores y refinar los protocolos de comunicación. La implementación fue incremental, y el diseño fue evolucionando según detectábamos nuevas necesidades o problemas que no resolvía nuestra arquitectura. Así pudimos validar qué funcionaba y que no.
+En este capitulo describiremos la implementación de los microservicios del nivel de conocimiento de conocimiento y del bucle. Dejaremos para más adelante, en el capitulo \ref{chap:caso_estudio}, la descripción de la implementación del nivel de solución y sistema manejado. En este capitulo ofrecemos una vista más concreta de la implementación, y las tecnologías empleadas. En el otro describiremos cómo encaja todo a nivel general y veremos cómo opera.
 
 La implementación se llevo a cabo en 4 hitos distintos, cada uno correspondiente a una etapa distinta del bucle:
+
 \begin{itemize}
   \item \textbf{Hito 1 - Servicio de monitorización y conocimiento}
   \item \textbf{Hito 2 - Servicio de análisis y reglas}
@@ -16,13 +17,15 @@ La implementación se llevo a cabo en 4 hitos distintos, cada uno correspondient
 
 \section{Servicio de monitorización y conocimiento}
 
-En esta primera etapa acordamos implementar el proceso de registro de las medidas de una sonda, hasta que se graba en el conocimiento. Esto implicó implementar las sondas y monitores del caso de estudio (capitulo \ref{chap:caso_estudio}), el componente de monitorización del bucle MAPE-K y la base de conocimiento. Se comenzó también con el prototipado de los que se convertirían en los conectores para comunicaciones descendentes: los conectores de APIs REST.
+En esta primera etapa desarrollamos el proceso de monitorización. Este abarca desde que la sonda realiza sus mediciones hasta que se graban en el conocimiento. Esto implicó implementar varios componentes: las sondas y monitores del caso de estudio (capitulo \ref{chap:caso_estudio}), el componente de monitorización del bucle MAPE-K y la base de conocimiento.
 
-El objetivo era implementar desde que la sonda reporta una medida hasta que se almacena esta nueva medida en el conocimiento. Para ello tuvimos que implementar la comunicación entre la sonda y el monitor de la solución. Después del monitor de la solución al componente de monitorización del bucle. Y de este último al conocimiento. La implementación de todos ellos fue muy parecida.
+También se prototiparon los conectores para peticiones síncronas basados en APIs RESTful: la comunicación entre la sonda y el monitor de la solución. Después del monitor de la solución al componente de monitorización del bucle. Y de este último al conocimiento. La implementación de todos ellos fue muy parecida.
 
-Respecto a los servicios, se optó por implementar el sistema con servicios en ASP.NET\footnote{Página oficial: \url{https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core}}. Se trata de un \emph{framework} para implementar servidores web de la plataforma .NET de Microsoft. Como comentamos en la sección \ref{chap:OpenAPI}, estos servicios expondrán \foreign{english}{endpoints} HTTP. En el listing \ref{ls:csharp-get} ya mostramos un ejemplo de la implementación de estos \foreign{english}{endpoints}.
+Respecto a los microservicios del sistema, se optó por el \foreign{english}{framework} ASP.NET\footnote{Página oficial: \url{https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core}}. Este \emph{framework} es específico para implementar servidores web de la plataforma .NET de Microsoft.
 
-A partir de estos endpoints, gracias al uso de la librería \emph{Swashbuckle.AspNetCore}\footnote{Página oficial: \url{https://github.com/domaindrivendev/Swashbuckle.AspNetCore}}, pudimos generar la especificación de nuestros servicios en el estándar OpenAPI. Esto nos aporta dos cosas: una interfaz de usuario para interactuar con la API y la posibilidad de generar el API client.
+Aquellos servicios que reciban peticiones síncronas expondrán \foreign{english}{endpoints} HTTP. En el fragmento \ref{ls:csharp-get} ya mostramos un ejemplo de la implementación de estos \foreign{english}{endpoints}.
+
+A partir de ellos, gracias al uso de la librería \emph{Swashbuckle.AspNetCore}\footnote{Página oficial: \url{https://github.com/domaindrivendev/Swashbuckle.AspNetCore}}, pudimos generar la especificación de nuestros servicios en el estándar OpenAPI. Esto nos aporta dos cosas: una interfaz de usuario para interactuar con la API y la posibilidad de generar el API client.
 
 Hablemos primero sobre la interfaz de usuario. La librería añade a nuestro servicio el \emph{endpoint} \texttt{/swagger}. Accediendo a esta ruta, el servicio nos presentará una interfaz con un listado de todas las operaciones que ofrece la API Rest. De cada petición nos muestra su documentación (la que añadimos en el código), sus parámetros y nos permite incluso ejecutarla allí mismo. De esta forma, nuestros usuarios pueden hacer pruebas de las peticiones antes de implementar su propio cliente. O para situaciones de emergencia cuando necesitemos ejecutar una petición por algún motivo (depuración?)
 
