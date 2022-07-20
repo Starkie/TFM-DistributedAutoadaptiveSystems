@@ -19,15 +19,16 @@ La implementación se llevo a cabo en 4 hitos distintos, cada uno correspondient
 
 En esta primera etapa desarrollamos el proceso de monitorización. Este abarca desde que la sonda realiza sus mediciones hasta que se graban en el conocimiento. Esto implicó implementar varios componentes: las sondas y monitores del caso de estudio (capitulo \ref{chap:caso_estudio}), el componente de monitorización del bucle MAPE-K y la base de conocimiento.
 
-También se prototiparon los conectores para peticiones síncronas basados en APIs RESTful: la comunicación entre la sonda y el monitor de la solución. Después del monitor de la solución al componente de monitorización del bucle. Y de este último al conocimiento. La implementación de todos ellos fue muy parecida.
+%% TODO: dotnet logo?
+Para su desarrollo se optó por el lenguaje C\# y el \foreign{english}{framework} ASP.NET\footnote{Página oficial: \url{https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core}}. Este \emph{framework} es específico para implementar servidores web de la plataforma .NET de Microsoft. Lo elegimos porque ya contábamos con experiencia de desarrollo en esta plataforma. Además de que soporta los principales sistemas operativos (Windows, Linux y Mac).
 
-Respecto a los microservicios del sistema, se optó por el \foreign{english}{framework} ASP.NET\footnote{Página oficial: \url{https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core}}. Este \emph{framework} es específico para implementar servidores web de la plataforma .NET de Microsoft.
+\subsection{Peticiones síncronas}
 
-Aquellos servicios que reciban peticiones síncronas expondrán \foreign{english}{endpoints} HTTP. En el fragmento \ref{ls:csharp-get} ya mostramos un ejemplo de la implementación de estos \foreign{english}{endpoints}.
+En este hito también se prototiparon los conectores para peticiones síncronas. Aquellos servicios que las soporten expondrán \foreign{english}{endpoints} HTTP. Por ejemplo, el servicio de conocimiento expone aquellos que permiten recuperar o modificar propiedades de adaptación.  En el fragmento \ref{ls:csharp-get} ya mostramos un ejemplo de su implementación.
 
-A partir de ellos, gracias al uso de la librería \emph{Swashbuckle.AspNetCore}\footnote{Página oficial: \url{https://github.com/domaindrivendev/Swashbuckle.AspNetCore}}, pudimos generar la especificación de nuestros servicios en el estándar OpenAPI. Esto nos aporta dos cosas: una interfaz de usuario para interactuar con la API y la posibilidad de generar el API client.
+Gracias al uso de la librería \emph{Swashbuckle.AspNetCore}\footnote{Página oficial: \url{https://github.com/domaindrivendev/Swashbuckle.AspNetCore}}, pudimos generar su especificación en el estándar OpenAPI. Esto nos aportó dos cosas: una interfaz de usuario para interactuar con la API y la posibilidad de generar el API client.
 
-Hablemos primero sobre la interfaz de usuario. La librería añade a nuestro servicio el \emph{endpoint} \texttt{/swagger}. Accediendo a esta ruta, el servicio nos presentará una interfaz con un listado de todas las operaciones que ofrece la API Rest. De cada petición nos muestra su documentación (la que añadimos en el código), sus parámetros y nos permite incluso ejecutarla allí mismo. De esta forma, nuestros usuarios pueden hacer pruebas de las peticiones antes de implementar su propio cliente. O para situaciones de emergencia cuando necesitemos ejecutar una petición por algún motivo (depuración?)
+Hablemos primero sobre la interfaz de usuario. La librería añade a nuestro servicio el \foreign{english}{endpoint} \texttt{/swagger}. Accediendo a esta ruta, se nos servirá una interfaz con un listado de todas las operaciones que ofrece la API (figura \ref{fig:swagger-knowledge-ui}). De cada petición nos muestra su documentación (la que añadimos en el código) y sus parámetros. Incluso nos permite ejecutarlas. De esta forma, los usuarios pueden investigar qué ofrece la API y hacer pruebas.
 
 \begin{figure}[htb]
   \centering
@@ -36,26 +37,31 @@ Hablemos primero sobre la interfaz de usuario. La librería añade a nuestro ser
   \label{fig:swagger-knowledge-ui}
 \end{figure}
 
-Por otro lado, también nos permite generar el API Client. Como comentamos en la sección de OpenAPI, tenemos gran variedad de generadores de código a nuestra disposición. Nosotros optamos por los ofrecidos por la librería \texttt{OpenApi.Generators}\footnote{Página del proyecto: \url{https://github.com/OpenAPITools/openapi-generator}}. En concreto, el generador de código de \verb|C#|. Usándolo, pudimos generar una librería que permite contactar con nuestro servicio, sin necesidad de implementar mucho código. Por ejemplo, el componente de monitorización del bucle contacta a través del bucle MAPE-K a través del API Client generado.
+Por otro lado, también nos permite generar el API Client. Como comentamos en la sección \ref{chap:OpenAPI} de OpenAPI, tenemos gran variedad de generadores de código a nuestra disposición. Nosotros optamos por la librería \texttt{OpenAPI.Generator}\footnote{Página del proyecto: \url{https://github.com/OpenAPITools/openapi-generator}}. En concreto, el generador de código de \verb|C#|. Usándolo pudimos generar una librería que permite contactar con nuestro servicio, sin necesidad de implementar mucho código. Por ejemplo, el componente de monitorización del bucle contacta a través de un API Client generado.
 
-El módulo del conocimiento es un servicio muy sencillo. Para esta implementación de referencia optamos por implementarlo con un diccionario en memoria, que asigna los pares clave-valor. Esto nos permite direccionarlas y acceder desde fuera a estos recursos. Ofrece operaciones de lectura y escritura sobre estas propiedades y configuraciones de servicio.
+\subsection{Componentes: Módulos de monitorización y conocimiento}
 
-Por encima de este, tenemos el módulo de monitorización. Actúa como intermediario entre los monitores de la solución y el conocimiento. También cuenta con una implementación muy sencilla. Ofrece operaciones de lectura de propiedades del conocimiento y para los monitores de la solución reporten medidas. De esta forma, los monitores de solución podrán obtener los valores de otras propiedades y valor si deben permitir o no la escritura de esa medida.
+El módulo del conocimiento es un servicio muy sencillo. Ofrece operaciones de lectura y escritura sobre las propiedades de adaptación y las claves de configuración de servicios manejados. Para el prototipo estas se almacenan en diccionarios en memoria. Cuando el servicio se reinicie, los valores se perderán.
 
-\textcolor{red}{¿Añadir ejemplo? ¿Desribir los componentes implementados? ¿Debería describirse el caso de uso con la implementación del bucle MAPE-K?}
+Por encima de este, tenemos el servicio de monitorización. En nuestra implementación, actúa como intermediario entre los monitores de la solución y el conocimiento. También se trata de un servicio sencillo. Ofrece operaciones útiles para los monitores de la solución: lectura de propiedades del conocimiento y otras para que los monitores reporten sus mediciones. De esta forma, los monitores de solución podrán informarse a partir del conocimiento para determinar si una medición es válida o no.
+
+\textcolor{red}{¿Añadir ejemplos de código? ¿Describir los componentes implementados? ¿Debería unificarse con el capítulo de implementación del caso de estudio?}
 
 \section{Servicio de análisis y reglas}
 \label{sec:implementacion-modulo-reglas}
 
-En el segundo hito, acordamos implementar la evaluación de reglas de adaptación. Esto requería de implementar el módulo de análisis del bucle MAPE-K y los módulos de reglas de la solución. En este hito empezamos a plantearnos el diseño de las comunicaciones ascendentes: las notificaciones. Con ellas, evitaríamos que se los componentes se acoplaran a la capa superior.
+En el segundo hito, acordamos implementar la evaluación de reglas de adaptación. Esto requería de implementar el servicio de análisis del bucle MAPE-K y los servicios de reglas de la solución. En este hito empezamos a plantearnos el diseño de las comunicaciones ascendentes: las notificaciones. Con ellas, evitaríamos que se los componentes se acoplaran a la capa superior.
 
-Primero describiremos las notificaciones. Optamos por implementar estas operaciones con \texttt{RabbitMQ}\footnote{Página oficial: \url{https://www.rabbitmq.com/}}. Se trata de un \foreign{english}{broker} de mensajería ''sencillo'' ampliamente utilizado. \cite{newmanBuildingMicroservicesDesigning2021} Nos permitió implementar los dos patrones de comunicación que necesitamos: las notificaciones y las peticiones asíncronas.
+\subsection{Notificaciones}
+
+%% TODO: Logo RabbitMQ?
+Comenzaremos describiendo el desarrollo de las notificaciones. Como ya se describió en la sección \ref{sec:notificaciones}, este componente se implementó mediante un \foreign{english}{broker} de mensajería. Elegimos \texttt{RabbitMQ}\footnote{Página oficial: \url{https://www.rabbitmq.com/}}, uno ''sencillo'' y ampliamente utilizado. \cite{newmanBuildingMicroservicesDesigning2021} Con él pudimos  implementar los dos patrones de comunicación que necesitamos: las notificaciones y las peticiones asíncronas.
 
 Para implementar nuestro conector, utilizamos una librería llamada \texttt{Rebus}\footnote{Página oficial: \url{https://github.com/rebus-org/Rebus}}. Esta nos permite interactuar con un bus, abstrayéndonos de la tecnología concreta utilizada para la comunicación. Así, podríamos cambiar de tecnología de transporte en cualquier momento por otra que se ajuste más a nuestros requisitos.
 
-Finalmente, para desacoplar la funcionalidad de los servicios de la publicación y consumición de mensajes del bus, empleamos \texttt{MediatR}\footnote{Página oficial: \url{https://github.com/jbogard/MediatR}}. Esta librería ofrece un mediador que nos permite propagar eventos dentro de un servicio. El emisor no necesita tener referencias a los receptores. Es similar a un \foreign{english}{broker} de mensajería, pero interproceso.
+Finalmente, para desacoplar la funcionalidad de de la publicación y consumición de mensajes del bus, empleamos \texttt{MediatR}\footnote{Página oficial: \url{https://github.com/jbogard/MediatR}}. Esta librería implementa el patrón mediador. Nos permite propagar mensajes dentro de un proceso. En nuestro caso, los eventos. Ni el emisor ni el receptor requieren tener referencias del otro. Es similar a un \foreign{english}{broker} de mensajería, pero funcionando interproceso.
 
-Comentado esto, describiremos la implementación de la comunicación entre el módulo de conocimiento y el servicio de análisis. Una vez se confirma la escritura de una propiedad o configuración en el conocimiento, este propaga internamente un \textbf{evento de integración} (línea 11 del fragmento \ref{ls:knowledge-set-property}) a través del mediador.
+Ahora nos centraremos en la comunicación entre el módulo de conocimiento y el servicio de análisis. Una vez se confirma la escritura de una propiedad o configuración en el conocimiento, este debe notificar a los servicios en la capa superior. Para ello, comienza propagando internamente un \textbf{evento de integración} (línea 11 del fragmento \ref{ls:knowledge-set-property}) mediante el mediador.
 
 
 \begin{lstlisting}[language={[Sharp]C},caption={Implementación del método que asigna valor a una propiedad. Muestra un ejemplo de propagación interna de eventos de integración.},captionpos=b, label=ls:knowledge-set-property]
@@ -75,9 +81,9 @@ private async Task SetProperty(SetPropertyDTO propertyDto)
 
 \end{lstlisting}
 
-El mediador le pasará el evento a nuestro publicador. Este publicará en el exchange el evento  (línea 15 del fragmento \ref{ls:knowledge-property-changed-publisher}). Lo recibirán todos los suscriptores ubicados en la capa superior.
+El mediador determinará que nuestro componente publicador es el destinatario de este evento. Lo hace en base a las interfaces que implementa (linea 2 del fragmento \ref{ls:knowledge-property-changed-publisher}). Este componente publica el evento en el bus de mensajería (línea 15). Rebus, en base a la configuración del servicio, lo enviará a nuestra instancia de \texttt{RabbitMQ} y lo publicará en el \foreign{english}{exchange} correspondiente. Todos los suscriptores ubicados en la capa superior lo recibirán en su cola.
 
-\begin{lstlisting}[language={[Sharp]C},caption={El publicador de eventos captura el evento de integración que se propaga internamente, y lo publica en el bus.},captionpos=b, label=ls:knowledge-property-changed-publisher]
+\begin{lstlisting}[language={[Sharp]C},caption={El publicador de eventos captura el evento de integración y lo publica en el bus.},captionpos=b, label=ls:knowledge-property-changed-publisher]
 public class PropertyChangedIntegrationEventPublisher
   : IIntegrationEventPublisher<PropertyChangedIntegrationEvent>
 {
@@ -99,45 +105,40 @@ public class PropertyChangedIntegrationEventPublisher
 }
 \end{lstlisting}
 
-Finalmente, en el servicio de análisis, tenemos el consumidor (fragmento \ref{ls:analysis-property-changed-consumer}). Este recibirá el evento del bus y lo propagará internamente en el servicio. De esta forma, todos los manejadores (\foreign{english}{handlers}) del evento lo recibirán y podrán tratarlo.
+Finalmente, en el servicio de análisis, tenemos el componente consumidor (fragmento \ref{ls:analysis-property-changed-consumer}). \texttt{Rebus} obtendrá el evento de la cola de mensajería y se lo pasará a nuestro consumidor. Este lo recibirá y lo propagará internamente en el servicio (línea 20). Todos los manejadores (\foreign{english}{handlers}) del evento lo recibirán y podrán tratarlo.
 
 \begin{lstlisting}[language={[Sharp]C},caption={El consumidor recibe el evento de integración del bus y lo propaga internamente. Todos los manejadores de este evento lo recibirán.},captionpos=b, label=ls:analysis-property-changed-consumer]
 public class PropertyChangedIntegrationEventConsumer
   : IIntegrationEventConsumer<PropertyChangedIntegrationEvent>
 {
-  private readonly AnalysisServiceDiagnostics _diagnostics;
-
   private readonly IMediator _mediator;
 
-  public PropertyChangedIntegrationEventConsumer(
-      AnalysisServiceDiagnostics diagnostics,
-      IMediator mediator)
+  public PropertyChangedIntegrationEventConsumer(IMediator mediator)
   {
-      _diagnostics = diagnostics;
       _mediator = mediator;
   }
 
   public async Task Handle(PropertyChangedIntegrationEvent message)
   {
-      using var activity = _diagnostics.PropertyChangeEventReceived(message);
-
       await _mediator.Publish(message);
   }
 }
 \end{lstlisting}
 
-En cuanto a la implementación del módulo de análisis, este realmente no tiene mucha lógica. Participa como intermediario entre el conocimiento y los módulos de reglas. Recibe los eventos de cambios en las propiedades y los propaga a la capa superior, usando el tópico correspondiente. Esto nos permitió abstraer a las reglas del acceso al conocimiento, y limitar su acceso solo a lecturas de propiedades y configuración.
+\subsection{Componentes: Servicio de análisis y módulos de reglas}
 
-En trabajos posteriores, este servicio podría ampliarse añadiendo autenticación y autorización. Así, se podría evitar que servicios no autorizados accedan al conocimiento o soliciten adaptaciones maliciosas.
+En cuanto a la implementación del módulo de análisis, este realmente no cuenta tampoco con mucha lógica. Participa como intermediario entre el conocimiento y los servicios de reglas. Como hemos visto, recibe los eventos de cambios en las propiedades y los propaga a la capa superior. Ofrece operaciones de solo lecturas de propiedades y configuración del conocimiento. Así, limitamos las escrituras por parte de las reglas.
 
-Respecto a la implementación de los módulos de reglas, ofrecemos una implementación de referencia. Como estos se encuentran a nivel de la solución, el desarrollador es libre de elegir la que considere más conveniente.
+Se podría considerar que este servicio ha quedado anémico \textcolor{red}{referencia}. En trabajos posteriores, este servicio podría ampliarse añadiendo autenticación y autorización. Así, se podría evitar que servicios no autorizados accedan a sus operaciones o soliciten adaptaciones maliciosas.
 
-En el fragmento \ref{ls:adaption-rule-base} mostramos la clase base para implementar reglas de adaptación. Vemos que esta clase está suscrita a los eventos de integración de cambio de propiedad de adaptación y cambio en la configuración del sistema (lineas 2-3). Cuando el consumidor capture uno de estos eventos, lo propagará internamente y todas las reglas afectadas lo capturarán.
+Respecto a la implementación de los módulos de reglas, ofrecemos una implementación de referencia. Aunque como estos se encuentran en nivel de la solución, el desarrollador es libre de elegir si implementarla u optar por otra distinta.
 
-Esta clase base se desarrolló siguiendo el patrón plantilla (o \foreign{english}{template})\footnote{\url{https://refactoring.guru/design-patterns/template-method}}. Ofrece un método que evalúa la condición de la regla (\texttt{EvaluateCondition}) y, si esta se cumple, la ejecuta (\texttt{Execute}). Las reglas que hereden de esta deberán implementar ambos métodos.
+En el fragmento \ref{ls:adaption-rule-base} mostramos la clase base de las reglas de adaptación. Vemos que esta clase está suscrita a los eventos de integración de cambio de propiedad de adaptación y cambio en la configuración del sistema (lineas 2-3). Cuando el consumidor capture uno de estos eventos, lo propagará internamente y todas las reglas afectadas lo capturarán.
+
+Esta clase base se desarrolló siguiendo el patrón plantilla (o \foreign{english}{template})\footnote{\url{https://refactoring.guru/design-patterns/template-method}}. Define un método que evalúa la condición de la regla (\texttt{EvaluateCondition}) y, si esta se cumple, la ejecuta (\texttt{Execute}). Las reglas que hereden de esta deberán de implementar ambos métodos.
 
 \begin{lstlisting}[language={[Sharp]C},caption={Clase base para implementar reglas de adaptación. Se evalúa la condición, y si esta se cumple, se ejecuta.},captionpos=b, label=ls:adaption-rule-base]
-public abstract class RuleBase
+public abstract class AdaptionRuleBase
     : IIntegrationEventHandler<PropertyChangedIntegrationEvent>,
       IIntegrationEventHandler<ConfigurationChangedIntegrationEvent>
 {
@@ -216,6 +217,8 @@ public static IServiceCollection AddAdaptionLoopAnalysisServices(
 
 En el tercer hito implementamos las peticiones de cambio de las reglas y el servicio de planificación. Aquí surge también la necesidad de un tercer patrón de comunicación: las peticiones asíncronas.
 
+\subsection{Peticiones asíncronas}
+
 Continuando por donde nos quedamos, una vez se evalúa la condición de la regla y esta estima que debe ejecutarse, necesitamos un mecanismo para solicitar cambios en la configuración del sistema. En el cuerpo de la regla se solicitarán cambios a la configuración actual del sistema en base a los síntomas que haya detectado la regla. En el fragmento \ref{ls:change-request-builder} mostramos un ejemplo de esta solicitud de cambio. Para un síntoma determinado, \texttt{TemperatureGreaterThanHotThreshold} (línea 6), requerimos que el servicio \texttt{Climatisation.AirConditionerService} esté presente (lineas 7-10) con la configuración \texttt{Mode} con el valor \texttt{Cooling} (lineas 11-13).
 
 \begin{lstlisting}[language={[Sharp]C},caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.},captionpos=b, label=ls:change-request-builder]
@@ -265,6 +268,8 @@ public class SystemConfigurationChangeRequestPublisher
   \end{lstlisting}
 
 El resto de la implementación será muy similar. Solo cambiará las interfaces que debamos implementar para cada tipo de componente (\texttt{IRequestConsumer} en lugar de \texttt{IIntegrationEventConsumer}, etc.).
+
+\subsection{Componentes: Servicio de planificación}
 
 El planificador recibirá esta petición de cambio y deberá elaborar un plan de adaptación. Para ello, verificará que el plan de cambio es viable. En nuestro prototipo, para reducir el ámbito del proyecto, nos limitamos a comprobar que la configuración sea distinta a la configuración actual. Si el sistema ya se encuentra en el estado solicitado, el plan de cambio se queda vacío y no se propaga.
 
