@@ -12,22 +12,22 @@ using Climatisation.Rules.Service.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 [RuleKnowledgePropertyDependency(ClimatisationConstants.Property.Temperature)]
-[RuleKnowledgeConfigurationDependency(
+[RuleServiceConfigurationDependency(
     ClimatisationAirConditionerConstants.AppName,
     ClimatisationConstants.Configuration.TargetTemperature,
     ClimatisationAirConditionerConstants.Configuration.Mode)]
-public class DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchievedRule : RuleBase
+public class DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchievedAdaptionRule : AdaptionRuleBase
 {
-    private const string RuleName = nameof(DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchievedRule);
+    private const string RuleName = nameof(DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchievedAdaptionRule);
 
     private const string TargetTemperatureAchieved = "target-temperature-achieved";
 
     private static readonly IEnumerable<string> propertyNames =
-        typeof(DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchievedRule)
+        typeof(DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchievedAdaptionRule)
             .GetRulePropertyDependencies();
 
     private static readonly IDictionary<string, IEnumerable<string>> configurationNames =
-        typeof(DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchievedRule)
+        typeof(DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchievedAdaptionRule)
             .GetRuleConfigurationDependencies();
 
     private readonly IConfigurationService _configurationService;
@@ -36,7 +36,7 @@ public class DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchi
 
     private readonly ISystemService _systemService;
 
-    public DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchievedRule(
+    public DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchievedAdaptionRule(
         ClimatisationRulesDiagnostics diagnostics,
         IConfigurationService configurationService,
         IPropertyService propertyService,
@@ -74,7 +74,7 @@ public class DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchi
     protected override async Task Execute()
     {
        // TODO: Comparación esta API vs código original con DTOs.
-        await _systemService.RequestChangeAsync(changeRequest =>
+        await _systemService.RequestConfigurationChange(changeRequest =>
         {
             changeRequest
                 .ForSymptom(TargetTemperatureAchieved)

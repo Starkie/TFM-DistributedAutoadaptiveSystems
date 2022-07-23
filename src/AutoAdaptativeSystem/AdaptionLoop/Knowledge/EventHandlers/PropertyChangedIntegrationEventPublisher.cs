@@ -2,12 +2,13 @@ namespace Knowledge.Service.Controllers.IntegrationEvents;
 
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Bus.Contracts.Publisher;
 using Knowledge.Contracts.IntegrationEvents;
 using MediatR;
 using Rebus.Bus;
 
 public class PropertyChangedIntegrationEventPublisher
-    : INotificationHandler<PropertyChangedIntegrationEvent>
+    : IIntegrationEventPublisher<PropertyChangedIntegrationEvent>
 {
     private readonly IBus _bus;
 
@@ -16,8 +17,10 @@ public class PropertyChangedIntegrationEventPublisher
         _bus = bus;
     }
 
-    public async Task Handle(PropertyChangedIntegrationEvent notification, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(PropertyChangedIntegrationEvent notification, CancellationToken cancellationToken)
     {
         await _bus.Publish(notification);
+
+        return Unit.Value;
     }
 }

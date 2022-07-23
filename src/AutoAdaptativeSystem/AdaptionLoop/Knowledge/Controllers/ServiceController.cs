@@ -133,7 +133,7 @@ public sealed class ServiceController : ControllerBase
 
             InsertProperty(serviceName, newValue);
 
-            await _mediator.Publish(new ConfigurationChangedIntegrationEvent(serviceName, property.Name));
+            await _mediator.Send(new ConfigurationChangedIntegrationEvent(serviceName, property.Name));
         }
 
         return NoContent();

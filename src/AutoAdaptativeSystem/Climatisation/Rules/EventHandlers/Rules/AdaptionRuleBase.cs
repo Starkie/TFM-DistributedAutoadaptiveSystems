@@ -10,9 +10,9 @@ using Climatisation.Rules.Service.Diagnostics;
 using Core.Bus.Handlers;
 
 [RuleKnowledgePropertyDependency]
-public abstract class RuleBase
-    : IIntegrationEventHandler<PropertyChangedIntegrationEvent>,
-    IIntegrationEventHandler<ConfigurationChangedIntegrationEvent>
+public abstract class AdaptionRuleBase
+    : IIntegrationEventConsumer<PropertyChangedIntegrationEvent>,
+    IIntegrationEventConsumer<ConfigurationChangedIntegrationEvent>
 {
     private readonly ClimatisationRulesDiagnostics _diagnostics;
 
@@ -22,7 +22,7 @@ public abstract class RuleBase
 
     private readonly IDictionary<string, IEnumerable<string>> _subscribedConfigurationNames;
 
-    protected RuleBase(
+    protected AdaptionRuleBase(
         ClimatisationRulesDiagnostics diagnostics,
         string ruleName,
         IEnumerable<string> subscribedPropertyNames,

@@ -41,7 +41,7 @@ public static class ServiceCollectionExtensions
 
     public static IDictionary<string, IEnumerable<string>> GetRuleConfigurationDependencies(this Type t)
     {
-        var attributes = t.GetCustomAttributes<RuleKnowledgeConfigurationDependencyAttribute>();
+        var attributes = t.GetCustomAttributes<RuleServiceConfigurationDependencyAttribute>();
 
         var configurationKeys = new Dictionary<string, IEnumerable<string>>();
 
@@ -56,7 +56,7 @@ public static class ServiceCollectionExtensions
     private static IEnumerable<string> GetRulesBusTopicNames(Assembly rulesAssembly)
     {
         var ruleTypes = rulesAssembly.GetTypes()
-            .Where(t => t.IsAssignableTo(typeof(RuleBase)));
+            .Where(t => t.IsAssignableTo(typeof(AdaptionRuleBase)));
 
         var subscriptions = new List<string>();
 

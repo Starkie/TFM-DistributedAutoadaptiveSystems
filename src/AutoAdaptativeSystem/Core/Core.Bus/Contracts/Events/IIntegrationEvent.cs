@@ -2,6 +2,6 @@ namespace Core.Bus.Contracts.Events;
 
 using MediatR;
 
-public interface IIntegrationEvent : INotification
+public interface IIntegrationEvent : IRequest, INotification
 {
 }

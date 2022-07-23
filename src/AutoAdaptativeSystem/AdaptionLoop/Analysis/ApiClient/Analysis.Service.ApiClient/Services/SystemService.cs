@@ -15,7 +15,7 @@ public class SystemService : ISystemService
         _systemApi = systemApi;
     }
 
-    public async Task RequestChangeAsync(Action<SystemConfigurationChangeRequestBuilder> configuration)
+    public async Task RequestConfigurationChange(Action<SystemConfigurationChangeRequestBuilder> configuration)
     {
         var changeRequestBuilder = SystemConfigurationChangeRequestBuilder.Configure();
 

@@ -1,13 +1,9 @@
 namespace Climatisation.Rules.Service.EventHandlers.Rules;
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Analysis.Contracts.Attributes;
-using Analysis.Service.ApiClient.Api;
-using Analysis.Service.ApiClient.Model;
 using Analysis.Service.ApiClient.Services;
 using Climatisation.AirConditioner.Contracts;
 using Climatisation.Contracts;
@@ -16,22 +12,22 @@ using Climatisation.Rules.Service.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 [RuleKnowledgePropertyDependency(ClimatisationConstants.Property.Temperature)]
-[RuleKnowledgeConfigurationDependency(
+[RuleServiceConfigurationDependency(
     ClimatisationAirConditionerConstants.AppName,
     ClimatisationConstants.Configuration.HotTemperatureThreshold,
     ClimatisationAirConditionerConstants.Configuration.Mode)]
-public class EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule : RuleBase
+public class EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededAdaptionRule : AdaptionRuleBase
 {
-    private const string RuleName = nameof(EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule);
+    private const string RuleName = nameof(EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededAdaptionRule);
 
     private const string TemperatureGreaterThanHotThreshold = "temperature-greater-than-hot-threshold";
 
     private static readonly IEnumerable<string> propertyNames =
-        typeof(EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule)
+        typeof(EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededAdaptionRule)
             .GetRulePropertyDependencies();
 
     private static readonly IDictionary<string, IEnumerable<string>> configurationNames =
-        typeof(EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule)
+        typeof(EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededAdaptionRule)
             .GetRuleConfigurationDependencies();
 
     private readonly IConfigurationService _configurationService;
@@ -40,7 +36,7 @@ public class EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule
 
     private readonly ISystemService _systemService;
 
-    public EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule(
+    public EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededAdaptionRule(
         ClimatisationRulesDiagnostics diagnostics,
         IConfigurationService configurationService,
         IPropertyService propertyService,
@@ -79,7 +75,7 @@ public class EnableAirConditionerCoolingModeWhenTemperatureThresholdExceededRule
     protected override async Task Execute()
     {
        // TODO: Comparación esta API vs código original con DTOs.
-        await _systemService.RequestChangeAsync(changeRequest =>
+        await _systemService.RequestConfigurationChange(changeRequest =>
         {
             changeRequest
                 .ForSymptom(TemperatureGreaterThanHotThreshold)

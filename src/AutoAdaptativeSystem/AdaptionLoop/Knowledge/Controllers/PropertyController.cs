@@ -115,9 +115,7 @@ public class PropertyController : ControllerBase
 
         properties.AddOrUpdate(propertyDto.Name, newValue, (_, _) => newValue);
 
-        // TODO: Investigar persistencia de mensajes:
-        // https://stackoverflow.com/questions/6148381/rabbitmq-persistent-message-with-topic-exchange
-        await _mediator.Publish(new PropertyChangedIntegrationEvent(propertyDto.Name));
+        await _mediator.Send(new PropertyChangedIntegrationEvent(propertyDto.Name));
     }
 
     /// <summary>

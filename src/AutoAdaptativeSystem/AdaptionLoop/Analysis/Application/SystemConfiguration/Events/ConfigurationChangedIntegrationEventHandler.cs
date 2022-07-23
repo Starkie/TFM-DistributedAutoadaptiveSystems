@@ -6,14 +6,14 @@ using Core.Bus.Handlers;
 using Knowledge.Contracts.IntegrationEvents;
 using Rebus.Bus;
 
-public class ConfigurationChangedIntegrationEventHandler
-    : IIntegrationEventHandler<ConfigurationChangedIntegrationEvent>
+public class ConfigurationChangedIntegrationEventConsumer
+    : IIntegrationEventConsumer<ConfigurationChangedIntegrationEvent>
 {
     private readonly AnalysisServiceDiagnostics _analysisServiceDiagnostics;
 
     private readonly IBus _bus;
 
-    public ConfigurationChangedIntegrationEventHandler(AnalysisServiceDiagnostics analysisServiceDiagnostics, IBus bus)
+    public ConfigurationChangedIntegrationEventConsumer(AnalysisServiceDiagnostics analysisServiceDiagnostics, IBus bus)
     {
         _analysisServiceDiagnostics = analysisServiceDiagnostics;
 
