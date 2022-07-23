@@ -5,5 +5,5 @@ using System.Threading.Tasks;
 
 public interface ISystemService
 {
-    Task RequestChangeAsync(Action<SystemConfigurationChangeRequestBuilder> configuration);
+    Task RequestConfigurationChange(Action<SystemConfigurationChangeRequestBuilder> configuration);
 }

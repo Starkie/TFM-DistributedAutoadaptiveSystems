@@ -33,7 +33,7 @@ public class ExecutionRequestedIntegrationEventConsumer
             switch (action)
             {
                 case DeploymentAction _:
-                    // TODO: Implement. ¿Debería ser responsabilidad del AdaptionLoop.Execute.Service desplegar servicios?.
+                    // TODO: Implement.
                     break;
                 case BindingAction _:
                     // TODO: Implement.

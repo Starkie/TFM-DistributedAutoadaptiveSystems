@@ -75,7 +75,7 @@ public class EnableAirConditionerHeatingModeWhenColdTemperatureThresholdExceeded
     protected override async Task Execute()
     {
        // TODO: Comparación esta API vs código original con DTOs.
-        await _systemService.RequestChangeAsync(changeRequest =>
+        await _systemService.RequestConfigurationChange(changeRequest =>
         {
             changeRequest
                 .ForSymptom(TemperatureLesserThanColdThreshold)
