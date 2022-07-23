@@ -117,11 +117,11 @@ Si una adaptación se lleva a cabo correctamente, deberá reflejarse en el conoc
 
 \subsubsection{Efectores}
 
-Los \textbf{efectores} son el segundo tipo de \foreign{english}{touchpoint} que debe implementar el recurso manejado. Son aquellos que al bucle modificar su configuración o estado.  Pueden implementarse de distintas formas: mediante ficheros de configuración, comandos, \emph{endpoints} HTTP, etc.
+Los \textbf{efectores} son el segundo tipo de \foreign{english}{touchpoint} que debe ofrecer el recurso manejado. Ofrecen una interfaz común que permite al bucle modificar la configuración o estado del sistema. Deberán interpretar estas acciones, descritas en conceptos de alto nivel (nivel de arquitectura) y traducirlas a acciones de más bajo nivel (en términos del propio sistema). \cite{garlanIncreasingSystemDependability2003} Es decir, deberán determinar cómo ejecutarlas en el recurso manejado.
 
-Mediante una interfaz común, reciben órdenes del ejecutor. Los efectores interpretan estas acciones, descritas en conceptos de alto nivel (nivel de arquitectura) y las traducen a acciones de más bajo nivel (en términos del propio sistema). \cite{garlanIncreasingSystemDependability2003}
+La comunicación entre este servicio y el sistema es un tanto especial: dependerá del sistema manejado; de si tenemos control sobre su implementación. Si no es así, tendremos que adaptarnos a la implementación que ofrezca este (HTTP, mensajería...).
 
-En el caso del servicio web, la acción correspondiente sería desplegar una nueva instancia. El efector conocerá el sistema de despliegue (p.e. Docker) y cómo solicitar la activación de un nuevo servicio.
+En el caso del servicio web, la acción correspondiente sería desplegar o eliminar instancias. El efector conocerá el sistema de despliegue (p.e. Docker) y cómo solicitar la activación o desactivación de un servicio.
 
 \subsection{Sistemas distribuidos basados en elementos autónomos}
 
