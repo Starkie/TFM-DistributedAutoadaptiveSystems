@@ -5,6 +5,8 @@
 \chapter{Introducción}
 \label{chap:introduccion}
 
+La Computación Autónoma (\foreign{english}{Autonomic Computing}) promueve la ingeniería, diseño y desarrollo de sistemas con capacidades de auto-adaptación, a través del uso de bucles de control. Estas capacidades le confieren a estos sistemas la posibilidad de adaptarse a entornos cambiantes, a conflictos operacionales e incluso a la optimización dinámica en su ejecución. Por otra parte, en la última década, la computación en el cloud y las arquitecturas basadas en microservicios se han postulado como una infraestructura muy flexible y dinámica para desplegar soluciones altamente disponibles y eficientes. Hay una tendencia clara a aplicar este tipo de infraestructuras, gracias a los múltiples beneficios que aporta.
+
 \textcolor{red}{La revolución digital \emph{citation needed} ha permeado en todos los aspectos de nuestras vidas. En nuestro día a día usamos una gran variedad de aplicaciones: redes sociales, aplicaciones de ofimática, comercios en línea\dots. A su vez, gracias a las posibilidades que ofrecen los avances en las tecnologías, cada vez ofrecen distintas funcionalidades y están en constante evolución. \emph{citation needed} Esto deriva en mayor complejidad de estos programas. \emph{citation needed}}
 
 \textcolor{red}{Las aplicaciones están en constante evolución. Hay muchas partes móviles}
@@ -19,11 +21,23 @@
 
 \section{Motivación}
 
-En este trabajo se quiere abordar la división de un servicio monolítico y adaptarlo para su funcionamiento en entornos en la nube. Para ello, se quiere extraer su funcionalidad en distintos microservicios. Es decir, se quiere \textbf{cambiar la topología} de la solución. Se trata de un cambio importante en la arquitectura de la solución.
+En este trabajo se exploró cómo diseñar soluciones que, aplicando los conceptos de los bucles de control (AC), estén preparadas para desplegarse en la nube. Para ello se tomó como punto de partida la infraestructura FaDA\footnote{Página oficial: \url{http://fada.tatami.webs.upv.es/}} (desarrollada por el grupo PROS/Tatami\footnote{Página oficial: \url{http://www.pros.webs.upv.es/}} del instituto VRAIN/UPV\footnote{Página oficial: \url{https://vrain.upv.es/}}). Esta propone una estrategia para realizar la ingeniería de sistemas auto-adaptativos usando bucles de control MAPE-K\cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}.
 
-En concreto, se trata de un servicio que implementa un bucle de control MAPE-K \cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}, una para la implementación de sistemas autónomos propuesta inicialmente por IBM. El bucle se encarga de gestionar un \textbf{recurso manejado} en base a unas \textbf{políticas} definidas por el administrador del sistema. Las políticas
+Actualmente, el bucle de control está implementado como un servicio monolítico. Todos sus componentes operan dentro del mismo proceso, incluidos los específicos a sistemas manejados (sondas, monitores\dots). Se trata por tanto de una implementación muy rígida. En caso de querer modificar algún componente, hay que redesplegarlo entero.
 
-%% TODO: ¿Multi-tennant? ¿Solución inicial muy acoplada y ad-hoc a una solución concreta? Se quiere independizar del programa.
+Por ello, se buscó dividir su funcionalidad en microservicios. Es decir, \textbf{cambiar la topología} de la solución. Con ello, podríamos independizar los compomentes y mejoraríamos su despliegue y su escalabilidad\textcolor{red}{cita sam newman}.
+
+\section{Objetivos}
+
+Como resultado de este TFM se espera obtener la definición arquitectónica de soluciones auto-adaptativas (incluyendo tanto al bucle de control MAPE-K como directrices para la implementación de los diferentes componentes adaptativos de la solución) diseñadas para desplegarse nativamente como microservicios en la nube. Por último, se aplicará la propuesta realizada al desarrollo de un caso práctico para demostrar su viabilidad y aplicabilidad.
+
+Para el desarrollo del trabajo nos planteamos los siguientes objetivos objetivos:
+
+\begin{enumerate}
+  \item  Definición de las piezas necesarias para componer una solución completa, y que permita ir extendiendo el bucle (en nuestro caso, las piezas eran M, A, P, E i K, pero también los Monitores, Sondas, Reglas, etc. que se convertirían en estos microservicios);
+
+  \item La definición de las APIs (REST) para permitir la comunicación entre las piezas
+\end{enumerate}
 
 \textcolor{red}{La idea es separar cada una de sus etapas en microservicios individuales. De esta forma, podemos desarrollarlas de forma independiente entre ellas, replicarlas para mejorar su escalabilidad, o sustituirlas por }implementaciones distintas, etc.
 
@@ -34,15 +48,7 @@ Para desarrollar el trabajo, propusimos el siguiente plan:
 
 \textcolor{red}{Por tanto, los conectores elegidos para comunicar los microservicios han sido más centrados en comunicar con las APIs públicas que expone cada uno.}
 
------------------------------------------------------------------
 
-\section{Motivación}
-
-????? ????????????? ????????????? ????????????? ????????????? ?????????????
-
-\section{Objetivos}
-
-????? ????????????? ????????????? ????????????? ????????????? ?????????????
 
 \section{Estructura de la memoria}
 
@@ -51,3 +57,5 @@ Para desarrollar el trabajo, propusimos el siguiente plan:
 %\section{Notes bibliografiques} %%%%% Opcional
 
 %????? ????????????? ????????????? ????????????? ????????????? ?????????????
+
+\textcolor{red}{Añadir diagrama de gant con los 7 hitos}
