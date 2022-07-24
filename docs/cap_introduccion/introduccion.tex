@@ -21,38 +21,35 @@ La Computación Autónoma (\foreign{english}{Autonomic Computing}) promueve la i
 
 \section{Motivación}
 
-En este trabajo se exploró cómo diseñar soluciones que, aplicando los conceptos de los bucles de control (AC), estén preparadas para desplegarse en la nube. Para ello se tomó como punto de partida la infraestructura FaDA\footnote{Página oficial: \url{http://fada.tatami.webs.upv.es/}} (desarrollada por el grupo PROS/Tatami\footnote{Página oficial: \url{http://www.pros.webs.upv.es/}} del instituto VRAIN/UPV\footnote{Página oficial: \url{https://vrain.upv.es/}}). Esta propone una estrategia para realizar la ingeniería de sistemas auto-adaptativos usando bucles de control MAPE-K\cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}.
+En este trabajo se quiere explorar el diseño de soluciones que, aplicando los conceptos de los bucles de control (AC), estén preparadas para desplegarse en la nube. Para ello se tomó como punto de partida la infraestructura FaDA\footnote{Página oficial: \url{http://fada.tatami.webs.upv.es/}} (desarrollada por el grupo PROS/Tatami\footnote{Página oficial: \url{http://www.pros.webs.upv.es/}} del instituto VRAIN/UPV\footnote{Página oficial: \url{https://vrain.upv.es/}}). Esta propone una estrategia para la ingeniería de sistemas auto-adaptativos usando bucles de control MAPE-K\cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}.
 
-Actualmente, el bucle de control está implementado como un servicio monolítico. Todos sus componentes operan dentro del mismo proceso, incluidos los específicos a sistemas manejados (sondas, monitores\dots). Se trata por tanto de una implementación muy rígida. En caso de querer modificar algún componente, hay que redesplegarlo entero.
+Actualmente, el bucle de control de FaDA está implementado como un servicio monolítico. Todos sus componentes operan dentro del mismo proceso, incluidos los específicos a sistemas manejados (sondas, monitores\dots). Se trata por tanto de una implementación muy rígida. En caso de querer modificar algún componente, hay que redesplegarlo entero.
 
-Por ello, se buscó dividir su funcionalidad en microservicios. Es decir, \textbf{cambiar la topología} de la solución. Con ello, podríamos independizar los compomentes y mejoraríamos su despliegue y su escalabilidad\textcolor{red}{cita sam newman}.
+Por ello, se buscó dividir su funcionalidad en microservicios. Es decir, \textbf{cambiar la topología} de la solución. Con ello, lograríamos independizar los componentes y su despliegue individual. Además, facilitaría escalar horizontalmente la capacidad del sistema en base a la carga de sus componentes.\textcolor{red}{cita sam newman}.
 
 \section{Objetivos}
 
-Como resultado de este TFM se espera obtener la definición arquitectónica de soluciones auto-adaptativas (incluyendo tanto al bucle de control MAPE-K como directrices para la implementación de los diferentes componentes adaptativos de la solución) diseñadas para desplegarse nativamente como microservicios en la nube. Por último, se aplicará la propuesta realizada al desarrollo de un caso práctico para demostrar su viabilidad y aplicabilidad.
-
-Para el desarrollo del trabajo nos planteamos los siguientes objetivos objetivos:
+Para el desarrollo del trabajo nos planteamos los siguientes objetivos:
 
 \begin{enumerate}
-  \item  Definición de las piezas necesarias para componer una solución completa, y que permita ir extendiendo el bucle (en nuestro caso, las piezas eran M, A, P, E i K, pero también los Monitores, Sondas, Reglas, etc. que se convertirían en estos microservicios);
+  \item Diseñar una arquitectura para soluciones auto-adaptativas preparadas para desplegarse nativamente como microservicios en la nube. Esto implica determinar los componentes en los que dividiremos la funcionalidad del bucle y los mecanismos de comunicación para conectarlos.
 
-  \item La definición de las APIs (REST) para permitir la comunicación entre las piezas
+  \item Definir directrices para la implementación de los diferentes componentes adaptativos específicos de una solución (monitores, sondas, efectores...).
+
+  \item Desarrollar un caso práctico para demostrar la viabilidad y aplicabilidad de nuestra propuesta.
 \end{enumerate}
-
-\textcolor{red}{La idea es separar cada una de sus etapas en microservicios individuales. De esta forma, podemos desarrollarlas de forma independiente entre ellas, replicarlas para mejorar su escalabilidad, o sustituirlas por }implementaciones distintas, etc.
-
-Para desarrollar el trabajo, propusimos el siguiente plan:
-\begin{itemize}
-  \item Cada etapa del bucle será un microservicio distinto. Extraeremos cuatro microservicios distintos: Planificador, Analizador,
-\end{itemize}
-
-\textcolor{red}{Por tanto, los conectores elegidos para comunicar los microservicios han sido más centrados en comunicar con las APIs públicas que expone cada uno.}
-
-
 
 \section{Estructura de la memoria}
 
-????? ????????????? ????????????? ????????????? ????????????? ?????????????
+El trabajo se puede dividir en tres grandes partes:
+
+En los capítulos \ref{chap:contexto_tecnologico}-\textcolor{red}{x} hacemos una introducción a algunos conceptos de la computación autónoma y los bucles de control. Describiremos la arquitectura del bucle MAPE-K que nos ocupa.
+
+La segunda parte de este trabajo describe la migración del sistema existente a una arquitectura basada en microservicios. Paara ello, comenzaremos describiendo el sistema actual en el capítulo \ref{chap:sistema_original}. En base a este, en el capítulo \ref{chap:diseño} describiremos nuestra propuesta arquitectónica. Aquí se describirá los distintos componentes que conforman nuestra solución y se describirá los mecanismos de comunicación por los que optamos.
+
+Finalmente, presentamos el caso de estudio (capítulo \ref{chap:caso_estudio}). En él implementamos un sistema auto-adaptativo básico para un sistema de climatización.
+
+Cerramos el trabajo presentando las conclusiones (capítulo \ref{chap:conclusiones}). Describiremos también las vertientes por las que se podría continuar ampliando el trabajo presentado.
 
 %\section{Notes bibliografiques} %%%%% Opcional
 
