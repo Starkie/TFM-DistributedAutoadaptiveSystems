@@ -5,23 +5,23 @@
 \chapter{Introducción}
 \label{chap:introduccion}
 
-La revolución digital\footnote{\url{https://es.wikipedia.org/wiki/Revoluci\%C3\%B3n_Digital}} ha permeado en todos los aspectos de nuestras vidas. En nuestro día a día usamos una gran variedad de aplicaciones informáticas: redes sociales, ofimática, comercios electrónicos\dots. Muchas de ellas se encuentran alojadas en la red, en servidores externos. \textcolor{red}{CITA PORCENTAJE APLICACIONES ONLINE}
+La revolución digital\footnote{\url{https://es.wikipedia.org/wiki/Revoluci\%C3\%B3n_Digital}} ha permeado en todos los aspectos de nuestras vidas. En nuestro día a día usamos una gran variedad de aplicaciones informáticas: redes sociales, ofimática, comercios electrónicos\dots. Muchas de ellas se encuentran alojadas en la red, en servidores externos.
 
-Para las aplicaciones web, uno de sus requisitos claves es la \textbf{disponibilidad}. Nuestros servicios deben estar en funcionamiento en todo momento para atender a nuestros usuarios. Tomemos por ejemplo el caso de una tienda \foreign{english}{on-line}. Necesitamos asegurar que esté en funcionamiento el mayor tiempo posible. Si surgiera una incidencia y se degrada la capacidad de atender a clientes, o directamente no podemos atender a ninguno, perderemos ingresos.
+Para las aplicaciones web, uno de sus requisitos claves es la \textbf{disponibilidad}. \cite{birmanAddingHighAvailability2004} Nuestros servicios deben estar en funcionamiento en todo momento para atender a nuestros usuarios. Tomemos por ejemplo el caso de una tienda \foreign{english}{on-line}. La plataforma debe estar disponible el mayor tiempo posible. Si surgiera una incidencia y se degrada la capacidad de atender a clientes, o directamente no podemos atender a ninguno, perderemos ingresos.
 
-Para atender estas incidencias, no es efectivo depender de operarios humanos. Es muy costoso tener a alguien pendiente de la aplicación las venticuatro horas del día para solucionar las incidencias. \textcolor{red}{CITA COSTES OPERARIOS HUMANOS}. Debido a esto querremos que nuestro sistema sea capaz de adaptarse automáticamente a las distintas situaciones que surjan durante su operación. Recurrir al operario humano debería ser el último recurso.
+Para atender estas incidencias, no es efectivo depender de operarios humanos. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006} Es muy costoso tener a alguien pendiente de la aplicación las venticuatro horas del día para solucionar las incidencias. Debido a esto querremos que nuestro sistema sea capaz de \textbf{adaptarse automáticamente} a las distintas situaciones que surjan durante su operación. Recurrir al operario humano debería ser el último recurso.
 
-En el ámbito de la computación autónoma (\foreign{english}{autonomic computing}) encontramos el concepto de \textbf{sistemas autoadaptativos}. Son sistemas capaces de ajustar su comportamiento en tiempo de ejecución en base su estado y el del entorno para alcanzar sus objetivos de operación. \textcolor{red}{CITA DEFINICIÓN SISTEMAS AUTOADAPTATIVOS} Esto es posible mediante el uso de de \textbf{bucles de control}. \cite{brunEngineeringSelfAdaptiveSystems2009}. Gracias a ellos, podremos dotar a los sistemas de capacidades para adaptarse a entornos cambiantes, resolver conflictos operacionales e incluso a la optimizarse dinámicamente.
+En el ámbito de la computación autónoma (\foreign{english}{autonomic computing}) encontramos el concepto de \textbf{sistemas auto-adaptativos}. Son sistemas capaces de ajustar su comportamiento en tiempo de ejecución en base su estado y el del entorno para alcanzar sus objetivos de operación. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006} Esto es posible mediante el uso de de \textbf{bucles de control}. \cite{brunEngineeringSelfAdaptiveSystems2009}. Gracias a ellos, podremos dotar a los sistemas de capacidades para adaptarse a entornos cambiantes, resolver conflictos operacionales e incluso a la optimizarse dinámicamente.
 
-Siguiendo con el ejemplo de la tienda on-line, un ejemplo de autoadaptación sería adaptarse a los picos de demanda. Cuando tengamos mayor afluencia de clientes, debe ser capaz de aumentar su capacidad de cómputo. En cambio, cuando la afluencia baje, deberá ser capaz de reducirla.
+Siguiendo con el ejemplo de la tienda on-line, un ejemplo de auto-adaptación sería adaptarse a los picos de demanda. Cuando tengamos mayor afluencia de clientes, debe ser capaz de aumentar su capacidad de cómputo. En cambio, cuando la afluencia baje, deberá ser capaz de reducirla.
 
 \section{Motivación}
 
-En este trabajo se quiere explorar el diseño de soluciones que, aplicando los conceptos de los bucles de control (AC), estén preparadas para desplegarse en la nube. Para ello se tomó como punto de partida la infraestructura FaDA\footnote{Página oficial: \url{http://fada.tatami.webs.upv.es/}} (desarrollada por el grupo PROS/Tatami\footnote{Página oficial: \url{http://www.pros.webs.upv.es/}} del instituto VRAIN/UPV\footnote{Página oficial: \url{https://vrain.upv.es/}}). Esta propone una estrategia para la ingeniería de sistemas auto-adaptativos usando bucles de control MAPE-K\cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}.
+En este trabajo se quiere explorar el diseño de soluciones auto-adaptativas que estén preparadas para desplegarse en la nube. Para ello se tomó como punto de partida la infraestructura FaDA\footnote{Página oficial: \url{http://fada.tatami.webs.upv.es/}} (desarrollada por el grupo PROS/Tatami\footnote{Página oficial: \url{http://www.pros.webs.upv.es/}} del instituto VRAIN/UPV\footnote{Página oficial: \url{https://vrain.upv.es/}}). Esta propone una estrategia para la ingeniería de sistemas auto-adaptativos usando bucles de control MAPE-K\cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}.
 
-Actualmente, el bucle de control de FaDA está implementado como un servicio monolítico. Todos sus componentes operan dentro del mismo proceso, incluidos los específicos a sistemas manejados (sondas, monitores\dots). Se trata por tanto de una implementación muy rígida. En caso de querer modificar algún componente, hay que redesplegarlo entero.
+Actualmente, el bucle de control de FaDA está implementado como un servicio monolítico. Todos sus componentes operan dentro del mismo proceso, incluidos los específicos para sistemas manejados (sondas, monitores\dots). Se trata por tanto de una implementación muy rígida. En caso de querer modificar algún componente, hay que redesplegarlo entero.
 
-Por ello, se buscó dividir su funcionalidad en microservicios. Es decir, \textbf{cambiar la topología} de la solución. Con ello, lograríamos independizar los componentes y su despliegue individual. Además, facilitaría escalar horizontalmente la capacidad del sistema en base a la carga de sus componentes.\textcolor{red}{cita sam newman}.
+Por ello, se buscó \textbf{dividir su funcionalidad en microservicios}. Es decir, cambiar la topología de la solución. Con ello, lograríamos independizar los componentes y su despliegue. Además, facilitaría escalar horizontalmente la capacidad del sistema en base a la carga.
 
 \section{Objetivos}
 
@@ -30,22 +30,20 @@ Para el desarrollo del trabajo nos planteamos los siguientes objetivos:
 \begin{enumerate}
   \item Diseñar una arquitectura para soluciones auto-adaptativas preparadas para desplegarse nativamente como microservicios en la nube. Esto implica determinar los componentes en los que dividiremos la funcionalidad del bucle y los mecanismos de comunicación para conectarlos.
 
-  \item Definir directrices para la implementación de los diferentes componentes adaptativos específicos de una solución (monitores, sondas, efectores...).
+  \item Definir directrices para la implementación de los diferentes componentes adaptativos específicos de una solución: monitores, sondas, efectores\dots
 
   \item Desarrollar un caso práctico para demostrar la viabilidad y aplicabilidad de nuestra propuesta.
 \end{enumerate}
 
 \section{Estructura de la memoria}
 
-El trabajo se puede dividir en tres grandes partes:
+El trabajo se puede dividir en tres grandes secciones. La primera de ellas es el \textbf{marco teórico}. En el capítulo \ref{chap:contexto_tecnologico} hacemos una introducción a algunos conceptos de la computación autónoma y los bucles de control. Presentaremos la arquitectura MAPE-K, en la que se basa el trabajo. También describiremos algunos conceptos de arquitecturas de \foreign{english}{software} que nos serán de interés.
 
-En los capítulos \ref{chap:contexto_tecnologico}-\textcolor{red}{x} hacemos una introducción a algunos conceptos de la computación autónoma y los bucles de control. Describiremos la arquitectura del bucle MAPE-K que nos ocupa.
+La segunda parte de este trabajo trata sobre la \textbf{migración del sistema existente} a una arquitectura basada en microservicios. Para ello, comenzaremos describiendo la arquitectura del sistema actual en el capítulo \ref{chap:sistema_original}. En base a este, en el capítulo \ref{chap:diseño} describiremos nuestra propia propuesta arquitectónica. Aquí se describirá los distintos componentes que conforman nuestra solución y se describirá los mecanismos de comunicación por los que optamos. Finalmente, en el capítulo 6 \ref{chap:implementación} describimos nuestra implementación de referencia.
 
-La segunda parte de este trabajo describe la migración del sistema existente a una arquitectura basada en microservicios. Paara ello, comenzaremos describiendo el sistema actual en el capítulo \ref{chap:sistema_original}. En base a este, en el capítulo \ref{chap:diseño} describiremos nuestra propuesta arquitectónica. Aquí se describirá los distintos componentes que conforman nuestra solución y se describirá los mecanismos de comunicación por los que optamos.
+La última sección del trabajo es la referente al \textbf{caso de estudio} (capítulo \ref{chap:caso_estudio}). En él implementamos un sistema auto-adaptativo básico para un sistema de climatización. Nos sirvió para aplicar nuestra arquitectura y verificar su funcionamiento.
 
-Finalmente, presentamos el caso de estudio (capítulo \ref{chap:caso_estudio}). En él implementamos un sistema auto-adaptativo básico para un sistema de climatización.
-
-Cerramos el trabajo presentando las conclusiones (capítulo \ref{chap:conclusiones}). Describiremos también las vertientes por las que se podría continuar ampliando el trabajo presentado.
+Cerramos el trabajo presentando las conclusiones (capítulo \ref{chap:conclusiones}). En este apartado describiremos también las vertientes por las que se podría continuar ampliando el trabajo en un futuro.
 
 %\section{Notes bibliografiques} %%%%% Opcional
 
