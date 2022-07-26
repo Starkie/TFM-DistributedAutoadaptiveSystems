@@ -1,11 +1,17 @@
 \chapter{Contexto Tecnológico}
 \label{chap:contexto_tecnologico}
 
+En este capítulo hacemos una introducción a algunos conceptos de la computación autónoma y los bucles de control. Son los conceptos principales en los que se basa el trabajo. Presentaremos la arquitectura MAPE-K, en la que se basa el sistema existente. También describiremos algunos conceptos de arquitecturas de \foreign{english}{software} que nos serán de interés.
+
 \section{Computación autónoma y bucles de control}
 
 Según \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}, la \textbf{computación autónoma} tiene como objetivo dotar a los sistemas de \textbf{autonomía} en su operación. Es decir, capacidades para gestionarse a si mismos. Los sistemas deberán adaptarse a los cambios en su entorno de ejecución. Con esto, buscamos alcanzar una reducción en el coste de operación y hacer más manejable la complejidad de los sistemas.
 
-Las adaptaciones pueden ser de distintos tipos: cambios en sus parámetros de configuración, habilitar o deshabilitar funcionalidades, etc. Estas se realizan en base a directivas de alto nivel, los objetivos. Un operario humano define las metas que el sistema debe alcanzar, y este intentará planificar acciones correctivas para alcanzarlo.
+Las adaptaciones pueden tomar distintas formas: cambios en sus parámetros de configuración, habilitar o deshabilitar funcionalidades, etc. Estas se realizan en base a directivas de alto nivel, los \textbf{ objetivos}. Un operario humano define las metas que el sistema debe alcanzar, y este intentará planificar acciones correctivas para alcanzarlo.
+
+En base a estos parámetros, el sistema puede intuir que debe reconfigurarse para cumplir con los objetivos de operación que tiene mercados. Para ello, en base a una serie de estrategias predefinidas, es capaz de elegir su siguiente configuración. \cite{garlanIncreasingSystemDependability2003}. Esto conlleva mover a tiempo de ejecución las decisiones de arquitectura y funcionalidad. Con ello, buscamos permitir un comportamiento dinámico del sistema. .
+
+\textcolor{red}{Tambien el internet de las cosas \emph{citation needed}}
 
 Siguiendo con el ejemplo de la tienda \foreign{english}{on-line}, el operario podría definir un umbral máximo de carga por cada instancia. Cuando se supere, el sistema podría decidir que se requiere una acción correctiva. Por ejemplo, esta acción podría consistir en desplegar nuevas instancias del servicio. Cuando la carga de los servicios baje, podrá optar por eliminarlas.
 
@@ -134,3 +140,86 @@ En el caso del servicio web, la acción correspondiente sería desplegar o elimi
 
 
 \textcolor{red}{¿Hablar del nivel en el que se encuentra el bucle de control? Sistema, infraestructura, mixto, mesh \cite{mendoncaGeneralityVsReusability2018}}
+
+\section{Arquitectura de \foreign{english}{Software}}
+
+En este capítulo haremos una breve introducción a las arquitecturas de \foreign{english}{software}. Describiremos su motivación, los elementos que las componen y etc. Este capitulo es relevante por dos motivos:
+
+\begin{itemize}
+  \item En el trabajo tratamos la migración de un sistema con arquitectura monolítica a una distribuida basada en microservicios. Trabajamos con conceptos como los componentes, los conectores \foreign{english}{software} y otros elementos arquitectónicos.
+
+  \item Por otro lado, nuestro bucle MAPE-K es capaz de cambiar la arquitectura del recurso manejado en tiempo de ejecución. Sus adaptaciones se describen en base a operadores arquitectónicos que la modifican: añadir o eliminar componentes, conectar o desconectarlos, \dots
+\end{itemize}
+
+\textcolor{red}{¿Mover al capítulo de contexto tecnológico y renombrar a marco teórico? ¿O dejarlo suelto?}
+
+\section{Arquitecturas de \emph{software}}
+
+Según \cite{taylorSoftwareArchitectureFoundations2009}, la \textbf{arquitectura de un sistema \emph{software}} es el conjunto de todas las \textbf{decisiones principales de diseño} que se toman durante su ciclo de vida; aquellas que sientan las bases del sistema. Estas afectan a todos sus apartados: la funcionalidad que debe ofrecer, la tecnología para su implementación, cómo se desplegará, etc. En conjunto, definen una pauta que guía (y a la vez refleja) el diseño, la implementación, la operación y la evolución del sistema.
+
+Todos los sistemas \emph{software} cuentan con una. La diferencia radica en si esta ha sido diseñada y descrita explícitamente o ha quedado implícita en su implementación. \cite{taylorSoftwareArchitectureFoundations2009} En el segundo caso es probable que, con el paso del tiempo, se ``erosione`` su arquitectura: se implementan funcionalidades sin respetar la estructura. También se olvida el por qué de ciertas decisiones. En general, se vuelve más difícil de mantener. Se convierte en una ''gran bola de barro''. \cite{footeBigBallMud1997}
+
+Por tanto, es vital dedicar tiempo para definirla atendiendo a las necesidades de nuestro sistema. Una buena arquitectura es capaz dotar de estructura a nuestro sistema. \cite{martinCleanArchitectureCraftsman2018} Mientras se respete la arquitectura, y se mantenga actualizada, esta estructura. Una buena arquitectura nos ofrece una serie de ventajas, como facilitar su desarrollo, mayor extensibilidad.
+
+\subsubsection{Componentes de una arquitectura}
+
+Otra posible definición de arquitectura la encontramos en el estándar IEEE 42010-2011 \cite{ieeeStandard420102011Systems2011}: es "\emph{un conjunto de conceptos o propiedades fundamentales, personificados por sus elementos, sus relaciones, y los principios que guían su diseño y evolución}". Podemos describirlas entonces usando estos tres conceptos: \cite{perryFoundationsStudySoftware1992}
+
+    \begin{itemize}
+        \item \textbf{Elementos}: Son las piezas fundamentales que conforman el sistema. Representan las unidades de funcionalidad de la aplicación. Se utilizan para describir \textbf{\emph{qué}} partes componen el sistema. Por ejemplo: un módulo, un servicio web...
+
+        \item \textbf{Forma}: El conjunto de propiedades y relaciones de un elemenento con otros o con el entorno de operación. Describe \textbf{\emph{cómo}} está organizado el sistema. Por ejemplo: un servicio A contacta con otro, B, usando una llamada HTTP.
+
+        \item \textbf{Justificación}: Razonamiento o motivación de las decisiones que se han tomado. Responden al \textbf{\emph{por qué}} algo se hace de una manera determinada. Nos aporta detalles más precisos sobre el sistema que no se pueden representar con los elementos o la forma.
+
+        Un ejemplo podría ser qué alternativas se consideraron para determinada decisión; y por qué se descartaron en favor de la elegida.
+
+    \end{itemize}
+
+Para este trabajo, nos interesan especialmente los elementos. Concretamente los componentes y los conectores.
+
+\subsubsection{Componentes}
+
+El primer tipo de elemento que debemos tratar son los componentes. Según \cite{taylorSoftwareArchitectureFoundations2009}, los \textbf{componentes} son ``elementos arquitectónicos que encapsulan un subconjunto de la funcionalidad y/o de los datos del sistema``.
+Dependiendo de las características de nuestro sistema (y del nivel de abstracción que usemos) pueden tomar distintas formas: objetos, módulos dentro un mismo proceso, servicios distribuidos, etc.
+
+\begin{wrapfigure}{r}{0.40\linewidth}
+  \centering
+  \includegraphics[scale=0.8]{cap_contexto_tecnologico/images/componente-ejemplo}
+  \caption{El servicio de monitorización representado como un componente. Ofrece una interfaz (\emph{IMonitoringService}) y depende de otra para funcionar (\emph{IKnowledgeService}).}
+  \label{fig:componenteEjemplo}
+\end{wrapfigure}
+
+Los componentes exponen una \textbf{interfaz} que permite acceder a la funcionalidad o datos que encapsulan. A su vez, también declaran una serie de \textbf{dependencias} con interfaces de otros. Allí se incluyen todos los elementos que requieren para poder funcionar. En la figura \ref{fig:componenteEjemplo} tenemos un ejemplo. \emph{Monitoring Service} expone la interfaz \emph{IMonitoringService}. Para poder funcionar, depende de un componente que ofrezca \emph{IKnowledgeService}.
+
+Por si solos, estos componentes independientes no aportan mucho valor. Más bien son la unidad básica de composición: podemos combinar varios de ellos para que trabajen conjuntamente y realicen tareas más complejas. Así, podemos \textbf{componer sistemas}. \cite{mehtaTaxonomySoftwareConnectors2000} La integración y la interacción entre ellos son aspectos clave que debemos abordar.
+
+\subsubsection{Conectores}
+
+Para que dos o más componentes puedan interactuar, necesitamos definir un mecanismo de comunicación. Recurrimos entonces a los \textbf{conectores}. Se trata de elementos arquitectónicos que nos ayudan a definir y razonar sobre la comunicación entre componentes. En la figura \ref{fig:componentesYConectorEjemplo} mostramos una representación de la necesidad de comunicación entre dos componentes a través de un conector. No se ha especificado todavía ningún detalle sobre cómo se implementará. Así, podemos estudiar la arquitectura y elegir los mecanismos adecuados para cada interacción del sistema. \cite{taylorSoftwareArchitectureFoundations2009}.
+
+%% TODO: Los conectores son application-independent. No dependen de la funcionalidad de la aplicación.
+%% TODO: Hablar de la cardinalidad de los conectores.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale=0.78]{cap_contexto_tecnologico/images/conector}
+  \caption{Ejemplo de comunicación de dos componentes a través de un conector.}
+  \label{fig:componentesYConectorEjemplo}
+\end{figure}
+
+Internamente, los conectores están compuestos por uno o más \textbf{conductos} o canales. A través de estos se lleva a cabo la comunicación entre los componentes. Hay una gran variedad de conductos posibles: comunicación interproceso, a través de la red, etc. Clasificamos los conectores según la complejidad de los canales que utilizan \cite{mehtaTaxonomySoftwareConnectors2000}:
+
+\begin{itemize}
+    \item \textbf{Conectores simples}: solo cuentan con un conducto, sin lógica asociada. Son conectores sencillos. Suelen estar ya implementados en los lenguajes de programación. Por ejemplo: una llamada a función en un programa o el sistema de entrada / salida de ficheros.
+
+    \item \textbf{Conectores complejos}: cuentan con uno o más conductos. Se definen por composición a partir de múltiples conectores simples. Además, pueden contar con funcionalidad para manejar el flujo de datos y/o control. Suelen utilizarse importando \emph{frameworks} o librerias. Por ejemplo: un balanceador de carga que redirige peticiones a los nodos.
+\end{itemize}
+
+Por tanto, cuando hayamos decidido que dos componentes necesitan comunicarse, es momento de evaluar qué mecanismo de comunicación es más adecuado. Basándonos en nuestros requisitos, la arquitectura ya definida, y los mecanismos de despliegue que queremos usar, elegimos el conector apropiado. Podemos orientarnos con taxonomías como la de \cite{mehtaTaxonomySoftwareConnectors2000}.
+
+\subsubsection{Estilos arquitectónicos}
+
+\textcolor{red}{TODO: Descripción breve}
+
+\textcolor{red}{Podemos agrupar decisiones principales.}
