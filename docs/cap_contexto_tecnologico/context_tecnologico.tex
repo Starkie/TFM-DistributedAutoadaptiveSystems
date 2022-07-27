@@ -1,7 +1,7 @@
 \chapter{Contexto Tecnológico}
 \label{chap:contexto_tecnologico}
 
-En este capítulo presentamos algunos de los conceptos más relevantes para el trabajo. Entre ellos se incluyen las arquitecturas de \foreign{english}{software}, la computación autónoma y los bucles de control. \textcolor{red}{El trabajo gira en torno a ellos}
+En este capítulo presentamos algunos de los conceptos más relevantes para el trabajo. Entre ellos se incluyen las arquitecturas de \foreign{english}{software}, la computación autónoma y los bucles de control. Estos conceptos nos acompañarán a lo largo de la memoria.
 
 \section{Arquitecturas de \foreign{english}{Software}}
 
@@ -10,29 +10,33 @@ En esta sección haremos una breve introducción a las arquitecturas de \foreign
 \begin{itemize}
   \item En el trabajo tratamos la migración de un sistema con arquitectura monolítica a una distribuida basada en microservicios. Trabajamos con componentes, conectores y otros elementos arquitectónicos.
 
-  \item Por otro lado, el bucle MAPE-K es capaz de cambiar la arquitectura del recurso manejado en tiempo de ejecución. Sus adaptaciones se describen en base a operadores arquitectónicos: añadir o eliminar componentes, conectar o desconectarlos, \dots
+  \item Por otro lado, el bucle MAPE-K es capaz de cambiar la arquitectura del recurso manejado en tiempo de ejecución. Sus adaptaciones se describen en base a operadores arquitectónicos: añadir o eliminar componentes, conectar o desconectarlos\dots
 \end{itemize}
 
 \subsection{Definición}
 
 Según \cite{taylorSoftwareArchitectureFoundations2009}, la \textbf{arquitectura de un sistema \emph{software}} es el conjunto de todas las \textbf{decisiones principales de diseño} que se toman durante su ciclo de vida; aquellas que sientan las bases del sistema. Estas afectan a todos sus apartados: la funcionalidad que debe ofrecer, la tecnología para su implementación, cómo se desplegará, etc. En conjunto, definen una pauta que guía (y a la vez refleja) el diseño, la implementación, la operación y la evolución del sistema.
 
-Todos los sistemas \emph{software} cuentan con una. La diferencia radica en si esta ha sido diseñada y descrita explícitamente o ha quedado implícita en su implementación. \cite{taylorSoftwareArchitectureFoundations2009} En el segundo caso es probable que, con el paso del tiempo, se ``erosione`` su arquitectura: se implementan funcionalidades sin respetar la estructura. También se olvida el por qué de ciertas decisiones. En general, se vuelve más difícil de mantener. Se convierte en una ''gran bola de barro''. \cite{footeBigBallMud1997}
+Todos los sistemas \emph{software} cuentan con una. La diferencia radica en si esta ha sido diseñada y descrita explícitamente o ha quedado implícita en su implementación. \cite{taylorSoftwareArchitectureFoundations2009} En el segundo caso es probable que, con el paso del tiempo, se ``erosione`` su arquitectura: se implementan funcionalidades sin respetar la estructura. También se olvida el por qué de ciertas decisiones. En general, se vuelve más difícil de mantener y desarrollar nuevas funcionalidades. Se convierte en una ''gran bola de barro''. \cite{footeBigBallMud1997}
 
-Por tanto, es vital dedicar tiempo para definirla atendiendo a las necesidades de nuestro sistema. Una buena arquitectura es capaz dotar de estructura a nuestro sistema. \cite{martinCleanArchitectureCraftsman2018} Mientras se respete la arquitectura, y se mantenga actualizada, esta estructura. Una buena arquitectura nos ofrece una serie de ventajas, como facilitar su desarrollo, mayor extensibilidad.
+Para evitarlo, es vital dedicar tiempo para plantear y definir una buena arquitectura. Según \cite{martinChapter15What2018}, una buena arquitectura es aquella que es <<\emph{fácil de entender, fácil de desarrollar, fácil de mantener y fácil de desplegar}>>. Esto se traducirá en una reducción de costes de mantenimiento y operación.
+
+\subsubsection{Estilos arquitectónicos}
+
+Queremos introducir también el concepto de estilos arquitectónicos. Se trata de
+
+\textcolor{red}{Podemos agrupar decisiones principales.}
 
 \subsection{Componentes de una arquitectura}
 
-Otra posible definición de arquitectura la encontramos en el estándar IEEE 42010-2011 \cite{ieeeStandard420102011Systems2011}: es "\emph{un conjunto de conceptos o propiedades fundamentales, personificados por sus elementos, sus relaciones, y los principios que guían su diseño y evolución}". Podemos describirlas entonces usando estos tres conceptos: \cite{perryFoundationsStudySoftware1992}
+Otra posible definición de arquitectura la encontramos en el estándar IEEE 42010-2011 \cite{ieeeStandard420102011Systems2011}: es <<\emph{un conjunto de conceptos o propiedades fundamentales, personificados por sus elementos, sus relaciones, y los principios que guían su diseño y evolución}>>. Podemos describirlas entonces usando estos tres conceptos: \cite{perryFoundationsStudySoftware1992}
 
     \begin{itemize}
-        \item \textbf{Elementos}: Son las piezas fundamentales que conforman el sistema. Representan las unidades de funcionalidad de la aplicación. Se utilizan para describir \textbf{\emph{qué}} partes componen el sistema. Por ejemplo: un módulo, un servicio web...
+        \item \textbf{Elementos}: Son las piezas fundamentales que conforman el sistema. Representan las unidades de funcionalidad de la aplicación. Se utilizan para describir \textbf{\emph{qué}} partes componen el sistema. Por ejemplo: un módulo, un servicio web, un conector...
 
         \item \textbf{Forma}: El conjunto de propiedades y relaciones de un elemenento con otros o con el entorno de operación. Describe \textbf{\emph{cómo}} está organizado el sistema. Por ejemplo: un servicio A contacta con otro, B, usando una llamada HTTP.
 
-        \item \textbf{Justificación}: Razonamiento o motivación de las decisiones que se han tomado. Responden al \textbf{\emph{por qué}} algo se hace de una manera determinada. Nos aporta detalles más precisos sobre el sistema que no se pueden representar con los elementos o la forma.
-
-        Un ejemplo podría ser qué alternativas se consideraron para determinada decisión; y por qué se descartaron en favor de la elegida.
+        \item \textbf{Justificación}: Razonamiento o motivación de las decisiones que se han tomado. Responden al \textbf{\emph{por qué}} algo se hace de una manera determinada. Nos aporta detalles más precisos sobre el sistema que no se pueden representar mediante los elementos o la forma. Un ejemplo podría ser qué alternativas se consideraron para tomar una decisión; y por qué se descartaron en favor de la elegida.
 
     \end{itemize}
 
@@ -40,8 +44,7 @@ Para este trabajo, nos interesan especialmente los elementos. Concretamente los 
 
 \subsubsection{Componentes}
 
-El primer tipo de elemento que debemos tratar son los componentes. Según \cite{taylorSoftwareArchitectureFoundations2009}, los \textbf{componentes} son ``elementos arquitectónicos que encapsulan un subconjunto de la funcionalidad y/o de los datos del sistema``.
-Dependiendo de las características de nuestro sistema (y del nivel de abstracción que usemos) pueden tomar distintas formas: objetos, módulos dentro un mismo proceso, servicios distribuidos, etc.
+El primer tipo de elemento que debemos tratar son los componentes. Según \cite{taylorSoftwareArchitectureFoundations2009}, los \textbf{componentes} son <<\emph{elementos arquitectónicos que encapsulan un subconjunto de la funcionalidad y/o de los datos del sistema}>>. Dependiendo de las características de nuestro sistema (y del nivel de abstracción que usemos) pueden tomar distintas formas: objetos, módulos dentro un mismo proceso, servicios distribuidos, etc.
 
 \begin{wrapfigure}{r}{0.40\linewidth}
   \centering
@@ -56,10 +59,19 @@ Por si solos, estos componentes independientes no aportan mucho valor. Más bien
 
 \subsubsection{Conectores}
 
-Para que dos o más componentes puedan interactuar, necesitamos definir un mecanismo de comunicación. Recurrimos entonces a los \textbf{conectores}. Se trata de elementos arquitectónicos que nos ayudan a definir y razonar sobre la comunicación entre componentes. En la figura \ref{fig:componentesYConectorEjemplo} mostramos una representación de la necesidad de comunicación entre dos componentes a través de un conector. No se ha especificado todavía ningún detalle sobre cómo se implementará. Así, podemos estudiar la arquitectura y elegir los mecanismos adecuados para cada interacción del sistema. \cite{taylorSoftwareArchitectureFoundations2009}.
+Para que los componentes puedan interactuar, necesitamos definir uno o más mecanismos de comunicación. Recurriremos entonces a los \textbf{conectores}. Se trata de elementos arquitectónicos que nos ayudan a investigar y especificar la comunicación entre componentes. \cite{perryFoundationsStudySoftware1992} Son elementos independientes a la aplicación. No están acoplados a componentes específicos. Son por tanto \textbf{reutilizables}. \cite{taylorComponentMessagebasedArchitectural1996a}
 
-%% TODO: Los conectores son application-independent. No dependen de la funcionalidad de la aplicación.
-%% TODO: Hablar de la cardinalidad de los conectores.
+Internamente, están compuestos por uno o más \textbf{conductos} o canales. A través de estos se realiza la transmisión de información. Según su \textbf{cardinalidad}, estos podrán conectar más o menos componentes. Hay una gran variedad de conductos disponibles: comunicación interproceso, en red, etc. Clasificamos los conectores según la complejidad de los conductos que utilizan \cite{mehtaTaxonomySoftwareConnectors2000}:
+
+\begin{itemize}
+    \item \textbf{Conectores simples}: solo cuentan con un conducto, sin lógica asociada. Son conectores sencillos. Suelen estar ya implementados en los lenguajes de programación. Por ejemplo: una llamada a función en un programa o el sistema de entrada / salida de ficheros.
+
+    \item \textbf{Conectores complejos}: cuentan con uno o más conductos. Se definen por composición a partir de múltiples conectores simples. Además, pueden contar con funcionalidad para manejar el flujo de datos y/o control. Suelen encontrarse en librerias o \foreign{english}{middlewares}. Por ejemplo: un balanceador de carga que redirige peticiones a los nodos.
+\end{itemize}
+
+Una vez hayamos decidido que dos componentes necesitan comunicarse, es momento de evaluar qué mecanismo de comunicación es más adecuado. Basándonos en nuestros requisitos, la arquitectura ya definida, y los mecanismos de despliegue que queremos usar, elegimos el conector apropiado. Podemos orientarnos con taxonomías como la de \cite{mehtaTaxonomySoftwareConnectors2000}.
+
+Fijémonos por ejemplo en la figura \ref{fig:componentesYConectorEjemplo}. En ella mostramos dos elementos que queremos comunicar. Vemos que no se ha especificado todavía ningún detalle sobre cómo se implementará. Esto nos permitirá estudiar sus necesidades y elegir el mecanismo óptimo para la interacción. \cite{taylorSoftwareArchitectureFoundations2009}.
 
 \begin{figure}[h!]
   \centering
@@ -67,23 +79,6 @@ Para que dos o más componentes puedan interactuar, necesitamos definir un mecan
   \caption{Ejemplo de comunicación de dos componentes a través de un conector.}
   \label{fig:componentesYConectorEjemplo}
 \end{figure}
-
-Internamente, los conectores están compuestos por uno o más \textbf{conductos} o canales. A través de estos se lleva a cabo la comunicación entre los componentes. Hay una gran variedad de conductos posibles: comunicación interproceso, a través de la red, etc. Clasificamos los conectores según la complejidad de los canales que utilizan \cite{mehtaTaxonomySoftwareConnectors2000}:
-
-\begin{itemize}
-    \item \textbf{Conectores simples}: solo cuentan con un conducto, sin lógica asociada. Son conectores sencillos. Suelen estar ya implementados en los lenguajes de programación. Por ejemplo: una llamada a función en un programa o el sistema de entrada / salida de ficheros.
-
-    \item \textbf{Conectores complejos}: cuentan con uno o más conductos. Se definen por composición a partir de múltiples conectores simples. Además, pueden contar con funcionalidad para manejar el flujo de datos y/o control. Suelen utilizarse importando \emph{frameworks} o librerias. Por ejemplo: un balanceador de carga que redirige peticiones a los nodos.
-\end{itemize}
-
-Por tanto, cuando hayamos decidido que dos componentes necesitan comunicarse, es momento de evaluar qué mecanismo de comunicación es más adecuado. Basándonos en nuestros requisitos, la arquitectura ya definida, y los mecanismos de despliegue que queremos usar, elegimos el conector apropiado. Podemos orientarnos con taxonomías como la de \cite{mehtaTaxonomySoftwareConnectors2000}.
-
-\subsection{Estilos arquitectónicos}
-
-\textcolor{red}{TODO: Descripción breve}
-
-\textcolor{red}{Podemos agrupar decisiones principales.}
-
 
 \section{Computación autónoma y bucles de control}
 
