@@ -23,9 +23,7 @@ Para evitarlo, es vital dedicar tiempo para plantear y definir una buena arquite
 
 \subsubsection{Estilos arquitectónicos}
 
-Queremos introducir también el concepto de estilos arquitectónicos. Se trata de
-
-\textcolor{red}{Podemos agrupar decisiones principales.}
+Queremos aprovechar la ocasión para introducir el concepto de \textbf{estilos arquitectónicos}. Según \cite{taylorSoftwareArchitectureFoundations2009}, se trata conjuntos de decisiones principales que podemos reutilizar en distintos proyectos. Gracias a ellas, podemos imponer una serie de restricciones en nuestra arquitectura que nos reportarán a cambio una serie de beneficios. Es el caso del estilo arquitectónico basado en microservicios. Creando servicios pequeños cuyas fronteras de funcionalidad  podemos obtener una serie de servicios pequeños, individuales que nos facilitan escalar y su despliegue. \cite{newmanBuildingMicroservicesDesigning2021}
 
 \subsection{Componentes de una arquitectura}
 
@@ -113,20 +111,26 @@ Para implementar estas capacidades de adaptación se recurre a la teoría de con
   \item \textbf{Actuar}: Si se ha planificado alguna acción se intentará \textbf{ejecutar} en esta etapa final. Mediante \textbf{efectores} en el sistema, el bucle es capaz de modificar su configuración. Dependiendo del éxito de ejecución, la adaptación se lleva a cabo o no. Finalizada esta etapa, se vuelve a recopilar información e inicia de nuevo el proceso.
 \end{itemize}
 
-Este tipo de proceso está presente en gran variedad de contextos como puede ser en procesos naturales, operación de plantas industriales \cite{climentpenadesDissenyPrototipatSolucions2020a}, etc. \textcolor{red}{Uno de los ámbitos en los que está teniendo más éxito es en el internet de las cosas (IoT). \cite{savaglioAgentbasedInternetThings2020} Mediante la inteligencia ambiental, los diversos elementos son capaces de colaborar para cumplir con un objetivo común.}
+\subsubsection{En la ingenieria de \foreign{english}{software}}
 
-\textcolor{red}{Hablar de human in the loop: solicitamos la intervención del humano cuando no contamos con suficiente información para tomar una acción correctiva.}
+En la ingeniería de \emph{software}, los bucles de control suelen suelen implementarse de dos formas distintas: \textbf{implícitos} o \textbf{explícitos}. La más habitual es la primera: se encuentran implícitos en la implementación de los procesos del sistema. \cite{brunEngineeringSelfAdaptiveSystems2009} No son componentes externos dedicados. Esto dificulta su implementación y mantenimiento ya que están entrelazados con la funcionalidad.
 
-En la ingeniería de \emph{software}, podemos encontrar los bucles de control de dos formas distintas: implícitos o explícitos. La más habitual es la primera: se encuentran implícitos en la implementación de los procesos del sistema. \cite{brunEngineeringSelfAdaptiveSystems2009} No son componentes externos dedicados. Esto dificulta su implementación y mantenimiento ya que están entrelazados con la funcionalidad.
+Por otro lado, aproximaciones como las de \cite{ibmcorporationArchitecturalBlueprintAutonomic2006} o \cite{garlanIncreasingSystemDependability2003} optan por la segunda: bucles como componentes externos. Esto permite separar la funcionalidad de las capacidades de adaptación.  Al dividirse estas responsabilidades, se puede reducir la complejidad de la implementación. En este trabajo nos centraremos en esta segunda variante.
 
-Por otro lado, aproximaciones como las de \cite{garlanIncreasingSystemDependability2003} o \cite{ibmcorporationArchitecturalBlueprintAutonomic2006} optan por la segunda: bucles como componentes externos. Esto permite separar la funcionalidad de las capacidades de adaptación.  Al dividirse estas responsabilidades, se puede reducir la complejidad de la implementación. En este trabajo nos centraremos en esta segunda variante.
+En el caso de los bucles externos, pueden categorizarse además en base al \textbf{nivel} en el que operan. \cite{mendoncaGeneralityVsReusability2018} Esto determinará el nivel de abstracción que tienen sobre el sistema que controlan, afectando a su reusabilidad en otras arquitecturas. De menor a mayor nivel de abstracción (y de reusabilidad) tenemos: nivel del sistema, mixto e infraestructura.
+
+En el \textbf{nivel de sistema}, el bucle de control es un componente que se despliega al mismo nivel que el sistema manejado. Así, tendrá mucho más conocimiento de la solución y podrá ofrecer adaptaciones específicas para ella. Esto implica que acaba acoplado a ella y es menos reusable.
+
+Por otro lado, en el \textbf{nivel de infraestructura}, el bucle se encuentra en un nivel de abstracción superior al sistema manejado. No tiene conocimiento sobre su implementación específica. Solo expone una serie de adaptaciones genéricas aplicables según la infraestructura en la que corre. Finalmente, el \textbf{nivel mixto} es una mezcla de ambas aproximaciones. El bucle tendrá componentes en ambas capas, capaces de comunicarse entre ellas para ofrecer una mejor capacidad de adaptación.
+
+En cuanto a aplicaciones prácticas, podemos encontrarlos en gran variedad de contextos: balanceadores de carga \cite{mishraLoadBalancingCloud2020}, operación de plantas industriales \cite{climentpenadesDissenyPrototipatSolucions2020a}, etc. Uno de los campos en lo que está teniendo más impacto es en el Internet de las Cosas (IoT). \cite{savaglioAgentbasedInternetThings2020} En él, cada uno de los elementos debe operar de forma autónoma y ser capaz de colaborar con el resto de elementos de la red para cumplir con un objetivo común.
 
 \section{Arquitecturas para sistemas autónomos: Bucles MAPE-K}
 \label{sec:bucles-mapek}
 
 Un estilo arquitectónico muy representativo es el basado en bucles MAPE-K \cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021} propuesto por IBM. Se trata de una referencia arquitectónica para desarrollar sistemas distribuidos autónomos. Nace con el objetivo hacer más manejable la complejidad de estos sistemas; y reducir sus costes de operación, requiriendo de la minima intervención humana.
 
-Su componentes principales son los \textbf{elementos autónomos}. Cada uno de estos es capaz de autogestionarse, y colaborar en conjunto con el resto de elementos autónomos del sistema  para alcanzar los objetivos. \textcolor{red}{¿Agent based?} A su vez, estos pueden dividirse en dos partes: los recursos manejados y un manejador autónomo (el bucle de control).
+Sus componentes principales son los \textbf{elementos autónomos}. Cada uno de ellos es capaz de autogestionarse y colaborar con el resto de elementos del sistema para alcanzar los objetivos. Podría considerarse como una arquitectura basada en agentes. \cite{savaglioAgentbasedInternetThings2020} A su vez, los elementos autónomos pueden dividirse en dos partes: un recurso manejado y un manejador autónomo (el bucle de control).
 
 Los \textbf{recursos manejados} son las unidades de funcionalidad. Puede ser cualquier tipo de recurso, \emph{hardware} o \emph{software}. Para dotarlos de capacidad de autoadaptación, los emparejamos con un \textbf{manejador autónomo}: el bucle de control. Gestiona al recurso en base a la información que recoge del entorno de ejecución y las políticas que guían su adaptación.
 
@@ -161,7 +165,7 @@ Siguiendo con nuestro ejemplo, el monitor recibiría el número de peticiones at
 
 \subsubsection{Base de conocimiento}
 
-La base de conocimiento (\emph{knowledge base}) es el componente base de toda la arquitectura. Informa a todas las etapas del bucle de control. Por lo que se trata de un componente transversal. \textcolor{red}{Es una arquitectura knowledge-driven \cite{taylorSoftwareArchitectureFoundations2009}.}
+La base de conocimiento (\emph{knowledge base}) es el componente base de toda la arquitectura. Informa a todas las etapas del bucle de control. Por lo que se trata de un componente transversal.
 
 Está compuesta por una o más fuentes de información que el bucle tiene a su disposición. A partir de ellas, se almacenan las \textbf{propiedades de adaptación}. Estas describen el estado pasado y presente del sistema y su entorno: métricas, componentes, conexiones entre ellos, parámetros de configuración\dots
 
@@ -203,12 +207,17 @@ En el caso del servicio web, la acción correspondiente sería desplegar o elimi
 
 \subsection{Sistemas distribuidos basados en elementos autónomos}
 
-\textcolor{red}{Si nos fijamos en la figura \ref{fig:autonomic-element}, veremos que en la parte superior del elemento autónomo figuran sondas y efectores. Esto nos indica que a su vez, pueden actuar también como recursos manejados. Esto nos permite poner por encima de este otro manejador autónomo que actúe como un \textbf{orquestador}. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}. Estos gestionan a un nivel superior uno o más elementos autonómicos. Son por tanto, elementos componibles.}
+Si nos fijamos en la figura \ref{fig:autonomic-element}, veremos que en la parte superior del elemento autónomo figuran sondas y efectores. Esto nos indica que pueden actuar también como recursos manejados, reportando mediciones y ofreciendo efectores para manipularlo. Nos permite colocar un manejador autónomo que actúe como \textbf{orquestador}. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}
 
-\textcolor{red}{Este orquestador podría estar responsabilizado de otras tareas de más alto nivel.}
+Los orquestadores gestionan uno o más elementos autónomos, responsabilizándose de tareas de más alto nivel. Facilitan también la cooperación entre sus elementos manejados. Por ejemplo, si nuestro elemento autonómico fuera un servidor web, el orquestador podría encargarse de gestionar varios servidores web distintos. Podría actuar como balanceador de carga u otros aspectos.
 
-\textcolor{red}{Por encima de estos orquestadores, finalmente, tendríamos al administrador u operario humano.}
-\textcolor{red}{Hablar del \emph{human manager}, la capa superior al sistema. Emite las políticas y monitoriza su funcionamiento a través de las sondas del bucle orquestador.}
+Por encima de los orquestadores tendríamos al administrador u \textbf{operario humano}. Como ya comentamos, este monitoriza el funcionamiento del sistema autónomo y lo gestionará mediante las políticas. Incluso puede participar en el proceso de toma de decisiones del bucle cuando este no cuenta con suficiente información para tomar una acción correctiva. Esto se conoce como \textbf{\foreign{english}{human in the loop}} (humano en el bucle). \cite{gilDesigningHumanLoop2016a}.
 
+La arquitectura final tendría el siguiente aspecto, mostrado en la figura \ref{fig:autonomic-system}.
 
-\textcolor{red}{¿Hablar del nivel en el que se encuentra el bucle de control? Sistema, infraestructura, mixto, mesh \cite{mendoncaGeneralityVsReusability2018}}
+\begin{figure}[htb]
+  \centering
+  \includegraphics[scale=0.6]{cap_contexto_tecnologico/images/mape-k-architecture}
+  \caption[Arquitectura de un sistema autoadaptativo basado en MAPE-K.]{Arquitectura de un sistema autoadaptativo basado en MAPE-K. Imagen obtenida de \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}.}
+  \label{fig:autonomic-system}
+\end{figure}
