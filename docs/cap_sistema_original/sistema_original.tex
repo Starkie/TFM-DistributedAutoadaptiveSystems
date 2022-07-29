@@ -1,0 +1,12 @@
+\chapter{Sistema original}
+\label{chap:sistema_original}
+
+En este capitulo describiremos el sistema actual. Aquel que queremos dividir en microservicios. Exploraremos sus componentes y describiremos nuestros objetivos para dividirlo.
+
+Como comentamos en el capítulo \ref{chap:introduccion}, el objetivo del trabajo es transformar un servicio monolítico en un sistema distribuido basado en microservicios. Se trata de un cambio arquitectónico importante. Queremos por tanto diseñar una estrategia ingenieril para llevar a a cabo la migración; teniendo en cuenta las particularidades del sistema.
+
+El servicio en cuestión implementa un \textbf{bucle de control MAPE-K}\cite{ibmcorporationArchitecturalBlueprintAutonomic2006,fonsServiciosAdaptivereadyPara2021}, que ya describimos en la sección \ref{sec:bucles-mapek}. Por suerte, partimos de un sistema cuyos componentes presentan una división funcional clara (cada etapa del bucle). Nos facilitará definir las fronteras de nuestros servicios.
+
+Debido a esto, el foco de este capítulo pasará a los \textbf{conectores de \emph{software}}. Necesitamos establecer qué estrategias de comunicación utilizaremos para comunicar los servicios.
+
+\textcolor{red}{Buscar libros de descomposición de monolitos en microservicios.}
