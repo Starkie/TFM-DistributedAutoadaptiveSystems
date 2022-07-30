@@ -9,6 +9,8 @@ Debido a esto, el foco de este capítulo pasará a los \textbf{conectores de \em
 
 \textcolor{red}{Buscar libros de descomposición de monolitos en microservicios.}
 
+\textcolor{red}{Implementación: Al ser FAdA un sistema tan grande y en continuo desarrollo, vamos a optar por implementar una versión reducida de su funcionalidad en lugar de aplicarlo directamente sobre la plataforma. Nos basaremos en las interfaces de la funcionalidad clave del bucle y dxrlos manejadores adaptive ready. Así podemos verificar sobre un prototipo si los patrones de comunicación elegidos son los adecuados. Esto nos permite reducir el alcance del proyecto.}
+
 \section{Distribución de los componentes}
 
 El primer paso fue identificar los componentes que compondrían nuestra arquitectura. Por suerte, partíamos de un sistema existente, con una arquitectura bien definida y documentada. Conocíamos el rol de cada uno de sus componentes y sus requisitos. Asi que el primer problema al que nos enfrentamos estaba relacionado con la distribución de los servicios. ¿Cómo definimos las fronteras entre cada uno de ellos? ¿Qué componentes debe abarcar cada microservicio?
@@ -28,9 +30,11 @@ Por otro lado, también nos permitirá escalar cada etapa de forma independiente
 
 \textcolor{red}{Detectamos otra posible división de funcionalidad:} actualmente, el bucle está muy acoplado al dominio de sus recursos manejados. Todo corre bajo el mismo proceso: el bucle, los monitores, sus reglas de adaptación y demás elementos específicos de la solución. Ese proceso solo podrá manejar aquellos sistemas cuyos módulos tenga cargados.
 
+\textcolor{red}{Podremos cambiar los componentes en caliente. Por ejemplo si queremos desplegar nuevas reglas o monitores mientras el sistema está en marcha. Sin necesidad de downtime por parte del recurso manejado. o pudiendo convivir temporalmente ambas instancias hasta que se confirme el despliegue.}
+
 Decidimos entonces desacoplarlos. Separar cada etapa del bucle MAPE-K de los elementos específicos de cada solución. Así, tendremos cada etapa como un microservicio agnóstico a una solución concreta; y por otro lado, estarán los servicios específicos para cada solución, con conocimiento del dominio del recurso manejado: monitores, reglas de adaptación, efectores\dots
 
-Podremos entonces aprovechar la misma infraestructura para manejar varios sistemas simultáneamente (\emph{multi-tennancy}). \textcolor{red}{ampliar + cita}
+Podremos entonces aprovechar la misma infraestructura para manejar varias soluciones simultáneamente (\emph{multi-tennancy}). \textcolor{red}{ampliar + cita}
 
 En cuanto al despliegue, mantendremos el bucle a nivel de sistema, \cite{mendoncaGeneralityVsReusability2018} como funcionaba hasta ahora. Esto significa que se desplegará conjuntamente con los microservicios del recurso manejado. En la figura \ref{fig:mape-k-microservices} mostramos los microservicios que componen nuestra arquitectura.
 
@@ -41,7 +45,7 @@ En cuanto al despliegue, mantendremos el bucle a nivel de sistema, \cite{mendonc
   \label{fig:mape-k-microservices}
 \end{figure}
 
-\textcolor{red}{Figura \ref{fig:mape-k-microservices}: Borrar los servicios específicos de planificador y ejecutor. Agrupar los servicios para poder aumentar zoom y hacerlo más legible. Añadir línea de divisón entre la capa del bucle y el dominio del recurso manejado.}
+\textcolor{red}{Figura \ref{fig:mape-k-microservices}: Borrar los servicios específicos de planificador y ejecutor. Agrupar los servicios para poder aumentar zoom y hacerlo más legible. Añadir línea de divisón entre la capa del bucle y el dominio del recurso manejado. Eliminar la dependencia entre el monitor y el módulo de análisis. Borrar también los planificadores específicos y los ejeecutre especficios.d}
 
 \section{Conectando los servicios}
 
@@ -267,6 +271,8 @@ Ninguno de ellos necesita conocer detalles sobre cómo están desplegado los otr
 \end{itemize}
 
 En la tabla \ref{tab:comparativa-mecanismos-comunicacion} presentamos un resumen de esta comparativa:
+
+\textcolor{red}{Añadir la cardinalidad de los conectores}
 
 \begin{longtable}{|p{4.4cm} | c | c | c | c|}
   \hline
