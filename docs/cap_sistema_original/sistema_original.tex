@@ -42,22 +42,34 @@ El bucle de control es genérico. No está acoplado a un dominio o solución con
 
 \subsection{Estructura del bucle}
 
-En la sección \ref{sec:estructura-mape-k} ya describimos la estructura de un bucle MAPE-K típico. Este no difiere mucho en su implementación y utiliza los mismos componentes: sondas, monitores, módulo de análisis, planificador, ejecutor y efectores. Pero si que hay facetas en las que queremos hacer hincapié: el uso de reglas de adaptación para implementar la etapa de análisis, y los operadores arquitectónicos para microservicios.
+En la sección \ref{sec:estructura-mape-k} ya describimos la estructura de un bucle MAPE-K típico. Como vemos ver en la figura \ref{fig:bucle-mapek3}, este no difiere mucho en su implementación. Utiliza los mismos componentes: sondas, monitores, módulo de análisis, planificador, ejecutor y efectores. Pero sí que hay facetas en las que queremos hacer hincapié: el uso de reglas de adaptación para implementar la etapa de análisis; y el uso de los operadores arquitectónicos para microservicios.
 
-\subsubsection{Operadores arquitectónicos para microservicios}
+\subsubsection{Operadores arquitectónicos}
 
-Un sistema autoadaptativo debe ser capaz de adaptarse a las distintas situaciones que puedan surgir durante su ejecución. Para ello, el bucle de control debe ser capaz de pautar una serie de acciones, las adaptaciones. En el caso de este bucle, como gestiona sistemas basados en microservicios, deberá aplicar las acciones típicas de servicios: desplegar nuevas instancias, eliminarlas, etc.
+Las adaptaciones que realiza un sistema autoadaptativo están compuestas por acciones. Estas acciones modifican la configuración o la arquitectura del sistema en tiempo de ejecución. Dependiendo del estilo arquitectónico, tendremos disponibles acciones de distintos tipos. Por lo general suelen ser muy similares: añadir o eliminar componentes, modificar las conexiones entre ellos o cambiar parámetros de configuración. Estas se describen con \textbf{operadores arquitectónicos}. \cite{garlanIncreasingSystemDependability2003}
 
-\textbf{Añadir imagen sobre los cambios de arquitecturas. De \cite{fonsServiciosAdaptivereadyPara2021}}
+El bucle de control que nos ocupa es específico para gestionar soluciones basadas en microservicios. Por tanto, ofrecerá los operadores arquitectónicos correspondientes a este estilo. En \cite{fonsEspecificacionSistemasAutoadaptativos2021} podemos ver las cinco tipos que soporta:
 
-En \cite{fonsServiciosAdaptivereadyPara2021} encontramos las distintas operaciones que soportan
+\begin{itemize}
+  \item \textbf{Desplegar servicios} (\textbf{\foreign{english}{deploy}}): Añadimos una nueva instancia de un servicio.
 
-Desplegar M : se crea (instancia) el microservicio M
-Eliminar M : se elimina el microservicio M
-Exponer M :: I : se pone accesible la interfaz I del microservicio M
-Ocultar M :: I : se elimina la accesibilidad a la interfaz I del microservicio M
-Enlazar M1 :: Ir con M2 :: Ip : se conecta la interfaz requerida Ir del microservicio M1 con la interfaz Ip del microservicio M2
-Desenlazar M1 :: Ir de M2 :: Ip : se elimina el enlace entre la interfaz requerida Ir de M1 de Ip de M2
+  \item \textbf{Eliminar servicios} (\textbf{\foreign{english}{undeploy}}): Eliminamos una instancia de un servicio.
+
+  \item \textbf{Enlazar servicios} (\textbf{\foreign{english}{bind}}): Añadimos una conexión entre dos servicios. A partir de entonces podrán comunicarse.
+
+  \item \textbf{Desenlazar servicios} (\textbf{\foreign{english}{unbind}}): Eliminamos una conexión existente entre dos servicios. Ya no podrán comunicarse.
+
+  \item \textbf{Cambiar configuración} (\textbf{\foreign{english}{set parameter}}): Modificamos un parámetro de configuración de un servicio.
+\end{itemize}
+
+En la figura \ref{fig:adaptaciones-microservicios} mostramos un ejemplo de los efectos de estas acciones en la arquitectura del sistema.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[scale=1.8]{cap_sistema_original/images/adaptaciones}
+  \caption[Ejemplo de adaptaciones en un sistema basado en microservicios.]{Ejemplo de adaptaciones en un sistema basado en microservicios. Imagen original obtenida de \cite{fonsServiciosAdaptivereadyPara2021}}
+  \label{fig:adaptaciones-microservicios}
+\end{figure}
 
 
 \subsubsection{Módulo de análisis y reglas de adaptación}
