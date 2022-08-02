@@ -18,6 +18,8 @@ A partir de los modelos, podemos generar código para los servicios. La platafor
 
 Para operar estas soluciones, la plataforma ofrece distintas implementaciones de bucles de control. Dependen también del modelo de despliegue que elijamos. Disponemos de soluciones para gestionar microservicios sobre la plataforma Kubernetes\cite{fonsServiciosAdaptivereadyPara2021}, otros que permiten operar componentes OSGi\footnote{Página oficial: \url{https://www.osgi.org}.}, etc. Para este trabajo nos centraremos en una versión reducida del bucle de control para microservicios: MAPE-K \foreign{english}{Lite}.
 
+\textcolor{red}{Los servicios adaptive ready son agnósticos a la la lógica de las adaptaciones. Simplemente implementan su funcionalidad y los contratos de adaptación. Desde el bucle de control reciben los comandos de adaptación a través de sus efectores.}
+
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=0.4]{cap_sistema_original/images/adaptive-ready-services}
@@ -35,20 +37,28 @@ El bucle de control es genérico. No está acoplado a un dominio o solución con
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=1.1]{cap_introduccion/images/bucle-mape-k}
+  \includegraphics[scale=1]{cap_introduccion/images/bucle-mape-k}
   \caption[Arquitectura de un Bucle MAPE-K. El flujo de información y de control entre las etapas del bucle están representados con flechas.]{Arquitectura de un Bucle MAPE-K. El flujo de información y de control entre las etapas del bucle están representados con flechas. Obtenida de \cite{fonsEspecificacionSistemasAutoadaptativos2021}}
   \label{fig:bucle-mapek3}
 \end{figure}
 
 \subsection{Estructura del bucle}
 
-En la sección \ref{sec:estructura-mape-k} ya describimos la estructura de un bucle MAPE-K típico. Como vemos ver en la figura \ref{fig:bucle-mapek3}, este no difiere mucho en su implementación. Utiliza los mismos componentes: sondas, monitores, módulo de análisis, planificador, ejecutor y efectores. Pero sí que hay facetas en las que queremos hacer hincapié: el uso de reglas de adaptación para implementar la etapa de análisis; y el uso de los operadores arquitectónicos para microservicios.
+En la sección \ref{sec:estructura-mape-k} ya describimos la estructura de un bucle MAPE-K típico. Como vemos ver en la figura \ref{fig:bucle-mapek3}, este no difiere mucho en su implementación. Sigue el mismo proceso y utiliza los mismos componentes: sondas, monitores, módulo de análisis, planificador, ejecutor y efectores. Pero sí que hay una faceta en la que queremos hacer hincapié: el uso de reglas de adaptación en la etapa de análisis.
+
+\subsubsection{Módulo de análisis y reglas de adaptación}
+
+El módulo de análisis del bucle de control se ha implementado mediante un conjunto de \textbf{reglas de adaptación}. Se trata de la codificación de heurísticas que nos permiten corregir u optimizar el funcionamiento del sistema. En base a los reportes de los monitores, se buscan oportunidades para mejorar la configuración del sistema. Estas pueden ser generales o especificas a un recurso manejado concreto.
+
+Las reglas de adaptación se dividen en dos componentes: la condición y la acción correctiva. La \textbf{condición} es una función que determina si es necesario ejecutar la acción. Se define a partir de las propiedades de adaptación del conocimiento. Esta se evaluará en tiempo de ejecución cuando se produzca un cambio en la configuración o se obtenga nueva información del entorno. cambie alguna de las propiedades de las que depende.
+
+Por otro lado, la \textbf{acción correctiva} es una \textbf{propuesta de cambio} en la configuración del sistema. En ella se describe cuál debería ser la siguiente configuración. Las acciones se formulan usando operadores arquitectónicos. Los describiremos en la siguiente sección. El planificador recibirá sus propuestas y decidirá si es viable aplicarlas o no
 
 \subsubsection{Operadores arquitectónicos}
 
-Las adaptaciones que realiza un sistema autoadaptativo están compuestas por acciones. Estas acciones modifican la configuración o la arquitectura del sistema en tiempo de ejecución. Dependiendo del estilo arquitectónico, tendremos disponibles acciones de distintos tipos. Por lo general suelen ser muy similares: añadir o eliminar componentes, modificar las conexiones entre ellos o cambiar parámetros de configuración. Estas se describen con \textbf{operadores arquitectónicos}. \cite{garlanIncreasingSystemDependability2003}
+Las acciones correctivas que realiza un sistema autoadaptativo se declaran usando \textbf{operadores arquitectónicos}. \cite{garlanIncreasingSystemDependability2003} Estas acciones modifican la configuración o la arquitectura del sistema en tiempo de ejecución. Dependiendo del estilo arquitectónico, tendremos disponibles unos operadores determinados. Por lo general suelen ser muy similares: añadir o eliminar componentes, modificar las conexiones entre ellos o cambiar parámetros de configuración.
 
-El bucle de control que nos ocupa es específico para gestionar soluciones basadas en microservicios. Por tanto, ofrecerá los operadores arquitectónicos correspondientes a este estilo. En \cite{fonsEspecificacionSistemasAutoadaptativos2021} podemos ver las cinco tipos que soporta:
+El bucle de control que nos ocupa es específico para gestionar soluciones basadas en microservicios. Por tanto, ofrecerá los operadores arquitectónicos correspondientes a este estilo. En \cite{fonsEspecificacionSistemasAutoadaptativos2021} podemos encontrar los cinco tipos que ofrece:
 
 \begin{itemize}
   \item \textbf{Desplegar servicios} (\textbf{\foreign{english}{deploy}}): Añadimos una nueva instancia de un servicio.
@@ -71,20 +81,9 @@ En la figura \ref{fig:adaptaciones-microservicios} mostramos un ejemplo de los e
   \label{fig:adaptaciones-microservicios}
 \end{figure}
 
+\subsubsection{Ejemplo de regla de adaptación}
 
-\subsubsection{Módulo de análisis y reglas de adaptación}
-
-\textcolor{red}{Añadir ejemplo de regla de adaptación del climatizador}.
-
-Para implementarlo, una posible aproximación es mediante \textbf{reglas de adaptación}. Estas pueden dividirse en dos partes: la condición y la acción. La condición se define a partir de las propiedades de adaptación y evalúa si es necesario ejecutar la acción correctiva.
-
-La acción de la regla describe una \textbf{propuesta de cambio} en la configuración del sistema. Estas se formulan en base a \textbf{operadores arquitectónicos}. \cite{garlanIncreasingSystemDependability2003} Dependiendo del estilo arquitectónico de nuestro sistema, tendremos disponibles una serie de operaciones para alterar su arquitectura.
-
-Por ejemplo, nuestro recurso manejado podría estar implementado como microservicios. En este caso, los operadores podrían consistir en desplegar o eliminar servicios, establecer conexiones entre los servicios, eliminarlas, o cambiar las propiedades de configuración del servicio. \cite{fonsServiciosAdaptivereadyPara2021}
-
-Las reglas se suscriben a cambios de las propiedades de las que dependen. Cuando ocurra alguno, se evalúa su condición. Si esta se cumple, se ejecuta la acción asociada. En caso contrario, no hará nada.
 
 Respecto al servicio web, definiremos reglas tomando el valor del número de peticiones por segundo. Podemos definirlas con umbrales para este valor: si es muy alto, la regla solicita el despliegue de una nueva instancia. Cuando la carga baje, y si el servicio está replicado, podremos eliminarlas.
 
-
-Los servicios adaptive ready son agnósticos a la la lógica de las adaptaciones. Simplemente implementan su funcionalidad y los contratos de adaptación. Desde el bucle de control reciben los comandos de adaptación a través de sus efectores.
+\textcolor{red}{Añadir ejemplo de regla de adaptación del climatizador}.
