@@ -48,21 +48,19 @@ El bucle de control es genérico. No está acoplado a un dominio o solución con
 
 \subsection{Estructura del bucle}
 
-En la sección \ref{sec:estructura-mape-k} ya describimos la estructura de un bucle MAPE-K típico. Como vemos ver en la figura \ref{fig:bucle-mapek3}, este no difiere mucho en su implementación. Sigue el mismo proceso y utiliza los mismos componentes. El recurso manejado y su entorno de ejecución están instrumentados con sondas que reportan información a los monitores. Los monitores filtran y agregan esta información para extraer propiedades de adaptación, que almacenan en el conocimiento. En base a ellas, el módulo de análisis solicita cambios en la configuración del sistema. El planificador analiza su viablidad y emite un plan de adaptación, describiendo las acciones necesarias para alcanzar la configuración deseada. Finalmente, el ejecutor, manipulando los efectores en el recurso manejado, lleva a cabo este plan.
-
-sondas, monitores, módulo de análisis, planificador, ejecutor y efectores. Pero sí que hay una faceta en la que queremos hacer hincapié: el uso de reglas de adaptación en la etapa de análisis.
+En la sección \ref{sec:estructura-mape-k} ya describimos la estructura de un bucle MAPE-K típico. Como vemos ver en la figura \ref{fig:bucle-mapek3}, este no difiere mucho en su implementación. Sigue el mismo proceso de monitorización, análisis, planificación y ejecución. Para implementarlas cuenta con los mismos componentes: sondas, monitores, módulo de análisis, planificador, ejecutor y efectores. Pero sí que hay una faceta en la que queremos hacer hincapié: el uso de reglas de adaptación en la etapa de análisis.
 
 \subsubsection{Módulo de análisis y reglas de adaptación}
 
 El módulo de análisis del bucle de control se ha implementado mediante un conjunto de \textbf{reglas de adaptación}. Se trata de la codificación de heurísticas que nos permiten corregir u optimizar el funcionamiento del sistema. En base a los reportes de los monitores, se buscan oportunidades para mejorar la configuración en tiempo de ejecución.
 
-Las reglas pueden ser generales o especificas a un recurso manejado concreto. Se dividen en dos componentes: la condición y la acción correctiva. La \textbf{condición} es una función que determina si es necesario ejecutar la acción. Se define a partir de las propiedades de adaptación del conocimiento. Esta se evaluará en tiempo de ejecución cuando se produzca un cambio en la configuración o se obtenga nueva información del entorno.
+Las reglas pueden ser generales o especificas a un recurso manejado concreto. Se dividen en dos componentes: la condición y la propuesta de cambio. La \textbf{condición} es una función que determina si es necesario ejecutar la acción. Se define a partir de las propiedades de adaptación del conocimiento. Esta se evaluará en tiempo de ejecución cuando se produzca un cambio en la configuración o se obtenga nueva información del entorno.
 
-Por otro lado, la \textbf{acción correctiva} es una \textbf{propuesta de cambio} en la configuración del recurso manejado. En ella se describe cuál debería ser su siguiente configuración arquitectónica: qué componentes deben estar o no presentes, qué conexiones entre ellos deben existir y sus parámetros de configuración. Las reglas enviarán esta propuesta al planificador, que analizará el estado actual y determinará qué cambios son necesarios para alcanzar este estado deseado.
+Por otro lado, la \textbf{propuesta de cambio} describe cuál debería ser la siguiente configuración del sistema: qué componentes deben estar o no presentes, qué conexiones entre ellos deben existir y sus parámetros de configuración. Las reglas enviarán esta propuesta al planificador. El planificador analizará el estado actual y pautará qué \textbf{acciones} son necesarias para alcanzar el estado deseado.
 
 \subsubsection{Operadores arquitectónicos}
 
-Las acciones correctivas se especifican usando \textbf{operadores arquitectónicos}. \cite{garlanIncreasingSystemDependability2003} Dependiendo del estilo arquitectónico del recurso manejado, tendremos disponibles unos operadores determinados. El bucle de control que nos ocupa es específico para gestionar soluciones basadas en microservicios. Por tanto, ofrecerá los operadores correspondientes a este estilo. En \cite{fonsEspecificacionSistemasAutoadaptativos2021} podemos encontrar los cinco tipos que ofrece:
+Las acciones se especifican usando \textbf{operadores arquitectónicos}. \cite{garlanIncreasingSystemDependability2003} Dependiendo del estilo arquitectónico del recurso manejado, tendremos disponibles unos operadores determinados. El bucle de control que nos ocupa es específico para gestionar soluciones basadas en microservicios. Por tanto, ofrecerá los operadores correspondientes a este estilo. En \cite{fonsEspecificacionSistemasAutoadaptativos2021} podemos encontrar los cinco tipos que ofrece:
 
 \begin{itemize}
   \item \textbf{Desplegar servicios} (\textbf{\foreign{english}{deploy}}): Añadimos una nueva instancia de un servicio.
@@ -105,3 +103,5 @@ Para especificar las reglas usaremos la notación SAS. \cite{fonsEspecificacionS
   \caption{Ejemplo de especificación de regla de adaptación con la notación SAS.}
   \label{tab:adaption-rules-example}
 \end{longtable}
+
+El planificador del sistema recibirá esta propuesta de cambio y tendrá que determinar qué acciones son necesarias para alcanzarlo. Por ejemplo, si el componente del aire acondicionado estuviera activo, solo se pautaría la acción para cambiar el parámetro \texttt{Mode} para que tenga el valor \texttt{Cooling}.
