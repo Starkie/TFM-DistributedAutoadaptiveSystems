@@ -162,31 +162,22 @@ Siguiendo con nuestro ejemplo, el monitor recibiría el número de peticiones at
 
 \subsubsection{Base de conocimiento}
 
-La base de conocimiento (\emph{knowledge base}) es el componente base de toda la arquitectura. Informa a todas las etapas del bucle de control. Por lo que se trata de un componente transversal.
+La base de conocimiento (\emph{knowledge base}) es el componente base de toda la arquitectura. Informa a todas las etapas del bucle de control. Por lo que se trata de un componente transversal. Está compuesta por una o más fuentes de información que el bucle tiene a su disposición. A partir de ellas, se almacenan las \textbf{propiedades de adaptación}. Estas describen el estado pasado y presente del sistema y su entorno: métricas, componentes, conexiones entre ellos, parámetros de configuración\dots
 
-Está compuesta por una o más fuentes de información que el bucle tiene a su disposición. A partir de ellas, se almacenan las \textbf{propiedades de adaptación}. Estas describen el estado pasado y presente del sistema y su entorno: métricas, componentes, conexiones entre ellos, parámetros de configuración\dots
-
-En conjunto, estas propiedades conforman un modelo abstracto del estado del recurso manejado que se mantiene en tiempo de ejecución. \cite{garlanIncreasingSystemDependability2003}. Las demás etapas del bucle operan en base a él. Como veremos más adelante, los efectores se encargan de traducir las acciones correctivas del modelo de alto nivel a términos del recurso manejado.
+En conjunto, estas propiedades conforman un \textbf{modelo abstracto del estado del recurso manejado} que se mantiene en tiempo de ejecución. \cite{garlanIncreasingSystemDependability2003} Las demás etapas del bucle operan en base a él.
 
 \subsubsection{Analizador}
 
-En base al modelo abstracto del sistema, podemos razonar sobre el estado actual sin acoplarnos al recurso manejado. Podemos definir heurísticas que nos permitan detectar situaciones que requieran de una acción correctiva. Esta es la función del analizador.
+La siguiente etapa del bucle corresponde con la de análisis. En base a la información que conforma el modelo del sistema podemos razonar sobre su estado actual. Esto nos permite definir heurísticas para detectar situaciones que requieran de acciones correctivas, los \textbf{síntomas}. \cite{brunEngineeringSelfAdaptiveSystems2009} Por ejemplo, que no se estén cumpliendo las políticas. Todo ello sin acoplarnos al recurso manejado.
 
-Para implementarlo, una posible aproximación es mediante \textbf{reglas de adaptación}. Estas pueden dividirse en dos partes: la condición y la acción. La condición se define a partir de las propiedades de adaptación y evalúa si es necesario ejecutar la acción correctiva.
-
-La acción de la regla describe una \textbf{propuesta de cambio} en la configuración del sistema. Estas se formulan en base a \textbf{operadores arquitectónicos}. \cite{garlanIncreasingSystemDependability2003} Dependiendo del estilo arquitectónico de nuestro sistema, tendremos disponibles una serie de operaciones para alterar su arquitectura.
-
-Por ejemplo, nuestro recurso manejado podría estar implementado como microservicios. En este caso, los operadores podrían consistir en desplegar o eliminar servicios, establecer conexiones entre los servicios, eliminarlas, o cambiar las propiedades de configuración del servicio. \cite{fonsServiciosAdaptivereadyPara2021}
-
-Las reglas se suscriben a cambios de las propiedades de las que dependen. Cuando ocurra alguno, se evalúa su condición. Si esta se cumple, se ejecuta la acción asociada. En caso contrario, no hará nada.
-
-Respecto al servicio web, definiremos reglas tomando el valor del número de peticiones por segundo. Podemos definirlas con umbrales para este valor: si es muy alto, la regla solicita el despliegue de una nueva instancia. Cuando la carga baje, y si el servicio está replicado, podremos eliminarlas.
+Continuando con el servicio web, definiremos heurísticas tomando el número de peticiones por segundo. Podemos definirlas como umbrales en base a su valor. Estos determinarán si la carga del sistema es alta o baja.
 
 \subsubsection{Planificador}
 
-Si alguna regla se dispara, el planificador recibe su propuesta de cambio. Este módulo se encarga de validar las acciones propuestas y agruparlas en un \textbf{plan de adaptación}. Para ello, recurre al conocimiento y compara el estado actual del sistema con las acciones solicitadas.
+Si se ha detectado algún síntoma, el planificador describirá cómo se debe actuar. Comprobará el estado del sistema y pautará una serie de acciones correctivas. Estas se agruparán en un \textbf{plan de adaptación}. Las acciones correctivas se formulan en base a \textbf{operadores arquitectónicos}. \cite{garlanIncreasingSystemDependability2003} Dependiendo del estilo arquitectónico de nuestro sistema, tendremos disponibles una serie de operadores determinados. Estos suelen ser muy similares: agregar o eliminar componentes, crear o eliminar conexiones entre ellos o modificar claves de configuración.
 
-Deberá verificar si estas acciones siguen siendo necesarias. Podría ocurrir que desde que se solicitaron hasta que se genera el plan de adaptación, haya cambiado el estado del sistema. También comprobará si es seguro aplicarlas, ya que no deben dejar el sistema en un estado inconsistente.
+Respecto al servicio web, si la carga del sistema es muy alta, se podría planificar
+el despliegue de una nueva instancia. Cuando la carga baje, y si el servicio está replicado, podremos eliminarlas.
 
 \subsubsection{Ejecutor}
 
