@@ -35,14 +35,14 @@ Para operar estas soluciones, la plataforma ofrece distintas implementaciones de
 
 \section{Bucle de control MAPE-K \foreign{english}{Lite}}
 
-El bucle de control MAPE-K \foreign{english}{Lite} de FAdA nos permite gestionar soluciones autoadaptativas basadas en microservicios. Es una versión reducida del bucle presentado en \cite{fonsEspecificacionSistemasAutoadaptativos2021}. Sigue la arquitectura MAPE-K descrita en la sección \ref{sec:bucles-mapek}. En su implementación actual, se despliega como un servicio monolítico. Todos sus componentes, tanto del bucle como los del recurso manejado (monitores, reglas..), se ejecutan dentro del mismo proceso.
+El bucle de control MAPE-K \foreign{english}{Lite} de FAdA nos permite gestionar soluciones autoadaptativas basadas en microservicios. Es una versión reducida del bucle presentado en \cite{fonsServiciosAdaptivereadyPara2021}. Sigue la arquitectura MAPE-K descrita en la sección \ref{sec:bucles-mapek}. En su implementación actual, se despliega como un servicio monolítico al nivel de la solución autoadaptativa. Todos sus componentes, tanto del bucle como los del recurso manejado (monitores, reglas..), se ejecutan dentro del mismo proceso.
 
 El bucle de control es genérico. No está acoplado a un dominio o solución concreta. Además pueden hacer uso de él varios sistemas. El proceso acepta como entradas las mediciones de las sondas y emite comandos dirigidos a los efectores del recurso manejado. En nuestro caso, los \foreign{english}{touchpoints} de los servicios adaptive ready. En la figura \ref{fig:bucle-mapek3} mostramos un modelo que detalla el flujo de control e información dentro de sus etapas.
 
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=1]{cap_introduccion/images/bucle-mape-k}
-  \caption[Arquitectura de un Bucle MAPE-K. El flujo de información y de control entre las etapas del bucle están representados con flechas.]{Arquitectura de un Bucle MAPE-K. El flujo de información y de control entre las etapas del bucle están representados con flechas. Obtenida de \cite{fonsEspecificacionSistemasAutoadaptativos2021}}
+  \caption[Arquitectura del bucle MAPE-K \foreign{english}{lite}. El flujo de información y de control entre las etapas del bucle están representados con flechas.]{Arquitectura del bucle MAPE-K \foreign{english}{lite}. El flujo de información y de control entre las etapas del bucle están representados con flechas. Obtenida de \cite{fonsEspecificacionSistemasAutoadaptativos2021}}
   \label{fig:bucle-mapek3}
 \end{figure}
 
