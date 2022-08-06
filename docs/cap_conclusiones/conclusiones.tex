@@ -1,6 +1,10 @@
 \chapter{Conclusiones}
 \label{chap:conclusiones}
 
+¿Se podría desplegar como un único servicio un conjunto de monitores y su módulo de monitorización? Publicariamos el módulo como un paquete NuGet o algo por el estilo. Esto nos permitiría restrigir cómo.
+
+Otra laguna importante: ¿qué hacemos con los servicios que reciben notificaciones y están replicados? ¿Actuarán dos veces? Necesitamos una forma de que solo una de las instancias reciba el mensaje. Si los servicios usan la misma cola, da problemas?
+
 \section{Trabajos futuros}
 
 \begin{itemize}
