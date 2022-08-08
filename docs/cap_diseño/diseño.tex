@@ -95,25 +95,22 @@ Basándonos en la descripción anterior, optamos por representar nuestra arquite
 
 \subsection{Definiendo los mecanismos de comunicación}
 
-Como comentamos antes, nos inspiramos en los mecanismos de comunicación descritos por C2: las peticiones y notificaciones. Pero, durante nuestra etapa de prototipado, nos dimos cuenta que estos no cubren todas nuestras necesidades. Hay dos casos que no están contemplados: la comunicación del módulo de análisis con el planificador, y la del planificador con el ejecutor. Ambos módulos se encuentran en la misma capa. Y, como dependen del conocimiento para funcionar, no podíamos moverlos a una capa superior para emplear las notificaciones.
+Como comentamos antes, nos inspiramos en los mecanismos de comunicación descritos por C2: las peticiones y notificaciones. Pero, durante nuestra etapa de prototipado, nos dimos cuenta de que estos no cubren todas nuestras necesidades. Hay dos casos que no están contemplados: la comunicación del módulo de análisis con el planificador, y la del planificador con el ejecutor. El problema estaba en que ambos componentes se encuentran en la misma capa. Como dependen del conocimiento para funcionar, no podíamos moverlos a una superior para emplear las notificaciones.
 
-Requeríamos por tanto de un tercer patrón de comunicación. Detectamos que este conector debería ser dirigido: los mensajes van dirigidos a un componente determinado. Además, como los elementos están en el mismo nivel, no queremos que se acoplen entre ellos. Surgió entonces la idea de utilizar las peticiones asíncronas, una combinación de los dos patrones existentes. A continuación lo presentamos junto al resto de patrones de comunicaciones que empleamos:
+Requeríamos entonces de un tercer patrón de comunicación. Detectamos que este debería de ser dirigido: los mensajes van destinados a un tipo de componente específico. Y, como los elementos están en el mismo nivel, no queremos que se acoplen entre ellos. Surgió entonces la idea de utilizar las peticiones asíncronas, una combinación de los dos patrones existentes. Lo presentamos a continuación junto al resto de patrones de comunicaciones que empleamos:
 
 \begin{itemize}
   \item \textbf{Peticiones síncronas}: Comunicaciones síncronas dirigidas a un servicio determinado. Un servicio contacta con otro con una petición o comando, y espera al resultado. Sólo están permitidas desde servicios de una capa más externa a un servicio en la capa interior adyacente.
 
   \item \textbf{Notificaciones}: Comunicaciones asíncronas no dirigidas. El servicio publica un evento que potencialmente recibirán todos los servicios en la capa externa adyacente. El cliente lo envía y continua su ejecución, sin esperar una respuesta.
 
-  \item \textbf{Peticiones asíncronas}: Comunicaciones asíncronas dirigidas a un servicio determinado. Ideal para solicitar peticiones de trabajo asíncronas: se envían y el destinatario lo procesará cuando pueda. El cliente continuará su ejecución, sin esperar respuesta.
-
-  Este mecanismo de comunicación solo está permitido entre elementos del mismo nivel. Para evitar el acoplamiento entre los componentes, deberemos buscar un conector que permita enviar el mensaje sin conocer específicamente al destinatario.
+  \item \textbf{Peticiones asíncronas}: Comunicaciones asíncronas dirigidas a un servicio determinado. Ideal para solicitar peticiones de trabajo asíncronas: se envían y el destinatario lo procesará cuando pueda. El cliente continuará su ejecución, sin esperar respuesta. Este mecanismo de comunicación solo está permitido entre elementos del mismo nivel.
 
 \end{itemize}
 
-
-\textcolor{red}{Figura \ref{fig:mape-k-microservices}: Añadir línea de divisón entre la capa del bucle y el dominio del recurso manejado. Eliminar la dependencia entre el monitor y el módulo de análisis. Borrar también los planificadores específicos y los ejeecutre especficios.d}
-
 \subsection{Conectores}
+
+\textcolor{red}{Figura \ref{fig:mape-k-microservices}: Añadir línea de divisón entre la capa del bucle y el dominio del recurso manejado. Eliminar la dependencia entre el monitor y el módulo de análisis. Borrar también los planificadores específicos y los ejeecutre especficios.}
 
 Una vez determinadas las necesidades de comunicación de nuestro sistema, debemos buscar los conectores adecuados. Seguimos la estrategia descrita en \cite{taylorSoftwareArchitectureFoundations2009} para elegir conectores; y nos basamos en los patrones de comunicación en sistemas distribuidos descritos en \cite{newmanBuildingMicroservicesDesigning2021}.
 
