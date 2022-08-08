@@ -44,22 +44,20 @@ En la figura \ref{fig:mape-k-microservices} mostramos la arquitectura resultante
 
 \section{Conectando los servicios}
 
-El siguiente problema al que nos enfrentamos está relacionado con la comunicación: si dividimos estos componentes en microservicios, ¿cómo deberían comunicarse? Hay que tener en cuenta que estos pueden estar desplegados y replicados en distintas máquinas. No podemos asumir que están en el mismo \foreign{english}{host}.
+El siguiente problema al que nos enfrentamos está relacionado con la comunicación. Si dividimos estos componentes en microservicios, ¿cómo deberían comunicarse? Hay que tener en cuenta que estos pueden estar desplegados y replicados en distintas máquinas. No podemos asumir que están en el mismo \foreign{english}{host}.
 
-Aprovechando la separación entre bucle de control y el dominio del recurso, investigamos arquitecturas existentes. Nos decantamos por \textbf{arquitecturas de servicios jerarquizados}. Queríamos explotar esta separación para mantener al bucle aislado del dominio de la solución. Dimos con el estilo arquitectónico C2 (\emph {components and connectors})\cite{taylorComponentMessagebasedArchitectural1996a, UCISoftwareArchitecture}, en el que nos hemos inspirado.
+Para elegir los mecanismos de comunicación, investigamos algunos de los estilos arquitectónicos existentes. Finalmente, nos decantamos por las \textbf{arquitecturas de servicios jerarquizados}. Estas nos permitían explotar la separación entre el bucle de control y los recursos manejados. En concreto, nos inspiramos en el estilo arquitectónico C2 (\emph {components and connectors})\cite{taylorComponentMessagebasedArchitectural1996a, UCISoftwareArchitecture}.
 
 \subsection{Jerarquías de microservicios: Arquitectura C2 y arquitectura limpia}
 
-Este estilo organiza sus componentes en jerarquías o capas: cada servicio se encuentra en un nivel determinado, según su nivel de abstracción respecto al entorno de ejecución. En las capas inferiores, se encuentran los servicios más externos, más ''acoplados''. Por ejemplo, aquellos servicios que requieran de acceder al sistema de ficheros, estarían en esta capa. Por otro lado, en las capas superiores se encuentran los servicios en niveles de abstracción superior, que dependen lo mínimo. \textcolor{red}{Buscar ejemplo representativo}
+Este estilo organiza sus elementos en jerarquías o capas. Un componente se ubicará en un nivel determinado en base a su nivel de abstracción respecto al entorno de ejecución. En las capas inferiores se encuentran aquellos más externos, los más ''acoplados al mundo real''. Por ejemplo, las interfaces de usuario estarían en esta capa. Por otro lado, en las capas superiores se encuentran los servicios con mayor abstracción. Este sería el caso de las reglas de negocio de un programa. No hay ninguna restricción en cuanto al número de capas. Podemos contar con cuantas sea necesario.
 
-\textcolor{red}{Figura \ref{fig:mape-k-microservices}: ¿Borrar los servicios específicos de planificador y ejecutor. Agrupar los servicios para poder aumentar zoom y hacerlo más legible. Añadir línea de divisón entre la capa del bucle y el dominio del recurso manejado. Eliminar la dependencia entre el monitor y el módulo de análisis. Borrar también los planificadores específicos y los ejeecutre especficios.d}
-
-En cuanto a la comunicación, un componente solo debe contactar con sus vecinos inmediatos (en una capa superior o inferior). Esto evita que el servicio pueda contactar con otras capas, limitando su alcance y su conocimiento sobre el resto del sistema. Además, dentro de un mismo nivel no pueden contactar entre ellos. Según la dirección de la comunicación, se emplean mecanismos distintos (figura \ref{fig:C2-arch-example}):
+En cuanto a la comunicación, un componente solo puede contactar con sus vecinos inmediatos (en una capa superior o inferior). Limitando su contacto con otras capas, limitamos su alcance y su conocimiento sobre el resto del sistema. Así evitamos que se acople al resto de componentes más de lo necesario. Además, dentro de un mismo nivel no pueden contactar entre ellos. Según la dirección de la comunicación, se emplean mecanismos distintos (figura \ref{fig:C2-arch-example}):
 
 \begin{itemize}
-  \item \textbf{Peticiones} (\emph{requests}): Se trata de solicitudes a un servicio concreto para que ejecute una acción. Un componente se comunica directamente con un vecino en una capa superior. La petición viaja de ''abajo a arriba'' en cuanto al nivel de abstracción. Por ejemplo, una petición de un cliente a un servicio web podría estar en esta categoría.
+  \item \textbf{Peticiones} (\emph{requests}): Se trata de solicitudes a un servicio concreto para que ejecute una acción. Un componente se comunica con un vecino en una capa superior. La petición viaja de ''abajo a arriba'' en cuanto al nivel de abstracción. Por ejemplo, una petición de un usuario a la interfaz gráfica entraría en esta categoría.
 
-  \item \textbf{Notificaciones}: Un componente de más arriba en la jerarquía (más interno) envía un mensaje hacia abajo, sin especificar un receptor. Todos los servicios que estén por debajo lo recibirán y decidirán si tratarlo o no. Esto evita que nuestro servicio se acople a aquellos más concretos. Se puede emplear para comunicar eventos de interés al resto de servicios. Un ejemplo sería notificar al resto de servicios sobre la creación de un nuevo usuario.
+  \item \textbf{Notificaciones}: Un componente envía un mensaje hacia abajo en la jerarquía, sin especificar un receptor. Todos los servicios que estén por debajo lo recibirán y decidirán si tratarlo o no. Esto evita que nuestro componente se acople a ellos. Se puede emplear para comunicar eventos que puedan ser de interés al resto. Un ejemplo sería notificar al resto de servicios sobre la creación de un nuevo usuario.
 \end{itemize}
 
 \begin{figure}[htb]
@@ -69,31 +67,31 @@ En cuanto a la comunicación, un componente solo debe contactar con sus vecinos 
   \label{fig:C2-arch-example}
 \end{figure}
 
-Basándonos en este estilo, definimos las capas de nuestro sistema. Esto nos permitió organizar los microservicios en jerarquías, lo que nos ayudaría a definir las reglas de nuestra arquitectura. Distinguimos cuatro niveles, de menor a mayor nivel de abstracción:
+Basándonos en este estilo definimos las capas de nuestro sistema. Esto nos permitió organizar los microservicios en jerarquías, lo que nos ayudaría a definir las reglas de nuestra arquitectura. Distinguimos cuatro niveles, de menor a mayor nivel de abstracción:
 
 \begin{itemize}
-  \item \textbf{Nivel del recurso manejado}: En este nivel se encuentra el recurso manejado. Este implementa las sondas y efectores, los elementos que nos permiten interactuar con él. Hacen de intermediarios entre este y el resto del bucle, para reducir su acoplamiento.
+  \item \textbf{Nivel del recurso manejado}: En este nivel se encuentra el recurso manejado. También se encuentran las sondas y efectores, los elementos que nos permiten interactuar con él. Hacen de intermediarios entre el recurso y el resto del bucle.
 
-  \item \textbf{Nivel de solución}: En esta capa se encuentran componentes del bucle específicos para una solución concreta: monitores, reglas de adaptación, etc. No los incluimos en el mismo nivel que las sondas y efectores porque están a un nivel de abstracción distinto. Estos elementos guardan dependencia con el propio bucle de control.
+  \item \textbf{Nivel de solución}: En esta capa se encuentran los componentes del bucle específicos para una solución autoadaptativa: monitores, reglas de adaptación, etc. No los incluimos en el mismo nivel que las sondas y efectores porque deben comunicarse con ellas. Estos elementos mantienen una dependencia con el propio bucle de control.
 
-  \item \textbf{Nivel del bucle}: Aquí se encuentran los servicios de las etapas del bucle: servicio de monitorización, análisis, planificación y ejecución. Esta capa es agnóstica al dominio de los recursos manejados. Además, actúa como intermediario entre los servicios de la solución y el conocimiento. Limitan cómo se accede a él.
+  \item \textbf{Nivel del bucle}: Aquí se encuentran los servicios de las etapas del bucle: monitorización, análisis, planificación y ejecución. Esta capa es agnóstica al dominio de los recursos manejados. Además, actúa como intermediario entre los servicios de la solución y el conocimiento, limitando su acceso. Por ejemplo, ningún servicio salvo los monitores deberían poder modificarlo.
 
-  \item \textbf{Conocimiento}: Es la capa más interna y la base de la arquitectura. No depende de ningún otro componente, por lo que tiene el mayor nivel de abstracción. Todos los componentes del nivel del bucle dependen de ella para funcionar.
+  \item \textbf{Conocimiento}: Es la capa más interna y la base de nuestra arquitectura. No depende de ningún otro componente, por lo que tiene el mayor nivel de abstracción. Todos los componentes del nivel del bucle dependen de ella para funcionar.
 
 \end{itemize}
 
 Habiendo definido esta jerarquía, vimos ciertas similitudes con arquitecturas \foreign{english}{domain driven}, como \foreign{english}{Clean Architecture}. \cite{martinChapter22Clean2018a} En ella, el sistema se organiza en base a una \textbf{regla de dependencia}: <<\emph{la dependencia entre los componentes solo puede apuntar hacia dentro, hacia políticas de alto nivel}>>. Es decir, la arquitectura se organiza en \textbf{capas concéntricas}. En el centro se encuentra el dominio, con el mayor nivel de abstracción. Este no tiene dependencias con ninguna capa exterior. Por otro lado, cada capa más externa tiene dependencias sólo con la capa a la que envuelve. Sólo puede comunicarse con componentes dentro de esta.
 
-Basándonos en la descripción anterior, optamos por representarla como una arquitectura \foreign{english}{knowledge driven} \cite{taylorSoftwareArchitectureFoundations2009}. Nuestra capa central será la del conocimiento. A partir de ahí, cada nivel superior dependería de aquella a la que ''envuelve'': el bucle al conocimiento, la solución al bucle\dots En la figura \ref{fig:clean-mapek-architecture} mostramos el resultado. Las flechas negras representan las peticiones, y las moradas, las notificaciones.
+Basándonos en la descripción anterior, optamos por representar nuestra arquitectura como si fuera \foreign{english}{knowledge driven} \cite{taylorSoftwareArchitectureFoundations2009}. Nuestra capa central será la del conocimiento (amarilla). A partir de ahí, cada nivel superior dependería de aquella a la que envuelve: el bucle al conocimiento (rojo), la solución al bucle (verde), y la del recurso manejado a la solución (azul). En la figura \ref{fig:clean-mapek-architecture} mostramos el resultado. Las flechas negras representan las peticiones; y las moradas, las notificaciones.
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.45]{cap_diseño/images/clean-arch-2-MAPEK-style-small}
+  \includegraphics[scale=0.45]{cap_diseño/images/jerarquia-componentes}
   \caption[Representación de nuestra propuesta arquitectónica. Inspirado en Arquitectura Limpia (\emph{Clean Architecture}).]{Representación de nuestra propuesta arquitectónica. Inspirado en Arquitectura Limpia (\emph{Clean Architecture}). \footnotemark }
   \label{fig:clean-mapek-architecture}
 \end{figure}
 
-\footnotetext{Imagen original de arquitectura limpia obtenida de: \url{https://threedots.tech/post/ddd-cqrs-clean-architecture-combined/}}
+\footnotetext{Basada en imágen de arquitectura limpia obtenida de: \url{https://threedots.tech/post/ddd-cqrs-clean-architecture-combined/}}
 
 \subsection{Definiendo los mecanismos de comunicación}
 
@@ -111,6 +109,9 @@ Requeríamos por tanto de un tercer patrón de comunicación. Detectamos que est
   Este mecanismo de comunicación solo está permitido entre elementos del mismo nivel. Para evitar el acoplamiento entre los componentes, deberemos buscar un conector que permita enviar el mensaje sin conocer específicamente al destinatario.
 
 \end{itemize}
+
+
+\textcolor{red}{Figura \ref{fig:mape-k-microservices}: Añadir línea de divisón entre la capa del bucle y el dominio del recurso manejado. Eliminar la dependencia entre el monitor y el módulo de análisis. Borrar también los planificadores específicos y los ejeecutre especficios.d}
 
 \subsection{Conectores}
 
