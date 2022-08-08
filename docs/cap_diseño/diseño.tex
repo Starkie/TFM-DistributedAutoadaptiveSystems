@@ -27,20 +27,18 @@ Otros aspectos que se verán afectados serán la \textbf{operación y el desplie
 
 Una vez elegido el estilo arquitectónico, el siguiente paso fue identificar qué servicios compondrían nuestra arquitectura. Por suerte, partíamos de un sistema existente bien documentado. Conocíamos el rol de cada uno de sus elementos y sus requisitos. Nos quedaba entonces determinar cómo agrupar estos elementos en servicios. ¿Cómo definimos las fronteras entre cada uno de ellos? ¿Qué componentes debe abarcar cada microservicio?
 
-Para ello nos guiaremos siguiendo unas pautas para dividir aplicaciones monolíticas. \cite{newmanBuildingMicroservicesDesigning2021} Los servicios que definamos deben presentar \textbf{alta cohesión} en su funcionalidad. Siempre que sea posible, debemos agrupar los componentes relacionados. De lo contrario, acabaríamos con servicios muy acoplados entre ellos. No serían realmente independientes y necesitarían comunicarse constantemente. En caso de que uno de ellos falle, el resto no podría operar con normalidad.
+Para ello nos guiaremos siguiendo unas pautas para dividir aplicaciones monolíticas. \cite{newmanBuildingMicroservicesDesigning2021} Los servicios que definamos deben presentar \textbf{alta cohesión} en su funcionalidad. Siempre que sea posible, debemos agrupar los componentes relacionados en un mismo servicio. De lo contrario, acabarían muy acoplados entre si. No serían realmente independientes y necesitarían comunicarse constantemente. En caso de que uno de ellos falle, el resto no podría operar con normalidad.
 
-Así, una de las primeras decisiones que tomamos fue \textbf{separar cada etapa del bucle con su propio servicio}. Entre ellas existe una división funcional bien definida y pueden operar con cierta independencia. Además, el conocimiento también tendría su propio microservicio. Esto nos reportaría los beneficios que comentamos en la sección anterior como la independencia en su implementación y la posibilidad de escalar su capacidad de cómputo individualmente.
+Por este motivo, una de las primeras decisiones que tomamos fue \textbf{separar cada etapa del bucle con su propio servicio}. Entre ellas existe una división funcional bien definida y pueden operar con cierta independencia. Además, como el conocimiento es compartido entre todas las etapas, también tendría su propio microservicio. Esto nos reportaría los beneficios que comentamos en la sección anterior como las implementaciones independientes y la posibilidad de escalar su capacidad de cómputo individualmente.
 
-La siguiente división de funcionalidad que consideramos fue separar los componentes específicos de las soluciones manejadas (figura \ref{fig:mape-k-microservices}). Actualmente el bucle queda acoplado a la lógica de los recursos manejados durante el despliegue. Todo corre bajo el mismo proceso: el bucle, los monitores, sus reglas de adaptación y demás elementos específicos de la solución. Ese proceso solo podrá manejar aquellos sistemas cuyos módulos tenga cargados. En caso de querer cambiarlos, tendríamos que redesplegar el proceso con los nuevos componentes.
+La siguiente división que consideramos fue \textbf{separar del bucle de control los componentes específicos de las soluciones manejadas}. Se trata de los monitores, reglas y demás elementos que conocen el dominio de la solución. Actualmente se despliegan en el mismo proceso que el bucle. En caso de querer cambiar alguno, tendríamos que redesplegarlo entero. Extrayéndolos a servicios independientes, el bucle se volverá agnóstico a las soluciones manejadas. En tiempo de ejecución podremos añadir o eliminar estos servicios, sin que afecte a su funcionamiento.
 
-\textcolor{red}{En cuanto a las sondas y efectores, dependerá de si tenemos control sobre el recurso manejado o no. Pueden implementarse como}
-
-En la figura \ref{fig:mape-k-microservices} mostramos los microservicios que componen nuestra arquitectura. En cuanto al despliegue, el bucle continuará desplegándose a nivel de sistema\cite{mendoncaGeneralityVsReusability2018}, como funcionaba hasta ahora. Es decir, se desplegará conjuntamente con los microservicios del recurso manejado.
+En la figura \ref{fig:mape-k-microservices} mostramos la arquitectura resultante de estas divisiones de funcionalidad. Cada elemento es un tipo distinto de microservicio. Las sondas y los efectores son un caso especial. Podrán desarrollarse como microservicios o como elementos empotrados en el recurso manejado. Dependerá de si tenemos control o no sobre la implementación del recurso.
 
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=0.5]{cap_diseño/images/componentes-segunda-division}
-  \caption{Diagrama con los componentes que forman nuestra arquitectura distribuida}
+  \caption{Diagrama con los microservicios que conforman nuestra arquitectura distribuida.}
   \label{fig:mape-k-microservices}
 \end{figure}
 
