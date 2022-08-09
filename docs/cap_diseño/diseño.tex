@@ -110,15 +110,13 @@ Requeríamos entonces de un tercer patrón de comunicación. Detectamos que este
 
 \subsection{Conectores}
 
-\textcolor{red}{Figura \ref{fig:mape-k-microservices}: Añadir línea de divisón entre la capa del bucle y el dominio del recurso manejado. Eliminar la dependencia entre el monitor y el módulo de análisis. Borrar también los planificadores específicos y los ejeecutre especficios.}
+Una vez determinados los mecanismos de comunicación, comenzamos la búsqueda de los conectores para implementarlos. Seguimos entonces la estrategia descrita en \cite{taylorSoftwareArchitectureFoundations2009}. Esta consiste en investigar las necesidades de comunicación entre componentes, y a partir de sus requisitos, determinar el \textbf{tipo de conector adecuado}. Sabiendo que hemos optado por una arquitectura distribuida, la elección se simplifica: los servicios pueden estar desplegados en máquinas distintas, por lo que el paso de mensajes será a través de la red.
 
-Una vez determinadas las necesidades de comunicación de nuestro sistema, debemos buscar los conectores adecuados. Seguimos la estrategia descrita en \cite{taylorSoftwareArchitectureFoundations2009} para elegir conectores; y nos basamos en los patrones de comunicación en sistemas distribuidos descritos en \cite{newmanBuildingMicroservicesDesigning2021}.
+Debido a esto, no recurrimos a la taxonomía que lista \cite{mehtaTaxonomySoftwareConnectors2000}. En su lugar optamos por consultar las estrategias de comunicación habituales para sistemas distribuidos descritas en \cite{newmanBuildingMicroservicesDesigning2021}. Se trata de cuatro mecanismos distintos: Invocación a métodos remotos (\foreign{english}{Remote Procedure Call}), APIs REST, consultas con GraphQL o \foreign{english}{brokers} de mensajería.
 
-La estrategia consiste en centrarse en las comunicaciones entre cada par de componentes, y a partir de sus requisitos, determinar el tipo de conector adecuado. Sabiendo que hemos optado por una arquitectura distribuida, la elección de los \textbf{tipos de conectores} se simplifica: los servicios pueden estar desplegados en máquinas distintas, por tanto el paso de mensajes será a través de la red.
+Todas estas tecnologías siguen el principio de \textbf{\foreign{english}{smart endpoints and dumb pipes}} (servicios inteligentes y conductos tontos) \cite{lewisMicroservices14}. Se trata de mecanismos de comunicación ligeros, como HTTP, sin mucha lógica asociada para regularla. Se limitan a ser simples conductos que transmiten los mensajes entre servicios. En su lugar, será el emisor será el responsable de gestionarla. Por ejemplo, implementando políticas de reintento o gestionando el enrutamiento de mensajes.
 
-Por ello, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonomySoftwareConnectors2000}, optamos por consultar las estrategias de comunicación habituales para sistemas distribuidos descritas en \cite{newmanBuildingMicroservicesDesigning2021}. Se trata de cuatro mecanismos distintos: Invocación a métodos remotos (\foreign{english}{Remote Procedure Call}), APIs REST, consultas con GraphQL o \foreign{english}{brokers} de mensajería. Tuvimos que evaluarlos mediante un análisis de \foreign{english}{trade-offs} para determinar las ventajas y desventajas de cada uno.
-
-\textcolor{red}{Hablar de smart endpoints, dumb pipes: \url{https://simplicable.com/new/smart-endpoints-and-dumb-pipes}}
+Para elegir los conectores evaluamos las tecnologías mediante un análisis de \foreign{english}{trade-offs}. A continuación detallamos las ventajas y desventajas que detectamos de cada uno.
 
 \subsubsection{Tipos de conectores}
 
