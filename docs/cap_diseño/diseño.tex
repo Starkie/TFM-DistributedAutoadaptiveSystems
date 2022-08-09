@@ -162,9 +162,11 @@ Los \foreign{english}{proxies} o (\foreign{english}{stubs} en la terminología d
   \end{itemize}
 \end{itemize}
 
-\textbf{\emph{Representational State Transfer} (REST)}: Se basa también en RPC, pero con ciertas restricciones adicionales. \cite{taylorSoftwareArchitectureFoundations2009} Su concepto principal son los \textbf{recursos}: cualquier elemento sobre el que el servicio pueda ofrecernos información; y que pueda tener asociado un identificador único (una URI). \cite{richardsonRESTfulWebServices2007} Por ejemplo, las entidades del dominio que gestiona nuestro servicio podrían ser recursos: usuarios, mediciones de temperaturas\dots
+\textbf{\emph{Representational State Transfer} (REST)}: Este mecanismo está basado en RPC, pero con ciertas restricciones adicionales. \cite{taylorSoftwareArchitectureFoundations2009} Sigue también el modelo cliente-servidor. Su concepto principal son los \textbf{recursos}: cualquier elemento sobre el que el servicio pueda ofrecernos información. Estos deben tener asociados un identificador único (una URI). \cite{richardsonRESTfulWebServices2007} Ejemplos de recursos podrían ser las entidades del dominio que gestiona nuestro servicio: usuarios, publicaciones\dots
 
-Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \dots) las define el protocolo de comunicación sobre el que se implemente. Gracias a esto, la interfaz que pueden exponer los servicios REST es común. Solo cambia el ``esquema de los datos``, los tipos de recursos que sirven a los clientes. Esto facilita enormemente la integración con otros servicios. \cite{nallyRESTVsRPC2018} La implementación más habitual es sobre el protocolo HTTP. Este define métodos estandarizados como \emph{GET} para las lecturas, \emph{PUT} para las actualizaciones, etc.
+Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \dots) las define el protocolo de comunicación sobre el que se implemente. Gracias a esto, la interfaz que ofrecen es \textbf{uniforme}. Solo cambia el ``esquema de los datos``, los tipos de recursos que sirven a los clientes. Esto facilita enormemente la integración con otros servicios. \cite{nallyRESTVsRPC2018} La implementación más habitual es sobre el protocolo HTTP (\foreign{english}{HyperText Transfer Protocol}). Este define métodos estandarizados como \texttt{GET} para las lecturas, \texttt{PUT} para las actualizaciones, etc.
+
+Otra de las pautas que dicta el estilo es que el servidor no puede mantener el estado de las sesiones de las aplicación (deben ser \textbf{\foreign{english}{stateless}}). Esto significa que cada petición debe poder procesarse de forma independiente. Esto permitirá por un lado que el servidor sea más eficiente, ya que no necesita recordar todos los datos de las sesiones en curso. Por otro lado, si nuestro servicio está replicado, cualquier instancia podrá atender la petición.
 
 \begin{itemize}
   \item \textbf{Ventajas}:
@@ -172,13 +174,11 @@ Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \
   \begin{itemize}
     \item \textbf{\foreign{english}{Stateless}}: El servidor no mantiene el estado de la sesión del cliente. Esto permite que cada petición sea independiente de las demás.
 
-    \item \textbf{Escalable}: Como las sesiones deben ser \foreign{english}{stateless}, podremos replicar nuestro servicio y que distintas instancias puedan atender las peticiones que surjan durante una misma sesión.
+    \item \textbf{Escalable}: Como las sesiones deben ser \foreign{english}{stateless}, podremos replicar nuestro servicio. Las distintas instancias puedan atender las peticiones que surjan durante una misma sesión.
 
-    \item \textbf{API Sencilla}: Los métodos que exponen estos servicios están estandarizados y son sencillos. Un servidor solo debe implementar unos pocos métodos estándar que consumirán los clientes.
+    \item \textbf{API Uniforme}: Los métodos que exponen estos servicios están estandarizados y son sencillos. Un servidor solo debe implementar unos pocos métodos estándar que consumirán los clientes. Esto mejora significativamente la \textbf{interoperabilidad}.
 
-    \item \textbf{Interoperabilidad}: Ampliamente utilizado en servicios de Internet. Es ideal para que clientes externos contacten con nuestro sistema mediante peticiones síncronas. \cite{newmanBuildingMicroservicesDesigning2021}
-
-    \item \textbf{Comunicación síncrona}: Es el mecanismo ideal para comunicaciones síncronas. En ellas, el cliente requiere la respuesta del servicio para poder continuar con su procesamiento. Aunque también podemos dar soporte a comunicaciones \foreign{english}{fire and forget}: el cliente envía un mensaje y no espera ninguna respuesta a su petición.
+    \item \textbf{Comunicación síncrona}: Es un mecanismo ideal para el patrón \foreign{english}{request-response}. En ellas, el cliente requiere la respuesta del servicio para poder continuar con su procesamiento.
 
     \item \textbf{Generación de clientes}: De forma similar a RPC, podemos generar clientes para facilitar la comunicación con APIs REST. Lo explicaremos con más detalle en la sección \ref{chap:OpenAPI} cuando hablemos de OpenAPI.
   \end{itemize}
@@ -190,7 +190,7 @@ Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \
 
     \item \textbf{Rendimiento}: El rendimiento es peor comparado con mecanismos RPC binarios. El tamaño de un mensaje HTTP serializado en XML o JSON es mayor que si estuviera en un formato binario.
 
-    \item \textbf{API Sencilla}: También es una desventaja. Hay operaciones complejas que pueden ser difíciles de representar con los métodos ofrecidos por el protocolo de comunicación. Pueden requerir más tiempo de diseño, o incluso, ser implementados como métodos RPC (que no siguen REST).
+    \item \textbf{API Uniforme}: Hay operaciones complejas que pueden ser difíciles de representar con los métodos ofrecidos por el protocolo de comunicación. Pueden requerir más tiempo de diseño, o incluso, ser implementados como métodos RPC (que no siguen el estilo REST).
   \end{itemize}
 \end{itemize}
 
