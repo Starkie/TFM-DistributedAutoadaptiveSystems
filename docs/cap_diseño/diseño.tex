@@ -120,27 +120,31 @@ Para elegir los conectores evaluamos las tecnologías mediante un análisis de \
 
 \subsubsection{Tipos de conectores}
 
-\textbf{Invocación de métodos remotos} o (\foreign{english}{\textbf{Remote Procedure Call}}): Este patrón se basa en el estilo cliente-servidor. Un servidor expone una serie de funciones que el cliente puede invocar mediante peticiones a través de la red. Estas peticiones incluyen el nombre de la función a ejecutar y sus parámetros. Al finalizar la ejecución, el servidor puede devolver un resultado, si lo hubiera. Existen varios protocolos que implementan este mecanismo como gRPC o SOAP.
+\textbf{Invocación de métodos remotos} o (\foreign{english}{\textbf{Remote Procedure Call}}): Este patrón se basa en el estilo cliente-servidor. Un servidor expone una serie de funciones que el cliente puede invocar mediante peticiones a través de la red. \cite{newmanBuildingMicroservicesDesigning2021} Estas peticiones incluyen el nombre de la función a ejecutar y sus parámetros. Al finalizar la ejecución, el servidor puede devolver un resultado, si lo hubiera. Existen varios protocolos que implementan este mecanismo como gRPC o SOAP.
 
-En la programación orientada a objetos suele emplearse una evolución de RPC: el paradigma de \textbf{objetos distribuidos}. \cite{tanenbaumChapter10Distributed2007} En este caso, el programa cliente puede interactuar con objetos que se encuentran en servidores remotos como si fueran locales. Esta interacción se realiza a través de objetos que actúan como \foreign{english}{proxies}, abstrayendo de la llamada al servidor.
+En la programación orientada a objetos suele emplearse una evolución de RPC: el paradigma de \textbf{objetos distribuidos}. \cite{tanenbaumChapter10Distributed2007} Este permite al programa cliente interactuar con objetos que se encuentran en servidores remotos como si se encontraran localmente. Se implementa mediante objetos que actúan como \foreign{english}{proxies}, abstrayendo al cliente de la llamada al servidor.
 
-Los \foreign{english}{proxies} ofrecen una interfaz para que el cliente invoque sus métodos localmente. Por debajo, estos métodos realizan una llamada al servicio remoto donde se encuentra realmente. El servidor remoto procesa la petición y nos devolverá un resultado. En la figura \ref{fig:rpc-distributedobjects} tenemos un esquema de este mecanismo.
+Los \foreign{english}{proxies} ofrecen una interfaz para que el cliente invoque sus métodos localmente. Por debajo, estos realizan una llamada al servicio remoto donde se encuentra realmente. El servidor remoto procesa la petición y nos devolverá un resultado. En la figura \ref{fig:rpc-distributedobjects} incluimos un diagrama de este mecanismo.
 
 Los \foreign{english}{proxies} o (\foreign{english}{stubs} en la terminología de RPC) suelen generarse a partir de un contrato que define qué operaciones ofrecen los objetos. Por ejemplo: SOAP con WDSL, gRPC; o en el caso de objetos distribuidos, Java RMI.
 
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=1.5]{cap_diseño/images/rpc-distributedobjects}
-  \caption[Funcionamiento del sistema de objetos distribuidos.]{Funcionamiento del sistema de objetos distribuidos. Obtenido de \cite{tanenbaumChapter10Distributed2007}}
+  \caption[Funcionamiento del sistema de objetos distribuidos.]{Funcionamiento del sistema de objetos distribuidos. Obtenido de \cite{tanenbaumChapter10Distributed2007}.}
   \label{fig:rpc-distributedobjects}
 \end{figure}
 
 \begin{itemize}
   \item \textbf{Ventajas}:
   \begin{itemize}
+    \item El servidor puede ofrecer todo tipo de operaciones a sus clientes. No estamos limitados por un estándar.
+
     \item Permite distribuir la carga de procesamiento del sistema. Esto puede ayudar para escalar la aplicación.
 
-    \item Abstrae al cliente de la interacción con un servidor remoto. Le resulta prácticamente indistinguible de un objeto local. Esto facilita la implementación.
+    \item \textbf{Comunicación síncrona}: Es un mecanismo ideal para comunicaciones síncronas. En ellas, el cliente requiere la respuesta del servicio para poder continuar con su procesamiento.
+
+    \item (\emph{Objetos distribuidos}) Se abstrae al cliente de la interacción con un servidor remoto. Esto facilita su implementación. Al estar tipado, es más sencillo construir las peticiones.
 
   \end{itemize}
 
@@ -148,13 +152,13 @@ Los \foreign{english}{proxies} o (\foreign{english}{stubs} en la terminología d
   \begin{itemize}
     \item \textbf{Dirigida}: Necesitamos conocer de antemano la ubicación del servidor al que queremos hacer una petición.
 
-    \item Dificulta la integración con otras aplicaciones. Cada servicio ofrece sus propias funciones. No están estandarizadas.
+    \item Dificulta la integración con otras aplicaciones. Cada servicio ofrecerá sus propias funciones. No están estandarizadas.
 
-    \item El cliente debe actualizarse y recompilarse con cada cambio en el esquema del servidor. Esto puede ser problemático para casos donde tenemos que desplegar una actualización para que nuestros clientes puedan continuar utilizando la aplicación.
+    \item (\emph{Objetos distribuidos}) Tendremos que actualizar el cliente con cada cambio en el esquema del servidor.
 
-    \item Respecto a los objetos distribuidos, no se puede abstraer completamente al cliente de las llamadas a través de la red. Pueden darse errores que no ocurrirían durante una invocación de un método sobre un objeto local. Por ejemplo, que el servidor no esté disponible. \cite{jausovecFallaciesDistributedSystems2020}
+    \item (\emph{Objetos distribuidos}) No se puede abstraer completamente al cliente de las llamadas a través de la red. Pueden darse errores que no ocurrirían durante una invocación de un método sobre un objeto local. Por ejemplo, que el servidor no esté disponible. \cite{jausovecFallaciesDistributedSystems2020}
 
-    \item \textcolor{red}{Si adoptamos sistemas como Java RMI, nuestro sistema se acopla a esa tecnología concreta. \cite{newmanBuildingMicroservicesDesigning2021}. Nos quita flexibilidad en cuanto a qué otras tecnologías podemos emplear en nuestra arquitectura.} ¿A Java o a Java RMI?
+    \item (\emph{Objetos distribuidos}) Sistemas como Java RMI son específicos para una plataforma concreta. n este caso, Java. Perderemos flexibilidad en cuanto a qué otras tecnologías podemos emplear en nuestra arquitectura. \cite{newmanBuildingMicroservicesDesigning2021}
   \end{itemize}
 \end{itemize}
 
