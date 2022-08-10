@@ -194,29 +194,36 @@ Otra de las pautas que dicta el estilo es que el servidor no puede mantener el e
   \end{itemize}
 \end{itemize}
 
-\textbf{GraphQL}\footnote{Página oficial: \url{https://graphql.org/}} \textcolor{red}{AMPLIAR}: Se trata de un protocolo para consultas de datos. Permite a los clientes ejecutar consultas personalizadas sobre los datos de un servidor. No se requiere de lógica específica para ejecutarla. De esta forma, el cliente puede obtener toda la información que necesita. Así se puede reducir el número de peticiones ejecutadas. También evita traerse datos innecesarios.
+\textbf{GraphQL}\footnote{Página oficial: \url{https://graphql.org/}}: Es protocolo de consultas para APIs. Sigue también el estilo cliente - servidor. El servidor expone un \foreign{english}{endpoint} que permite consultar los datos de la aplicación en forma de \textbf{grafo}. Cada \textbf{nodo} tiene asociado un \textbf{esquema de datos}. Este describe sus propiedades y relaciones con otros. Partiendo de un esquema determinado, podemos realizar consultas que naveguen este grafo. También permite el uso de filtros.
+
+Dota de enorme \textbf{flexibilidad} a los clientes. Con una sola consulta son capaces de recuperar toda la información que consideren relevante. Se evita el \textbf{\foreign{english}{over-fetching}}, recuperar datos irrelevantes. \cite{porcelloLearningGraphQLDeclarative2021} Esto ha provocado que empiece a ganar popularidad frente al estilo REST para realizar consultas complejas. \cite{britoRESTVsGraphQL2020} En REST, estamos limitados a los esquemas de datos de las vistas que ofrezca un recurso. No podemos modificarlos mediante consultas. Incluso, es posible que requiramos de varias llamadas distintas a la API para construir la misma respuesta que en GraphQL.
+
+\textcolor{red}{¿Sería necesario añadir ejemplos de las queries y los resultados que devuelven? Lo mismo para el resto de apartados}
 
 \begin{itemize}
   \item \textbf{Ventajas}:
 
   \begin{itemize}
-    \item \textbf{Ideal para móviles}: Gracias a que reduce la cantidad de llamadas, es ideal para entornos donde queremos optimizar el uso de red.
+    \item \textbf{Consultas más expresivas}: Nos permite definir consultas tan complejas como necesitemos.
 
-    \item \textbf{Rendimiento}: Ofrece un mayor rendimiento comparado con otras alternativas que no ofrezcan un endpoint ya implementado. Y debamos obtener la misma información por composición, haciendo varias llamadas.
+    \item \textbf{Rendimiento}: Es ideal para entornos donde queremos optimizar el uso de red. Esto es gracias a que se reduce la cantidad de llamadas a la API y podemos obtener solo la información relevante.
+
+    \begin{itemize}
+      \item Esto lo hace \textbf{ideal para móviles}.
+    \end{itemize}
+
   \end{itemize}
 
   \item \textbf{Desventajas}:
 
   \begin{itemize}
-    \item \textbf{Solo permite lecturas}: Es un lenguaje de consultas. No tiene comandos que permita escrituras.
+    \item \textbf{Solo permite lecturas}: Es un lenguaje de consultas. No tiene comandos que permitan escrituras.
 
-    \item \textbf{Exponemos datos a la red}: \textcolor{red}{Se expone todos los datos a la red. Toda la información estará accesible para los clientes con permisos para acceder al EP.}
-
-    \item \textbf{Problemas de rendimiento}: El cliente puede hacer consultas muy pesadas que penalicen el rendimiento de la base de datos sobre la que opera nuestro servicio.
+    \item \textbf{Problemas de rendimiento}: Los clientes pueden hacer consultas muy pesadas que penalicen el rendimiento de la base de datos sobre la que opera nuestro servicio.
   \end{itemize}
 \end{itemize}
 
-\textbf{\foreign{english}{Brokers} de mensajería}: Es un mecanismo de \textbf{comunicación asíncrona} muy popular. Sobre todo en arquitecturas basadas en eventos. Contamos con un servicio, el \foreign{english}{broker}, que actúa como intermediario. Gestiona la comunicación entre los servicios del sistema. \cite{newmanBuildingMicroservicesDesigning2021} Existen varias estrategias de comunicación posibles: colas de trabajo, \foreign{english}{publish-suscribe}, híbrida\dots
+\textbf{\foreign{english}{Brokers} de mensajería}: Es un mecanismo de \textbf{comunicación asíncrona} muy popular. Contamos con un servicio que actúa como intermediario en la comunicación, el \textbf{\foreign{english}{broker}}. \cite{newmanBuildingMicroservicesDesigning2021} Existen varias estrategias de comunicación posibles: colas de trabajo, \foreign{english}{publish-suscribe}, híbrida\dots
 
 Tomemos por ejemplo las \textbf{colas de trabajo}. \cite{royChapterMessagePatterns2017} Es una estrategia para implementar comunicaciones asíncronas dirigidas. Nos permiten desacoplar la comunicación entre componentes usando colas de mensajería como intermediarias. Para ello, un servicio, el productor, publica mensajes en la cola. Estos mensajes representan peticiones de trabajo que pueden ser costosas de procesar. Un servicio, el trabajador, estará la escucha de los mensajes que llegan y los irá consumiendo. Estos mensajes se procesan siguiendo un orden FIFO (\foreign{english}{first in, first out}). En la figura \ref{fig:work-queues} mostramos un ejemplo con dos consumidores (C1 y C2) a la escucha de la misma cola.
 
