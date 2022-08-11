@@ -144,6 +144,8 @@ Los \foreign{english}{proxies} o (\foreign{english}{stubs} en la terminología d
 
     \item \textbf{Comunicación síncrona}: Es un mecanismo ideal para comunicaciones síncronas. En ellas, el cliente requiere la respuesta del servicio para poder continuar con su procesamiento.
 
+    \item \textbf{Comunicación asíncrona}: Si el cliente no requiere de una respuesta del servidor, puede enviar el mensaje y continuar con su ejecución. Esta estrategia es conocida como \foreign{english}{fire and forget} (disparar y olvidar).
+
     \item (\emph{Objetos distribuidos}) Se abstrae al cliente de la interacción con un servidor remoto. Esto facilita su implementación. Al estar tipado, es más sencillo construir las peticiones.
 
   \end{itemize}
@@ -223,9 +225,11 @@ Dota de enorme \textbf{flexibilidad} a los clientes. Con una sola consulta son c
   \end{itemize}
 \end{itemize}
 
-\textbf{\foreign{english}{Brokers} de mensajería}: Es un mecanismo de \textbf{comunicación asíncrona} muy popular. Contamos con un servicio que actúa como intermediario en la comunicación, el \textbf{\foreign{english}{broker}}. \cite{newmanBuildingMicroservicesDesigning2021} Existen varias estrategias de comunicación posibles: colas de trabajo, \foreign{english}{publish-suscribe}, híbrida\dots
+\textbf{\foreign{english}{Brokers} de mensajería}: Es un mecanismo de \textbf{comunicación asíncrona} muy popular. En él, contamos con un servicio que actúa como intermediario de la comunicación, el \textbf{\foreign{english}{broker}}. \cite{newmanBuildingMicroservicesDesigning2021} Esto nos permite \textbf{desacoplar} a los participantes. \cite{korabUnderstandingMessageBrokers2017} El emisor de un mensaje no necesita conocer detalles de los destinatarios: su dirección, el número de instancias, si están activos en este momento, etc. Sólo necesita conocer el formato del mensaje, las colas o temas asociados; y enviárselo al \foreign{english}{broker}. Este se encargará de enrutarlo.
 
-Tomemos por ejemplo las \textbf{colas de trabajo}. \cite{royChapterMessagePatterns2017} Es una estrategia para implementar comunicaciones asíncronas dirigidas. Nos permiten desacoplar la comunicación entre componentes usando colas de mensajería como intermediarias. Para ello, un servicio, el productor, publica mensajes en la cola. Estos mensajes representan peticiones de trabajo que pueden ser costosas de procesar. Un servicio, el trabajador, estará la escucha de los mensajes que llegan y los irá consumiendo. Estos mensajes se procesan siguiendo un orden FIFO (\foreign{english}{first in, first out}). En la figura \ref{fig:work-queues} mostramos un ejemplo con dos consumidores (C1 y C2) a la escucha de la misma cola.
+Uno de los conceptos más característicos de este estilo son las \textbf{colas de mensajería}. Se trata de colecciones FIFO (\foreign{english}{first in, first out}) donde el \foreign{english}{broker} almacena los mensajes destinados a un servicio \textbf{consumidor}. Cada vez que se añada un mensaje nuevo, el consumidor será notificado. Este podrá ir procesándolos secuencialmente, sin necesidad de saturarse. Las colas nos permiten implementar varias estrategias de comunicación: colas de trabajo, \foreign{english}{publish-suscribe}, híbrida\dots
+
+Tomemos por ejemplo las \textbf{colas de trabajo}. \cite{royChapterMessagePatterns2017} Esta estrategia nos permite implementar comunicaciones asíncronas punto a punto (dirigidas). Es ideal para casos en los que necesitamos que un mensaje llegue sólo una vez a un destinatario determinado. \cite{ibmWhatAreMessage2020} Por ejemplo, para enviar peticiones de trabajo que pueden ser costosas de procesar. Para enviarlas, el emisor sólo necesita conocer el nombre de la cola de mensajería correspondiente y usar el formato de mensaje apropiado. No requiere conocer ningún otro detalle. En la figura \ref{fig:work-queues} mostramos un ejemplo con un productor (P) que envía el mensaje a una cola con dos consumidores (C1 y C2) a la escucha de esta.
 
 \begin{figure}[htb]
   \centering
@@ -236,10 +240,7 @@ Tomemos por ejemplo las \textbf{colas de trabajo}. \cite{royChapterMessagePatter
 
 \footnotetext{Imagen obtenida de: \url{https://www.rabbitmq.com/tutorials/tutorial-two-dotnet.html}}
 
-Otra estrategia posible es \foreign{english}{publish-suscribe}: sirve para implementar comunicación \foreign{english}{multicast}. Se basa en el uso de \textbf{temas} o \textbf{\foreign{english}{topics}}: categorías de mensajes que pueden resultar de interés. Un servicio (el productor) envía un mensaje al \foreign{english}{broker}, indicando que pertenece a un tema determinado. El \foreign{english}{broker} recibe el mensaje y se encarga de reenviarlo a todos los servicios suscritos a este tema en concreto. \cite{rabbitmqPublishSubscribeDocumentation} En la figura \ref{fig:publish-subscribe} tenemos un ejemplo. El mensaje ''A'' llega a todos los servicios suscritos a al tema ''Topic''.
-
-\textcolor{red}{Describir fanout}
-\textcolor{red}{Describir exchanges}
+Otra estrategia que podemos implementar es \textbf{\foreign{english}{publish-suscribe}}. Esta sirve para implementar comunicación \foreign{english}{multicast}. \cite{royChapterMessagePatterns2017} Se basa en el uso de temas o \textbf{\foreign{english}{topics}}, categorías de mensajes. En base a ellas, los servicios consumidores pueden suscribirse a las que le resulten de interés. Un servicio (el productor) enviará un mensaje al \foreign{english}{broker}, indicando que pertenece a un tema determinado. El \foreign{english}{broker} recibe el mensaje y se encarga de enrutarlo a las colas de todos los consumidores suscritos a él. \cite{rabbitmqPublishSubscribeDocumentation} En la figura \ref{fig:publish-subscribe} tenemos un ejemplo. El mensaje ''A'' llega a todos los servicios suscritos a al tema ''Topic''.
 
 \begin{figure}[htb]
   \centering
@@ -250,14 +251,13 @@ Otra estrategia posible es \foreign{english}{publish-suscribe}: sirve para imple
 
 \footnotetext{Java Messaging Service: \url{https://docs.oracle.com/cd/E19509-01/820-5892/ref_jms/index.html}}
 
-La mayor ventaja de este estilo de comunicación es el \textbf{desacoplamiento} entre los servicios. \cite{korabUnderstandingMessageBrokers2017}
-Ninguno de ellos necesita conocer detalles sobre cómo están desplegado los otros: su dirección, el número de instancias, si están activos en este momento, etc. Para enviar o recibir mensajes solo necesitan conocer su formato, las colas o temas y la dirección del \foreign{english}{broker}.
-
 \begin{itemize}
   \item \textbf{Ventajas}:
 
   \begin{itemize}
-    \item \textbf{Comunicación asíncrona}: El servicio no necesita quedarse a la espera de una respuesta del servidor. Puede procesar otras operaciones hasta que se le notifique del resultado, si lo hubiera.
+    \item \textbf{Comunicación asíncrona}: El servicio no necesita quedarse a la espera de una respuesta del servidor. Puede procesar otras operaciones hasta que se le notifique del resultado, si lo hubiera. Por otro lado, el consumidor puede ir procesándolas a su ritmo.
+
+    \item \textbf{Escalable}: Varias instancias del mismo servicio pueden estar a la escucha de la misma cola. De esta forma, podemos aumentar la capacidad de cómputo de forma transparente a los emisores.
 
     \item \textbf{Desacoplamiento de los servicios}: Ni los productores ni los consumidores necesitan conocer el origen o destino de sus mensajes. Solo su formato, las colas o temas y la dirección del \foreign{english}{broker}.
 
@@ -270,27 +270,27 @@ Ninguno de ellos necesita conocer detalles sobre cómo están desplegado los otr
   \begin{itemize}
     \item \textbf{Requisitos de infraestructura}: Utilizar un \foreign{english}{broker} de mensajería puede incrementar la dificultad de nuestros despliegues. Este puede convertirse en un punto de fallo único. Para operar de forma fiable, estos sistemas requieren de replicación. \cite{newmanBuildingMicroservicesDesigning2021}
 
-    \item \textbf{Envío garantizado de mensajes}: Para poder garantizar el envío de un mensaje, el \foreign{english}{broker} puede recurrir a reenviarlo. Debemos diseñar nuestros sistemas de forma que estos mensajes duplicados sean descartados si ya han sido procesados.
+    \item \textbf{Desacoplamiento de componentes}: Debido al alto nivel de desacoplamiento, puede resultar difícil detectar cuando el consumidor no está recibiendo los mensajes. Por ejemplo, si el emisor los está publicando en una cola equivocada. Los mensajes se acumularían en esta cola errónea y el consumidor real no recibiría nada.
+
+    \item \textbf{Envío garantizado de mensajes}: Si se reintenta el envío del mensaje, es posible que ya lo hayamos consumido. Debemos diseñar nuestros sistemas de forma que estos mensajes duplicados sean descartados si ya han sido procesados.
   \end{itemize}
 \end{itemize}
 
 En la tabla \ref{tab:comparativa-mecanismos-comunicacion} presentamos un resumen de esta comparativa:
 
-\textcolor{red}{Añadir la cardinalidad de los conectores}
-
-\begin{longtable}{|p{4.4cm} | c | c | c | c|}
+\begin{longtable}{|>{\centering}p{0.28\linewidth} | >{\centering}p{0.1\linewidth} | >{\centering}p{0.1\linewidth} | >{\centering}p{0.12\linewidth} | >{\centering\arraybackslash}p{0.25\linewidth} |}
   \hline
   & \textbf{RPC} & \textbf{REST} & \textbf{GraphQL} & \textbf{Broker mensajería} \\
   \hline
-  \textbf{Tipo de comunicación entre componentes} & Dirigida & Dirigida & Dirigida & Dirigida y \foreign{english}{Multicast} \\
+  \textbf{Tipo de comunicación y cardinalidad} & Dirigida (1..1) & Dirigida (1..1) & Dirigida (1..1) & Dirigida (1..1) y \foreign{english}{Multicast} (1..N) \\
   \hline
   \textbf{Acoplamiento entre componentes} & Alto & Medio & Alto & Bajo \\
   \hline
   \textbf{Interoperabilidad} & Baja & Alta & Alta & Alta\footnotemark \\
   \hline
-  \textbf{Comandos de lectura} & Sí & Sí & Sí & Sí\footnotemark \\
+  \textbf{Peticiones de lectura} & Sí & Sí & Sí & Sí\footnotemark \\
   \hline
-  \textbf{Comandos de escritura} & Si & Sí & No & Sí \\
+  \textbf{Peticiones de escritura} & Si & Sí & No & Sí \\
   \hline
   \textbf{Comunicación síncrona} & Sí & Sí & Sí & No \\
   \hline
