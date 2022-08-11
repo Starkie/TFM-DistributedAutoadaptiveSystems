@@ -159,6 +159,7 @@
 \RequirePackage[within=chapter]{newfloat}
 
 \RequirePackage{longtable}
+\RequirePackage{array}
 
 \DeclareFloatingEnvironment[fileext=loa,
      listname=\listalgorithmname,name=\algorithmname]{algorithm}
