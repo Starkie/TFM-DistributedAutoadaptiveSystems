@@ -4,6 +4,12 @@
 
 Una vez descrito el diseño del sistema, llegamos a la etapa de implementación. Uno de los objetivos del trabajo era verificar que la arquitectura elegida era viable. Para ello, optamos por implementar un sistema autoadaptativo muy básico. Tanto el diseño como la implementación se desarrollaron de forma incremental. Gracias a esto, el diseño fue evolucionando según detectábamos nuevas necesidades o problemas que no resolvía nuestra arquitectura.
 
+Por otro lado, el bucle MAPE-K original está desarrollado en Java. Pero, el prototipo que se desarrolló en este trabajo, fue implementado lenguaje C\# usando el \foreign{english}{framework} ASP.NET Core. Se tomó esta decisión para reducir el tiempo de aprendizaje y centrar los esfuerzos en la definición de la arquitectura del sistema.
+
+Gracias a la generación de código, se podría obtener la especificación del prototipo y generar los clientes o servidores en cualquier lenguaje soportado. Java incluido. El bucle MAPE-K original después podría ser refactorizado usando este código autogenerado.
+
+\textcolor{red}{Implementación: Al ser FAdA un sistema tan grande y en continuo desarrollo, vamos a optar por implementar una versión reducida de su funcionalidad en lugar de aplicarlo directamente sobre la plataforma. Nos basaremos en las interfaces de la funcionalidad clave del bucle y dxrlos manejadores adaptive ready. Así podemos verificar sobre un prototipo si los patrones de comunicación elegidos son los adecuados. Esto nos permite reducir el alcance del proyecto.}
+
 En este capitulo describiremos la implementación de los microservicios del nivel de conocimiento de conocimiento y del bucle. Dejaremos para más adelante, en el capitulo \ref{chap:caso_estudio}, la descripción de la implementación del nivel de solución y sistema manejado. En este capitulo ofrecemos una vista más concreta de la implementación, y las tecnologías empleadas. En el otro describiremos cómo encaja todo a nivel general y veremos cómo opera.
 
 La implementación se llevo a cabo en 4 hitos distintos, cada uno correspondiente a una etapa distinta del bucle:
@@ -46,6 +52,143 @@ El módulo del conocimiento es un servicio muy sencillo. Ofrece operaciones de l
 Por encima de este, tenemos el servicio de monitorización. En nuestra implementación, actúa como intermediario entre los monitores de la solución y el conocimiento. También se trata de un servicio sencillo. Ofrece operaciones útiles para los monitores de la solución: lectura de propiedades del conocimiento y otras para que los monitores reporten sus mediciones. De esta forma, los monitores de solución podrán informarse a partir del conocimiento para determinar si una medición es válida o no.
 
 \textcolor{red}{¿Añadir ejemplos de código? ¿Describir los componentes implementados? ¿Debería unificarse con el capítulo de implementación del caso de estudio?}
+
+
+A continuación explicaremos cómo utilizamos OpenAPI. Para ello, continuaremos con el ejemplo del servicio de conocimiento que hemos descrito a lo largo de esta sección. Nos centraremos en la implementación de la operación para obtener una propiedad del conocimiento, descrita en la tabla \ref{tab:especificacion-get-property}.
+
+En el \textcolor{red}{fragmento} \ref{ls:csharp-get} podemos observar que se trata de un método C\# llamado \emph{GetProperty}. Su implementación es sencilla: busca en un diccionario la propiedad cuyo nombre se le pasa por parámetro. Si la encuentra, devuelve su valor con un código 200 OK. En caso contrario, devuelve un código de error que describe el motivo (formato de la petición incorrecto o no se ha encontrado la propiedad).
+
+Aparte de la implementación, podemos comprobar que el método cuenta con una serie de comentarios (líneas 1-8) y atributos (10-12). Esta documentación describe qué hace el método, sus entradas y posibles respuestas. OpenAPI es capaz de utilizarlos para generar una especificación más completa. Por tanto, resulta muy recomendable incluirlos.
+
+\begin{lstlisting}[language={[Sharp]C},caption={Implementación del método GetProperty decorado para generar la especificación OpenAPI.},captionpos=b, label=ls:csharp-get]
+/// <summary>
+///    Gets a property given its name.
+/// </summary>
+/// <param name="propertyName"> The name of the property to find. </param>
+/// <returns> An IActionResult with result of the query. </returns>
+/// <response code="200"> The property was found. Returns the value of the property. </response>
+/// <response code="404"> The property was not found. </response>
+/// <response code="400"> There was an error with the provided arguments. </response>
+[HttpGet("{propertyName}")]
+[ProducesResponseType(typeof(PropertyDTO), StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status404NotFound)]
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
+public IActionResult GetProperty([FromRoute]string propertyName)
+{
+    if (string.IsNullOrEmpty(propertyName))
+    {
+        return BadRequest();
+    }
+
+    bool foundProperty = properties.TryGetValue(propertyName, out PropertyDTO property);
+
+    if (!foundProperty)
+    {
+        return NotFound();
+    }
+
+    return Ok(property);
+}
+\end{lstlisting}
+
+Haciendo uso de las librerías de OpenAPI, generamos la especificación a partir del servicio de conocimiento. En el \textcolor{red}{fragmento} \ref{ls:openapi-get}, podemos ver cómo se describe la operación en este estándar:
+
+\begin{lstlisting}[language=python,caption={Especificación OpenAPI del método para obtener una propiedad del conocimiento (\lstinline{GetProperty}).},captionpos=b, label=ls:openapi-get]
+"paths": {
+  "/Property/{propertyName}": {
+    "get": {
+      "tags": [
+        "Property"
+      ],
+      "summary": "Gets a property given its name.",
+      "parameters": [
+        {
+          "name": "propertyName",
+          "in": "path",
+          "description": "The name of the property to find.",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The property was found. Returns the value of the property.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PropertyDTO"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "The property was not found.",
+        },
+        "400": {
+          "description": "There was an error with the provided arguments.",
+        }
+      }
+    }
+  }
+\end{lstlisting}
+
+Podemos apreciar que en la ruta \emph{/Property/\{propertyName\}} está disponible una operación de tipo \emph{GET}. Esta acepta determinados parámetros y describe unas posibles respuestas. También aparece una referencia a otro esquema (línea 25), que representa la estructura de la respuesta en ese caso concreto. También aparecen los comentarios opcionales que indicamos en el \textcolor{red}{fragmento} \ref{ls:csharp-get}. Encontramos grandes similitudes con la especificación presentada en la tabla \ref{tab:especificacion-get-property}.
+
+%% TODO: ¿Eliminar?
+\textcolor{red}{Los convenios de los generadores de código de OpenAPI pueden no ser de nuestro agrado. Por ejemplo, pueden resultar muy verbosos o puede resultar muy pesado trabajar con DTOs directamente. Por suerte, tenemos varias alternativas para solucionarlo: Modificar las plantillas de generación de código. Al ser de código abierto, podríamos modificar las existentes o crear nuestras propias plantillas con nuestros propios convenios.}
+
+\textcolor{red}{Otra opción, más fácil de implementar, es desarrollar código por encima del API Client generado. Es el caso del servicio de Análisis. Como trabajar con DTOs directamente se hacía muy pesado (fragmento \ref{ls:analysis-api-client-original}), optamos por implementar un \foreign{english}{builder} de peticiones. Esto nos permitia configurar la petición de una forma más descriptiva para el usuario (fragmento \ref{ls:analysis-api-cliente-request-builder}):}
+
+\begin{lstlisting}[language={[Sharp]C},caption={Implementación de petición original. Trabajar con DTOs era muy verboso.},captionpos=b, label=ls:analysis-api-client-original]
+var changeRequests = new List<ServiceConfigurationDTO>
+{
+  new()
+  {
+    ServiceName = ClimatisationAirConditionerConstants.AppName,
+    IsDeployed = true,
+    ConfigurationProperties = new List<ConfigurationProperty>()
+    {
+      new()
+      {
+          Name = ClimatisationAirConditionerConstants.Configuration.Mode,
+          Value = AirConditioningMode.Cooling.ToString(),
+      },
+    },
+  },
+};
+
+var symptoms = new List<SymptomDTO> { new(SymptomName, "true") };
+
+var systemConfigurationChangeRequest = new SystemConfigurationChangeRequestDTO()
+{
+  ServiceConfiguration = changeRequests,
+  Symptoms = symptoms,
+  Timestamp = DateTime.UtcNow,
+};
+
+await _systemApi.SystemRequestChangePostAsync(
+  systemConfigurationChangeRequest,
+  CancellationToken.None);
+\end{lstlisting}
+
+
+\begin{lstlisting}[language={[Sharp]C},caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.},captionpos=b, label=ls:analysis-api-cliente-request-builder]
+await _systemService.RequestChangeAsync(changeRequest =>
+{
+  changeRequest
+    .ForSymptom(TemperatureGreaterThanHotThreshold)
+    .WithService(ClimatisationAirConditionerConstants.AppName, service =>
+    {
+      service.MustBePresent()
+        .WithParameter(
+          ClimatisationAirConditionerConstants.Configuration.Mode,
+          AirConditioningMode.Cooling.ToString());
+    });
+});
+\end{lstlisting}
+
 
 \section{Servicio de análisis y reglas}
 \label{sec:implementacion-modulo-reglas}

@@ -307,25 +307,27 @@ Ahora describiremos qué protocolo elegimos para cada mecanismo de comunicación
 
 \subsection{Peticiones síncronas}
 
-Comenzamos investigando las peticiones síncronas. Tomemos por ejemplo la comunicación entre el servicio de monitorización (\foreign{english}{monitoring service}) y el servicio de conocimiento (\foreign{english}{knowledge servic}). Recordemos que el servicio de conocimiento almacena todas las propiedades de adaptación. El resto de servicios del nivel del bucle necesitan consultarlas y actualizarlas durante su funcionamiento. En la figura \ref{fig:monitor-knowledge-initial} representamos inicialmente ambos componentes y un conector, sin especificar de qué tipo será.
+Comenzamos investigando el diseño de las peticiones síncronas. Tomemos por ejemplo la comunicación entre el servicio de monitorización (\foreign{english}{monitoring service}) y el servicio de conocimiento (\foreign{english}{knowledge servic}). Recordemos que el conocimiento almacena todas las propiedades de adaptación. El resto de servicios del nivel del bucle necesitan consultarlas y actualizarlas durante su funcionamiento. En la figura \ref{fig:monitor-knowledge-initial} representamos inicialmente ambos componentes y un conector, sin especificar de qué tipo será.
 
-% TODO: Cambiar por imagen de componentes, que ofrezcan y requieran interfaces.
-\begin{figure}[htb]
+% TODO: Centrar
+\begin{wrapfigure}{r}{0.38\linewidth}
   \centering
-  \includegraphics{cap_diseño/images/Monitor-Knowledge-Initial-Connector}
-  \caption{Representación inicial de la comunicación entre el servicio de monitorización y el de conocimiento. El conector no indica su tipo todavía.}
+  \vspace{10pt}
+  \includegraphics[scale=0.5]{cap_diseño/images/Monitor-Knowledge-Initial-Connector}
+  \caption{Representación inicial del conector entre el servicio de monitorización y el de conocimiento. De momento no indica más que la necesidad de comunicación.}
   \label{fig:monitor-knowledge-initial}
-\end{figure}
+  \vspace{2pt}
+\end{wrapfigure}
 
-El siguiente paso es identificar qué interacciones debe existir entre ambos componentes. En este caso, el servicio de monitorización debe contactar con el servicio de conocimiento para leer y actualizar el valor de las propiedades. Por tanto, existen operaciones de lectura y escritura de los datos.
+El siguiente paso consiste en identificar qué interacciones debe existir entre ambos componentes. En este caso, el servicio de monitorización debe poder leer y actualizar el valor de las propiedades. Por tanto, existen operaciones de lectura y escritura de los datos.
 
-Entre las cuatro opciones de tipos de conector podemos descartar inmediatamente la opción de GraphQL. Se trata de un conector más orientado a las consultas de datos. En nuestro caso, necesitamos ejecutar también escrituras. Aunque podría ser interesante para consultas más avanzadas, utilizar dos protocolos de comunicación en paralelo aumentaría la complejidad de la arquitectura.
+De entre los cuatro tipos de conectores, podemos descartar inmediatamente la opción de GraphQL. Se trata de un mecanismo más orientado a las consultas de datos. En nuestro caso, necesitamos ejecutar también escrituras. Aunque podríamos trabajar con dos protocolos de comunicación en paralelo, esto aumentaría la complejidad de la arquitectura. Además que el protocolo está más enfocado en consultas complejas. Como las propiedades se almacenan como pares clave - valor, sin relaciones, no lo consideramos necesario.
 
-También descartamos el \foreign{english}{broker} de mensajería. Como requerimos de lecturas de datos, nos convenía más recurrir al resto de patrones. Para obtener propiedades del conocimiento, resultaba más sencillo de implementar mediante comunicación síncrona.
+También descartamos emplear el \foreign{english}{broker} de mensajería. Como requerimos de lecturas de datos, nos convenía más recurrir a otros patrones. Para obtener propiedades del conocimiento, resultaba más sencillo de implementar mediante comunicación síncrona.
 
-Finalmente, hay que tener en cuenta que una de nuestras prioridades es la \textbf{interoperabilidad}: esta API estará expuesta ''hacia fuera'', a una capa más externa. Por tanto, tendremos clientes que nos contactarán. Potencialmente, de terceros. Prima por tanto la compatibilidad. Descartamos entonces RPC, dado que nos acoplaría a una tecnología concreta y a APIs no estándares.
+Finalmente, teníamos que decidir entre usar REST o RPC. Para tomar la decisión decidimos priorizar la \textbf{interoperabilidad}. Este componente estará expuesto ''hacia fuera'': expondrá su interfaz a la capa superior. Cualquier elemento que se encuentre en ella, podrá contactarlo. Potencialmente, estos podrían ser desarrollados por terceros. Para maximizar la compatibilidad, descartamos entonces RPC. Este protocolo nos hubiera acoplado a una tecnología concreta y a APIs no estándares.
 
-Nos terminamos decantando por el conector REST sobre HTTP. Implementamos ambas funciones mediante \foreign{english}{endpoints} HTTP. Su especificación se detalla a continuación en las tablas \ref{tab:especificacion-get-property} y \ref{tab:especificacion-put-property}.
+Nos terminamos decantando entonces por el conector REST. Implementamos ambas funciones de lectura y escritura mediante \foreign{english}{endpoints} HTTP. Su especificación se detalla a continuación en las tablas \ref{tab:especificacion-get-property} y \ref{tab:especificacion-put-property}. En ellas se incluye la operación y la ruta sobre que aplica.
 
 \newsavebox\getpropertyrequestbox
 \begin{lrbox}{\getpropertyrequestbox}
@@ -453,156 +455,19 @@ Una vez definida la interfaz que expondrá el servicio de conocimiento, nos qued
   \vspace{5pt}
 \end{wrapfigure}
 
-OpenAPI\footnote{Página oficial: \url{https://www.openapis.org/}} es un lenguaje estándar para describir APIs RESTful. Nos permite describir de forma estructurada las operaciones que ofrece un servicio manteniéndose agnóstico a su implementación. Esta descripción ayuda tanto a humanos como a computadoras a descubrir y utilizar las funcionalidades de la API. La OpenAPI Initiative (OAI) dirige el proyecto bajo el manto de la \emph{Linux Foundation}.
+OpenAPI\footnote{Página oficial: \url{https://www.openapis.org/}} es un lenguaje estándar para describir APIs REST. Nos permite especificar de forma estructurada las operaciones que ofrece un servicio, manteniéndose agnóstico a su implementación. Esta descripción ayuda tanto a humanos como a computadoras a descubrir y utilizar las funcionalidades de la API.\cite{openapi_initiativeOpenAPISpecificationV3} La OpenAPI Initiative (OAI) dirige el proyecto bajo el manto de la \emph{Linux Foundation}.
 
-Un documento OpenAPI describe el funcionamiento de la API y el conjunto de recursos que la componen. Describe las operaciones HTTP que podemos ejecutar sobre estos recursos, incluyendo las estructuras de datos que recibe o envía y los códigos de respuesta. Estos códigos indican al cliente el resultado de la ejecución de la operación. \cite{openapi_initiativeOpenAPISpecificationV3} Más adelante mostraremos un ejemplo, con el \textcolor{red}{fragmento} \ref{ls:openapi-get}.
+Un documento OpenAPI describe el funcionamiento de la API y el conjunto de recursos que la componen. Especifica las operaciones HTTP que podemos ejecutar sobre estos recursos y las estructuras de datos de entrada o salida. También se incluyen los códigos de respuesta de HTTP: códigos indican al cliente el resultado de la ejecución de la operación. \cite{openapi_initiativeOpenAPISpecificationV3} Más adelante, en el fragmento \ref{ls:openapi-get}, mostraremos un ejemplo de un documento típico.
 
-La especificación puede escribirse manualmente o puede generarse a partir de una implementación existente. Así, podemos desarrollar nuestro servicio en un determinado lenguaje y obtener su descripción en OpenAPI. Además, podemos aprovecharla en varios ámbitos del desarrollo gracias a la variedad de herramientas existentes: generación de documentación, generación de casos de prueba, identificar cambios incompatibles, etc. \cite{westerveldChapterOpenAPIAPI2021}
+La especificación puede escribirse manualmente o puede generarse a partir de una implementación existente. Así, podemos desarrollar primero nuestro servicio en un determinado lenguaje y obtener después su descripción en OpenAPI. Además, podemos aprovecharla en varios ámbitos del desarrollo gracias a la  \textbf{variedad de herramientas} existentes: generación de documentación, generación de casos de prueba, identificar cambios incompatibles, etc. \cite{westerveldChapterOpenAPIAPI2021}
 
-Uno de los casos de uso más interesantes es la generación de código a partir de la definición. Existen una serie de librerías\footnote{\url{https://github.com/OpenAPITools/openapi-generator}} capaces de generar clientes o servidores conforme a la especificación. Ofrecen soporte a una gran variedad de lenguajes: Java, C\#, JavaScript\dots En el caso del cliente, actúa como un proxy que nos abstrae de la lógica de comunicación con el servidor. Similar a lo descrito en el apartado de RPC.
+Uno de los casos de uso más interesantes es la \textbf{generación de código}. Existen una serie de librerías\footnote{\url{https://github.com/OpenAPITools/openapi-generator}} capaces de generar clientes o servidores conforme a la especificación. Ofrecen soporte a una gran variedad de lenguajes: Java, C\#, JavaScript... En el caso del \textbf{cliente}, actúa como un proxy que nos abstrae de la lógica de comunicación con el servidor. Similar a lo ya descrito en el apartado de RPC.
 
-Para el desarrollo de este trabajo, nos interesaba especialmente debido a las diferencias tecnológicas existentes: el bucle MAPE-K original estaba desarrollado en Java, pero el prototipo se desarrolló con el lenguaje C\# usando el \foreign{english}{framework} ASP.NET Core. Se tomó esta decisión para reducir el tiempo de aprendizaje y centrar los esfuerzos en la definición de la arquitectura del sistema.
-
-Gracias a la generación de código, se podría obtener la especificación del prototipo y generar los clientes o servidores en cualquier lenguaje soportado. Java incluido. El bucle MAPE-K original después podría ser refactorizado usando este código autogenerado.
-
-A continuación explicaremos cómo utilizamos OpenAPI. Para ello, continuaremos con el ejemplo del servicio de conocimiento que hemos descrito a lo largo de esta sección. Nos centraremos en la implementación de la operación para obtener una propiedad del conocimiento, descrita en la tabla \ref{tab:especificacion-get-property}.
-
-En el \textcolor{red}{fragmento} \ref{ls:csharp-get} podemos observar que se trata de un método C\# llamado \emph{GetProperty}. Su implementación es sencilla: busca en un diccionario la propiedad cuyo nombre se le pasa por parámetro. Si la encuentra, devuelve su valor con un código 200 OK. En caso contrario, devuelve un código de error que describe el motivo (formato de la petición incorrecto o no se ha encontrado la propiedad).
-
-Aparte de la implementación, podemos comprobar que el método cuenta con una serie de comentarios (líneas 1-8) y atributos (10-12). Esta documentación describe qué hace el método, sus entradas y posibles respuestas. OpenAPI es capaz de utilizarlos para generar una especificación más completa. Por tanto, resulta muy recomendable incluirlos.
-
-\begin{lstlisting}[language={[Sharp]C},caption={Implementación del método GetProperty decorado para generar la especificación OpenAPI.},captionpos=b, label=ls:csharp-get]
-/// <summary>
-///    Gets a property given its name.
-/// </summary>
-/// <param name="propertyName"> The name of the property to find. </param>
-/// <returns> An IActionResult with result of the query. </returns>
-/// <response code="200"> The property was found. Returns the value of the property. </response>
-/// <response code="404"> The property was not found. </response>
-/// <response code="400"> There was an error with the provided arguments. </response>
-[HttpGet("{propertyName}")]
-[ProducesResponseType(typeof(PropertyDTO), StatusCodes.Status200OK)]
-[ProducesResponseType(StatusCodes.Status404NotFound)]
-[ProducesResponseType(StatusCodes.Status400BadRequest)]
-public IActionResult GetProperty([FromRoute]string propertyName)
-{
-    if (string.IsNullOrEmpty(propertyName))
-    {
-        return BadRequest();
-    }
-
-    bool foundProperty = properties.TryGetValue(propertyName, out PropertyDTO property);
-
-    if (!foundProperty)
-    {
-        return NotFound();
-    }
-
-    return Ok(property);
-}
-\end{lstlisting}
-
-Haciendo uso de las librerías de OpenAPI, generamos la especificación a partir del servicio de conocimiento. En el \textcolor{red}{fragmento} \ref{ls:openapi-get}, podemos ver cómo se describe la operación en este estándar:
-
-\begin{lstlisting}[language=python,caption={Especificación OpenAPI del método para obtener una propiedad del conocimiento (\lstinline{GetProperty}).},captionpos=b, label=ls:openapi-get]
-"paths": {
-  "/Property/{propertyName}": {
-    "get": {
-      "tags": [
-        "Property"
-      ],
-      "summary": "Gets a property given its name.",
-      "parameters": [
-        {
-          "name": "propertyName",
-          "in": "path",
-          "description": "The name of the property to find.",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "The property was found. Returns the value of the property.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PropertyDTO"
-              }
-            }
-          }
-        },
-        "404": {
-          "description": "The property was not found.",
-        },
-        "400": {
-          "description": "There was an error with the provided arguments.",
-        }
-      }
-    }
-  }
-\end{lstlisting}
-
-Podemos apreciar que en la ruta \emph{/Property/\{propertyName\}} está disponible una operación de tipo \emph{GET}. Esta acepta determinados parámetros y describe unas posibles respuestas. También aparece una referencia a otro esquema (línea 25), que representa la estructura de la respuesta en ese caso concreto. También aparecen los comentarios opcionales que indicamos en el \textcolor{red}{fragmento} \ref{ls:csharp-get}. Encontramos grandes similitudes con la especificación presentada en la tabla \ref{tab:especificacion-get-property}.
-
-%% TODO: ¿Eliminar?
-\textcolor{red}{Los convenios de los generadores de código de OpenAPI pueden no ser de nuestro agrado. Por ejemplo, pueden resultar muy verbosos o puede resultar muy pesado trabajar con DTOs directamente. Por suerte, tenemos varias alternativas para solucionarlo: Modificar las plantillas de generación de código. Al ser de código abierto, podríamos modificar las existentes o crear nuestras propias plantillas con nuestros propios convenios.}
-
-\textcolor{red}{Otra opción, más fácil de implementar, es desarrollar código por encima del API Client generado. Es el caso del servicio de Análisis. Como trabajar con DTOs directamente se hacía muy pesado (fragmento \ref{ls:analysis-api-client-original}), optamos por implementar un \foreign{english}{builder} de peticiones. Esto nos permitia configurar la petición de una forma más descriptiva para el usuario (fragmento \ref{ls:analysis-api-cliente-request-builder}):}
-
-\begin{lstlisting}[language={[Sharp]C},caption={Implementación de petición original. Trabajar con DTOs era muy verboso.},captionpos=b, label=ls:analysis-api-client-original]
-var changeRequests = new List<ServiceConfigurationDTO>
-{
-  new()
-  {
-    ServiceName = ClimatisationAirConditionerConstants.AppName,
-    IsDeployed = true,
-    ConfigurationProperties = new List<ConfigurationProperty>()
-    {
-      new()
-      {
-          Name = ClimatisationAirConditionerConstants.Configuration.Mode,
-          Value = AirConditioningMode.Cooling.ToString(),
-      },
-    },
-  },
-};
-
-var symptoms = new List<SymptomDTO> { new(SymptomName, "true") };
-
-var systemConfigurationChangeRequest = new SystemConfigurationChangeRequestDTO()
-{
-  ServiceConfiguration = changeRequests,
-  Symptoms = symptoms,
-  Timestamp = DateTime.UtcNow,
-};
-
-await _systemApi.SystemRequestChangePostAsync(
-  systemConfigurationChangeRequest,
-  CancellationToken.None);
-\end{lstlisting}
-
-
-\begin{lstlisting}[language={[Sharp]C},caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.},captionpos=b, label=ls:analysis-api-cliente-request-builder]
-await _systemService.RequestChangeAsync(changeRequest =>
-{
-  changeRequest
-    .ForSymptom(TemperatureGreaterThanHotThreshold)
-    .WithService(ClimatisationAirConditionerConstants.AppName, service =>
-    {
-      service.MustBePresent()
-        .WithParameter(
-          ClimatisationAirConditionerConstants.Configuration.Mode,
-          AirConditioningMode.Cooling.ToString());
-    });
-});
-\end{lstlisting}
+Para el desarrollo de este trabajo, nos interesaba especialmente debido a las posibles diferencias tecnológicas entre microservicios. Cada uno de ellos puede implementarse utilizando distintos lenguajes o librerias dependiendo de la funcionalidad a ofrecer. Gracias a la generación de código, se podría obtener la especificación del servidor y generar los clientes o servidores en cualquiera de los lenguajes soportados.
 
 Para terminar, mostramos la estructura del conector que emplearemos para implementar las peticiones aparece en la figura \ref{fig:monitor-knowledge-connector-architecture}. La figura muestra como el servicio de monitorización contacta al de conocimiento para asignarle un valor a la propiedad \emph{Temp}.
 
-El conector, delimitado por una línea discontinua roja, está compuesto por dos elementos: una API REST y un cliente. Los otros dos grupos de elementos representan los procesos de los servicios de monitorización y conocimiento. El servicio de monitorización se comunica a con la API través del API Client, que está en su proceso actuando como \emph{proxy}.
+El conector, delimitado por una línea discontinua roja, está compuesto por dos elementos: una API REST y un cliente. Los otros dos grupos de elementos representan los procesos de los servicios de monitorización y conocimiento. El servicio de monitorización se comunica a con la API través del API Client, que está en su proceso actuando como \emph{proxy}. En el capítulo \ref{chap:implementación} describiremos una propuesta de su implementación.
 
 %%% TODO: Actualizar la imagen para que aparezca PUT en vez de POST.
 %%% TODO: ¿Darle la vuelta a los servicios? Monitor arriba y Knowledge abajo.
