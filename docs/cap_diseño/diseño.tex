@@ -465,15 +465,13 @@ Uno de los casos de uso más interesantes es la \textbf{generación de código}.
 
 Para el desarrollo de este trabajo, nos interesaba especialmente debido a las posibles diferencias tecnológicas entre microservicios. Cada uno de ellos puede implementarse utilizando distintos lenguajes o librerias dependiendo de la funcionalidad a ofrecer. Gracias a la generación de código, se podría obtener la especificación del servidor y generar los clientes o servidores en cualquiera de los lenguajes soportados.
 
-Para terminar, mostramos la estructura del conector que emplearemos para implementar las peticiones aparece en la figura \ref{fig:monitor-knowledge-connector-architecture}. La figura muestra como el servicio de monitorización contacta al de conocimiento para asignarle un valor a la propiedad \emph{Temp}.
+Para terminar, mostramos la estructura del conector que emplearemos para implementar las peticiones síncronas. Aparece en la figura \ref{fig:monitor-knowledge-connector-architecture}. Esta muestra como el servicio de monitorización contacta al de conocimiento para asignarle un valor a la propiedad \emph{Temp} (temperatura).
 
-El conector, delimitado por una línea discontinua roja, está compuesto por dos elementos: una API REST y un cliente. Los otros dos grupos de elementos representan los procesos de los servicios de monitorización y conocimiento. El servicio de monitorización se comunica a con la API través del API Client, que está en su proceso actuando como \emph{proxy}. En el capítulo \ref{chap:implementación} describiremos una propuesta de su implementación.
+El conector, delimitado por una línea discontinua roja, está compuesto por dos elementos: una API REST y un cliente. Los otros dos grupos representan los procesos de los servicios de monitorización y conocimiento. El servicio de monitorización se comunica con la API través del API Client. Este se despliega dentro de su proceso actuando como \emph{proxy}. En el capítulo \ref{chap:implementación} - \nameref{chap:implementación} describiremos nuestra propuesta para su implementación.
 
-%%% TODO: Actualizar la imagen para que aparezca PUT en vez de POST.
-%%% TODO: ¿Darle la vuelta a los servicios? Monitor arriba y Knowledge abajo.
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.64]{cap_diseño/images/Monitor-Knowledge-Connector}
+  \includegraphics[scale=0.65]{cap_diseño/images/Monitor-Knowledge-Connector}
   \caption{Diseño del conector usando implementación Cliente - Servidor}
   \label{fig:monitor-knowledge-connector-architecture}
 \end{figure}
@@ -563,9 +561,16 @@ components:
 
 Para implementar este patrón, nuestro conector estará compuesto por tres elementos: un publicador, el \foreign{english}{broker} y un consumidor. Pongamos por ejemplo que el servicio de conocimiento recibe una petición para actualizar una propiedad. Si esta actualización se lleva a cabo, deberá propagar el evento a través del publicador. Este enviará el mensaje al \foreign{english}{broker} a un \foreign{english}{exchange} determinado.
 
-El \foreign{english}{broker}, que conoce todos los suscriptores, lo añadirá en la cola de mensajería de cada uno de ellos. Sus consumidores, desplegados en cada servicio suscriptor, serán notificados del nuevo mensaje. Los procesarán en cuanto puedan. En la \textcolor{red}{figura X} mostramos la estructura de este nuevo conector.
+El \foreign{english}{broker}, que conoce todos los suscriptores, lo añadirá en la cola de mensajería de cada uno de ellos. Sus consumidores, desplegados en cada servicio suscriptor, serán notificados del nuevo mensaje. Los procesarán en cuanto puedan. En la figura \ref{fig:knowledge-analyisis-connector-architecture} mostramos la estructura de este nuevo conector.
 
-\textcolor{red}{TODO: Imagen del conector. Similar a \ref{fig:monitor-knowledge-connector-architecture}}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale=0.58]{cap_diseño/images/Knowledge-Analysis-Connector}
+  \caption{Diseño del conector usando implementación Cliente - Servidor}
+  \label{fig:knowledge-analyisis-connector-architecture}
+\end{figure}
+
+\pagebreak
 
 \subsection{Peticiones asíncronas}
 
