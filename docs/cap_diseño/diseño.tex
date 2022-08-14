@@ -465,14 +465,16 @@ Uno de los casos de uso más interesantes es la \textbf{generación de código}.
 
 Para el desarrollo de este trabajo, nos interesaba especialmente debido a las posibles diferencias tecnológicas entre microservicios. Cada uno de ellos puede implementarse utilizando distintos lenguajes o librerias dependiendo de la funcionalidad a ofrecer. Gracias a la generación de código, se podría obtener la especificación del servidor y generar los clientes o servidores en cualquiera de los lenguajes soportados.
 
+\subsubsection{Arquitectura del conector}
+
 Para terminar, mostramos la estructura del conector que emplearemos para implementar las peticiones síncronas. Aparece en la figura \ref{fig:monitor-knowledge-connector-architecture}. Esta muestra como el servicio de monitorización contacta al de conocimiento para asignarle un valor a la propiedad \emph{Temp} (temperatura).
 
 El conector, delimitado por una línea discontinua roja, está compuesto por dos elementos: una API REST y un cliente. Los otros dos grupos representan los procesos de los servicios de monitorización y conocimiento. El servicio de monitorización se comunica con la API través del API Client. Este se despliega dentro de su proceso actuando como \emph{proxy}. En el capítulo \ref{chap:implementación} - \nameref{chap:implementación} describiremos nuestra propuesta para su implementación.
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.75]{cap_diseño/images/Monitor-Knowledge-Connector}
-  \caption{Diseño del conector usando implementación Cliente - Servidor}
+  \includegraphics[scale=0.65]{cap_diseño/images/Monitor-Knowledge-Connector}
+  \caption{Arquitectura del conector de peticiones síncronas.}
   \label{fig:monitor-knowledge-connector-architecture}
 \end{figure}
 
@@ -489,7 +491,7 @@ El conector, delimitado por una línea discontinua roja, está compuesto por dos
 
 El siguiente mecanismo de comunicación que tratamos fueron las notificaciones. Recordemos que es de tipo \textbf{\foreign{english}{broadcast}}: consiste en transmitir mensajes desde un servicio a todos aquellos que pertenecen a la capa superior. Cada uno decidirá si debe procesarlo o no. Sería ideal entonces priorizar el \textbf{desacoplamiento} entre el emisor y los destinatarios.
 
-Para estudiarla, tomamos como ejemplo la comunicación entre el servicio de conocimiento y los aquellos en el nivel del bucle. Cada vez que se modifique una propiedad de adaptación o una clave de configuración, emitirá una notificación a la capa superior. Así, por ejemplo, el servicio de análisis sabrá que debe evaluar las reglas de adaptación.
+Para estudiarla, tomamos como ejemplo la comunicación entre el servicio de conocimiento y los aquellos en el nivel del bucle. Cada vez que se modifique una propiedad de adaptación o una clave de configuración, emitirá una notificación a la capa superior. Así, por ejemplo, el servicio de análisis sabrá que debe evaluar las reglas de adaptación (figura \ref{fig:knowledge-analysis-notification-initial-connector}).
 
 A continuación analizamos qué tipo de conector era el más indicado. Empezamos descartando GraphQL porque es un protocolo basado en lecturas. Como el objetivo es enviar información a otros servicios, no nos servía. Respecto a RPC y REST, tampoco cumplían nuestras necesidades. Estos protocolos requerirían de conocer la dirección de todos los servicios para poder contactarlos. O, en su defecto, requeriríamos de un intermediario que los tenga registrados.
 
@@ -574,28 +576,35 @@ components:
             description: The name of the property that changed
 \end{lstlisting}
 
-\subsubsection{Diseño del conector}
+\subsubsection{Arquitectura del conector}
 
-Para implementar este patrón, nuestro conector estará compuesto por tres elementos: un \textbf{publicador}, el \textbf{\foreign{english}{broker}} y un \textbf{consumidor}. Pongamos por ejemplo que el servicio de conocimiento recibe una petición para actualizar una propiedad. Si esta actualización se lleva a cabo, deberá propagar el evento a través del publicador. Este enviará el mensaje al \foreign{english}{broker} a un \foreign{english}{exchange} determinado.
+Para implementar este mecanismo, nuestro conector estará compuesto por tres elementos: un \textbf{publicador}, el \textbf{\foreign{english}{broker}} y un \textbf{consumidor}. Pongamos por ejemplo que el servicio de conocimiento recibe una petición para actualizar una propiedad. Si esta actualización se lleva a cabo, deberá propagar el evento a través del publicador. Este enviará el mensaje al \foreign{english}{broker} a un \foreign{english}{exchange} determinado.
 
 El \foreign{english}{broker}, que conoce todos los suscriptores, lo añadirá en la cola de mensajería de cada uno de ellos. Sus consumidores, desplegados en cada servicio suscriptor, serán notificados del nuevo mensaje y lo procesarán en cuanto puedan. En la figura \ref{fig:knowledge-analyisis-connector-architecture} mostramos la estructura de este nuevo conector.
 
-\begin{figure}[htb]
+\begin{figure}[h!]
   \centering
   \includegraphics[scale=0.60]{cap_diseño/images/Knowledge-Analysis-Connector}
-  \caption{Diseño del conector para notificaciones mediante un \foreign{english}{broker} de mensajería.}
+  \caption{Arquitectura del conector para notificaciones mediante un \foreign{english}{broker} de mensajería.}
   \label{fig:knowledge-analyisis-connector-architecture}
 \end{figure}
 
 \subsection{Peticiones asíncronas}
 
-El mecanismo de comunicación restante son las \textbf{peticiones asíncronas}. Se trata de peticiones de trabajo que un microservicio le envía a otro distinto. Ambos deberán encontrarse mismo nivel de la jerarquía. Como comentamos, tenemos dos casos en nuestra arquitectura que requieren de este patrón: la comunicación entre el módulo de análisis y el planificador; y aquella entre el planificador y el ejecutor. Nos centraremos en el primero.
+El mecanismo de comunicación restante son las \textbf{peticiones asíncronas}. Se trata de peticiones de trabajo que un microservicio envía a otro o a si mismo. Es ideal para procesos costosos, que el destinatario podrá procesar de forma asíncrona. Ambos servicios deberán encontrarse en el mismo nivel de la jerarquía. En nuestra arquitectura tenemos dos casos que requieren de este patrón: la comunicación entre el módulo de análisis y el planificador; y aquella entre el planificador y el ejecutor. Nos centraremos en el primero (figura \ref{fig:analyisis-planner-async-request-initial-connector}).
 
-Cuando se evalúan las reglas de adaptación, si alguna de ellas se ejecuta, propone un cambio en la configuración del sistema. Como estos servicios están en una capa superior a la del bucle, se lo transmiten al servicio de análisis mediante una petición síncrona. El módulo de análisis recibirá esta propuesta y la enviará al planificador mediante una petición asíncrona. Podríamos haberla enviado directamente directamente al servicio de planificación, pero preferimos que no se acoplen a un servicio adicional.
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{cap_diseño/images/Analysis-Planner-Initial-Async-Request-Connector}
+  \caption{Representación inicial del conector entre el servicio de análisis y el planificador.}
+  \label{fig:analyisis-planner-async-request-initial-connector}
+\end{figure}
 
-A la hora de escoger el mecanismo de comunicación, el razonamiento fue muy similar al empleado en las notificaciones. Optamos por implementarlas usando un \foreign{english}{broker} de mensajería, pero siguiendo el patrón de colas de trabajo. Los \foreign{english}{workers} cuentan con una cola de mensajería específica para las peticiones de trabajo. El publicador la conoce y, a través del  \foreign{english}{broker}, envía los mensajes allí. El consumidor los irá recuperando y procesando en cuando esté disponible.
+Cuando se evalúan las reglas de adaptación, si alguna de ellas se ejecuta, propone un cambio en la configuración del sistema. Como estos servicios están en una capa superior a la del bucle, se lo transmiten al servicio de análisis mediante una petición síncrona. El módulo de análisis recibirá esta propuesta y se la enviará al planificador mediante una petición asíncrona. Podríamos haberla enviado directamente directamente al servicio de planificación, pero preferimos que no se acoplen a un servicio adicional.
 
-En la tabla \ref{tab:especificacion-system-configuration-change-request-box} presentamos la especificación de la petición asíncrona para solicitar un cambio de configuración de sistema. Vemos que es muy similar a \ref{tab:especificacion-property-changed-integrationevent}. La principal diferencia es que esta incluye mucha más información que el evento. Esto es debido a que tiene más en común con una petición síncrona. El consumidor recibirá todos los parámetros que necesita para ejecutar la petición. Aun así, en el momento de ejecución, deberá verificar que algunos de estos parámetros no hayan cambiado.
+A la hora de escoger el tipo de conector, el razonamiento fue muy similar al empleado en las notificaciones. Optamos por implementarlas usando un \foreign{english}{broker} de mensajería. En este caso, empleando el patrón de \textbf{colas de trabajo}. Los \textbf{\foreign{english}{workers}} o trabajadores cuentan con una \textbf{cola de mensajería específica para las peticiones de trabajo}. El publicador la conoce y, a través del \foreign{english}{broker}, envía los mensajes directamente a ella. Los trabajadores los irán recuperando y procesando en cuanto puedan.
+
+En la tabla \ref{tab:especificacion-system-configuration-change-request} presentamos la especificación de la petición asíncrona para solicitar un cambio de configuración en el sistema. Vemos que es muy similar a \ref{tab:especificacion-property-changed-integrationevent}. La principal diferencia es que esta incluye mucha más información que el evento. Esto es debido a que tiene más en común con una petición síncrona. El planificador recibirá todos los parámetros que necesita para ejecutar la petición. Aun así, en el momento de ejecución deberá verificar con el conocimiento que algunos de estos no hayan cambiado.
 
 \newsavebox\systemconfigurationchangerequestbox
 \begin{lrbox}{\systemconfigurationchangerequestbox}
@@ -657,15 +666,28 @@ En la tabla \ref{tab:especificacion-system-configuration-change-request-box} pre
 
   \hline
 
-  \caption{Especificación de las peticiones de cambio de configuración del sistema.}
-  \label{tab:especificacion-system-configuration-change-request-box}
+  \caption{Especificación de una petición de cambio de configuración del sistema.}
+  \label{tab:especificacion-system-configuration-change-request}
 \end{longtable}
 
-Respecto a la especificación con AsyncAPI, las peticiones asíncronas no están soportadas todavía. A fecha de la redacción, el grupo se encuentra estudiando cómo implementarlas. \footnotetext{Discusión disponible en: \url{https://github.com/asyncapi/spec/pull/594}}. Su inclusión está propuesta para la versión 3.0.0 de la especificación. Como mencionamos anteriormente, el estándar todavía se encuentra en fases iniciales de su desarrollo.
+\subsubsection{AsyncAPI}
 
-\subsubsection{Diseño del conector}
+Respecto a la especificación con AsyncAPI, las peticiones asíncronas no están soportadas todavía. A fecha de la redacción, el grupo se encuentra estudiando cómo implementarlas\footnote{Discusión disponible en: \url{https://github.com/asyncapi/spec/pull/594}}. Como mencionamos anteriormente, el estándar todavía se encuentra en desarrollo. Su inclusión está propuesta para la versión \texttt{3.0.0} de la especificación.
 
-En cuanto a sus componentes, el conector seguiría la siguiente arquitectura: \textcolor{red}{dibujo de arquitectura. La arquitectura del conector es muy similar a la de las notificaciones: un publicador, un broker y un consumidor.}
+\subsubsection{Arquitectura del conector}
+
+La arquitectura de este mecanismo es muy similar a la de las notificaciones. Está compuesta también por tres elementos: un \textbf{publicador}, el \textbf{\foreign{english}{broker}} y un \textbf{consumidor}. Pongamos por ejemplo que el servicio de análisis recibe una petición síncrona para cambiar el estado del sistema. Este servicio deberá traducirla a una petición asíncrona y enviarla a través del publicador. A su vez, este enviará el mensaje al \foreign{english}{broker} dirigido a una cola determinada.
+
+El \foreign{english}{broker} simplemente lo añadirá a la cola especificada. Las instancias del planificador serán notificadas del nuevo mensaje y una de ellas lo procesará en cuanto puedan. En la figura \ref{fig:async-request-connector-architecture} mostramos la estructura de este último conector.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale=0.60]{cap_diseño/images/Async-Request-Connector-Architecture}
+  \caption{Arquitectura del conector para peticiones asíncronas mediante un \foreign{english}{broker} de mensajería.}
+  \label{fig:async-request-connector-architecture}
+\end{figure}
+
+\pagebreak
 
 \section{Diseño final}
 
