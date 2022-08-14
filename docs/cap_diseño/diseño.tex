@@ -240,12 +240,12 @@ Tomemos por ejemplo las \textbf{colas de trabajo}. \cite{royChapterMessagePatter
 
 \footnotetext{Imagen obtenida de: \url{https://www.rabbitmq.com/tutorials/tutorial-two-dotnet.html}}
 
-Otra estrategia que podemos implementar es \textbf{\foreign{english}{publish-suscribe}}. Esta sirve para implementar comunicación \foreign{english}{multicast}. \cite{royChapterMessagePatterns2017} Se basa en el uso de temas o \textbf{\foreign{english}{topics}}, categorías de mensajes. En base a ellas, los servicios consumidores pueden suscribirse a las que le resulten de interés. Un servicio (el productor) enviará un mensaje al \foreign{english}{broker}, indicando que pertenece a un tema determinado. El \foreign{english}{broker} recibe el mensaje y se encarga de enrutarlo a las colas de todos los consumidores suscritos a él. \cite{rabbitmqPublishSubscribeDocumentation} En la figura \ref{fig:publish-subscribe} tenemos un ejemplo. El mensaje ''A'' llega a todos los servicios suscritos a al tema ''Topic''.
+Otra estrategia que podemos implementar es \textbf{\foreign{english}{publish-suscribe}}. Esta sirve para implementar comunicación \foreign{english}{broadcast}. \cite{royChapterMessagePatterns2017} Se basa en el uso de temas o \textbf{\foreign{english}{topics}}, categorías de mensajes. En base a ellas, los servicios consumidores pueden suscribirse a las que le resulten de interés. Un servicio (el productor) enviará un mensaje al \foreign{english}{broker}, indicando que pertenece a un tema determinado. El \foreign{english}{broker} recibe el mensaje y se encarga de enrutarlo a las colas de todos los consumidores suscritos a él. \cite{rabbitmqPublishSubscribeDocumentation} En la figura \ref{fig:publish-subscribe} tenemos un ejemplo. El mensaje ''A'' llega a todos los servicios suscritos a al tema ''Topic''.
 
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=0.5]{cap_diseño/images/publish_subscribe}
-  \caption[Estrategia \foreign{english}{publish/suscribe}: el \foreign{english}{broker} actúa como intermediario en la comunicación \foreign{english}{multicast}.]{Estrategia \foreign{english}{publish/suscribe}: el \foreign{english}{broker} actúa como intermediario en la comunicación \foreign{english}{multicast}. Imagen obtenida de \footnotemark.}
+  \caption[Estrategia \foreign{english}{publish/suscribe}: el \foreign{english}{broker} actúa como intermediario en la comunicación \foreign{english}{broadcast}.]{Estrategia \foreign{english}{publish/suscribe}: el \foreign{english}{broker} actúa como intermediario en la comunicación \foreign{english}{broadcast}. Imagen obtenida de \footnotemark.}
   \label{fig:publish-subscribe}
 \end{figure}
 
@@ -282,7 +282,7 @@ En la tabla \ref{tab:comparativa-mecanismos-comunicacion} presentamos un resumen
   \hline
   & \textbf{RPC} & \textbf{REST} & \textbf{GraphQL} & \textbf{Broker mensajería} \\
   \hline
-  \textbf{Tipo de comunicación y cardinalidad} & Dirigida (1..1) & Dirigida (1..1) & Dirigida (1..1) & Dirigida (1..1) y \foreign{english}{Multicast} (1..N) \\
+  \textbf{Tipo de comunicación y cardinalidad} & Dirigida (1..1) & Dirigida (1..1) & Dirigida (1..1) & Dirigida (1..1) y \foreign{english}{broadcast} (1..N) \\
   \hline
   \textbf{Acoplamiento entre componentes} & Alto & Medio & Alto & Bajo \\
   \hline
@@ -471,7 +471,7 @@ El conector, delimitado por una línea discontinua roja, está compuesto por dos
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.65]{cap_diseño/images/Monitor-Knowledge-Connector}
+  \includegraphics[scale=0.75]{cap_diseño/images/Monitor-Knowledge-Connector}
   \caption{Diseño del conector usando implementación Cliente - Servidor}
   \label{fig:monitor-knowledge-connector-architecture}
 \end{figure}
@@ -479,15 +479,23 @@ El conector, delimitado por una línea discontinua roja, está compuesto por dos
 \subsection{Notificaciones}
 \label{sec:notificaciones}
 
-El siguiente mecanismo de comunicación que tratamos fueron las notificaciones. Recordemos que esta comunicación consiste en transmitir mensajes desde un servicio a todos los que se pertenecen a la capa superior. Es una comunicación de tipo \emph{multicast}. No va dirigida a ningún servicio concreto. Potencialmente, todos podrían recibir el mensaje y decidir si procesarlo o no.
+% TODO: Centrar
+\begin{wrapfigure}{l}{0.38\linewidth}
+  \centering
+  \includegraphics[scale=0.50]{cap_diseño/images/Knowledge-Analysis-Initial-Notification-Connector}
+  \caption{Representación inicial del conector entre el servicio de conocimiento y el de análisis.}
+  \label{fig:knowledge-analysis-notification-initial-connector}
+\end{wrapfigure}
 
-Para estudiarla, tomamos como ejemplo la comunicación entre el servicio de conocimiento y los servicios en el nivel del bucle. Cada vez que se modifique una propiedad de adaptación o una clave de configuración, emitirá un evento a la capa superior. Así, por ejemplo, el servicio de análisis sabrá que debe reevaluar las reglas de adaptación.
+El siguiente mecanismo de comunicación que tratamos fueron las notificaciones. Recordemos que es de tipo \textbf{\foreign{english}{broadcast}}: consiste en transmitir mensajes desde un servicio a todos aquellos que pertenecen a la capa superior. Cada uno decidirá si debe procesarlo o no. Sería ideal entonces priorizar el \textbf{desacoplamiento} entre el emisor y los destinatarios.
 
-Buscando el tipo de conector adecuado, empezamos descartando GraphQL. Es un protocolo basado en lecturas. Como el objetivo es enviar información a otros servicios, no nos sirve. Respecto a RPC y REST, tampoco cumplían nuestras necesidades. Tenemos el requisito de bajo acoplamiento contra los servicios de la capa superior. Estos protocolos requerirían de conocer la dirección de todos los servicios para poder contactarlos. O, en su defecto, requeririamos de implementar un intermediario que los tenga registrados.
+Para estudiarla, tomamos como ejemplo la comunicación entre el servicio de conocimiento y los aquellos en el nivel del bucle. Cada vez que se modifique una propiedad de adaptación o una clave de configuración, emitirá una notificación a la capa superior. Así, por ejemplo, el servicio de análisis sabrá que debe evaluar las reglas de adaptación.
 
-Por tanto, optamos por implementarlo usando un \emph{broker} de mensajería. Concretamente, siguiendo el patrón \emph{publish}-\emph{subscribe}. El servicio de conocimiento publicará el evento a través del \emph{broker} en un \foreign{english}{exchange} determinado. Este evento tendrá como \emph{topic} o tema asociado el nombre de la propiedad. Todos los servicios interesados deberán suscribirse a este. El \emph{broker} añadirá el mensaje en la cola de cada uno de los suscriptores. Así podrán procesarlo cuando puedan, de forma asíncrona.
+A continuación analizamos qué tipo de conector era el más indicado. Empezamos descartando GraphQL porque es un protocolo basado en lecturas. Como el objetivo es enviar información a otros servicios, no nos servía. Respecto a RPC y REST, tampoco cumplían nuestras necesidades. Estos protocolos requerirían de conocer la dirección de todos los servicios para poder contactarlos. O, en su defecto, requeriríamos de un intermediario que los tenga registrados.
 
-En la tabla \ref{tab:especificacion-property-changed-integrationevent} mostramos la especificación del evento. Podemos apreciar que el mensaje enviado incluye la información mínima indispensable: el nombre de la propiedad que ha cambiado. Tomamos esta decisión porque se trata de una comunicación asíncrona. Desde que se emite el evento hasta que se procesa su valor puede haber cambiado. De esta forma obligamos a las reglas a solicitar el valor de la propiedad en el momento en que se evalúen. Entonces siempre se ejecutaran con la información actualizada.
+Por tanto, optamos por implementarlo usando un \foreign{english}{broker} de mensajería. Concretamente, siguiendo el patrón \textbf{\foreign{english}{publish-subscribe}}. El servicio de conocimiento publicaría el evento a través del \foreign{english}{broker}. Este evento tendrá como \foreign{english}{topic} asociado el nombre de la propiedad que ha cambiado. Así, los servicios de la capa superior podrían decidir si suscribirse o no al tipo de notificación. El \foreign{english}{broker} añadirá el mensaje en las colas de mensajería de cada uno de los suscriptores. Entonces, podrán procesarlo cuando puedan, de forma asíncrona.
+
+En la tabla \ref{tab:especificacion-property-changed-integrationevent} mostramos la especificación del evento. Podemos apreciar que el mensaje enviado incluye la \textbf{información mínima indispensable}: el nombre de la propiedad que ha cambiado. Elegimos esta aproximación porque se trata de una comunicación asíncrona. Desde que se emite el evento hasta que se procesa, el valor de la propiedad puede haber cambiado. De esta forma, obligamos a las reglas a solicitar su valor en el momento en que se evalúen. Siempre se ejecutaran con la información actualizada.
 
 \newsavebox\propertychangedeventbox
 \begin{lrbox}{\propertychangedeventbox}
@@ -528,9 +536,18 @@ En la tabla \ref{tab:especificacion-property-changed-integrationevent} mostramos
 
 \subsubsection{AsyncAPI}
 
-Para describir el evento, investigamos si existía algún estándar equivalente a OpenAPI. Y así es, se llama AsyncAPI\footnote{Página oficial: \url{https://www.asyncapi.com/}}. Por desgracia, se encuentra en fases tempranas de su desarrollo. No ha alcanzado todavía el grado de implantación que tiene su homólogo. Por ejemplo, no cuenta un catálogo muy amplio de generadores de código. Tampoco podemos extraer la especificación a partir de una implementación existente.
+\begin{wrapfigure}{l}{0.25\linewidth}
+  \vspace{15pt}
+  \includegraphics[scale=0.5]{cap_diseño/images/asyncapilogo}
+  \centering
+  \vspace{5pt}
+\end{wrapfigure}
 
-Aun así, lo emplearemos para describir manualmente nuestros eventos en un formato estándar. En el fragmento \ref{ls:asyncapi-propertychanged-integrationevent} presentamos la especificación del mensaje de la tabla \ref{tab:especificacion-property-changed-integrationevent}. Podemos apreciar similitudes con la especificación OpenAPI (por ejemplo, en el fragmento \ref{ls:openapi-get}). Figura la estructura del mensaje y su documentación. La mayor diferencia es la mención del canal (el \foreign{english}{exchange}  en nuestro caso) y el método (\foreign{english}{subscribe}). Esto indica que los consumidores podrán suscribirse a este evento a partir de este canal.
+Para describir el evento, investigamos si existía algún estándar equivalente a OpenAPI. Y así es, se llama AsyncAPI\footnote{Página oficial: \url{https://www.asyncapi.com/}}. Por desgracia, se encuentra en fases tempranas de su desarrollo. No ha alcanzado todavía el grado de madurez e implantación que tiene su homólogo. Por ejemplo, no cuenta un catálogo muy extenso de generadores de código. Tampoco podemos extraer la especificación a partir de una implementación existente.
+
+Aun así, lo emplearemos para describir manualmente nuestros eventos en un formato estándar. En el fragmento \ref{ls:asyncapi-propertychanged-integrationevent} presentamos la especificación del mensaje de la tabla \ref{tab:especificacion-property-changed-integrationevent}. Podemos apreciar similitudes con la especificación OpenAPI (por ejemplo, en el fragmento \ref{ls:openapi-get}). Figuran tanto la estructura del mensaje como su documentación. La mayor diferencia es la mención del canal (el \foreign{english}{exchange}  en nuestro caso) y el método (\foreign{english}{subscribe}). Esto indica que los consumidores podrán suscribirse a este evento a partir de este canal.
+
+\pagebreak
 
 % TODO: Pintar bien los YAML.
 \begin{lstlisting}[language={C++},caption={Ejemplo del evento de integración \emph{builder}.},captionpos=b, label=ls:asyncapi-propertychanged-integrationevent]
@@ -559,18 +576,16 @@ components:
 
 \subsubsection{Diseño del conector}
 
-Para implementar este patrón, nuestro conector estará compuesto por tres elementos: un publicador, el \foreign{english}{broker} y un consumidor. Pongamos por ejemplo que el servicio de conocimiento recibe una petición para actualizar una propiedad. Si esta actualización se lleva a cabo, deberá propagar el evento a través del publicador. Este enviará el mensaje al \foreign{english}{broker} a un \foreign{english}{exchange} determinado.
+Para implementar este patrón, nuestro conector estará compuesto por tres elementos: un \textbf{publicador}, el \textbf{\foreign{english}{broker}} y un \textbf{consumidor}. Pongamos por ejemplo que el servicio de conocimiento recibe una petición para actualizar una propiedad. Si esta actualización se lleva a cabo, deberá propagar el evento a través del publicador. Este enviará el mensaje al \foreign{english}{broker} a un \foreign{english}{exchange} determinado.
 
-El \foreign{english}{broker}, que conoce todos los suscriptores, lo añadirá en la cola de mensajería de cada uno de ellos. Sus consumidores, desplegados en cada servicio suscriptor, serán notificados del nuevo mensaje. Los procesarán en cuanto puedan. En la figura \ref{fig:knowledge-analyisis-connector-architecture} mostramos la estructura de este nuevo conector.
+El \foreign{english}{broker}, que conoce todos los suscriptores, lo añadirá en la cola de mensajería de cada uno de ellos. Sus consumidores, desplegados en cada servicio suscriptor, serán notificados del nuevo mensaje y lo procesarán en cuanto puedan. En la figura \ref{fig:knowledge-analyisis-connector-architecture} mostramos la estructura de este nuevo conector.
 
-\begin{figure}[h!]
+\begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.58]{cap_diseño/images/Knowledge-Analysis-Connector}
-  \caption{Diseño del conector usando implementación Cliente - Servidor}
+  \includegraphics[scale=0.60]{cap_diseño/images/Knowledge-Analysis-Connector}
+  \caption{Diseño del conector para notificaciones mediante un \foreign{english}{broker} de mensajería.}
   \label{fig:knowledge-analyisis-connector-architecture}
 \end{figure}
-
-\pagebreak
 
 \subsection{Peticiones asíncronas}
 
