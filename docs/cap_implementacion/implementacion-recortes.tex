@@ -1,0 +1,100 @@
+A continuación explicaremos cómo utilizamos OpenAPI. Para ello, continuaremos con el ejemplo del servicio de conocimiento que hemos descrito a lo largo de esta sección.
+
+
+Haciendo uso de las librerías de OpenAPI, generamos la especificación a partir del servicio de conocimiento. En el \textcolor{red}{fragmento} \ref{ls:openapi-get}, podemos ver cómo se describe la operación en este estándar:
+
+\begin{lstlisting}[language=python,caption={Especificación OpenAPI del método para obtener una propiedad del conocimiento (\lstinline{GetProperty}).},captionpos=b, label=ls:openapi-get]
+"paths": {
+  "/Property/{propertyName}": {
+    "get": {
+      "tags": [
+        "Property"
+      ],
+      "summary": "Gets a property given its name.",
+      "parameters": [
+        {
+          "name": "propertyName",
+          "in": "path",
+          "description": "The name of the property to find.",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The property was found. Returns the value of the property.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PropertyDTO"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "The property was not found.",
+        },
+        "400": {
+          "description": "There was an error with the provided arguments.",
+        }
+      }
+    }
+  }
+\end{lstlisting}
+
+Podemos apreciar que en la ruta \emph{/Property/\{propertyName\}} está disponible una operación de tipo \emph{GET}. Esta acepta determinados parámetros y describe unas posibles respuestas. También aparece una referencia a otro esquema (línea 25), que representa la estructura de la respuesta en ese caso concreto. También aparecen los comentarios opcionales que indicamos en el \textcolor{red}{fragmento} \ref{ls:csharp-get}. Encontramos grandes similitudes con la especificación presentada en la tabla \ref{tab:especificacion-get-property}.
+
+%% TODO: ¿Eliminar?
+\textcolor{red}{Los convenios de los generadores de código de OpenAPI pueden no ser de nuestro agrado. Por ejemplo, pueden resultar muy verbosos o puede resultar muy pesado trabajar con DTOs directamente. Por suerte, tenemos varias alternativas para solucionarlo: Modificar las plantillas de generación de código. Al ser de código abierto, podríamos modificar las existentes o crear nuestras propias plantillas con nuestros propios convenios.}
+
+\textcolor{red}{Otra opción, más fácil de implementar, es desarrollar código por encima del API Client generado. Es el caso del servicio de Análisis. Como trabajar con DTOs directamente se hacía muy pesado (fragmento \ref{ls:analysis-api-client-original}), optamos por implementar un \foreign{english}{builder} de peticiones. Esto nos permitia configurar la petición de una forma más descriptiva para el usuario (fragmento \ref{ls:analysis-api-cliente-request-builder}):}
+
+\begin{lstlisting}[language={[Sharp]C},caption={Implementación de petición original. Trabajar con DTOs era muy verboso.},captionpos=b, label=ls:analysis-api-client-original]
+var changeRequests = new List<ServiceConfigurationDTO>
+{
+  new()
+  {
+    ServiceName = ClimatisationAirConditionerConstants.AppName,
+    IsDeployed = true,
+    ConfigurationProperties = new List<ConfigurationProperty>()
+    {
+      new()
+      {
+          Name = ClimatisationAirConditionerConstants.Configuration.Mode,
+          Value = AirConditioningMode.Cooling.ToString(),
+      },
+    },
+  },
+};
+
+var symptoms = new List<SymptomDTO> { new(SymptomName, "true") };
+
+var systemConfigurationChangeRequest = new SystemConfigurationChangeRequestDTO()
+{
+  ServiceConfiguration = changeRequests,
+  Symptoms = symptoms,
+  Timestamp = DateTime.UtcNow,
+};
+
+await _systemApi.SystemRequestChangePostAsync(
+  systemConfigurationChangeRequest,
+  CancellationToken.None);
+\end{lstlisting}
+
+
+\begin{lstlisting}[language={[Sharp]C},caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.},captionpos=b, label=ls:analysis-api-cliente-request-builder]
+await _systemService.RequestChangeAsync(changeRequest =>
+{
+  changeRequest
+    .ForSymptom(TemperatureGreaterThanHotThreshold)
+    .WithService(ClimatisationAirConditionerConstants.AppName, service =>
+    {
+      service.MustBePresent()
+        .WithParameter(
+          ClimatisationAirConditionerConstants.Configuration.Mode,
+          AirConditioningMode.Cooling.ToString());
+    });
+});
+\end{lstlisting}
