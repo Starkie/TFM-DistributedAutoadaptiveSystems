@@ -1,7 +1,7 @@
 \chapter{Diseño de la solución}
 \label{chap:diseño}
 
-En este capitulo describiremos la estrategia que seguimos para refactorizar el bucle MAPE-K \foreign{english}{Lite}. Como comentamos en la introducción, nuestro objetivo es adaptarlo a entornos \foreign{english}{cloud}. Esto implica transformarlo de un servicio monolítico a un sistema distribuido basado en microservicios. Se trata de un cambio arquitectónico importante. Por ello, queremos seguir una estrategia ingenieril teniendo en cuenta las particularidades del sistema.
+En este capítulo describiremos la estrategia que seguimos para refactorizar el bucle MAPE-K \foreign{english}{Lite}. Como comentamos en la introducción, nuestro objetivo es adaptarlo a entornos \foreign{english}{cloud}. Esto implica transformarlo de un servicio monolítico a un sistema distribuido basado en microservicios. Se trata de un cambio arquitectónico importante. Por ello, queremos seguir una estrategia ingenieril teniendo en cuenta las particularidades del sistema.
 
 Comenzaremos justificando la elección de este estilo arquitectónico y describiendo los beneficios que esperábamos obtener. A continuación, detallaremos nuestro diseño y explicaremos cómo se dividió la funcionalidad del bucle en microservicios. Después, presentaremos algunos de los mecanismos de comunicación más populares y comentaremos cuáles elegimos para conectar nuestros componentes. Finalmente, presentaremos la estructura final de nuestra arquitectura.
 
@@ -691,4 +691,6 @@ El \foreign{english}{broker} simplemente lo añadirá a la cola especificada. La
 
 \section{Diseño final}
 
-Añadir diagrama con el diseño final, mostrando el diseño de los componentes con todos los conectores.
+Una vez definidos los componentes y sus conectores, podemos mostrar el diseño final de nuestra arquitectura. Las APIs que expondrá cada microservicio las describimos en detalle en el anexo \ref{anx:apis} - \nameref{anx:apis}.
+
+\textcolor{red}{Diagrama}
