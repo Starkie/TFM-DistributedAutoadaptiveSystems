@@ -31,7 +31,7 @@ Para su desarrollo se optó por el lenguaje C\# y el \foreign{english}{framework
 
 \subsection{Peticiones síncronas}
 
-En este hito se prototiparon las peticiones síncronas. Los servicios que las implementan exponen APIs REST mediante \foreign{english}{endpoints} HTTP. Por ejemplo, el servicio de conocimiento expone operaciones que permiten recuperar o modificar propiedades de adaptación. Nos centraremos en la primera, ya descrita en la tabla \ref{tab:especificacion-get-property}.
+En este hito se prototiparon las peticiones síncronas (flechas negras de la figura \ref{fig:hito-1-monitorizacion}). Los servicios que las implementan exponen APIs REST mediante \foreign{english}{endpoints} HTTP. Por ejemplo, el servicio de conocimiento expone operaciones que permiten recuperar o modificar propiedades de adaptación. Nos centraremos en la primera, ya descrita en la tabla \ref{tab:especificacion-get-property}.
 
 En el fragmento \ref{ls:csharp-get} mostramos su implementación. Podemos observar que se trata de un método llamado \emph{GetProperty}. Su lógica es sencilla: busca en un diccionario la propiedad cuyo nombre recibe por parámetro. Si la encuentra, devuelve su valor con un código HTTP (\texttt{200 OK}). En caso contrario, sólo devuelve un código de error que describe el motivo de fallo: formato de la petición incorrecto (\texttt{400 - Bad Request}) o que no se ha encontrado la propiedad (\texttt{404 - Not Found}).
 
@@ -127,9 +127,9 @@ Además, podremos utilizar estas herramientas durante la refactorización del bu
 
 \subsection{Componentes: Módulos de monitorización y conocimiento}
 
-\textcolor{red}{Los componentes implementados en este hito son muy sencillos. Simplemente validan las mediciones de las sondas y las convierten en propiedades de adaptación. Ya hemos hablado del servicio de conocimiento. Este ofrece operaciones de lectura y escritura sobre las propiedades de adaptación y las claves de configuración de los recursos manejados.}
+Los componentes implementados en este hito son muy sencillos. Simplemente validan las mediciones de las sondas y extraen de ellas las propiedades de adaptación. Ya hemos hablado de la implementación del servicio de conocimiento. Este ofrece simplemente operaciones de lectura y escritura sobre las propiedades de adaptación y las claves de configuración de los recursos manejados.
 
-\textcolor{red}{Por encima de este, tenemos al servicio de monitorización. En nuestra implementación, actúa como intermediario entre los monitores de la solución y el conocimiento. Ofrece operaciones útiles para los monitores: lectura de propiedades del conocimiento y otras para que los monitores reporten sus mediciones. De esta forma, los monitores de solución podrán informarse a partir del conocimiento para determinar si una medición es válida o no.} Para conectar todos estos servicios se emplearon las peticiones síncronas, que describiremos anteriormente.
+Por encima de este, tenemos al servicio de monitorización. En nuestra implementación, actúa como intermediario entre los monitores de la solución y el conocimiento. Ofrece \foreign{english}{endpoints} útiles para los monitores, como puede ser reportar sus mediciones o la lectura del conocimiento. De esta forma, los monitores de solución podrán informarse para determinar si una medición es válida o no. Para conectar todos estos servicios se emplearon las peticiones síncronas, que describiremos anteriormente.
 
 \section{Servicio de análisis y reglas}
 \label{sec:implementacion-modulo-reglas}
@@ -144,7 +144,7 @@ La siguiente etapa que desarrollamos fue la evaluación de las reglas de adaptac
   \centering
 \end{wrapfigure}
 
-Comenzaremos describiendo el desarrollo de las notificaciones. Como ya se describió en la sección \ref{sec:notificaciones}, este mecanismo se implementó mediante un \foreign{english}{broker} de mensajería. Elegimos \texttt{RabbitMQ}\footnote{Página oficial: \url{https://www.rabbitmq.com/}} para el proyecto, un \foreign{english}{broker} sencillo y ampliamente utilizado. \cite{newmanBuildingMicroservicesDesigning2021}
+Comenzaremos describiendo el desarrollo de las notificaciones (flechas moradas de la figura \ref{fig:hito-2-analisis}). Como ya se describió en la sección \ref{sec:notificaciones}, este mecanismo se implementó mediante un \foreign{english}{broker} de mensajería. Elegimos \texttt{RabbitMQ}\footnote{Página oficial: \url{https://www.rabbitmq.com/}} para el proyecto, un \foreign{english}{broker} sencillo y ampliamente utilizado. \cite{newmanBuildingMicroservicesDesigning2021}
 
 Para implementar los publicadores y consumidores de nuestro conector, utilizamos una librería llamada \texttt{Rebus}\footnote{Página oficial: \url{https://github.com/rebus-org/Rebus}}. Esta nos permitía interactuar con el bus abstrayéndonos de su tecnología concreta. Así, podríamos cambiar de tecnología de transporte en cualquier momento sin tener que modificar nuestros servicios.
 
@@ -168,8 +168,6 @@ private async Task SetProperty(SetPropertyDTO propertyDto)
 }
 
 \end{lstlisting}
-
-\pagebreak
 
 El mediador determina que el componente publicador es el destinatario de este evento y lo invoca. Para detectarlo, se basa en las interfaces que implementa (linea 2 del fragmento \ref{ls:knowledge-property-changed-publisher}). Este componente publica el evento en el bus de mensajería (línea 15). Rebus, en base a la configuración del servicio, lo enviará a nuestra instancia de \texttt{RabbitMQ}. Todos los suscriptores de este evento recibirán el mensaje en su cola.
 
@@ -217,9 +215,18 @@ public class PropertyChangedIntegrationEventConsumer
 
 \subsection{Componentes: Servicio de análisis y módulos de reglas}
 
-En este hito se desarrollaron los servicios de análisis y de los módulos de reglas. En cuanto al del módulo de análisis, este realmente no cuenta con mucha lógica. Participa como intermediario entre el conocimiento y los servicios de reglas. Como hemos visto, recibe los eventos de cambios en las propiedades y los propaga a la capa superior. Ofrece operaciones de solo lectura del conocimiento. Así, impedimos las escrituras por parte de las reglas.
+En este hito se desarrollaron los servicios de análisis y de los módulos de reglas (figura \ref{fig:hito-2-analisis}). En cuanto al del módulo de análisis, este realmente no cuenta con mucha lógica. Participa como intermediario entre el conocimiento y los servicios de reglas. Como hemos visto, recibe los eventos de cambios en las propiedades y los propaga a la capa superior. Ofrece operaciones de solo lectura del conocimiento. Así, impedimos las escrituras por parte de las reglas.
 
-\textcolor{red}{Más tarde nos dimos cuenta que se podría considerar que este servicio ha quedado ''anémico''\footnote{Similar a los objetos anémicos, sin apenas lógica: \url{https://www.martinfowler.com/bliki/AnemicDomainModel.html}}. No tiene apenas lógica propia. Cuando se realice la refactorización del bucle original, se podría evalúar si tiene sentido mantener esta división. Si no es así, debería desplegarse como una librería que consuman todos los servicios de reglas de adaptación. En trabajos posteriores, este servicio podría ampliarse añadiendo autenticación y autorización. Así, se podría evitar que servicios no autorizados accedan a sus operaciones o soliciten adaptaciones maliciosas.}
+\begin{wrapfigure}{l}{0.3\linewidth}
+  \vspace{-20pt}
+  \centering
+  \includegraphics[scale=0.6]{cap_implementacion/images/hito-2-analisis}
+\caption{Segundo hito: reglas de adaptación y módulo de análisis.}
+  \label{fig:hito-2-analisis}
+  \vspace{-10pt}
+\end{wrapfigure}
+
+Más tarde nos dimos cuenta que se podría considerar como un servicio ''anémico''\footnote{Similar a los objetos anémicos, sin apenas lógica: \url{https://www.martinfowler.com/bliki/AnemicDomainModel.html}}. No tiene apenas lógica propia. Cuando se realice la refactorización del bucle original, se podría evalúar si tiene sentido mantener esta división. Si no es así, debería desplegarse como una librería que consuman todos los servicios de reglas de adaptación. En trabajos posteriores, este servicio podría ampliarse añadiendo autenticación y autorización. Así, se podría evitar que servicios no autorizados accedan a sus operaciones o soliciten adaptaciones maliciosas.
 
 Respecto a los módulos de reglas, a continuación ofrecemos una implementación de referencia. En el fragmento \ref{ls:adaption-rule-base} mostramos la clase base de las reglas de adaptación. Se desarrolló siguiendo el patrón plantilla (o \foreign{english}{template})\footnote{\url{https://refactoring.guru/design-patterns/template-method}}. Define un método que evalúa la condición de la regla (\texttt{EvaluateCondition}) y, si esta se cumple, la ejecuta (\texttt{Execute}). Aquellas reglas que hereden de esta deberán de implementar ambos métodos.
 
