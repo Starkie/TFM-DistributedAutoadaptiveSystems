@@ -396,7 +396,7 @@ En el hito final desarrollamos la ejecución del plan de adaptación. Cerramos a
 
 El servicio de ejecución recibe el plan de adaptación del planificador mediante una petición asíncrona. Para ejecutarlo, deberá agrupar las acciones por el servicio afectado y distribuirlas entre los distintos ejecutores de la solución. Para transmitirlas, enviará cada grupo de acciones mediante una notificación. Pueden existir varios ejecutores de la solución, y no deberíamos acoplarnos a ellos. El evento enviado es muy similar al que ya mostramos en el fragmento \ref{ls:adaption-change-plan}.
 
-Cuando un ejecutor capture esta notificación, procesará las acciones asignadas. Este componente será el encargado de traducir las acciones de adaptación a manipulaciones de efectores del recurso manejado. Dependiendo del tipo de acción, el efector hará una acción u otra: desplegar un servicio, o eliminarlo, cambiar la configuración, etc.
+Cuando un ejecutor capture esta notificación, procesará las acciones asignadas. Este componente será el encargado de traducir las acciones de adaptación a manipulaciones de efectores del recurso manejado. Dependiendo del tipo de acción, el efector hará una acción u otra: desplegar un servicio, o eliminarlo, cambiar la configuración, etc. Para reducir el alcance del proyecto, sólo implementamos las adaptaciones de tipo \foreign{english}{set parameter}.
 
 En cuanto a la comunicación con el efector, este caso es un tanto especial. El mecanismo dependerá del sistema manejado; de si tenemos control sobre su implementación. Si no es así, tendremos que adaptarnos a aquellos protocolos que ofrezca el recurso (HTTP, mensajería...).
 
