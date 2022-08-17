@@ -124,7 +124,7 @@ En la tabla \ref{tab:adaption-rules-climatisation} especificamos las cuatro regl
     & \includegraphics[scale=0.75]{cap_caso-estudio/images/adaption-loop-rule-heat} \\
     \hline
 
-    \textbf{Regla:} & \emph{DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureAchieved}  \\
+    \textbf{Regla:} & \emph{DisableAirConditionerWhenHeatingModeEnabledAndTargetTemperatureReached}  \\
     \textbf{Descripción:} & Apaga el aire acondicionado cuando el modo calefacción está activo y se ha alcanzado la temperatura de confort.  \\
     \textbf{Condición:} & \emph{airconditioner-mode} $=$ \emph{Heating} \textbf{AND} \emph{temperature} $\ge$ \emph{target-temperature}  \\
     \textbf{Cuerpo:} &  \\
@@ -138,7 +138,9 @@ En la tabla \ref{tab:adaption-rules-climatisation} especificamos las cuatro regl
     & \includegraphics[scale=0.75]{cap_caso-estudio/images/adaption-loop-rule-cooling} \\
     \hline
 
-    \textbf{Regla:} & \emph{DisableAirConditionerWhenCoolingAndTargetTemperatureAchievedAdaptionRule}  \\
+    \pagebreak
+
+    \textbf{Regla:} & \emph{DisableAirConditionerWhenCoolingAndTargetTemperatureReachedAdaptionRule}  \\
     \textbf{Descripción:} & Apaga el aire acondicionado cuando el modo enfiar está activo y se ha alcanzado la temperatura de confort.  \\
     \textbf{Condición:} & \emph{airconditioner-mode} $=$  \emph{Cooling} \textbf{AND} \emph{temperature} $\le$ \emph{target-temperature}  \\
     \textbf{Cuerpo:} &  \\
@@ -151,9 +153,7 @@ En la tabla \ref{tab:adaption-rules-climatisation} especificamos las cuatro regl
 
 \subsection{Efectores:}
 
-Una vez se evaluén estas reglas, solicitamos un cambio en la configuración del sistema. El módulo de planificación comprobará contra el conocimiento y el estado actual del sistema cuáles de los cambios solicitados es necesario aplicar. Si por ejemplo la propiedad ya tiene el valor solicitado, no hará falta ejecutarla.
-
-El modulo de ejecución recibirá la petición y se la redirigirá a los efectores del sistema de climatización. En este caso, requerimos de efectores que cambien el modo del aire acondicionado según corresponda.
+Los efectores que expondrá el aire acondicionado para cambiar su modo de funcionamiento son:
 
 \begin{table}[htb]
   \centering
@@ -175,37 +175,33 @@ El modulo de ejecución recibirá la petición y se la redirigirá a los efector
     \label{tab:climatisation-effectors}
 \end{table}
 
-Hecho esto, el sistema se adapta a a la nueva situación, y reportará una nueva temperatura en cuanto corresponda. La temperatura variará dependiendo de si está apagado o no.
-
-\subsection{Configuración del sistema}
-
-Requerimos entonces 4 servicios para implementar la solución: Servicio de aire acondicionado, monitor de climatización, el servicio de reglas y el servicio de efectores. Con ellos, podemos adaptarnos al bucle MAPE-K descrito en el capítulo %TODO: Capítulo.
-
 \section{Implementación}
 
-Para la implementación, hemos utilizado las mismas tecnologías descritas en el capítulo \ref{chap:implementación}: microservicios \texttt{ASP.NET}, comunicación mediante APIs REST y \foreign{english}{brokers} de mensajería \texttt{RabbitMQ}. Generamos los API Clients con OpenAPI y demás.
+En esta sección describiremos la implementación del sistema de climatización. Para funcionar como un elemento autónomo, tendremos que emplear los servicios del bucle MAPE-K distribuido y otros cuatro nuevos. Por un lado estará el recurso manejado, el aire acondicionado. Y por el otro, tendremos los servicios de infraestructura necesarios para operar con el bucle. Estos son el monitor, el servicio de reglas y el servicio de efectores.
 
-A continuación describiremos todos los servicios implementados:
+Para su implementación, hemos empleado las mismas tecnologías descritas en el capítulo \ref{chap:implementación}: microservicios \texttt{ASP.NET}, comunicación mediante APIs REST basadas en HTTP y \foreign{english}{brokers} de mensajería \texttt{RabbitMQ}. A continuación, describiremos cada uno:
 
 \subsection{Servicio de aire acondicionado}
 
-El servicio de aire acondicionado será nuestro sistema manejado. Como no disponemos de un aire acondicionado real, hemos optado por implementar uno ficticio. Este cuenta con tres estados de operación: apagado (\texttt{OFF}), enfriando (\texttt{COOLING}) o calentando (\texttt{HEATING}). Según el modo, aumentará o disminuirá la temperatura que reporta un termómetro interno. Además, cuando está apagado, la temperatura ficticia aumenta o disminuye gradualmente según una configuración. De esta forma, podemos simular los cambios de temperatura más rápido y ver si se aplican correctamente las adaptaciones correspondientes.
+El servicio de aire acondicionado será nuestro recurso manejado. Este cuenta con tres modos de operación: apagado (\texttt{OFF}), enfriando (\texttt{COOLING}) o calentando (\texttt{HEATING}). Según el modo, simulará el aumento o disminución de la temperatura que reporta el termómetro interno. Incluso cuando esté apagado, la temperatura variará para forzar su activación. De esta forma, podemos verificar más rápido si se aplican correctamente las adaptaciones.
 
-Además, este servicio expone tres endpoints HTTP, que nos permiten cambiar el modo del aire acondicionado. Serán estos los que invocará el servicio de efectores para manipular su estado.
+El componente expone una API con tres \foreign{english}{endpoints} para cambiar el modo. Son estos los que invocará el ejecutor durante las adaptaciones. Además, cuando se produzca el cambio, reportará automáticamente al monitor su nuevo valor. Esto servirá para confirmar el cambio y completar el proceso de adaptación.
 
-Por otro lado, para simplificar la configuración del sistema, optamos por registrar las propiedades del aire acondicionado durante su arranque. Tenemos para ello un servicio en segundo plano (un \foreign{english}{background service} de \texttt{ASP.NET}) que registra la configuración inicial durante el arranque. Así le daremos valor a las propiedades como los umbrales de temperatura o las variables como is-deployed. \textcolor{red}{Es necesario un fragmento de código?}
+El termómetro interno está implementado como un servicio en segundo plano dentro del aire acondicionado. Un \foreign{english}{background service}\footnote{ayyy \url{https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services\#backgroundservice-base-class}} de ASP.NET. Este reportará periódicamente, cada pocos segundos, la temperatura actual al monitor.
+
+Durante el arranque del servicio tenemos otra tarea en segundo plano. Esta se ejecuta una sola vez y se encarga de registrar la configuración inicial del recurso manejado. Este dará valor a las propiedades como los umbrales de temperatura o las variables como \texttt{is-deployed} en el conocimiento.
 
 \subsection{Monitor}
 
-El monitor de la solución expone endpoints para recabar las mediciones de las sondas. En este caso, las mediciones de temperatura del aire acondicionado: \texttt{POST Measurement/Temperature}. Este endpoint recibe la temperatura y ejecuta las validaciones descritas en el apartado anterior: descarta valores con diferencias de 5ºC tomados en menos de un minuto, entre otras. Si el valor es válido, lo manda al servicio de monitorización. A su vez este lo almacenará en el conocimiento como propiedad de adaptación.
+El monitor de la solución expone un \foreign{english}{endpoint} para recabar las mediciones de temperatura. Se encuentra en la ruta \texttt{POST Measurement/Temperature}. Cuando reciba un valor deberá validarlo. El monitor descartará aquellos con diferencias mayores a 5ºC y tomados con menos de un minuto de diferencia. En cambio, si es válido, lo envía al servicio de monitorización. Este lo recibirá y lo almacenará en el conocimiento como una propiedad de adaptación.
 
-El servicio también ofrece endpoints para actualizar la configuración del aire acondicionado en el conocimiento. Así podrá registrar su configuración inicial o los modos de operación cuando cambien. Son un subconjunto de los endpoints que ofrece el conocimiento, expuestos a través del servicio de monitorización del bucle.
+El servicio también ofrece \foreign{english}{endpoints} para actualizar la configuración del aire acondicionado en el conocimiento. Así podrá registrar su configuración inicial o los modos de operación cuando cambien. Son un subconjunto de los que ofrece el conocimiento, expuestos a través del servicio de monitorización del bucle.
 
 \subsection{Reglas}
 
-En cuanto al servicio de reglas, este contiene las cuatro reglas definidas en el apartado \ref{sec:caso-estudio-diseño-reglas}. Estas activan o desactivan el aire acondicionado en base a la temperatura de la estancia. Se han implementado siguiendo la estructura descrita en el apartado \ref{sec:implementacion-modulo-reglas}. Todas ellas heredan de las clase abstracta \texttt{AdaptionRuleBase}. Deben implementar los métodos para evaluar la condición y ejecutar su acción; y deben declarar las propiedades de adaptación de las que dependen.
+En cuanto al servicio de reglas, este contiene las cuatro definidas en el apartado \ref{sec:caso-estudio-diseño-reglas}. Las reglas activan o desactivan el aire acondicionado en base a la temperatura de la estancia. Se han implementado siguiendo la estructura descrita en el apartado \ref{sec:implementacion-modulo-reglas}. Todas ellas heredan de las clase abstracta \texttt{AdaptionRuleBase}. Deben implementar los métodos para evaluar la condición y ejecutar su acción. También tendrán que declarar las propiedades de adaptación de las que dependen para suscribirse a sus cambios.
 
-Para describirlas, nos centraremos en la regla \texttt{Disable Air Conditioner When Cooling And Target Temperature Achieved Adaption Rule}. Esta desactiva el aire acondicionado cuando está en modo enfriamiento y se ha alcanzado la temperatura de enfriamiento de la estancia. A lo largo de la memoria ya habíamos mostrado algunos fragmentos de código de esta.
+Para describirlas tomaremos como ejemplo la regla \texttt{Disable Air Conditioner When Cooling And Target Temperature Reached Adaption Rule}. Esta desactiva el aparato cuando está activo el modo enfriamiento y se ha alcanzado la temperatura de confort. A lo largo de la memoria ya habíamos mostrado algunos fragmentos de código de esta.
 
 Las reglas describen las propiedades o configuraciones de las que dependen mediante atributos. Se trata de aquellas que requiere para evaluar su condición. Tomemos por ejemplo el fragmento \ref{ls:adaption-rule-dependencies}. Observamos que declara de tres dependencias: \texttt{airconditioner-mode}, \texttt{temperature} y \texttt{hot-temperature-threshold}.
 
