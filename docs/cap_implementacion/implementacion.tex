@@ -280,7 +280,7 @@ public class DisableAirConditionerWhenCoolingAndTargetTemperatureAchievedAdaptio
 }
 \end{lstlisting}
 
-En base a los atributos, el servicio se suscribirá a los \foreign{english}{topics} de las notificaciones que emite el módulo de análisis. Para leerlos emplearemos la \textbf{reflexión}: analizaremos el ensamblado buscando las reglas y obtendremos los valores de sus atributos. Se le pasarán a Rebus, que gestionará la suscripción con RabbitMQ.
+En base a los atributos, el servicio se suscribirá a los \foreign{english}{topics} de las notificaciones que emite el módulo de análisis. Para leerlos emplearemos la \textbf{reflexión}: analizaremos el ensamblado buscando las reglas y obtendremos los valores de sus atributos. Se le pasarán a \texttt{Rebus}, que gestionará la suscripción con \texttt{RabbitMQ}.
 
 \section{Servicio de planificación y peticiones de cambio}
 
@@ -380,16 +380,24 @@ Por ejemplo, en el fragmento \ref{ls:adaption-change-plan} encontramos un plan d
 Para reducir el alcance del proyecto, no validaremos la viabilidad del plan de adaptación. Se descartó implementar los planificadores específicos de la solución.  Sólo contaremos con la estrategia por defecto: validar que el plan contenga al menos un acción.
 
 
-\section{Ejecutor y efectores}
+\section{Servicio de ejecución y efectores}
 
-En el hito final implementamos el módulo ejecutor y los efectores. Cerramos así el ciclo del bucle de adaptación. El ejecutor recibe el plan de adaptación del planificador. A partir de este, deberá distribuir las acciones de adaptación que contiene entre los servicios de efectores.
 
-Para transmitirle el plan de adaptación del planificador al ejecutor, volvemos a recurrir a las peticiones asíncronas. El plan de adaptación que se le pasa como evento de integración es el que ya mostramos en el fragmento \ref{ls:adaption-change-plan}.
+En el hito final desarrollamos la ejecución del plan de adaptación. Cerramos así el ciclo del bucle de adaptación. Esto requirió del módulo ejecutor, los ejecutores de la solución y los efectores del recurso manejado (figura \ref{fig:hito-4-ejecutor}).
 
-Una vez captura la petición, el ejecutor deberá determinar qué servicios debe cambiar y manipular sus efectores. En nuestra implementación de referencia, simplemente agrupamos las acciones por el nombre del servicio afectado. Publicaremos cada grupo como notificaciones individuales, usando el nombre del servicio como tema.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale=0.55]{cap_implementacion/images/hito-4-ejecutor}
+  \caption{Componentes desarrollados durante el cuarto hito: Módulo de ejecución, ejecutores y efectores.}
+  \label{fig:hito-4-ejecutor}
+\end{figure}
 
-Los servicios de efectores del recurso manejado las capturarán. Estos servicios procesan las acciones asignadas. Si contienen el efector correspondiente, la ejecutarán. Dependiendo del tipo de acción, el efector hará una acción u otra: desplegar un servicio, o eliminarlo, cambiar la configuración, etc.
+\subsection{Componentes: Servicio de ejecución, ejecutores y efectores}
 
-En cuanto a la comunicación con el sistema, este caso es un tanto especial. El mecanismo dependerá del sistema manejado; de si tenemos control sobre su implementación. Si no es así, tendremos que adaptarnos a aquellos que ofrezca el recurso (HTTP, mensajería...).
+El servicio de ejecución recibe el plan de adaptación del planificador mediante una petición asíncrona. Para ejecutarlo, deberá agrupar las acciones por el servicio afectado y distribuirlas entre los distintos ejecutores de la solución. Para transmitirlas, enviará cada grupo de acciones mediante una notificación. Pueden existir varios ejecutores de la solución, y no deberíamos acoplarnos a ellos. El evento enviado es muy similar al que ya mostramos en el fragmento \ref{ls:adaption-change-plan}.
 
-Continuando con nuestro ejemplo del modo del aire acondicionado, el sistema modificaría la configuración del mismo. Una vez se confime el cambio, si se ha llevado a cabo, se ejecutará actualizará su valor en la base de conocimiento. Dependerá de si el sistema es capaz de hacerlo o debe recaer la responsabilidad en el efector.
+Cuando un ejecutor capture esta notificación, procesará las acciones asignadas. Este componente será el encargado de traducir las acciones de adaptación a manipulaciones de efectores del recurso manejado. Dependiendo del tipo de acción, el efector hará una acción u otra: desplegar un servicio, o eliminarlo, cambiar la configuración, etc.
+
+En cuanto a la comunicación con el efector, este caso es un tanto especial. El mecanismo dependerá del sistema manejado; de si tenemos control sobre su implementación. Si no es así, tendremos que adaptarnos a aquellos protocolos que ofrezca el recurso (HTTP, mensajería...).
+
+Continuando con el ejemplo del aire acondicionado, el ejecutor recibiría la notificación con las acciones a ejecutar. En este caso, cambiar el modo de funcionamiento a enfriar. Para ello, enviará la acción al efector y se ejecutará. Una vez se confirme el cambio, una sonda lo detectará y notificará a su monitor. Se seguirá el mismo proceso que con las demás mediciones para guardarlo en la base de conocimiento.
