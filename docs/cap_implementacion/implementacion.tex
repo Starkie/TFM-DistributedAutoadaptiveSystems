@@ -139,9 +139,10 @@ La siguiente etapa que desarrollamos fue la evaluación de las reglas de adaptac
 \subsection{Notificaciones}
 
 \begin{wrapfigure}{r}{0.13\linewidth}
-  \vspace{-20pt}
+  \vspace{-10pt}
   \includegraphics[scale=0.09]{cap_implementacion/images/rabbitmq}
   \centering
+  \vspace{-10pt}
 \end{wrapfigure}
 
 Comenzaremos describiendo el desarrollo de las notificaciones (flechas moradas de la figura \ref{fig:hito-2-analisis}). Como ya se describió en la sección \ref{sec:notificaciones}, este mecanismo se implementó mediante un \foreign{english}{broker} de mensajería. Elegimos \texttt{RabbitMQ}\footnote{Página oficial: \url{https://www.rabbitmq.com/}} para el proyecto, un \foreign{english}{broker} sencillo y ampliamente utilizado. \cite{newmanBuildingMicroservicesDesigning2021}
@@ -281,15 +282,24 @@ public class DisableAirConditionerWhenCoolingAndTargetTemperatureAchievedAdaptio
 
 En base a los atributos, el servicio se suscribirá a los \foreign{english}{topics} de las notificaciones que emite el módulo de análisis. Para leerlos emplearemos la \textbf{reflexión}: analizaremos el ensamblado buscando las reglas y obtendremos los valores de sus atributos. Se le pasarán a Rebus, que gestionará la suscripción con RabbitMQ.
 
-\section{Planificador}
+\section{Servicio de planificación y peticiones de cambio}
 
-En el tercer hito implementamos las peticiones de cambio de las reglas y el servicio de planificación. Aquí surge también la necesidad del tercer patrón de comunicación: las peticiones asíncronas.
+En el tercer hito implementamos las peticiones de cambio en la configuración del sistema. Este proceso comienza con la ejecución del cuerpo de las reglas y acaba con la generación de un \textbf{plan de cambio}. Esto requirió del desarrollo de un nuevo servicio: el planificador (figura \ref{fig:hito-3-planificador}). En este hito también surgió la necesidad de las peticiones asíncronas, el tercer protocolo de comunicación.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale=0.50]{cap_implementacion/images/hito-3-planificador}
+  \caption{Componente desarrollado durante el tercer hito: Planificador.}
+  \label{fig:hito-3-planificador}
+\end{figure}
 
 \subsection{Peticiones asíncronas}
 
-Continuando con las reglas de adaptación, llega el turno de describir su ejecución. Esta tiene lugar una vez se evalúa la condición y se estima que es necesaria una acción correctiva. En el cuerpo de la regla se describe la acción como una serie de cambios a la configuración del sistema. Para implementar el método, requerimos de un mecanismo para solicitar los cambios.
+Las peticiones asíncronas son el tercer mecanismo de comunicación de nuestra arquitectura (flecha naranja en la figura \ref{fig:hito-3-planificador}). Estas permiten interactuar a los servicios que pertenecen a una misma capa. Para describir su implementación tomaremos de ejemplo las peticiones de cambio de las reglas de adaptación.
 
-Las reglas comunicarán la solicitud al módulo de análisis mediante una petición síncrona. En el fragmento \ref{ls:change-request-builder} mostramos un ejemplo. Usando su API Client, implementamos un \foreign{english}{builder}\footnote{Patrón \foreign{english}{builder}: \url{https://refactoring.guru/design-patterns/builder}} para simplificar la creación de solicitudes de cambio. En este ejemplo, indicamos cuál debería ser la siguiente configuración para el servicio \texttt{Climatisation AirConditioner Service} (líneas 7-14). Deberá estar activo (lineas 7-10) y su propiedad \texttt{Mode} con el valor \texttt{Cooling} (lineas 11-13). En esta petición se incluye también el síntoma que desencadena el cambio (línea 6).
+Cuando la regla evalúa su condición y estima que es necesaria una acción correctiva, se ejecuta su método \texttt{Execute}. Este método envía una petición que describe cuál debería ser el siguiente estado del recurso manejado. Por ejemplo, qué componentes deben estar presentes o no, qué conexiones deben existir, etc.
+
+Las reglas comunicarán esta solicitud al módulo de análisis mediante una petición síncrona. Para simplificar el proceso, desarrollamos un \foreign{english}{builder}\footnote{Patrón \foreign{english}{builder}: \url{https://refactoring.guru/design-patterns/builder}} de peticiones por encima de su API \foreign{english}{client}. En el fragmento \ref{ls:change-request-builder} mostramos un ejemplo. Allí se indica cuál debería ser la siguiente configuración para el servicio \texttt{Climatisation AirConditioner Service} (líneas 7-14). Deberá estar activo (línea 10) y su propiedad \texttt{Mode} deberá tener el valor \texttt{Cooling} (líneas 11-13). También se incluye el síntoma que desencadena el cambio (línea 6).
 
 \begin{lstlisting}[language={[Sharp]C},caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.},captionpos=b, label=ls:change-request-builder]
 protected override async Task Execute()
@@ -310,9 +320,9 @@ protected override async Task Execute()
 }
 \end{lstlisting}
 
-El servicio de análisis recibirá la petición y la redirigirá al planificador. Lo hará mediante una petición asíncrona. Su implementación es muy similar a la de las notificaciones, explicada en detalle en el apartado anterior. La mayor diferencia radica en la cardinalidad de la comunicación: el mensaje se publicará directamente en la cola de trabajo, en lugar de publicarlo en un exchange. Es decir, como mucho lo procesará un solo servicio.
+El servicio de análisis recibirá la petición y la redirigirá al planificador mediante una petición asíncrona. Su implementación es muy similar a la de las notificaciones, explicada en detalle en el apartado anterior. La mayor diferencia radica en la cardinalidad de la comunicación: en lugar de publicarlo en un \foreign{english}{exchange}, el mensaje se publicará directamente en la cola de trabajo. Sólo lo debería procesará un servicio.
 
-Esto implica que sólo cambiará la implementación del publicador. En la línea 14 del fragmento \ref{ls:request-publisher} vemos que el mensaje se enruta directamente a la cola \texttt{PlanningServiceQueue}. El resto de la implementación será muy similar. Solo cambiará las interfaces que debamos implementar para cada tipo de componente (\texttt{IRequestConsumer} en lugar de \texttt{IIntegrationEventConsumer}, etc.).
+Como la comunicación es tan similar, únicamente cambiará la implementación del publicador. La mayor diferencia la podemos apreciar en el fragmento \ref{ls:request-publisher}. Allí, vemos que el mensaje se enruta directamente a la cola \texttt{PlanningServiceQueue} (línea 15). También cambiarán las interfaces que deban implementar los componentes. En este caso \texttt{IRequestPublisher} en lugar de \texttt{IIntegrationEventPublisher} (línea 2).
 
 \begin{lstlisting}[language={[Sharp]C},caption={Las peticiones asíncronas se publican a una cola determinada.},captionpos=b, label=ls:request-publisher]
 public class SystemConfigurationChangeRequestPublisher
@@ -339,9 +349,7 @@ public class SystemConfigurationChangeRequestPublisher
 
 \subsection{Componentes: Servicio de planificación}
 
-El planificador recibirá esta petición de cambio y deberá elaborar un \textbf{plan de adaptación}. Para ello, verificará que la solicitud es viable. En nuestro prototipo, para reducir el alcance del proyecto, nos limitamos a comprobar que la configuración sea distinta a la actual. Añadirá al plan las \textbf{acciones de adaptación} requeridas para alcanzar el estado deseado. Si el sistema ya estuviera en ese estado, el plan de cambio se queda vacío y no se propaga.
-
-Ya comentamos que los operadores arquitectónicos con los que operaremos serán del ámbito de los microservicios: activar servicio, eliminar servicio, vincular servicios, desvincularlos y cambiar su configuración.
+El planificador consumirá esta petición de cambio y deberá elaborar un \textbf{plan de adaptación}. Para ello, deberá determinar qué acciones son necesarias para alcanzar el estado deseado. Lo comparará con el estado actual, almacenado en el conocimiento, y añadirá al plan las \textbf{acciones de adaptación} requeridas. Si el sistema ya estuviera en ese estado, el plan de cambio se quedará vacío y no se propagará.
 
 Por ejemplo, en el fragmento \ref{ls:adaption-change-plan} encontramos un plan de adaptación para la regla descrita en la sección anterior. Solo contiene una acción de adaptación: cambiar el valor de la propiedad \texttt{Mode} a \texttt{Cooling}. Como el servicio de aire acondicionado ya estaba en funcionamiento, no se ha incluido una acción para desplegarlo.
 
@@ -368,6 +376,9 @@ Por ejemplo, en el fragmento \ref{ls:adaption-change-plan} encontramos un plan d
   ]
 }
 \end{lstlisting}
+
+Para reducir el alcance del proyecto, no validaremos la viabilidad del plan de adaptación. Se descartó implementar los planificadores específicos de la solución.  Sólo contaremos con la estrategia por defecto: validar que el plan contenga al menos un acción.
+
 
 \section{Ejecutor y efectores}
 
