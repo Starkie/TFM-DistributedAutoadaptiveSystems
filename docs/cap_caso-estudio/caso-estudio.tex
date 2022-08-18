@@ -187,7 +187,7 @@ El servicio de aire acondicionado será nuestro recurso manejado. Este cuenta co
 
 El componente expone una API con tres \foreign{english}{endpoints} para cambiar el modo. Son estos los que invocará el ejecutor durante las adaptaciones. Además, cuando se produzca el cambio, reportará automáticamente al monitor su nuevo valor. Esto servirá para confirmar el cambio y completar el proceso de adaptación.
 
-El termómetro interno está implementado como un servicio en segundo plano dentro del aire acondicionado. Un \foreign{english}{background service}\footnote{ayyy \url{https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services\#backgroundservice-base-class}} de ASP.NET. Este reportará periódicamente, cada pocos segundos, la temperatura actual al monitor.
+El termómetro interno está implementado como un servicio en segundo plano dentro del aire acondicionado. Un \foreign{english}{background service}\footnote{Documentación oficial: \url{https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services\#backgroundservice-base-class}} de ASP.NET. Este reportará periódicamente, cada pocos segundos, la temperatura actual al monitor.
 
 Durante el arranque del servicio tenemos otra tarea en segundo plano. Esta se ejecuta una sola vez y se encarga de registrar la configuración inicial del recurso manejado. Este dará valor a las propiedades como los umbrales de temperatura o las variables como \texttt{is-deployed} en el conocimiento.
 
@@ -201,14 +201,14 @@ El servicio también ofrece \foreign{english}{endpoints} para actualizar la conf
 
 En cuanto al servicio de reglas, este contiene las cuatro definidas en el apartado \ref{sec:caso-estudio-diseño-reglas}. Las reglas activan o desactivan el aire acondicionado en base a la temperatura de la estancia. Se han implementado siguiendo la estructura descrita en el apartado \ref{sec:implementacion-modulo-reglas}. Todas ellas heredan de las clase abstracta \texttt{AdaptionRuleBase}. Deben implementar los métodos para evaluar la condición y ejecutar su acción. También tendrán que declarar las propiedades de adaptación de las que dependen para suscribirse a sus cambios.
 
-Para describirlas tomaremos como ejemplo la regla \texttt{Disable Air Conditioner When Cooling And Target Temperature Reached Adaption Rule}. Esta desactiva el aparato cuando está activo el modo enfriamiento y se ha alcanzado la temperatura de confort. A lo largo de la memoria ya habíamos mostrado algunos fragmentos de código de esta.
+Para describirlas tomaremos como ejemplo la regla \texttt{Disable Air Conditioner When Cooling And Target Temperature Reached Adaption Rule}. Esta desactiva el aparato cuando está activo el modo enfriamiento y se ha alcanzado la temperatura de confort. A lo largo de la memoria ya hemos mostrado algunos fragmentos de su código.
 
-Las reglas describen las propiedades o configuraciones de las que dependen mediante atributos. Se trata de aquellas que requiere para evaluar su condición. Tomemos por ejemplo el fragmento \ref{ls:adaption-rule-dependencies}. Observamos que declara de tres dependencias: \texttt{airconditioner-mode}, \texttt{temperature} y \texttt{hot-temperature-threshold}.
+La regla describe las propiedades o configuraciones de las que depende mediante atributos. Son los parámetros que requiere para evaluar su condición. Tomemos por ejemplo el fragmento \ref{ls:adaption-rule-dependencies}. Observamos que declara tres dependencias: \texttt{airconditioner-mode}, \texttt{temperature} y \texttt{hot-temperature-threshold}.
 
-En cuanto a la implementación, ya habíamos mostrado su método \texttt{Execute} en el fragmento \ref{ls:change-request-builder}. Solo nos queda exponer la implementación de referencia del método \texttt{Evaluate Condition}. En el fragmento \ref{ls:adaption-rule-evaluate-condition} ofrecemos la implementación de la condición \emph{airconditioner-mode} == \emph{Cooling} \textbf{AND} \emph{temperature} <= \emph{target-temperature}. Observamos que en las líneas 3-5, 12-15 y 17-20 se obtienen las propiedades de adaptación o claves de configuración desde el servicio de análisis. En base a ellas, en las líneas 22-23 se evalúa la condición descrita.
+En cuanto a la implementación, ya habíamos discutido anteriormente su método \texttt{Execute} en el fragmento \ref{ls:change-request-builder}. Solo nos queda exponer la implementación de referencia del método \texttt{Evaluate}. En el fragmento \ref{ls:adaption-rule-evaluate-condition} podemos ver la condición. Observamos que en las líneas 3-5, 12-15 y 17-20 se obtienen las propiedades de adaptación o claves de configuración desde el servicio de análisis. En base a ellas, en las líneas 22-23 se evalúa.
 
-\begin{lstlisting}[language={[Sharp]C},caption={Implementación de referencia del método \texttt{EvaluateCondition}. La regla obtiene del conocimiento el estado actual del sistema y determina si debe ejecutarse.},captionpos=b, label=ls:adaption-rule-evaluate-condition]
-protected override async Task<bool> EvaluateCondition()
+\begin{lstlisting}[language={[Sharp]C},caption={Implementación de referencia del método \texttt{Evaluate}. La regla obtiene del conocimiento el estado actual del sistema y determina si debe ejecutarse.},captionpos=b, label=ls:adaption-rule-evaluate-condition]
+protected override async Task<bool> Evaluate()
 {
   var currentTemperature =
     await _propertyService.GetProperty<TemperatureMeasurementDTO>(
@@ -234,13 +234,13 @@ protected override async Task<bool> EvaluateCondition()
 }
 \end{lstlisting}
 
-\subsection{Efectores}
+\subsection{Ejecutores}
 
-Finalmente, tenemos el servicio de efectores. En la última etapa del bucle de adaptación, el módulo de ejecución emite una notificación con las acciones de adaptación que debe ejecutarse para determinado componente del sistema manejado. El servicio de efectores se suscribirá a estas notificaciones de aquellos componentes que gestiona. En este caso, las referentes al aire acondicionado.
+Finalmente, tenemos el servicio de ejecutores. En la última etapa del bucle de adaptación, el módulo de ejecución emite una notificación con las acciones de adaptación que debe ejecutarse para determinado componente del recurso manejado. El servicio de ejecutores se suscribirá a estas notificaciones de aquellos componentes que gestiona. En este caso, las referentes al aire acondicionado.
 
-Una vez capturada, determinará el tipo de acción que debe ejecutar e invocará a su implementación. En nuestro caso, hacemos un dispatch interno del evento
+Para el caso de estudio, por restricciones de tiempo, nos limitamos a implementar las adaptaciones que implicaban cambios en la configuración del sistema manejado (adaptaciones \foreign{english}{set parameter}). Los efectores que exponga el recurso manejado determinará cómo se ejecutarán estas acciones.
 
-Para el caso de estudio, por restricciones de tiempo, nos limitamos a implementar las adaptaciones que implicaban cambios en la configuración del sistema manejado (adaptaciones \foreign{english}{set parameter}). La implementación del componente manejado determinará cómo se ejecutarán estas acciones. Dependemos de los efectores que expongan. Por ejemplo, para el servicio de aire acondicionado, cambiar el modo de operación supone invocar a unos endpoints que expone. Por ejemplo: (\texttt{POST /airconditioner/turn-off}).
+Para el servicio de aire acondicionado, cambiar el modo de operación supone invocar a los \foreign{english}{endpoints} HTTP que expone. En el fragmento \ref{ls:effector-airconditioner-set-parameter} mostramos cómo se ejecuta la acción de adaptación para cambiar la configuración \texttt{Mode}. En base al nuevo valor, se invocará a un \foreign{english}{endpoint} u otro (líneas 14 a 27). Para ello, empleamos el API \foreign{english}{client} generado del servicio de aire acondicionado.
 
 \begin{lstlisting}[language={[Sharp]C},caption={Implementación de los efectores del aire acondicionado. Invocan a los endpoints HTTP en base a las acciones de adaptación.},captionpos=b, label=ls:effector-airconditioner-set-parameter]
 public async Task<Unit> Handle(
