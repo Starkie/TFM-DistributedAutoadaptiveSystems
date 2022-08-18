@@ -18,11 +18,11 @@ Para orquestar el despliegue de la solución optamos por \texttt{Docker Compose}
 
 \texttt{Docker Compose} también nos permite declarar las dependencias entre servicios. Esto fue clave para el despliegue del contenedor de \texttt{RabbitMQ}. Debido a que el protocolo requiere de una conexión permanente al bus\cite{johanssonPartRabbitMQBest2019}, todos los servicios que dependen de él deben desplegarse después. Por ello, declaramos una dependencia con este servicio y definimos una política de reintentos.
 
-\subsection{Telemetría}
+\subsection{Observabilidad y telemetría}
 
-Un punto en el que queremos hacer hincapié es en la telemetría. Debido a que estamos tratando con un sistema distribuido es complicado conocer el estado del sistema en determinado momento. Especialmente en este caso, que participan más de diez servicios distintos.
+Un punto en el que queremos hacer hincapié es en la telemetría. Debido a que estamos tratando con un sistema distribuido, es complicado conocer su estado global en un momento determinado. Especialmente en este caso, en el que participan más de diez microservicios distintos. Si necesitáramos depurar y diagnosticar el comportamiento del sistema, es muy difícil trazar el impacto de una petición.
 
-Por defecto, solo contábamos con los \emph{logs} de consola, que mostramos en la figura \ref{fig:console-logs}. Aparecen en una única ventana intercalados los registros de todos los servicios. Aunque nos pueden resultar útil, es una aproximación ineficiente y según aumente la escala de peticiones simultáneamente se volverá más difícil de interpretar.
+Por defecto, solo contábamos con los \emph{logs} (registros), que mostramos en la figura \ref{fig:console-logs}. Aparecen intercalados en una única ventana los de todos los servicios y peticiones concurrentes. Aunque nos pueden resultar utilidad, es una aproximación ineficiente. Incluyen demasiada información y es difícil de procesar para una persona. Además que, según aumente la carga de peticiones, aumentará el número de registros y se volverá más difícil de interpretar.
 
 \begin{figure}[h]
   \centering
@@ -31,10 +31,20 @@ Por defecto, solo contábamos con los \emph{logs} de consola, que mostramos en l
   \label{fig:console-logs}
 \end{figure}
 
-Por ello, para que resultara más sencillo trabajar en la implementación de los servicios y diagnosticar qué ocurre con el sistema, decidimos implementar una solución de observabilidad. La observabilidad es \cite{parkerProblemDistributedTracing2020} y consta de tres partes distintas: %TODO CITA
+En el ámbito de los sistemas distribuidos requerimos de soluciones de monitorización y \foreign{english}{logging} más avanzadas. \cite{newmanBuildingMicroservicesDesigning2021} Nuestros servicios tendrán que recopilar y reportar datos de su funcionamiento, lo que se conoce como \textbf{telemetría}. Esto requerirá de \textbf{instrumentar} nuestros sistemas con distintas herramientas o \textbf{sondas}. Es exactamente lo mismo que hacemos en la etapa de monitorización del bucle MAPE-K.
+
+Para explotar estos datos recurrimos a técnicas de \textbf{observabilidad}. Según \cite{parkerProblemDistributedTracing2020}, la observabilidad <<\emph{no es sólo un método para monitorizar sistemas en producción, si no también para ser capaces de entender su comportamiento usando un número relativamente bajo de señales}>>. Con \textbf{señales} se refiere a las distintas fuentes de información de telemetría de las que dispongamos.
+
+La observabilidad nos ayuda a detectar variaciones en el funcionamiento de nuestro sistema. Estas puedes ser provocadas por errores, realentizaciones, etc. Hay un sinfin de causas. La observabilidad nos permite medirlas y explicar las causas de esta variación. en base a las señales. ayudarnos a: medir el impacto del funcionamiento de la aplicación sobre los usuarios y explicar la variación en esas medidades.
+
+
+Existen tres tipos de señales que podemos capturar de nuestros servicios. Todas ellas son complementarias, ya que reflejan su funcionamiento desde distintas perspectivas. Son conocidos como \textbf{los tres pilares de la observabilidad}:
+
 \begin{itemize}
   \item \textbf{Logs}: \textcolor{red}{A recording of an Event. Typically the record includes a timestamp indicating when the Event happened as well as other data that describes what happened, where it happened, etc. \cite{opentelemetryOpenTelemetryDocumentation2022} Provide extremely fine-grained detail on a given service, but have no built-in way to provide that detail in the context of a request. \cite{parkerProblemDistributedTracing2020}}
+
   \item \textbf{Métricas}: \textcolor{red}{Son agregados que nos permiten conocer el estado de las estancias de nuestros servicios. Records a data point, either raw measurements or predefined aggregation, as timeseries with Metadata. \cite{opentelemetryOpenTelemetryDocumentation2022}}
+
   \item \textbf{Trazas distribuidas}: \textcolor{red}{Tracks the progression of a single Request, called a Trace, as it is handled by Services that make up an Application. A Distributed Trace transverses process, network and security boundaries. \cite{opentelemetryOpenTelemetryDocumentation2022}  providing visibility into the operation of your microservice architecture. It allows you to gain critical insights into the performance and status of individual services as part of a chain of requests in a way that would be difficult or time-consuming to do otherwise. Distributed tracing gives you the ability to understand exactly what a particular, individual service is doing as part of the whole, enabling you to ask and answer questions about the performance of your services and your distributed system. \cite{parkerProblemDistributedTracing2020}}
 \end{itemize}
 
