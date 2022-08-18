@@ -207,6 +207,8 @@ La regla describe las propiedades o configuraciones de las que depende mediante 
 
 En cuanto a la implementación, ya habíamos discutido anteriormente su método \texttt{Execute} en el fragmento \ref{ls:change-request-builder}. Solo nos queda exponer la implementación de referencia del método \texttt{Evaluate}. En el fragmento \ref{ls:adaption-rule-evaluate-condition} podemos ver la condición. Observamos que en las líneas 3-5, 12-15 y 17-20 se obtienen las propiedades de adaptación o claves de configuración desde el servicio de análisis. En base a ellas, en las líneas 22-23 se evalúa.
 
+\pagebreak
+
 \begin{lstlisting}[language={[Sharp]C},caption={Implementación de referencia del método \texttt{Evaluate}. La regla obtiene del conocimiento el estado actual del sistema y determina si debe ejecutarse.},captionpos=b, label=ls:adaption-rule-evaluate-condition]
 protected override async Task<bool> Evaluate()
 {
@@ -274,53 +276,3 @@ public async Task<Unit> Handle(
     return Unit.Value;
 }
 \end{lstlisting}
-
-\section{Despliegue y Pruebas}
-
-Debido a la gran cantidad de microservicios que componen la solución, optamos por empaquetarlos en contenedores \texttt{Docker}. Para ello, definimos un plan de despliegue con Docker Compose, que nos permitía definir el número de instancias y las dependencias entre ellas. Por ejemplo, todos los servicios que requieran de un bus de mensajería, dependen de la instancia de RabbitMQ desplegada. Por simplicidad, optamos por desplegar una única instancia para toda la solución. Lo ideal sería que cada que requiriera de emitir sus propias notificaciones dispongan de la suya propia, que se adapte más a sus necesidades.
-
-\subsection{Telemetría}
-
-Un punto en el que queremos hacer hincapié es en la telemetría. Debido a que estamos tratando con un sistema distribuido es complicado conocer el estado del sistema en determinado momento. Especialmente en este caso, que participan más de diez servicios distintos.
-
-Por defecto, solo contábamos con los \emph{logs} de consola, que mostramos en la figura \ref{fig:console-logs}. Aparecen en una única ventana intercalados los registros de todos los servicios. Aunque nos pueden resultar útil, es una aproximación ineficiente y según aumente la escala de peticiones simultáneamente se volverá más difícil de interpretar.
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[scale=1.45]{cap_caso-estudio/images/console-logs}
-  \caption{Extracto de \emph{logs} de una ejecución habitual.}
-  \label{fig:console-logs}
-\end{figure}
-
-Por ello, para que resultara más sencillo trabajar en la implementación de los servicios y diagnosticar qué ocurre con el sistema, decidimos implementar una solución de observabilidad. La observabilidad es \cite{parkerProblemDistributedTracing2020} y consta de tres partes distintas: %TODO CITA
-\begin{itemize}
-  \item \textbf{Logs}: \textcolor{red}{A recording of an Event. Typically the record includes a timestamp indicating when the Event happened as well as other data that describes what happened, where it happened, etc. \cite{opentelemetryOpenTelemetryDocumentation2022} Provide extremely fine-grained detail on a given service, but have no built-in way to provide that detail in the context of a request. \cite{parkerProblemDistributedTracing2020}}
-  \item \textbf{Métricas}: \textcolor{red}{Son agregados que nos permiten conocer el estado de las estancias de nuestros servicios. Records a data point, either raw measurements or predefined aggregation, as timeseries with Metadata. \cite{opentelemetryOpenTelemetryDocumentation2022}}
-  \item \textbf{Trazas distribuidas}: \textcolor{red}{Tracks the progression of a single Request, called a Trace, as it is handled by Services that make up an Application. A Distributed Trace transverses process, network and security boundaries. \cite{opentelemetryOpenTelemetryDocumentation2022}  providing visibility into the operation of your microservice architecture. It allows you to gain critical insights into the performance and status of individual services as part of a chain of requests in a way that would be difficult or time-consuming to do otherwise. Distributed tracing gives you the ability to understand exactly what a particular, individual service is doing as part of the whole, enabling you to ask and answer questions about the performance of your services and your distributed system. \cite{parkerProblemDistributedTracing2020}}
-\end{itemize}
-
-Para poder capturar todos estos elementos, optamos por usar el estándar OpenTelemetry. Se trata de una librería estándar utilizada para instrumentar el código de las aplicaciones. Distintas compañías del ámbito de la telemetría software ofrecen APIs que capturan el output de esta librería.
-
-Gracias a él pudimos capturar la telemetría de la siguiente forma implementar usando tres servicios distintos:
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[scale=0.75]{cap_caso-estudio/images/observability-telemetry-collection}
-  \caption{Extracto de \emph{logs} de una ejecución habitual.}
-  \label{fig:observability-telemetry-collection}
-\end{figure}
-
-\subsubsection{Loki: Logs}
-Lo primero que queremos ver es cómo mejorar nuestra estrategia de logging. Lo ideal es añadir identificadores de correlación (el traceID), que nos permita rastrear a través de los distintos servicios una misma traza. Por ejemplo, podemos filtrar a partir de ella para ver todos los detalles de los servicios que intervinieron.
-
-\subsubsection{Jaeger: Trazas distribuidas}
-
-Gracias a las trazas distribuidas, podemos ver todas las actividades por las que pasó una petición. En nuestro caso, podemos ver por todos los estados por los que paso.
-
-\subsubsection{Prometheus: Métricas}
-
-
-\subsubsection{Grafana: Visualización}
-
-Desarrollamos un panel de monitorización con Grafana. Esto nos permitía consultar en un solo lugar las métricas, los logs y las trazas.
-
