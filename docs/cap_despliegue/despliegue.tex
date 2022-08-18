@@ -35,20 +35,37 @@ En el ámbito de los sistemas distribuidos requerimos de soluciones de monitoriz
 
 Para explotar estos datos recurrimos a técnicas de \textbf{observabilidad}. Según \cite{parkerProblemDistributedTracing2020}, la observabilidad <<\emph{no es sólo un método para monitorizar sistemas en producción, si no también para ser capaces de entender su comportamiento usando un número relativamente bajo de señales}>>. Con \textbf{señales} se refiere a las distintas fuentes de información de telemetría de las que dispongamos.
 
-La observabilidad nos ayuda a detectar variaciones en el funcionamiento de nuestro sistema. Estas puedes ser provocadas por errores, realentizaciones, etc. Hay un sinfin de causas. La observabilidad nos permite medirlas y explicar las causas de esta variación. en base a las señales. ayudarnos a: medir el impacto del funcionamiento de la aplicación sobre los usuarios y explicar la variación en esas medidades.
-
+\textcolor{red}{La observabilidad nos ayuda a detectar variaciones en el funcionamiento de nuestro sistema. Estas puedes ser provocadas por errores, realentizaciones, etc. Hay un sinfin de causas. La observabilidad nos permite medirlas y explicar las causas de esta variación. en base a las señales. ayudarnos a: medir el impacto del funcionamiento de la aplicación sobre los usuarios y explicar la variación en esas medidas.}
 
 Existen tres tipos de señales que podemos capturar de nuestros servicios. Todas ellas son complementarias, ya que reflejan su funcionamiento desde distintas perspectivas. Son conocidos como \textbf{los tres pilares de la observabilidad}:
 
 \begin{itemize}
-  \item \textbf{Logs}: \textcolor{red}{A recording of an Event. Typically the record includes a timestamp indicating when the Event happened as well as other data that describes what happened, where it happened, etc. \cite{opentelemetryOpenTelemetryDocumentation2022} Provide extremely fine-grained detail on a given service, but have no built-in way to provide that detail in the context of a request. \cite{parkerProblemDistributedTracing2020}}
+  \item \textbf{\foreign{english}{Logs}}: Se trata de eventos de la aplicación que se registran durante su funcionamiento. Pueden almacenarse como simples cadenas de texto o estructuras de datos más complejas. En el segundo caso, se trata de registros enriquecidos con propiedades que les dotan de más contexto. Es el mecanismo de telemetría que ofrece más detalle del funcionamiento de un servicio concreto. También es el más usado.
 
-  \item \textbf{Métricas}: \textcolor{red}{Son agregados que nos permiten conocer el estado de las estancias de nuestros servicios. Records a data point, either raw measurements or predefined aggregation, as timeseries with Metadata. \cite{opentelemetryOpenTelemetryDocumentation2022}}
+  \item \textbf{Métricas}: Son datos agregados que nos permiten conocer el estado global de nuestros servicios.  \cite{opentelemetryOpenTelemetryDocumentation2022} Se calculan a partir de mediciones de parámetros del servicio en un momento determinado. Por ejemplo del número de peticiones recibidas, su duración, etc. Normalmente se representan cómo series temporales: peticiones por segundo, duración media de las peticiones, etc.
 
-  \item \textbf{Trazas distribuidas}: \textcolor{red}{Tracks the progression of a single Request, called a Trace, as it is handled by Services that make up an Application. A Distributed Trace transverses process, network and security boundaries. \cite{opentelemetryOpenTelemetryDocumentation2022}  providing visibility into the operation of your microservice architecture. It allows you to gain critical insights into the performance and status of individual services as part of a chain of requests in a way that would be difficult or time-consuming to do otherwise. Distributed tracing gives you the ability to understand exactly what a particular, individual service is doing as part of the whole, enabling you to ask and answer questions about the performance of your services and your distributed system. \cite{parkerProblemDistributedTracing2020}}
+  \item \textbf{Trazas distribuidas}: Se trata del mecanismo más reciente. Es una forma de registrar el recorrido que hace una petición a través de los distintos microservicios que componen nuestro sistema. Nos permite ver cómo participa cada uno de ellos en la operación y qué impacto tiene en el rendimiento. \cite{parkerProblemDistributedTracing2020}
+
+  Para registrar una traza, le asignaremos a la petición un identificador único que se propagará con cada sub-petición. Están compuestas por \foreign{english}{spans}, operaciones que se realizan dentro de la petición. Cada uno puede tener otras sub-operaciones anidadas. \cite{opentelemetryOpenTelemetryDocumentation2022}
 \end{itemize}
 
-Para poder capturar todos estos elementos, optamos por usar el estándar OpenTelemetry. Se trata de una librería estándar utilizada para instrumentar el código de las aplicaciones. Distintas compañías del ámbito de la telemetría software ofrecen APIs que capturan el output de esta librería.
+Para explotar estos datos, necesitaremos poder hacer consultas sobre ellos. Pongamos por ejemplo que hemos detectado que ha aumentado considerablemente la métrica de la duración media de las peticiones. A partir de la fecha y hora de este suceso, deberíamos poder recuperar la información necesaria para responder a la pregunta de qué ha pasado. Ya sean \foreign{english}{logs}, trazas u otras métricas relacionadas.
+
+Una \textbf{plataforma de observabilidad} es un conjunto de servicios que nos permite centralizar la gestión de los datos.
+
+Para poder capturar y explotar esta información debimos construir nuestra propia \textbf{plataforma de observabilidad}. Esta nos permitió hacer consultas sobre el estado del sistema y crear vistas que nos permitan conocerlo. También pudimos correlacionar los datos de las metricas, trazas y logs ara hacer consultas
+
+\begin{wrapfigure}{r}{0.16\linewidth}
+  \centering
+  \vspace{-10pt}
+  \includegraphics[scale=0.40]{cap_despliegue/images/opentelemetry-logo}
+  \vspace{-10pt}
+\end{wrapfigure}
+
+Para poder capturar todas estas señales, empleamos el estándar \textbf{OpenTelemetry}\footnote{Página oficial: \url{https://opentelemetry.io/}}. Se trata de un proyecto desarrollado por la Cloud Native Computing Foundation (CNCF). Tiene el objetivo de definir un mecanismo estándar para recopilar y transmitir datos de telemetría. Para ello, ofrece un conjunto de librerias que nos permite instrumentar nuestras aplicaciones. Podremos enviar estos datos a cualquier plataforma que ofrezca extensiones compatibles.
+
+Para poder capturar y explotar estas señales, necesitaremos construir nuestra plataforma de observabilidad.
+
 
 Gracias a él pudimos capturar la telemetría de la siguiente forma implementar usando tres servicios distintos:
 
@@ -61,6 +78,11 @@ Gracias a él pudimos capturar la telemetría de la siguiente forma implementar 
 
 \subsubsection{Loki: Logs}
 Lo primero que queremos ver es cómo mejorar nuestra estrategia de logging. Lo ideal es añadir identificadores de correlación (el traceID), que nos permita rastrear a través de los distintos servicios una misma traza. Por ejemplo, podemos filtrar a partir de ella para ver todos los detalles de los servicios que intervinieron.
+
+\begin{itemize}
+  \item Podemos correlacionar logs de distintos servicios utilizando un identificador único. Por ejemplo, cuando todos surgen a partir de una misma petición. Se trata del \foreign{english}{traceId} (identificador de la traza). \cite{parkerProblemDistributedTracing2020}
+\end{itemize}
+
 
 \subsubsection{Jaeger: Trazas distribuidas}
 
