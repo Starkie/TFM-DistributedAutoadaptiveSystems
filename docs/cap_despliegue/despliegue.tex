@@ -101,23 +101,48 @@ Nuestros servicios emiten los \foreign{english}{logs} siguiendo el mismo conveni
   \includegraphics[scale=0.025]{cap_despliegue/images/prometheus-logo}
 \end{wrapfigure}
 
-\texttt{Prometheus}\footnote{Página oficial: \url{https://prometheus.io/}} es una herramienta de monitorización y alertas desarrollada originalmente por SoundCloud. Nos permite capturar mediciones de distintos parámetros de nuestros servicios. Estas serán procesadas y almacenadas como métricas de series temporales. Sobre ellas, podremos hacer distintos tipos de análisis, consultas y visualizaciones.
+\texttt{Prometheus}\footnote{Página oficial: \url{https://prometheus.io/}} es una herramienta de monitorización y alertas desarrollada originalmente por SoundCloud. Nos permite capturar mediciones de parámetros de nuestros servicios. Estas serán procesadas y almacenadas como series temporales. Sobre ellas, podremos hacer distintos tipos de análisis, consultas y visualizaciones.
 
-Por defecto, ASP.NET captura varias métricas distintas que podemos exponer con Prometheus. Pero, también podemos definir nuestras propias métricas. Estas pueden ser de distintos tipos. Los más habituales son los \textbf{contadores} e \textbf{indicadores}. \cite{parkerProblemDistributedTracing2020} Los primeros aumentan su valor cada vez que ocurre un evento determinado. Por ejemplo, el número de peticiones recibidas. Por otro lado, los indicadores representan un valor en un momento determinado. Por ejemplo, el número de usuarios activos actualmente.
+Por defecto, ASP.NET captura distintas métricas que podemos exponer con Prometheus. También nos permite definir las nuestras propias. Estas pueden ser de distintos tipos. Los más habituales son los \textbf{contadores} e \textbf{indicadores}. \cite{parkerProblemDistributedTracing2020} Los primeros aumentan su valor cada vez que ocurre un evento determinado. Por ejemplo, el número de peticiones recibidas. Por otro lado, los indicadores representan un valor en un momento determinado. Por ejemplo, el número de usuarios activos actualmente.
 
-Para capturar los datos, el servidor de Prometheus ejecutará consultas HTTP sobre un \foreign{english}{endpoint} estándar: \texttt{GET /metrics}. Nuestros servicios instrumentados expondrán sus métricas y mediciones allí. En la figura \ref{fig:prometheus-ejemplo-metricas} tenemos un ejemplo. Muestra las métricas capturadas por defecto y algunas definidas por nosotros, como un contador de obtenciones de configuraciones.
+Para importar los datos, el servidor de Prometheus ejecutará periódicamente consultas HTTP sobre un \foreign{english}{endpoint} estándar: \texttt{GET /metrics}. Nuestros servicios instrumentados expondrán sus métricas y mediciones allí. En la figura \ref{fig:prometheus-ejemplo-metricas} tenemos un ejemplo. Muestra las métricas por defecto y algunas definidas por nosotros, como un contador de peticiones de configuraciones.
 
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=1.75]{cap_despliegue/images/Prometheus-Metricas-Ejemplo}
-  \caption{Ejemplo de la estructura de un registro.}
+  \caption{Ejemplo de las métricas que expone el \foreign{english}{endpoint} de Prometheus en el servicio de conocimiento.}
   \label{fig:prometheus-ejemplo-metricas}
 \end{figure}
 
-
 \subsubsection{Jaeger: Trazas distribuidas}
 
-Gracias a las trazas distribuidas, podemos ver todas las actividades por las que pasó una petición. En nuestro caso, podemos ver por todos los estados por los que paso.
+\begin{wrapfigure}{r}{0.10\linewidth}
+  \vspace{-20pt}
+  \includegraphics[scale=0.12]{cap_despliegue/images/jaeger-logo-x}
+  \vspace{-20pt}
+\end{wrapfigure}
+
+Jaeger\footnote{Página oficial: \url{https://www.jaegertracing.io}} es un sistema para la captura de trazas distribuidas. Fue desarrollado originalmente por Uber Technologies. Todos los servicios instrumentados enviarán allí los fragmentos correspondientes a las actividades en las que participan (los \foreign{english}{spans}). A partir de ellas y el identificador común de la traza, es capaz de reconstruir la traza completa de la petición.
+
+Gracias a las trazas distribuidas, podemos ver todas las actividades que desencadenó una petición concreta. Podemos ver sus nombres, su duración e incluso las sub-actividades en las que derivan. En nuestro caso, mostramos en la figura \ref{fig:jaeger-traza-distribuida} un fragmento de la traza del reporte de una medición de temperatura. Vemos que esta inicia con la actividad de reporte y que acaba desencadenando actividades en seis servicios distintos.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[scale=0.35]{cap_despliegue/images/jaeger-traza-distribuida}
+  \caption{Ejemplo de una traza distribuida de Jaeger. Representa las actividades que desencadena el reporte de una medición de tempertura.}
+  \label{fig:jaeger-traza-distribuida}
+\end{figure}
+
+A partir de las trazas, Jaeger también es capaz de inferir la arquitectura de nuestra aplicación. En la figura \ref{fig:jaeger-arquitectura-inferida} mostramos la arquitectura inferida de nuestro sistema de climatización. Podemos comprobar que la implementación respeta la jerarquía de los microservicios definida en este trabajo. Aunque, este diagrama no muestra el mecanismo de comunicación usado entre cada uno.
+
+\begin{figure}[htb]
+  \hspace{1.25cm}
+  \includegraphics[scale=0.3]{cap_despliegue/images/Jaeger-arquitectura-climatizacion}
+  \caption{Arquitectura inferida por Jaeger de nuestro sistema de climatización a partir de las trazas capaturadas.}
+  \label{fig:jaeger-arquitectura-inferida}
+\end{figure}
+
+
 
 
 \subsubsection{Grafana: Visualización}

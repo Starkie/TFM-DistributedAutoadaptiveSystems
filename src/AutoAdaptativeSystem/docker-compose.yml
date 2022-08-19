@@ -207,6 +207,8 @@ services:
       - "9411:9411"
     environment:
       COLLECTOR_ZIPKIN_HOST_PORT: 9411
+      METRICS_STORAGE_TYPE: "prometheus"
+      PROMETHEUS_SERVER_URL: "http://prometheus:9090"
     networks:
       - knowledge-network
       - adaption-loop-network
