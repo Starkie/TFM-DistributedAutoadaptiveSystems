@@ -64,28 +64,58 @@ Para poder capturar y explotar estas señales, necesitaremos construir nuestra p
 
 Para capturar la telemetría, empleamos el estándar \textbf{OpenTelemetry}\footnote{Página oficial: \url{https://opentelemetry.io/}}. Se trata de un proyecto desarrollado por la Cloud Native Computing Foundation (CNCF). Tiene el objetivo de definir un mecanismo estándar para recopilar y transmitir datos de telemetría. Para ello, ofrece un conjunto de librerias que nos permite instrumentar nuestras aplicaciones. Podremos enviar estos datos a cualquier plataforma que ofrezca extensiones compatibles.
 
-Nuestra plataforma de observabilidad tiene la siguiente estructura (figura \ref{fig:observability-telemetry-collection}):
+Con estas herramientas hemos instrumentado todos nuestros servicios. Nuestra plataforma de observabilidad tiene la siguiente estructura (figura \ref{fig:observability-telemetry-collection}):
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[scale=0.29]{cap_despliegue/images/observability-telemetry-collection}
+  \includegraphics[scale=0.28]{cap_despliegue/images/observability-telemetry-collection}
   \caption{Estructura de nuestra plataforma de observabilidad}
   \label{fig:observability-telemetry-collection}
 \end{figure}
 
-\subsubsection{Loki: Logs}
-Lo primero que queremos ver es cómo mejorar nuestra estrategia de logging. Lo ideal es añadir identificadores de correlación (el traceID), que nos permita rastrear a través de los distintos servicios una misma traza. Por ejemplo, podemos filtrar a partir de ella para ver todos los detalles de los servicios que intervinieron.
+\subsubsection{Grafana Loki: \foreign{english}{Logs}}
 
-\begin{itemize}
-  \item Podemos correlacionar logs de distintos servicios utilizando un identificador único. Por ejemplo, cuando todos surgen a partir de una misma petición. Se trata del \foreign{english}{traceId} (identificador de la traza). \cite{parkerProblemDistributedTracing2020}
-\end{itemize}
+\begin{wrapfigure}{r}{0.10\linewidth}
+  \vspace{-7pt}
+  \hspace{-10pt}
+  \centering
+  \includegraphics[scale=0.85]{cap_despliegue/images/Loki}
+\end{wrapfigure}
+
+\texttt{Loki}\footnote{Página oficial: \url{https://grafana.com/oss/loki/}} es un agregador de \foreign{english}{logs} estructurados desarrollado por Grafana Labs. Todos los servicios instrumentados se los enviarán y este los almacenará de forma centralizada. Para facilitar las consultas, Loki indexa todos los registros en base a etiquetas (\foreign{english}{labels}), metadatos especificados por el usuario. Por ejemplo, el nivel (información, \foreign{english}{warning}...) o el nombre del servicio que los emite.
+
+Nuestros servicios emiten los \foreign{english}{logs} siguiendo el mismo convenio. Estos deben incluir la fecha del evento y su nivel de severidad. También incluirán propiedades que indiquen el nombre del emisor y el del entorno en el que se encuentra. Además, queremos correlacionar \foreign{english}{logs} de distintos servicios que se originen de una misma petición. Para ello los etiquetaremos con un identificador único: el identificador de la traza (\texttt{traceId}). En la figura \ref{fig:loki-ejemplo-logs} mostramos un ejemplo de toda la información registrada.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5]{cap_despliegue/images/Ejemplo-log}
+  \caption{Ejemplo de la estructura de un registro.}
+  \label{fig:loki-ejemplo-logs}
+\end{figure}
+
+\subsubsection{Prometheus: Métricas}
+
+\begin{wrapfigure}{r}{0.10\linewidth}
+  \vspace{-7pt}
+  \centering
+  \includegraphics[scale=0.025]{cap_despliegue/images/prometheus-logo}
+\end{wrapfigure}
+
+\texttt{Prometheus}\footnote{Página oficial: \url{https://prometheus.io/}} es una herramienta de monitorización y alertas desarrollado por SoundCloud. Nos permite capturar y almacenar las métricas de nuestros servicios. Sobre ellas, podremos hacer distintos tipos de análisis y visualizaciones.
+
+Para capturar los datos, el servicio consulta un endpoint estándar
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[scale=1.75]{cap_despliegue/images/Prometheus-Metricas-Ejemplo}
+  \caption{Ejemplo de la estructura de un registro.}
+  \label{fig:prometheus-ejemplo-metricas}
+\end{figure}
 
 
 \subsubsection{Jaeger: Trazas distribuidas}
 
 Gracias a las trazas distribuidas, podemos ver todas las actividades por las que pasó una petición. En nuestro caso, podemos ver por todos los estados por los que paso.
-
-\subsubsection{Prometheus: Métricas}
 
 
 \subsubsection{Grafana: Visualización}
