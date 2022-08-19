@@ -35,44 +35,41 @@ En el ámbito de los sistemas distribuidos requerimos de soluciones de monitoriz
 
 Para explotar estos datos recurrimos a técnicas de \textbf{observabilidad}. Según \cite{parkerProblemDistributedTracing2020}, la observabilidad <<\emph{no es sólo un método para monitorizar sistemas en producción, si no también para ser capaces de entender su comportamiento usando un número relativamente bajo de señales}>>. Con \textbf{señales} se refiere a las distintas fuentes de información de telemetría de las que dispongamos.
 
-\textcolor{red}{La observabilidad nos ayuda a detectar variaciones en el funcionamiento de nuestro sistema. Estas puedes ser provocadas por errores, realentizaciones, etc. Hay un sinfin de causas. La observabilidad nos permite medirlas y explicar las causas de esta variación. en base a las señales. ayudarnos a: medir el impacto del funcionamiento de la aplicación sobre los usuarios y explicar la variación en esas medidas.}
-
-Existen tres tipos de señales que podemos capturar de nuestros servicios. Todas ellas son complementarias, ya que reflejan su funcionamiento desde distintas perspectivas. Son conocidos como \textbf{los tres pilares de la observabilidad}:
+La observabilidad nos ayuda a detectar \textbf{fluctuaciones en el funcionamiento} de nuestro sistema. Estas puedes ser errores, realentizaciones, caídas de servicios, etc. También nos permite \textbf{explicar sus causas} a partir de las señales. De nuestros servicios podemos capturar tres tipos de señales distintos. Todas ellas son complementarias, ya que reflejan el funcionamiento desde distintas perspectivas. Son conocidas como \textbf{los tres pilares de la observabilidad}:
 
 \begin{itemize}
-  \item \textbf{\foreign{english}{Logs}}: Se trata de eventos de la aplicación que se registran durante su funcionamiento. Pueden almacenarse como simples cadenas de texto o estructuras de datos más complejas. En el segundo caso, se trata de registros enriquecidos con propiedades que les dotan de más contexto. Es el mecanismo de telemetría que ofrece más detalle del funcionamiento de un servicio concreto. También es el más usado.
+  \item \textbf{\foreign{english}{Logs}}: Se trata de eventos de la aplicación que se registran durante su funcionamiento. Pueden ser simples cadenas de texto o estructuras de datos más complejas. En el segundo caso, se trata de registros enriquecidos con propiedades que les dotan de más contexto. Es el mecanismo de telemetría que ofrece más detalle del funcionamiento de un servicio concreto. También es el más usado.
 
-  \item \textbf{Métricas}: Son datos agregados que nos permiten conocer el estado global de nuestros servicios.  \cite{opentelemetryOpenTelemetryDocumentation2022} Se calculan a partir de mediciones de parámetros del servicio en un momento determinado. Por ejemplo del número de peticiones recibidas, su duración, etc. Normalmente se representan cómo series temporales: peticiones por segundo, duración media de las peticiones, etc.
+  \item \textbf{Métricas}: Son datos agregados que nos permiten conocer el estado global de nuestros servicios. \cite{opentelemetryOpenTelemetryDocumentation2022} Se calculan a partir de mediciones de parámetros del servicio en un momento determinado. Por ejemplo del número de peticiones recibidas, su duración, etc. Normalmente se representan cómo series temporales: peticiones por segundo, duración media de las peticiones, etc.
 
   \item \textbf{Trazas distribuidas}: Se trata del mecanismo más reciente. Es una forma de registrar el recorrido que hace una petición a través de los distintos microservicios que componen nuestro sistema. Nos permite ver cómo participa cada uno de ellos en la operación y qué impacto tiene en el rendimiento. \cite{parkerProblemDistributedTracing2020}
 
   Para registrar una traza, le asignaremos a la petición un identificador único que se propagará con cada sub-petición. Están compuestas por \foreign{english}{spans}, operaciones que se realizan dentro de la petición. Cada uno puede tener otras sub-operaciones anidadas. \cite{opentelemetryOpenTelemetryDocumentation2022}
 \end{itemize}
 
-Para explotar estos datos, necesitaremos poder hacer consultas sobre ellos. Pongamos por ejemplo que hemos detectado que ha aumentado considerablemente la métrica de la duración media de las peticiones. A partir de la fecha y hora de este suceso, deberíamos poder recuperar la información necesaria para responder a la pregunta de qué ha pasado. Ya sean \foreign{english}{logs}, trazas u otras métricas relacionadas.
+Para explotar estos datos, necesitaremos entonces poder hacer consultas sobre ellos. Pongamos por ejemplo que hemos detectado que ha aumentado considerablemente la métrica de la duración media de las peticiones. A partir de la fecha y hora de este suceso, deberíamos poder recuperar la información necesaria para responder a la pregunta de qué ha pasado. Ya sean \foreign{english}{logs}, trazas u otras métricas relacionadas.
 
-Una \textbf{plataforma de observabilidad} es un conjunto de servicios que nos permite centralizar la gestión de los datos.
+Con este fin se surgen las \textbf{plataformas de observabilidad}. Se trata de conjuntos de servicios que capturan los datos de telemetría. Los procesan y almacenan para su posterior consulta. También contamos con servicios que nos permiten visualizar y consultar de forma conjunta toda esta información. Por ejemplo, mediante \foreign{english}{dashboards} o paneles.
 
-Para poder capturar y explotar esta información debimos construir nuestra propia \textbf{plataforma de observabilidad}. Esta nos permitió hacer consultas sobre el estado del sistema y crear vistas que nos permitan conocerlo. También pudimos correlacionar los datos de las metricas, trazas y logs ara hacer consultas
+\subsubsection{Plataforma de observabilidad}
 
-\begin{wrapfigure}{r}{0.16\linewidth}
+Para poder capturar y explotar estas señales, necesitaremos construir nuestra propia plataforma de observabilidad. Para este trabajo hemos optado por una combinación de cuatro servicios. \texttt{Grafana Loki} para capturar los \foreign{english}{logs}. \texttt{Prometheus} para capturar las métricas. \texttt{Jaeger} para capturar las trazas distribuidas. Y \texttt{Grafana} para visualizar y consultar todos los datos.
+
+\begin{wrapfigure}{r}{0.15\linewidth}
+  \vspace{-10pt}
+  \hspace{10pt}
   \centering
-  \vspace{-10pt}
-  \includegraphics[scale=0.40]{cap_despliegue/images/opentelemetry-logo}
-  \vspace{-10pt}
+  \includegraphics[scale=0.5]{cap_despliegue/images/opentelemetry-logo}
 \end{wrapfigure}
 
-Para poder capturar todas estas señales, empleamos el estándar \textbf{OpenTelemetry}\footnote{Página oficial: \url{https://opentelemetry.io/}}. Se trata de un proyecto desarrollado por la Cloud Native Computing Foundation (CNCF). Tiene el objetivo de definir un mecanismo estándar para recopilar y transmitir datos de telemetría. Para ello, ofrece un conjunto de librerias que nos permite instrumentar nuestras aplicaciones. Podremos enviar estos datos a cualquier plataforma que ofrezca extensiones compatibles.
+Para capturar la telemetría, empleamos el estándar \textbf{OpenTelemetry}\footnote{Página oficial: \url{https://opentelemetry.io/}}. Se trata de un proyecto desarrollado por la Cloud Native Computing Foundation (CNCF). Tiene el objetivo de definir un mecanismo estándar para recopilar y transmitir datos de telemetría. Para ello, ofrece un conjunto de librerias que nos permite instrumentar nuestras aplicaciones. Podremos enviar estos datos a cualquier plataforma que ofrezca extensiones compatibles.
 
-Para poder capturar y explotar estas señales, necesitaremos construir nuestra plataforma de observabilidad.
+Nuestra plataforma de observabilidad tiene la siguiente estructura (figura \ref{fig:observability-telemetry-collection}):
 
-
-Gracias a él pudimos capturar la telemetría de la siguiente forma implementar usando tres servicios distintos:
-
-\begin{figure}[h]
+\begin{figure}[h!]
   \centering
-  \includegraphics[scale=0.75]{cap_despliegue/images/observability-telemetry-collection}
-  \caption{Extracto de \emph{logs} de una ejecución habitual.}
+  \includegraphics[scale=0.29]{cap_despliegue/images/observability-telemetry-collection}
+  \caption{Estructura de nuestra plataforma de observabilidad}
   \label{fig:observability-telemetry-collection}
 \end{figure}
 
