@@ -96,14 +96,16 @@ Nuestros servicios emiten los \foreign{english}{logs} siguiendo el mismo conveni
 \subsubsection{Prometheus: Métricas}
 
 \begin{wrapfigure}{r}{0.10\linewidth}
-  \vspace{-7pt}
+  \vspace{-12pt}
   \centering
   \includegraphics[scale=0.025]{cap_despliegue/images/prometheus-logo}
 \end{wrapfigure}
 
-\texttt{Prometheus}\footnote{Página oficial: \url{https://prometheus.io/}} es una herramienta de monitorización y alertas desarrollado por SoundCloud. Nos permite capturar y almacenar las métricas de nuestros servicios. Sobre ellas, podremos hacer distintos tipos de análisis y visualizaciones.
+\texttt{Prometheus}\footnote{Página oficial: \url{https://prometheus.io/}} es una herramienta de monitorización y alertas desarrollada originalmente por SoundCloud. Nos permite capturar mediciones de distintos parámetros de nuestros servicios. Estas serán procesadas y almacenadas como métricas de series temporales. Sobre ellas, podremos hacer distintos tipos de análisis, consultas y visualizaciones.
 
-Para capturar los datos, el servicio consulta un endpoint estándar
+Por defecto, ASP.NET captura varias métricas distintas que podemos exponer con Prometheus. Pero, también podemos definir nuestras propias métricas. Estas pueden ser de distintos tipos. Los más habituales son los \textbf{contadores} e \textbf{indicadores}. \cite{parkerProblemDistributedTracing2020} Los primeros aumentan su valor cada vez que ocurre un evento determinado. Por ejemplo, el número de peticiones recibidas. Por otro lado, los indicadores representan un valor en un momento determinado. Por ejemplo, el número de usuarios activos actualmente.
+
+Para capturar los datos, el servidor de Prometheus ejecutará consultas HTTP sobre un \foreign{english}{endpoint} estándar: \texttt{GET /metrics}. Nuestros servicios instrumentados expondrán sus métricas y mediciones allí. En la figura \ref{fig:prometheus-ejemplo-metricas} tenemos un ejemplo. Muestra las métricas capturadas por defecto y algunas definidas por nosotros, como un contador de obtenciones de configuraciones.
 
 \begin{figure}[htb]
   \centering
