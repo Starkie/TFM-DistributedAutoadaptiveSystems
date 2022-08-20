@@ -260,6 +260,7 @@
 \RequirePackage{graphicx}
 \RequirePackage{eso-pic}
 
+\RequirePackage{pdflscape}
 
 %%%%%%%%%%%%%%
 %  Navegable - Links

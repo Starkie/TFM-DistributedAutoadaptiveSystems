@@ -109,14 +109,14 @@ Para importar los datos, el servidor de Prometheus ejecutará periódicamente co
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=1.75]{cap_despliegue/images/Prometheus-Metricas-Ejemplo}
+  \includegraphics[scale=1.65]{cap_despliegue/images/Prometheus-Metricas-Ejemplo}
   \caption{Ejemplo de las métricas que expone el \foreign{english}{endpoint} de Prometheus en el servicio de conocimiento.}
   \label{fig:prometheus-ejemplo-metricas}
 \end{figure}
 
 \subsubsection{Jaeger: Trazas distribuidas}
 
-\begin{wrapfigure}{r}{0.10\linewidth}
+\begin{wrapfigure}{r}{0.15\linewidth}
   \vspace{-20pt}
   \includegraphics[scale=0.12]{cap_despliegue/images/jaeger-logo-x}
   \vspace{-20pt}
@@ -142,10 +142,32 @@ A partir de las trazas, Jaeger también es capaz de inferir la arquitectura de n
   \label{fig:jaeger-arquitectura-inferida}
 \end{figure}
 
-
-
-
 \subsubsection{Grafana: Visualización}
 
-Desarrollamos un panel de monitorización con Grafana. Esto nos permitía consultar en un solo lugar las métricas, los logs y las trazas.
+\begin{wrapfigure}{r}{0.15\linewidth}
+  \vspace{-20pt}
+  \includegraphics[scale=0.10]{cap_despliegue/images/Grafana_logo}
+  \vspace{-20pt}
+\end{wrapfigure}
 
+La última pieza del puzzle de observabilidad es Grafana. Desarrollado también por Grafana Labs, es una herramienta para la monitorización y visualización de datos. Gracias a su sistema de \foreign{english}{plugins}, es compatible con una gran variedad de fuentes de información: bases de datos, servicios web, servicios de métricas, etc.
+
+Nos permite \textbf{explorar los datos} a través de consultas sobre las fuentes de información. Todas ellas se hacen usando los mecanismos ofrecidos por cada plataforma. Este sería el caso de Prometheus, donde podemos usar su lenguaje de consultas \texttt{PromQL}. Con él, podremos consultar y visualizar métricas. Esto nos permitirá explotar al máximo las capacidades de cada una.
+
+Incluso, podemos ir más allá y \textbf{definir relaciones entre datos de fuentes distintas}. Retrocedamos a la figura \ref{fig:loki-ejemplo-logs}, que representa los \foreign{english}{logs} de Loki. Si nos fijamos, en el campo \texttt{TracerId} aparece un enlace a Jaeger. Al hacer clic en él, se desplegará en un panel lateral la traza de la petición a la que pertenece el registro. Todo esto nos será de gran ayuda a la hora de \textbf{investigar} los motivos de las fluctuaciones en el funcionamiento.
+
+También se pueden aprovechar las consultas de las fuentes de datos para crear \textbf{paneles de monitorización}. Esto nos permitirá agregar en solo lugar a los \foreign{english}{logs}, las métricas y las trazas. A partir de ellos podemos crear todo tipo de visualizaciones útiles. Por ejemplo, del estado de las peticiones concurrentes, del número de errores, etc. En la figura \ref{fig:grafana-panel-monitorizacion} enseñamos nuestro panel de monitorización. Este nos muestra parámetros como la temperatura actual de la habitación (gráfica superior izquierda), un listado de las adaptaciones ejecutadas (panel de \foreign{english}{logs} bajo las temperaturas) o información técnica de los servicios (consumo de RAM, tiempo de CPU...).
+
+\begin{landscape}
+
+  \begin{figure}[htb]
+    \centering
+    \includegraphics[scale=0.37]{cap_despliegue/images/Grafana-panel-monitorizacion}
+    \caption{Panel de monitorización para la solución autoadaptativa de climatización.}
+    \label{fig:grafana-panel-monitorizacion}
+  \end{figure}
+
+\end{landscape}
+
+
+\section{Pruebas}
