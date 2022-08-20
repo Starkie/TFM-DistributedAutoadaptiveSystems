@@ -156,7 +156,7 @@ Nos permite \textbf{explorar los datos} a través de consultas sobre las fuentes
 
 Incluso, podemos ir más allá y \textbf{definir relaciones entre datos de fuentes distintas}. Retrocedamos a la figura \ref{fig:loki-ejemplo-logs}, que representa los \foreign{english}{logs} de Loki. Si nos fijamos, en el campo \texttt{TracerId} aparece un enlace a Jaeger. Al hacer clic en él, se desplegará en un panel lateral la traza de la petición a la que pertenece el registro. Todo esto nos será de gran ayuda a la hora de \textbf{investigar} los motivos de las fluctuaciones en el funcionamiento.
 
-También se pueden aprovechar las consultas de las fuentes de datos para crear \textbf{paneles de monitorización}. Esto nos permitirá agregar en solo lugar a los \foreign{english}{logs}, las métricas y las trazas. A partir de ellos podemos crear todo tipo de visualizaciones útiles. Por ejemplo, del estado de las peticiones concurrentes, del número de errores, etc. En la figura \ref{fig:grafana-panel-monitorizacion} enseñamos nuestro panel de monitorización. Este nos muestra parámetros como la temperatura actual de la habitación (gráfica superior izquierda), un listado de las adaptaciones ejecutadas (panel de \foreign{english}{logs} bajo las temperaturas) o información técnica de los servicios (consumo de RAM, tiempo de CPU...).
+También se pueden aprovechar las consultas de las fuentes de datos para crear \textbf{paneles de monitorización}. Esto nos permitirá agregar en solo lugar a los \foreign{english}{logs}, las métricas y las trazas. A partir de ellos podemos crear todo tipo de visualizaciones útiles. Por ejemplo, del estado de las peticiones concurrentes, del número de errores, etc. En la figura \ref{fig:grafana-panel-monitorizacion} enseñamos nuestro panel de monitorización. Este nos muestra parámetros como la temperatura actual de la habitación (gráfica superior izquierda), un listado de las adaptaciones ejecutadas (panel de \foreign{english}{logs} bajo las temperaturas) o información técnica de los servicios (consumo de RAM, tiempo de CPU...). En la siguiente sección las explicaremos en más detalle.
 
 \begin{landscape}
 
@@ -171,3 +171,57 @@ También se pueden aprovechar las consultas de las fuentes de datos para crear \
 
 
 \section{Pruebas}
+
+Finalmente, llegó el momento de poner a prueba nuestro sistema. Queríamos determinar si la arquitectura diseñada era viable o requería de algún refinamiento. Recordemos que el objetivo es aplicarla en el bucle MAPE-K \foreign{english}{Lite} original mediante una refactorización. Con esto en mente, diseñamos distintas pruebas para verificar su funcionamiento. Nos resultó de gran ayuda nuestra plataforma de observabilidad, que nos permitirá investigar distintas áreas de la solución.
+
+Las primeras pruebas que ejecutamos fueron las relacionadas con el funcionamiento del sistema de climatización. Hasta que este no se estabilizará, no podíamos emitir ningún juicio sobre la arquitectura. En estos tests verificamos que, a partir de las mediciones de temperatura, debe ser capaz de completar el proceso de adaptación. Esto implica que todas las etapas del bucle MAPE-K se ejecutan correctamente. También incluimos pruebas de carga para analizar cómo se comportaba en situaciones extremas.
+
+Completadas estas pruebas pasamos a verificar, ahora sí, aspectos de la arquitectura. Gracias a la telemetría que capturamos, pudimos responder a distintas preguntas sobre ella. Por ejemplo, si es correcta la división funcional que hemos elegido o si los mecanismos de comunicación son los adecuados. En base a las respuestas, pautamos una serie de correcciones que se podrían aplicar.
+
+\subsection{Verificaciones del funcionamiento}
+
+
+Analizaremos también los logs para detectar si ha aparecido algún error durante su funcionamiento. Vemos que todos los logs generados son de información y haciendo una búsqueda de la palabra clave ''exception'' o ''error'' solo nos reportan los fallos durante el arranque. Estos están relacionados con aquellos servicios que dependen de RabbitMQ pero este todavía no está iniciado. Una vez se estabiliza el despliegue, no aparecen más errores.
+
+Según el desarrolador de Rebus, estos se podrían corregirse implementado un servicio en segundo plano que gestione la conexión. \footnote{\url{https://github.com/rebus-org/Rebus.ServiceProvider\#delayed-start-of-the-bus}} De esta forma, se intentará conectar al bus en cuanto esté disponible. Así, no fallará el arranque y se conectará en cuanto pueda.  Debido a restricciones de tiempo, decidimos limitarnos a una estrategia de reintentos en el arranque.. Estos se podrían corre
+
+El siguiente paso será ver si se aplican correctamente las adaptaciones. Recordemos que nuestro sistema cuenta con un termómetro simulado. Cada 15s este reporta una medición de temperatura al monitor de climatización. Esta variará dependiendo del modo acctivo del aire acondicionado.
+
+Tenemos que probar que se apliquen correctamente las cuatro reglas definidas en la tabla \ref{tab:adaption-rules-climatisation}
+
+
+También probamos a asignar temperaturas manualmente a través de un endpoint. Así podíamos forzar manualmente a que se apliquen las reglas.
+
+También podemos comprobar los logs para ver que se están aplicando las adaptaciones pertinentes cuando corresponde.
+
+En la figura \ref{fig:pruebas-temperatura} podemos observar que, superada la temperatura umbral de temperatura, el aire acondicionado se enciende y asciente o desciende la temperatura según corresponda. Una vez se alcanza la temperatura de confort, este se apaga y queda en el estado neutral.
+
+\begin{figure}[h]
+  \hspace{-1.2cm}
+  \includegraphics[scale=0.42]{cap_despliegue/images/pruebas-temperatura-calentar}
+  \includegraphics[scale=0.42]{cap_despliegue/images/pruebas-temperatura-enfriar}
+  \caption{Gráficas extraídas de Grafana que muestran el funcionamiento de las adaptaciones. Izq.: Encender y apagar la calefacción. Der.: Encender y apagar la refrigeración.}
+  \label{fig:pruebas-temperatura}
+\end{figure}
+
+Otro tipo de prueba que implementamos fueron las de carga. Para ello, intentamos saturar el sistema mediante mediciones falsas de temperatura, para ver cómo reaccionara. Para ello, usamos la librería NBomber\footnote{Página oficial: \url{https://github.com/PragmaticFlow/NBomber}.}. Cuyo uso es justamente este.Con ella, pudimos ver que el
+
+\subsection{Verificación de la arquitectura}
+
+Una vez verificado el correcto funcionamiento del sistema, podemos proceder a verificar la arquitectura. Nos centraremos especialmente en los puntos en los que tenga lugar el mayor número de comunicación entre servicios.
+
+Recuperando la figura \ref{fig:jaeger-arquitectura-inferida}, en ella se describe el resultado de reportar 10 mediciones de temperatura. De ellas, solo 1 medición ha provocado la adaptación del sistema. En ella, podemos comprobar que dos servicios están muy acoplados. El de reglas y el de análisis. Aparecen 85 peticiones síncronas desde las reglas al módulo de análisis. Esto nos indica que están muy acoplados \cite{singjaiPatternsDerivingAPIs2021}. Esto nos plantea que existen dos
+
+Por otro lado, vemos también la misma dependencia entre el servicio de análisis y el conocimiento. EN este caso, la división funcional si que es clara. AParte de que el cocnocimiento está compartido entre distintos servicios del nivel del bucle. Por tanto, una mejor solución sería optimizar esta comunicación. Podríamos agrupar en una misma petición la solicitud de varias propiedades del conocimiento a la vez.
+
+\begin{figure}[htb]
+  \hspace{1.25cm}
+  \includegraphics[scale=0.3]{cap_despliegue/images/Jaeger-arquitectura-climatizacion}
+  \caption{Jaeger nos genera un esquema de la arquitectura de nuestra aplicación. Este muestra las comunicaciones entre servicios.}
+  \label{fig:jaeger-arquitectura-inferida}
+\end{figure}
+
+Las modificaciones que se podrían efectuar son las siguientes: agrupar en un mismo servcio el  monitor con el monitor de la solución y las reglas con el módulo de análisis. Esto nos facilitará también el funcionamiento plug \& play que buscábamos.
+
+
+Obviamente, los servicios que dependan de peticiones síncronas no podrán funcionar sin aquel del que dependen. Por ejemplo, el conocimiento. Por ello, deberemos gestionarlos mediante técnicas de replicación para adelantarnos a cualquier fallo sobre él.
