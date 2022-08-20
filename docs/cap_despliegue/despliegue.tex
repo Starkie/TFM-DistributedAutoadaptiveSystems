@@ -178,16 +178,33 @@ Las primeras pruebas que ejecutamos fueron las relacionadas con el funcionamient
 
 Completadas estas pruebas pasamos a verificar, ahora sí, aspectos de la arquitectura. Gracias a la telemetría que capturamos, pudimos responder a distintas preguntas sobre ella. Por ejemplo, si es correcta la división funcional que hemos elegido o si los mecanismos de comunicación son los adecuados. En base a las respuestas, pautamos una serie de correcciones que se podrían aplicar.
 
-\subsection{Verificaciones del funcionamiento}
+\subsection{Pruebas sobre el sistema de climatización}
 
+\begin{wrapfigure}{r}{0.38\linewidth}
+  \vspace{-15pt}
+  \centering
+  \includegraphics[scale=0.50]{cap_despliegue/images/pruebas-logs-error}
+  \caption{Niveles de los \foreign{english}{logs} registrados durante la inicialización del sistema.}
+  \label{fig:pruebas-logs-inicializacion}
+  \vspace{-15pt}
+\end{wrapfigure}
 
-Analizaremos también los logs para detectar si ha aparecido algún error durante su funcionamiento. Vemos que todos los logs generados son de información y haciendo una búsqueda de la palabra clave ''exception'' o ''error'' solo nos reportan los fallos durante el arranque. Estos están relacionados con aquellos servicios que dependen de RabbitMQ pero este todavía no está iniciado. Una vez se estabiliza el despliegue, no aparecen más errores.
+La primera prueba del sistema de climatización consistió en comprobar su \textbf{correcto despliegue}. Para ello, verificamos que después de este, todos los servicios estén operativos. También analizamos los \foreign{english}{logs} en busca de registros de error. Detectamos que durante la inicialización aparecen algunos (primera barra en la figura \ref{fig:pruebas-logs-inicializacion}). Una vez que se completa, el sistema se estabiliza y estos errores desaparecen (resto de barras). Todos provenían de servicios que dependen del \foreign{english}{broker} de mensajería (figura \ref{fig:prueba-logs-error-rabbitmq}). Como deben establecer una conexión con él durante el arranque, si no ha completado su despliegue todavía, fallarán.
 
-Según el desarrolador de Rebus, estos se podrían corregirse implementado un servicio en segundo plano que gestione la conexión. \footnote{\url{https://github.com/rebus-org/Rebus.ServiceProvider\#delayed-start-of-the-bus}} De esta forma, se intentará conectar al bus en cuanto esté disponible. Así, no fallará el arranque y se conectará en cuanto pueda.  Debido a restricciones de tiempo, decidimos limitarnos a una estrategia de reintentos en el arranque.. Estos se podrían corre
+Según el desarrollador de Rebus, estos errores podrían solucionarse implementado un \textbf{servicio en segundo plano que gestione la conexión}.\footnote{\url{https://github.com/rebus-org/Rebus.ServiceProvider\#delayed-start-of-the-bus}} De esta forma, el servicio no fallará durante el arranque e intentará periódicamente conectarse con RabbitMQ. Debido a restricciones de tiempo, en lugar de implementarlo así, optamos por definir una estrategia de reintentos en el fichero de Docker Compose. Así, los afectados se reiniciarán hasta que puedan establecer la conexión correctamente.
 
-El siguiente paso será ver si se aplican correctamente las adaptaciones. Recordemos que nuestro sistema cuenta con un termómetro simulado. Cada 15s este reporta una medición de temperatura al monitor de climatización. Esta variará dependiendo del modo acctivo del aire acondicionado.
+\begin{figure}[htb]
+  \centering
+  \includegraphics[scale=0.45]{cap_despliegue/images/Logs-fallo-RabbitMQ}
+  \caption{Ejemplo de registro relacionado con el fallo al contactar con RabbitMQ durante el arranque.}
+  \label{fig:prueba-logs-error-rabbitmq}
+\end{figure}
+
+Las siguientes pruebas que realizamos estaban relacionadas con la correcta aplicación de las adaptaciones. será ver si se aplican correctamente las adaptaciones. Recordemos que nuestro sistema cuenta con un termómetro simulado. Cada 15s este reporta una medición de temperatura al monitor de climatización. Esta variará dependiendo del modo acctivo del aire acondicionado.
 
 Tenemos que probar que se apliquen correctamente las cuatro reglas definidas en la tabla \ref{tab:adaption-rules-climatisation}
+
+También comprobamos que las trazas pasen por todos las etapas correspondientes.
 
 
 También probamos a asignar temperaturas manualmente a través de un endpoint. Así podíamos forzar manualmente a que se apliquen las reglas.
