@@ -200,18 +200,11 @@ Según el desarrollador de Rebus, estos errores podrían solucionarse implementa
   \label{fig:prueba-logs-error-rabbitmq}
 \end{figure}
 
-Las siguientes pruebas que realizamos estaban relacionadas con la correcta aplicación de las adaptaciones. será ver si se aplican correctamente las adaptaciones. Recordemos que nuestro sistema cuenta con un termómetro simulado. Cada 15s este reporta una medición de temperatura al monitor de climatización. Esta variará dependiendo del modo acctivo del aire acondicionado.
+A continuación, procedimos a realizar \textbf{pruebas sobre la funcionalidad}. En estas, nos centramos en verificar que el sistema \textbf{regula correctamente la temperatura} de la habitación. Recordemos que el servicio de aire acondicionado cuenta con un termómetro simulado. Cada 15 segundos, este reporta una medición de temperatura ficticia al monitor de climatización. Esta variará dependiendo del modo activo del aire acondicionado. En base a la temperatura, el bucle evaluará las reglas y pautará adaptaciones si lo considera necesario.
 
-Tenemos que probar que se apliquen correctamente las cuatro reglas definidas en la tabla \ref{tab:adaption-rules-climatisation}
+\textcolor{red}{Para ello, comprobaremos que se aplican las cuatro reglas definidas en la tabla \ref{tab:adaption-rules-climatisation}. Todas ellas activan o desactivan un modo del aire acondicionado cuando la temperatura alcanza un determinado umbral. Por ejemplo, si es muy alta, se debería activar el modo de refrigeración. Cuando se alcance la temperatura de confort, otra regla lo apagará.}
 
-También comprobamos que las trazas pasen por todos las etapas correspondientes.
-
-
-También probamos a asignar temperaturas manualmente a través de un endpoint. Así podíamos forzar manualmente a que se apliquen las reglas.
-
-También podemos comprobar los logs para ver que se están aplicando las adaptaciones pertinentes cuando corresponde.
-
-En la figura \ref{fig:pruebas-temperatura} podemos observar que, superada la temperatura umbral de temperatura, el aire acondicionado se enciende y asciente o desciende la temperatura según corresponda. Una vez se alcanza la temperatura de confort, este se apaga y queda en el estado neutral.
+\textcolor{red}{Tenemos varias formas de verificarlo. La primera de ellas es mediante la visualización de la temperatura de nuestro panel de monitorización. En la figura \ref{fig:pruebas-temperatura} mostramos la aplicación de las cuatro reglas. A la derecha se muestran las dos reglas que acabamos de describir.}
 
 \begin{figure}[h]
   \hspace{-1.2cm}
@@ -220,6 +213,17 @@ En la figura \ref{fig:pruebas-temperatura} podemos observar que, superada la tem
   \caption{Gráficas extraídas de Grafana que muestran el funcionamiento de las adaptaciones. Izq.: Encender y apagar la calefacción. Der.: Encender y apagar la refrigeración.}
   \label{fig:pruebas-temperatura}
 \end{figure}
+
+
+Tenemos varias formas para comprobar si esto es así. La primera de ellas es la más evidente, mirando el
+
+También comprobamos que las trazas pasen por todos las etapas correspondientes.
+
+
+También probamos a asignar temperaturas manualmente a través de un endpoint. Así podíamos forzar manualmente a que se apliquen las reglas.
+
+También podemos comprobar los logs para ver que se están aplicando las adaptaciones pertinentes cuando corresponde.
+
 
 Otro tipo de prueba que implementamos fueron las de carga. Para ello, intentamos saturar el sistema mediante mediciones falsas de temperatura, para ver cómo reaccionara. Para ello, usamos la librería NBomber\footnote{Página oficial: \url{https://github.com/PragmaticFlow/NBomber}.}. Cuyo uso es justamente este.Con ella, pudimos ver que el
 
