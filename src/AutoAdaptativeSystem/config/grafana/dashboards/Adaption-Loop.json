@@ -40,6 +40,7 @@
           "custom": {
             "axisLabel": "",
             "axisPlacement": "auto",
+            "axisSoftMax": -1,
             "barAlignment": 0,
             "drawStyle": "line",
             "fillOpacity": 0,
@@ -62,7 +63,7 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "line"
             }
           },
           "mappings": [],
@@ -74,8 +75,16 @@
                 "value": null
               },
               {
+                "color": "blue",
+                "value": 17
+              },
+              {
+                "color": "green",
+                "value": 21
+              },
+              {
                 "color": "red",
-                "value": 80
+                "value": 25
               }
             ]
           }
@@ -90,7 +99,7 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "dark-red",
+                  "fixedColor": "red",
                   "mode": "fixed"
                 }
               }
