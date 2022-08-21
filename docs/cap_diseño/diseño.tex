@@ -6,6 +6,7 @@ En este capítulo describiremos la estrategia que seguimos para refactorizar el 
 Comenzaremos justificando la elección de este estilo arquitectónico y describiendo los beneficios que esperábamos obtener. A continuación, detallaremos nuestro diseño y explicaremos cómo se dividió la funcionalidad del bucle en microservicios. Después, presentaremos algunos de los mecanismos de comunicación más populares y comentaremos cuáles elegimos para conectar nuestros componentes. Finalmente, presentaremos la estructura final de nuestra arquitectura.
 
 \section{¿Por qué usar microservicios?}
+\label{sec:por-que-microservicios}
 
 Una de las decisiones clave que tomamos durante el desarrollo de este trabajo fue elegir el estilo arquitectónico a emplear. Dado que queremos adaptar el bucle de control a entornos en la nube, será imprescindible que esté preparado para ellos. Optamos por las \textbf{arquitecturas basadas en microservicios} porque son uno de los pilares de las aplicaciones \foreign{english}{cloud native}. \cite{gannonCloudNativeApplications2017} Gracias a este estilo, obteníamos una serie de beneficios que consideramos vitales para extender el bucle MAPE-K.
 
@@ -478,7 +479,7 @@ El conector, delimitado por una línea discontinua roja, está compuesto por dos
   \label{fig:monitor-knowledge-connector-architecture}
 \end{figure}
 
-\subsection{Notificaciones}
+\subsection{\textcolor{red}{Notificaciones - Corregir imagen debe ser ALC en vez de K}}
 \label{sec:notificaciones}
 
 % TODO: Centrar
@@ -689,8 +690,14 @@ El \foreign{english}{broker} simplemente lo añadirá a la cola especificada. La
 
 \pagebreak
 
-\section{Diseño final}
+\section{\textcolor{red}{Diseño final}}
 
-Una vez definidos los componentes y sus conectores, podemos mostrar el diseño final de nuestra arquitectura. Las APIs que expondrá cada microservicio las describimos en detalle en el anexo \ref{anx:apis} - \nameref{anx:apis}.
+Una vez definidos los componentes y sus conectores, podemos mostrar el diseño final de nuestra arquitectura (\ref{fig:arquitectura-sistema}). Cada componente individual representa un microservicio independiente. Las APIs que usarán para comunicarse los microservicio las describimos en detalle en el anexo \ref{anx:apis} - \nameref{anx:apis}.
 
-\textcolor{red}{Diagrama}
+
+\begin{figure}[h!]
+  \hspace{-1cm}
+  \includegraphics[scale=0.5]{cap_diseño/images/arquitectura}
+  \caption{Arquitectura del sistema.}
+  \label{fig:arquitectura-sistema}
+\end{figure}
