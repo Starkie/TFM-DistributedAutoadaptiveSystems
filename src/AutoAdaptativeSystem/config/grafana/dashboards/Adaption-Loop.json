@@ -275,8 +275,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "4x1ifEU7k"
+        "type": "jaeger",
+        "uid": "fL84zbLnz"
       },
       "fieldConfig": {
         "defaults": {
@@ -296,9 +296,6 @@
               "viz": false
             },
             "lineInterpolation": "linear",
-            "lineStyle": {
-              "fill": "solid"
-            },
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -314,7 +311,17 @@
               "mode": "off"
             }
           },
-          "mappings": [],
+          "mappings": [
+            {
+              "options": {
+                "Time": {
+                  "index": 0,
+                  "text": "TIme"
+                }
+              },
+              "type": "value"
+            }
+          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -323,34 +330,20 @@
                 "value": null
               }
             ]
-          }
+          },
+          "unit": "ms"
         },
         "overrides": [
           {
             "matcher": {
               "id": "byName",
-              "options": "Get property"
+              "options": "Duration"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "yellow",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Property not found"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "red",
+                  "fixedColor": "blue",
                   "mode": "fixed"
                 }
               }
@@ -364,10 +357,12 @@
         "x": 16,
         "y": 0
       },
-      "id": 6,
+      "id": 24,
       "options": {
         "legend": {
-          "calcs": [],
+          "calcs": [
+            "mean"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -379,29 +374,25 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "4x1ifEU7k"
+            "type": "jaeger",
+            "uid": "fL84zbLnz"
           },
-          "editorMode": "code",
-          "expr": "rate(knowledge_service_property_get_requests_count{}[$__rate_interval])",
-          "legendFormat": "Get property",
-          "range": true,
-          "refId": "A"
+          "operation": "Reporting temperature measurement",
+          "queryType": "search",
+          "refId": "A",
+          "service": "v1.0.Climatisation.AirConditioner.Service"
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "4x1ifEU7k"
+            "type": "jaeger",
+            "uid": "fL84zbLnz"
           },
-          "editorMode": "code",
-          "expr": "rate(knowledge_service_property_get_not_found_count{}[$__rate_interval])",
           "hide": false,
-          "legendFormat": "Property not found",
-          "range": true,
           "refId": "B"
         }
       ],
-      "title": "Knowledge: Property Request rate",
+      "title": "Adaption Mean Duration",
+      "transformations": [],
       "type": "timeseries"
     },
     {
@@ -715,6 +706,137 @@
     },
     {
       "datasource": {
+        "type": "prometheus",
+        "uid": "4x1ifEU7k"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Get property"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Property not found"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 23
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "4x1ifEU7k"
+          },
+          "editorMode": "code",
+          "expr": "rate(knowledge_service_property_get_requests_count{}[$__rate_interval])",
+          "legendFormat": "Get property",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "4x1ifEU7k"
+          },
+          "editorMode": "code",
+          "expr": "rate(knowledge_service_property_get_not_found_count{}[$__rate_interval])",
+          "hide": false,
+          "legendFormat": "Property not found",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Knowledge: Property Request rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
         "type": "loki",
         "uid": "sH27zbL7z"
       },
@@ -722,7 +844,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 23
+        "y": 31
       },
       "id": 20,
       "options": {
@@ -791,8 +913,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -807,7 +928,7 @@
         "h": 11,
         "w": 8,
         "x": 0,
-        "y": 31
+        "y": 39
       },
       "id": 22,
       "options": {
@@ -881,8 +1002,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -924,7 +1044,7 @@
         "h": 11,
         "w": 8,
         "x": 8,
-        "y": 31
+        "y": 39
       },
       "id": 7,
       "options": {
@@ -1009,8 +1129,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1041,7 +1160,7 @@
         "h": 11,
         "w": 8,
         "x": 16,
-        "y": 31
+        "y": 39
       },
       "id": 1,
       "options": {
@@ -1085,7 +1204,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "5s",
+  "refresh": "10s",
   "schemaVersion": 36,
   "style": "dark",
   "tags": [],
@@ -1093,7 +1212,7 @@
     "list": []
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
