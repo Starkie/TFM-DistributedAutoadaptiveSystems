@@ -14,7 +14,7 @@ var step = Step.Create("step", async context =>
     // you can define and execute any logic here,
     // for example: send http request, SQL query etc
     // NBomber will measure how much time it takes to execute your logic
-    double temperature = random.NextDouble() * 35;
+    double temperature = random.Next(17, 25);
     string formatedTemperature = temperature.ToString("F2");
 
     Console.WriteLine($"[Temperature] - Reporting {formatedTemperature}ºC");
