@@ -54,7 +54,10 @@ public class AirConditionerService : IAirConditionerService
     private async Task DispatchDomainEvents(AirConditioner airConditioner)
     {
         // TODO: Enable recursive dispatch, in case the entity has new domainEvents.
-        foreach (var domainEvent in airConditioner.DomainEvents)
+        // The domain events collection is materialized as a list to avoid errors regarding
+        // new elements being added. These occur because the entity is registered as a singleton, and
+        // multiple request can add new events.
+        foreach (var domainEvent in airConditioner.DomainEvents.ToList())
         {
             await _mediator.Publish(domainEvent);
         }

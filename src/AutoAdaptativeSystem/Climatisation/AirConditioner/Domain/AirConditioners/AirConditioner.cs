@@ -1,5 +1,6 @@
 namespace Climatisation.AirConditioner.Domain.AirConditioners;
 
+using System.Collections.Concurrent;
 using Climatisation.AirConditioner.Contracts;
 using Climatisation.AirConditioner.Domain.AirConditioners.Events.Domain;
 using Climatisation.AirConditioner.Domain.Thermometers;
@@ -8,9 +9,12 @@ using Climatisation.AirConditioner.Domain.Thermometers.ValueObjects;
 public abstract class AirConditioner
 {
     // TODO: Move to a base class Entity.
-    private List<DomainEvent> _domainEvents;
+    // ConcurrentBag is used because the entity is shared between processes.
+    // In a real system a List should be used and the entity would not be shared.
+    // Every individual request should have their own instance.
+    private ConcurrentBag<DomainEvent> _domainEvents;
 
-    public IEnumerable<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+    public IEnumerable<DomainEvent> DomainEvents => _domainEvents;
 
     private readonly Thermometer _thermometer;
 
@@ -24,7 +28,7 @@ public abstract class AirConditioner
 
     public virtual Temperature GetRoomTemperature()
     {
-        _domainEvents = new List<DomainEvent>();
+        _domainEvents = new ConcurrentBag<DomainEvent>();
 
         return _thermometer.Measure();
     }
