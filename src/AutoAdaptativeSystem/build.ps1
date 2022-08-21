@@ -86,4 +86,4 @@ Copy-Item (Join-Path $PSScriptRoot "config/prometheus.yml") "$PrometheusConfigPa
 Copy-Item -Force -Recurse (Join-Path $PSScriptRoot "config/grafana") "$PublishPath"
 
 # Start the compose.
-docker-compose -f ./publish/docker-compose.yml up --build
+docker-compose -f ./publish/docker-compose.yml up --build -d
