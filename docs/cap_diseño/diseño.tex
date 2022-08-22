@@ -479,15 +479,16 @@ El conector, delimitado por una línea discontinua roja, está compuesto por dos
   \label{fig:monitor-knowledge-connector-architecture}
 \end{figure}
 
-\subsection{\textcolor{red}{Notificaciones - Corregir imagen debe ser ALC en vez de K}}
+\subsection{Notificaciones}
 \label{sec:notificaciones}
 
 % TODO: Centrar
-\begin{wrapfigure}{l}{0.38\linewidth}
+\begin{wrapfigure}{l}{0.34\linewidth}
   \centering
-  \includegraphics[scale=0.50]{cap_diseño/images/Knowledge-Analysis-Initial-Notification-Connector}
+  \includegraphics[scale=0.54]{cap_diseño/images/Knowledge-Analysis-Initial-Notification-Connector}
   \caption{Representación inicial del conector entre el servicio de conocimiento y el de análisis.}
   \label{fig:knowledge-analysis-notification-initial-connector}
+  \vspace{-10pt}
 \end{wrapfigure}
 
 El siguiente mecanismo de comunicación que tratamos fueron las notificaciones. Recordemos que es de tipo \textbf{\foreign{english}{broadcast}}: consiste en transmitir mensajes desde un servicio a todos aquellos que pertenecen a la capa superior. Cada uno decidirá si debe procesarlo o no. Sería ideal entonces priorizar el \textbf{desacoplamiento} entre el emisor y los destinatarios.
@@ -690,14 +691,16 @@ El \foreign{english}{broker} simplemente lo añadirá a la cola especificada. La
 
 \pagebreak
 
-\section{\textcolor{red}{Diseño final}}
+\section{Propuesta arquitectónica}
 
-Una vez definidos los componentes y sus conectores, podemos mostrar el diseño final de nuestra arquitectura (\ref{fig:arquitectura-sistema}). Cada componente individual representa un microservicio independiente. Las APIs que usarán para comunicarse los microservicio las describimos en detalle en el anexo \ref{anx:apis} - \nameref{anx:apis}.
+Una vez definidos los componentes y sus conectores, podemos completar nuestra propuesta arquitectónica (figura \ref{fig:arquitectura-sistema}). En esta propuesta inicial, cada componente individual representa un tipo de microservicio distinto. Un caso aparte son las sondas y efectores, que pueden desplegarse como parte del recuso manejado.
+
+Por otro lado, los conectores entre ellos están representados mediante distintos tipos de felcha. Podemos comprobar que todas las comunicaciones respetan la jerarquía descrita en la figura \ref{fig:clean-mapek-architecture}. Los servicios de un nivel superior contactan con aquellos en la capa inmediatamente inferior mediante peticiones síncronas. Los de una capa inferior, con los de la inmediatamente superior a través de notificaciones. Y, finalmente, los de una misma capa mediante peticiones asíncronas. Las APIs que usarán para comunicarse las describimos en detalle en el anexo \ref{anx:apis} - \nameref{anx:apis}.
 
 
 \begin{figure}[h!]
   \hspace{-1cm}
   \includegraphics[scale=0.5]{cap_diseño/images/arquitectura}
-  \caption{Arquitectura del sistema.}
+  \caption{Propuesta arquitectónica inicial del bucle MAPE-K distribuido.}
   \label{fig:arquitectura-sistema}
 \end{figure}
