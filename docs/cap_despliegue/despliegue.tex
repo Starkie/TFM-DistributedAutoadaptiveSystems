@@ -1,7 +1,7 @@
 \chapter{Despliegue y pruebas}
 \label{chap:despliegue}
 
-\textcolor{red}{En este capítulo describiremos cómo se llevó a acabo el despliegue de la solución y las pruebas que se realizaron.}
+En este capítulo describiremos cómo se preparó el despliegue del sistema. Introduciremos también el concepto de observabilidad, que nos permitirá conocer su estado en todo momento. Detallaremos cómo capturamos las métricas de los servicios y maneras de explotarlas. Finalmente, describiremos una serie de pruebas que realizamos para verificar su funcionamiento y el de la arquitectura.
 
 \section{Despliegue}
 
@@ -26,7 +26,7 @@ Por defecto, solo contábamos con los \emph{logs} (registros), que mostramos en 
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=1.45]{cap_despliegue/images/console-logs}
+  \includegraphics[scale=1.35]{cap_despliegue/images/console-logs}
   \caption{Extracto de \emph{logs} de una ejecución habitual.}
   \label{fig:console-logs}
 \end{figure}
@@ -68,10 +68,12 @@ Con estas herramientas hemos instrumentado todos nuestros servicios. Nuestra pla
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[scale=0.28]{cap_despliegue/images/observability-telemetry-collection}
+  \includegraphics[scale=0.25]{cap_despliegue/images/observability-telemetry-collection}
   \caption{Estructura de nuestra plataforma de observabilidad}
   \label{fig:observability-telemetry-collection}
 \end{figure}
+
+\pagebreak
 
 \subsubsection{Grafana Loki: \foreign{english}{Logs}}
 
@@ -231,7 +233,7 @@ Una vez confirmado el correcto funcionamiento del sistema, pudimos proceder a ve
 
 Recurrimos en primer lugar a la arquitectura inferida por Jaeger. Recuperamos para ello la figura \ref{fig:jaeger-arquitectura-inferida}. Esta describe el resultado de trazar 10 reportes de mediciones de temperatura. De ellas, 8 pasaron el filtro del monitor, y solo 1 ha provocado la adaptación del sistema. Muestra todos los microservicios que intervinieron y el número de mensajes enviados entre cada uno.
 
-Nuestra primera comprobación fue respecto a la jerarquía de componentes y la dirección de la comunicación. Verificamos que la estructura de este diagrama coincide con la nuestro diseño (figura \textcolor{red}{REFERENCIA FIGURA DISEÑO FINAL}). Ningún microservicio aparece conectado con otro no contemplado. También coincide la dirección de la comunicaciones entre ellos.
+Nuestra primera comprobación fue respecto a la jerarquía de componentes y la dirección de la comunicación. Verificamos que la estructura de este diagrama coincide con la nuestro diseño (figura \ref{fig:arquitectura-sistema}). Ningún microservicio aparece conectado con otro no contemplado. También coincide la dirección de la comunicaciones entre ellos.
 
 La siguiente prueba fue sobre el número de mensajes. Si existe un intercambio elevado de mensajes entre dos o más servicios, se puede considerar que son muy ''habladores'' (\foreign{english}{chatty} en inglés). Esto puede ser un indicador de que están muy acoplados. \cite{singjaiPatternsDerivingAPIs2021} De ser así, pueden convertirse en \textbf{puntos de congestión} o \textbf{impedir que el dependiente funcione} correctamente si falla el otro. Detectamos dos casos así en el diagrama y los presentamos en la figura \ref{fig:pruebas-congestion}. En verde, aparecen marcadas las conexiones entre los monitores con el servicio de monitorización. Por otro lado, en rojo marcamos las reglas y el servicio de análisis. Como veremos a continuación, son casos muy similares.
 
@@ -279,4 +281,18 @@ Otra alternativa más adecuada consistiría en \textbf{agrupar en un mismo servi
 
 Por otro lado, no podemos hacer lo mismo con el componente de conocimiento. Aunque el módulo de análisis presenta mismo grado de acoplamiento, este debe mantenerse como un servicio independiente. Otras etapas del bucle necesitan acceder también a él: los monitores, el planificador, etc. En su lugar, podríamos intentar optimizar la comunicación y \textbf{reducir el número de peticiones}. En las reglas de adaptación se solicitaban distintas propiedades de adaptación con peticiones individuales. Estas podrían agruparse en una sola petición que recupere toda la información necesaria.
 
-Aplicando estas dos últimas sugerencias, nuestra propuesta arquitectónica podría quedar como sigue: \textcolor{red}{IMAGEN ARQUITECTURA CON SERVICIOS AGRUPADOS. MONITORES Y ANALIZADORES SALEN AGRUPADOS CON MÓDULO DE MONITORIZACIÓN.}
+Actualizamos nuestra propuesta arquitectónica con las dos últimas sugerencias. Esta podría quedar como en la figura \ref{fig:arquitectura-final}. El módulo de monitorización y el de análisis se desplegarían con los monitores y las reglas respectivamente. Estos podrían publicarse como librerias para que los otros proyectos las consuman.
+
+Respecto al módulo de planificación y los planificadores de la solución, dependerá de cómo sea su implementación en el bucle de adaptación real. A priori, parecen muy similares a los servicios de reglas de adaptación. En ese caso, podría estudiarse también su despliegue conjunto con cada servicio de planificación. Finalmente, el módulo de ejecución iría ''por libre''. Como los ejecutores no realizan peticiones síncronas, podrían desplegarse por separado. No están acoplados entre si.
+
+\begin{landscape}
+
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[scale=0.74]{cap_despliegue/images/arquitectura-final}
+    \caption{Propuesta arquitectónica final del bucle MAPE-K distribuido.}
+    \label{fig:arquitectura-final}
+  \end{figure}
+
+\end{landscape}
+
