@@ -15,7 +15,7 @@ var step = Step.Create("step", async context =>
     // for example: send http request, SQL query etc
     // NBomber will measure how much time it takes to execute your logic
     double temperature = random.Next(17, 25);
-    
+
     try
     {
         measurementApi.MeasurementTemperaturePost(new TemperatureMeasurementDTO(temperature, TemperatureUnit.CELSIUS, probeId, DateTime.UtcNow));
