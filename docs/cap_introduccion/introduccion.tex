@@ -9,7 +9,7 @@ La revolución digital\footnote{\url{https://es.wikipedia.org/wiki/Revoluci\%C3\
 
 Para las aplicaciones web, uno de sus requisitos claves es la \textbf{disponibilidad}. \cite{birmanAddingHighAvailability2004} Nuestros servicios deben estar en funcionamiento en todo momento para atender a nuestros usuarios. Tomemos por ejemplo el caso de una tienda \foreign{english}{on-line}. La plataforma debe estar disponible el mayor tiempo posible. Si surgiera una incidencia y se degrada la capacidad de atender a clientes, o directamente no podemos atender a ninguno, perderemos ingresos.
 
-Para atender estas incidencias, no es efectivo depender de operarios humanos. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006} Es muy costoso tener a alguien pendiente de la aplicación las veinticuatro horas del día para solucionar las incidencias. Debido a esto querremos que nuestro sistema sea capaz de \textbf{adaptarse automáticamente} a las distintas situaciones que surjan durante su operación. Recurrir al operario humano debería ser el último recurso.
+Para atender estas incidencias, no es efectivo depender de operarios humanos. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006} Es muy costoso tener a alguien pendiente de la aplicación las veinticuatro horas del día para atender las incidencias. Sería preferible que nuestro sistema sea capaz de \textbf{adaptarse automáticamente} a las distintas situaciones que surjan durante su operación. Recurrir al operario humano debería ser el último recurso.
 
 En el ámbito de la computación autónoma (\foreign{english}{autonomic computing}) encontramos el concepto de \textbf{sistemas auto-adaptativos}. Son sistemas capaces de ajustar su comportamiento en tiempo de ejecución en base su estado y el del entorno para alcanzar sus objetivos de operación. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006} Esto es posible mediante el uso de \textbf{bucles de control}. \cite{brunEngineeringSelfAdaptiveSystems2009} Gracias a ellos, podremos dotar a los sistemas de capacidades para adaptarse a entornos cambiantes, resolver conflictos operacionales e incluso a la optimizarse dinámicamente.
 
@@ -21,7 +21,7 @@ En este trabajo se quiere explorar el diseño de soluciones auto-adaptativas que
 
 Actualmente, el bucle de control de FaDA está implementado como un servicio monolítico. Todos sus componentes operan dentro del mismo proceso, incluidos los específicos para sistemas manejados (sondas, monitores\dots). Se trata por tanto de una implementación muy rígida. En caso de querer modificar algún componente, hay que redesplegarlo entero.
 
-Por ello, se buscó \textbf{dividir su funcionalidad en microservicios}. Es decir, cambiar la topología de la solución. Con ello, lograríamos independizar los componentes y su despliegue. Además, facilitaría escalar horizontalmente la capacidad del sistema en base a la carga.
+Por ello, se buscó \textbf{dividir su funcionalidad en microservicios}. Es decir, cambiar la topología de la solución. Con ello, se lograría independizar los componentes y su despliegue. Además, facilitaría escalar horizontalmente la capacidad del sistema en base a la carga.
 
 \section{Objetivos}
 
@@ -37,16 +37,16 @@ Para el desarrollo del trabajo nos planteamos los siguientes objetivos:
 
 \section{Estructura de la memoria}
 
-El trabajo se puede dividir en tres grandes secciones. La primera de ellas es el \textbf{marco teórico}. En el capítulo \ref{chap:contexto_tecnologico} hacemos una introducción a algunos conceptos de la computación autónoma y los bucles de control. Presentaremos la arquitectura MAPE-K, en la que se basa el trabajo. También describiremos algunos conceptos de arquitecturas de \foreign{english}{software} que nos serán de interés.
+El trabajo se divide en cuatro grandes secciones. La primera de ellas es el \textbf{marco teórico}. En el capítulo \ref{chap:contexto_tecnologico} se presentan algunos conceptos de la computación autónoma y los bucles de control. Se describirá la arquitectura MAPE-K, en la que se basa el trabajo. También definiremos algunos conceptos de arquitecturas de \foreign{english}{software} que nos serán de interés.
 
-La segunda parte de este trabajo trata sobre la \textbf{migración del sistema existente} a una arquitectura basada en microservicios. Para ello, comenzaremos describiendo la arquitectura del sistema actual en el capítulo \ref{chap:sistema_original}. En base a este, en el capítulo \ref{chap:diseño} describiremos nuestra propia propuesta arquitectónica. Aquí se describirá los distintos componentes que conforman nuestra solución y se describirá los mecanismos de comunicación por los que optamos. Finalmente, en el capítulo \ref{chap:implementación} describimos nuestra implementación de referencia.
+La segunda parte de este trabajo trata sobre la \textbf{migración del sistema existente} a una arquitectura basada en microservicios. Para ello, se introducirá el sistema actual: el bucle MAPE-K \foreign{english}{Lite} de FaDA (capítulo \ref{chap:sistema_original}). A continuación, en el capítulo \ref{chap:diseño} presentamos nuestra propuesta arquitectónica. Se describirá los distintos componentes que la conforman y los mecanismos de comunicación para conectarlos. Finalmente, en el capítulo \ref{chap:implementación}, detallaremos paso a paso nuestra implementación.
 
-La última sección del trabajo es la referente al \textbf{caso de estudio} (capítulo \ref{chap:caso_estudio}). En él implementamos un sistema auto-adaptativo básico para un sistema de climatización. Nos sirvió para aplicar nuestra arquitectura y verificar su funcionamiento.
+La tercera sección del trabajo describe un \textbf{caso de estudio} (capítulo \ref{chap:caso_estudio}). En él, se desarrolla un sistema auto-adaptativo básico de climatización. Nos sirvió para aplicar nuestra arquitectura en la práctica y verificar su funcionamiento. Sirve cómo implementación referencia para otras soluciones autoadaptativas.
 
-Cerramos el trabajo presentando las conclusiones (capítulo \ref{chap:conclusiones}). En este apartado describiremos también las vertientes por las que se podría continuar ampliando el trabajo en un futuro.
+Finalmente, cerraremos el trabajo con una descripción del proceso de \textbf{despliegue del sistema y pruebas} (capítulo \ref{chap:despliegue}). Para validar nuestra arquitectura realizamos distintos tipos de pruebas de funcionalidad y rendimiento. En base a los resultados, presentamos cambios que podrían hacerse sobre nuestra propuesta arquitectónica. A continuación, presentamos las conclusiones  generales (capítulo \ref{chap:conclusiones}). Se presentarán también las vertientes por las que se podría continuar ampliando el trabajo en un futuro.
 
 %\section{Notes bibliografiques} %%%%% Opcional
 
 %????? ????????????? ????????????? ????????????? ????????????? ?????????????
 
-\textcolor{red}{Añadir diagrama de gant con los 7 hitos}
+\textcolor{red}{Añadir diagrama de Gant con los 7 hitos}
