@@ -1,20 +1,38 @@
 \chapter{Conclusiones}
 \label{chap:conclusiones}
 
-¿Se podría desplegar como un único servicio un conjunto de monitores y su módulo de monitorización? Publicariamos el módulo como un paquete NuGet o algo por el estilo. Esto nos permitiría restrigir cómo.
+En este capítulo se realiza una retrospectiva del desarrollo del trabajo y presentaremos algunas conclusiones sobre el mismo. Por ejemplo, el grado de realización de los objetivos marcados o la descripción de vertientes todavía abiertas.
+
+Al inicio del trabajo se presentaron una serie de objetivos que se quería alcanzar.
+
+
+Para el desarrollo del trabajo nos planteamos los siguientes objetivos:
+
+\begin{enumerate}
+  \item Diseñar una arquitectura para soluciones auto-adaptativas preparadas para desplegarse nativamente como microservicios en la nube. Esto implica determinar los componentes en los que dividiremos la funcionalidad del bucle y los mecanismos de comunicación para conectarlos.
+
+  \item Definir directrices para la implementación de los diferentes componentes adaptativos específicos de una solución: monitores, sondas, efectores\dots
+
+  \item Desarrollar un caso práctico para demostrar la viabilidad y aplicabilidad de nuestra propuesta.
+\end{enumerate}
 
 \section{Relación con asignaturas cursadas}
 
+El trabajo desarrollado tiene relación con varias asignaturas cursadas durante el máster. Entre ellas, podemos destacar:
+
 \begin{itemize}
-  \item SUA
-  \item IOT
-  \item Data Science y ERS.
+  \item \textbf{Diseño de Sistemas Ubicuos y Adaptativos} (SUA): Es la asignatura que más relación guarda con el trabajo. En ella se tratan la computación autónoma y los sistemas autoadaptativos. Mediante el desarrollo de un prototipo de coche autónomo, se presentó el bucle MAPE-K y sus distintas fases.
+
+  \item \textbf{Internet de los Servicios (IoS) y de las Cosas (IoT)} (ISC): En esta asignatura se presentan conceptos relacionados con los servicios web. Se introducen patrones de diseño como las APIs REST y arquitecturas adaptadas a entornos \foreign{english}{cloud}. Además, el campo del internet de las cosas se beneficia también de los sistemas autoadaptativos. \cite{savaglioAgentbasedInternetThings2020}.
+
+  \item \textbf{\foreign{english}{Data Science}} (DAS) y \textbf{Extracción de información desde la red social} (ERS): En ambas asignaturas se trata la extracción de conocimiento a partir de los datos. Mediante técnicas de obtención, procesamiento y visualización, podemos interpretarlos y ''contar una historia'' con ellos. Ambas tuvieron una gran influencia en el desarrollo de la plataforma de observabilidad y las visualizaciones implementadas (capitulo \ref{chap:despliegue}).
+
 \end{itemize}
 
 \section{Trabajos futuros}
 
-\begin{itemize}
-  \item Aplicar la refactorización sobre el bucle MAPE-K Lite.
-  \item Implementar mecanismos de autenticación y dar soporte a multitenancy.
-  \item  Aprovechar toda la telemetría que (loki, prometheus, jaeger) capturamos para definir reglas que guíen las adaptaciones.
-\end{itemize}
+En cuanto a trabajos futuros, el más evidente es aplicar la refactorización sobre el bucle MAPE-K \foreign{english}{Lite} de FaDA. Aunque el prototipo pretendía ser lo más fiel al sistema original, es posible que surjan nuevas dificultades no contempladas. Deberá definirse una estrategia para atacarla e ir implementándola gradualmente. Para ello, podrán aprovecharse las interfaces definidas de los servicios y sus especificaciones en lenguajes estándares como OpenAPI. Mediante la generación de código, tanto de clientes como de servidores, se podrá reducir el tiempo y esfuerzo necesarios para la implementación. abo.
+
+Todavía quedan algunas vertientes abiertas que se podrían explorar. Entre ellas, la implementación de \foreign{english}{multitenancy} (multicliente). \cite{aljahdaliMultitenancyCloudComputing2014} Es decir, permitir que varias soluciones autoadaptativas empleen la misma infraestructura del bucle; pero de forma segregada, sin poder interferir entre ellas o acceder a los datos de otras. Se excluyó de este trabajo para reducir el alcance del proyecto. Para implementarla, se debería desarrollar mecanismos de autenticación y autorización, que permitan identificar a cada aplicación y limitar sus permisos. Además deberá estudiarse cómo proteger el acceso a la información de los distintos clientes.
+
+Por otro lado, se podrían investigar más maneras de explotar la telemetría recogida por la plataforma de observabilidad. Por ejemplo, para informar al proceso del bucle MAPE-K. De esta forma, se podrían extraer propiedades de adaptación y ampliar nuestro conocimiento del estado del sistema. En base a estas, se podrían definir nuevas reglas que nos permitan adaptar nuestro sistema a distintas situaciones. Un caso interesante sería analizar las métricas de peticiones concurrentes para desplegar nuevas instancias de los servicios.
