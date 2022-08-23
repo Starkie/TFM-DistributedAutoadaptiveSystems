@@ -211,7 +211,7 @@ En cuanto a la implementación, ya habíamos discutido anteriormente su método 
 
 \pagebreak
 
-\begin{lstlisting}[language={[Sharp]C},caption={Implementación de referencia del método \texttt{Evaluate}. La regla obtiene del conocimiento el estado actual del sistema y determina si debe ejecutarse.\protect\footnotemark},captionpos=b, label=ls:adaption-rule-evaluate-condition]
+\begin{lstlisting}[caption={Implementación de referencia del método \texttt{Evaluate}. La regla obtiene del conocimiento el estado actual del sistema y determina si debe ejecutarse.\protect\footnotemark},captionpos=b, label=ls:adaption-rule-evaluate-condition]
 protected override async Task<bool> Evaluate()
 {
   var currentTemperature =
@@ -248,7 +248,7 @@ Para el caso de estudio, por restricciones de tiempo, nos limitamos a implementa
 
 Para el servicio de aire acondicionado, cambiar el modo de operación supone invocar a los \foreign{english}{endpoints} HTTP que expone. En el fragmento \ref{ls:effector-airconditioner-set-parameter} mostramos cómo se ejecuta la acción de adaptación para cambiar la configuración \texttt{Mode}. En base al nuevo valor, se invocará a un \foreign{english}{endpoint} u otro (líneas 14 a 27). Para ello, empleamos el API \foreign{english}{client} generado del servicio de aire acondicionado.
 
-\begin{lstlisting}[language={[Sharp]C},caption={Implementación de los efectores del aire acondicionado. Invocan a los endpoints HTTP en base a las acciones de adaptación.\protect\footnotemark},captionpos=b, label=ls:effector-airconditioner-set-parameter]
+\begin{lstlisting}[caption={Implementación de los efectores del aire acondicionado. Invocan a los endpoints HTTP en base a las acciones de adaptación.\protect\footnotemark},captionpos=b, label=ls:effector-airconditioner-set-parameter]
 public async Task<Unit> Handle(
   SetAirConditionerModeRequest notification,
   CancellationToken cancellationToken)

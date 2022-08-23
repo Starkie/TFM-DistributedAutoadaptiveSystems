@@ -51,7 +51,7 @@ Podemos apreciar que en la ruta \emph{/Property/\{propertyName\}} está disponib
 
 \textcolor{red}{Otra opción, más fácil de implementar, es desarrollar código por encima del API Client generado. Es el caso del servicio de Análisis. Como trabajar con DTOs directamente se hacía muy pesado (fragmento \ref{ls:analysis-api-client-original}), optamos por implementar un \foreign{english}{builder} de peticiones. Esto nos permitia configurar la petición de una forma más descriptiva para el usuario (fragmento \ref{ls:analysis-api-cliente-request-builder}):}
 
-\begin{lstlisting}[language={[Sharp]C},caption={Implementación de petición original. Trabajar con DTOs era muy verboso.},captionpos=b, label=ls:analysis-api-client-original]
+\begin{lstlisting}[caption={Implementación de petición original. Trabajar con DTOs era muy verboso.},captionpos=b, label=ls:analysis-api-client-original]
 var changeRequests = new List<ServiceConfigurationDTO>
 {
   new()
@@ -84,7 +84,7 @@ await _systemApi.SystemRequestChangePostAsync(
 \end{lstlisting}
 
 
-\begin{lstlisting}[language={[Sharp]C},caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.},captionpos=b, label=ls:analysis-api-cliente-request-builder]
+\begin{lstlisting}[caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.},captionpos=b, label=ls:analysis-api-cliente-request-builder]
 await _systemService.RequestChangeAsync(changeRequest =>
 {
   changeRequest
