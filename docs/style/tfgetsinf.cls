@@ -226,6 +226,24 @@
                 enum, namespace, string, await, async, var}
 }
 
+% Extraído de https://tex.stackexchange.com/questions/336919/simple-coloring-of-json-attributes
+\lstdefinestyle{json}{
+     string=[s]{"}{"},
+     stringstyle=\color{blue},
+     comment=[l]{:},
+     commentstyle=\color{black},
+}
+
+\lstdefinestyle{yaml}{
+     basicstyle=\color{blue}\footnotesize,
+     rulecolor=\color{black},
+     string=[s]{'}{'},
+     stringstyle=\color{blue},
+     comment=[l]{:},
+     commentstyle=\color{black},
+     morecomment=[l]{-}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Aspecto los títulos para \chapter y \section, así como
 % añadir un punto después de la numeración de las secciones

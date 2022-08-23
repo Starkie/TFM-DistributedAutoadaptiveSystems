@@ -73,7 +73,7 @@ Podemos comprobar que el método cuenta con una serie de comentarios (líneas \t
 
 Para generar la especificación empleamos la librería \emph{Swashbuckle.AspNetCore}\footnote{Página oficial: \url{https://github.com/domaindrivendev/Swashbuckle.AspNetCore}}. Esta es capaz de extraerla de un servicio ASP.NET existente. En el fragmento \ref{ls:openapi-get}, podemos ver cómo se describe el \foreign{english}{endpoint} en este estándar. Podemos confirmar que se han incluido los comentarios y atributos que documentaban en el código. Por ejemplo, figuran los parámetros, las respuestas y sus códigos HTTP, etc. Es destacable la similitud que presenta con la especificación de la tabla \ref{tab:especificacion-get-property}.
 
-\begin{lstlisting}[language=python,caption={Especificación OpenAPI del método para obtener una propiedad del conocimiento (\lstinline{GetProperty}). \protect\footnotemark},captionpos=b, label=ls:openapi-get]
+\begin{lstlisting}[style=json,caption={Especificación OpenAPI del método para obtener una propiedad del conocimiento (\lstinline{GetProperty}). \protect\footnotemark},captionpos=b, label=ls:openapi-get]
 "paths": {
   "/Property/{propertyName}": {
     "get": {
@@ -366,7 +366,7 @@ El planificador consumirá esta petición de cambio y deberá elaborar un \textb
 
 Por ejemplo, en el fragmento \ref{ls:adaption-change-plan} encontramos un plan de adaptación para la regla descrita en la sección anterior. Solo contiene una acción de adaptación: cambiar el valor de la propiedad \texttt{Mode} a \texttt{Cooling}. Como el servicio de aire acondicionado ya estaba en funcionamiento, no se ha incluido una acción para desplegarlo.
 
-\begin{lstlisting}[language=python,caption={Plan de adaptación generado para la regla anterior. Solo contiene una acción de adaptación: cambiar la configuración \texttt{Mode} del servicio \texttt{AirConditioner}.},captionpos=b, label=ls:adaption-change-plan]
+\begin{lstlisting}[style=json,caption={Plan de adaptación generado para la regla anterior. Solo contiene una acción de adaptación: cambiar la configuración \texttt{Mode} del servicio \texttt{AirConditioner}.},captionpos=b, label=ls:adaption-change-plan]
 {
   "ChangePlan": {
     "Timestamp": "2022-07-09T09:53:01.1868834Z",

@@ -25,8 +25,7 @@ En el fragmento \ref{ls:docker-compose-example} mostramos la declaración de la 
 
 Podemos apreciar que nos permite declarar las dependencias entre servicios (líneas 12-13). Esto fue clave para el despliegue del contenedor de \texttt{RabbitMQ}. Debido a que el protocolo requiere de una conexión permanente al bus\cite{johanssonPartRabbitMQBest2019}, todos los servicios que dependen de él deben desplegarse después. Por ello, declaramos una dependencia con este servicio y definimos una política de reintentos (línea 18).
 
-% TODO: Pintar bien los YAML.
-\begin{lstlisting}[language={C++},caption={Ejemplo de declaración de despliegue de un servicio en Docker Compose},captionpos=b, label=ls:docker-compose-example]
+\begin{lstlisting}[style=yaml,caption={Ejemplo de declaración de despliegue de un servicio en Docker Compose},captionpos=b, label=ls:docker-compose-example]
 climatisation_rules:
 build:
   context: ./climatisation_rules

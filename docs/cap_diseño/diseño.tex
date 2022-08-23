@@ -553,8 +553,7 @@ Aun así, lo emplearemos para describir manualmente nuestros eventos en un forma
 
 \pagebreak
 
-% TODO: Pintar bien los YAML.
-\begin{lstlisting}[language={C++},caption={Ejemplo del evento de integración \emph{builder}.},captionpos=b, label=ls:asyncapi-propertychanged-integrationevent]
+\begin{lstlisting}[style=yaml,caption={Especificación del evento de integración \emph{PropertyChangedIntegrationEvent} en el lenguaje AsyncAPI.},captionpos=b, label=ls:asyncapi-propertychanged-integrationevent]
 asyncapi: 2.4.0
 info:
   title: Knowledge Service
@@ -568,8 +567,8 @@ channels:
 components:
   messages:
     PropertyChangedIntegrationEvent:
-      description: >-
-        Integration event notifying about a change in an adaption property.
+      description:
+        - Integration event notifying about a change in an adaption property.
       payload:
         type: object
         properties:
