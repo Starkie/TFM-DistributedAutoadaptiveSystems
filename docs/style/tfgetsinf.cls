@@ -5,7 +5,7 @@
 \newif\iflisttables\listtablesfalse
 \newif\iflistfigures\listfiguresfalse
 \newif\iflistquadres\listquadresfalse
-\newif\iflistalgorithms\listalgorithmsfalse
+\newif\iflistlistings\listlistingsfalse
 
 \DeclareOption{catalan}{\PassOptionsToPackage{english,spanish,main=catalan}{babel}}
 \DeclareOption{spanish}{\PassOptionsToPackage{english,catalan,main=spanish}{babel}}
@@ -14,7 +14,7 @@
 \DeclareOption{listoftables}{\listtablestrue}
 \DeclareOption{listoffigures}{\listfigurestrue}
 \DeclareOption{listofquadres}{\listquadrestrue}
-\DeclareOption{listofalgorithms}{\listalgorithmstrue}
+\DeclareOption{listlistings}{\listlistingstrue}
 
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}}
 \ProcessOptions
@@ -131,6 +131,8 @@
      \renewcommand{\listalgorithmname}{\'Indice de algoritmos}
      \renewcommand{\quadrename}{Cuadro}
      \renewcommand{\listquadrename}{\'Indice de cuadros}
+     \renewcommand{\lstlistingname}{Fragmento}
+     \renewcommand{\lstlistlistingname}{\'Indice de listados de código}
      \renewcommand{\appendicesname}{Ap\'endices}}
 
 \addto\captionsenglish{%
@@ -182,6 +184,11 @@
 
 \RequirePackage{fancyvrb}
 \RequirePackage{listings}
+
+% Extraído de: https://tex.stackexchange.com/questions/97474/how-to-add-lstlistoflistings-to-the-table-of-contents/331126#331126
+\renewcommand{\lstlistoflistings}{\begingroup
+     \tocfile{\lstlistlistingname}{lol}
+\endgroup}
 
 \lstset{ %
 	language=[Sharp]C,					% choose the language of the code
@@ -344,11 +351,12 @@
 %%%%%%%%%
 % Índexs
 %%%%%%%%%
-\newcommand{\makeindexes}{\cleardoublepage\tableofcontents\cleardoublepage
+
+\newcommand{\makeindexes}{\cleardoublepage\tableofcontents
                           \iflistfigures\listoffigures\fi
                           \iflisttables\listoftables\fi
                           \iflistquadres\listofquadres\fi
-                          \iflistalgorithms\listofalgorithms\fi
+                          \iflistlistings\lstlistoflistings\cleardoublepage\fi
                           \addtocontents{toc}{\protect\noindent\protect\hrulefill\protect\par}}
 
 \setlength{\cftaftertoctitleskip}{\baselineskip}
