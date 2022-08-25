@@ -11,13 +11,13 @@ Para las aplicaciones web, uno de sus requisitos claves es la \textbf{disponibil
 
 Para atender estas incidencias, no es efectivo depender de operarios humanos. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006} Es muy costoso tener a alguien pendiente de la aplicación las veinticuatro horas del día para atender las incidencias. Sería preferible que nuestro sistema sea capaz de \textbf{adaptarse automáticamente} a las distintas situaciones que surjan durante su operación. Recurrir al operario humano debería ser el último recurso.
 
-En el ámbito de la computación autónoma (\foreign{english}{autonomic computing}) encontramos el concepto de \textbf{sistemas auto-adaptativos}. Son sistemas capaces de ajustar su comportamiento en tiempo de ejecución en base su estado y el del entorno para alcanzar sus objetivos de operación. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006} Esto es posible mediante el uso de \textbf{bucles de control}. \cite{brunEngineeringSelfAdaptiveSystems2009} Gracias a ellos, podremos dotar a los sistemas de capacidades para adaptarse a entornos cambiantes, resolver conflictos operacionales e incluso a la optimizarse dinámicamente.
+En el ámbito de la computación autónoma (\foreign{english}{autonomic computing}) encontramos el concepto de \textbf{sistemas autoadaptativos}. Son sistemas capaces de ajustar su comportamiento en tiempo de ejecución en base su estado y el del entorno para alcanzar sus objetivos de operación. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006} Esto es posible mediante el uso de \textbf{bucles de control}. \cite{brunEngineeringSelfAdaptiveSystems2009} Gracias a ellos, podremos dotar a los sistemas de capacidades para adaptarse a entornos cambiantes, resolver conflictos operacionales e incluso a la optimizarse dinámicamente.
 
-Siguiendo con el ejemplo de la tienda on-line, un ejemplo de auto-adaptación sería adaptarse a los picos de demanda. Cuando tengamos mayor afluencia de clientes, debe ser capaz de aumentar su capacidad de cómputo. En cambio, cuando la afluencia baje, deberá ser capaz de reducirla.
+Siguiendo con el ejemplo de la tienda on-line, un ejemplo de adaptación sería adaptarse a los picos de demanda. Cuando tengamos mayor afluencia de clientes, debe ser capaz de aumentar su capacidad de cómputo. En cambio, cuando la afluencia baje, deberá ser capaz de reducirla.
 
 \section{Motivación}
 
-En este trabajo se quiere explorar el diseño de soluciones auto-adaptativas que estén preparadas para desplegarse en la nube. Para ello se tomó como punto de partida la infraestructura FaDA\footnote{Página oficial: \url{http://fada.tatami.webs.upv.es/}} (desarrollada por el grupo PROS/Tatami\footnote{Página oficial: \url{http://www.pros.webs.upv.es/}} del instituto VRAIN/UPV\footnote{Página oficial: \url{https://vrain.upv.es/}}). Esta propone una estrategia para la ingeniería de sistemas auto-adaptativos usando bucles de control MAPE-K\cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}.
+En este trabajo se quiere explorar el diseño de soluciones autoadaptativas que estén preparadas para desplegarse en la nube. Para ello se tomó como punto de partida la infraestructura FaDA\footnote{Página oficial: \url{http://fada.tatami.webs.upv.es/}} (desarrollada por el grupo PROS/Tatami\footnote{Página oficial: \url{http://www.pros.webs.upv.es/}} del instituto VRAIN/UPV\footnote{Página oficial: \url{https://vrain.upv.es/}}). Esta propone una estrategia para la ingeniería de sistemas autoadaptativos usando bucles de control MAPE-K\cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}.
 
 Actualmente, el bucle de control de FaDA está implementado como un servicio monolítico. Todos sus componentes operan dentro del mismo proceso, incluidos los específicos para sistemas manejados (sondas, monitores\dots). Se trata por tanto de una implementación muy rígida. En caso de querer modificar algún componente, hay que redesplegarlo entero.
 
@@ -28,7 +28,7 @@ Por ello, se buscó \textbf{dividir su funcionalidad en microservicios}. Es deci
 Para el desarrollo del trabajo nos planteamos los siguientes objetivos:
 
 \begin{enumerate}
-  \item Rediseñar la arquitectura existente para soluciones auto-adaptativas y prepararla para desplegarse nativamente como microservicios en la nube. Esto implica determinar los componentes en los que dividiremos la funcionalidad del bucle y los mecanismos de comunicación para conectarlos.
+  \item Rediseñar la arquitectura existente para soluciones autoadaptativas y prepararla para desplegarse nativamente como microservicios en la nube. Esto implica determinar los componentes en los que dividiremos la funcionalidad del bucle y los mecanismos de comunicación para conectarlos.
 
   \item Definir directrices para la implementación de los diferentes componentes adaptativos específicos de una solución: monitores, sondas, efectores\dots
 
@@ -41,7 +41,7 @@ El trabajo se divide en cuatro grandes secciones. La primera de ellas es el \tex
 
 La segunda parte de este trabajo trata sobre la \textbf{migración del sistema existente} a una arquitectura basada en microservicios. Para ello, se introducirá el sistema actual: el bucle MAPE-K \foreign{english}{Lite} de FaDA (capítulo \ref{chap:sistema_original}). A continuación, en el capítulo \ref{chap:diseño} presentamos nuestra propuesta arquitectónica. Se describirá los distintos componentes que la conforman y los mecanismos de comunicación para conectarlos. Finalmente, en el capítulo \ref{chap:implementación}, detallaremos paso a paso nuestra implementación.
 
-La tercera sección del trabajo describe un \textbf{caso de estudio} (capítulo \ref{chap:caso_estudio}). En él, se desarrolla un sistema auto-adaptativo básico de climatización. Nos sirvió para aplicar nuestra arquitectura en la práctica y verificar su funcionamiento. Sirve cómo implementación referencia para otras soluciones autoadaptativas.
+La tercera sección del trabajo describe un \textbf{caso de estudio} (capítulo \ref{chap:caso_estudio}). En él, se desarrolla un sistema autoadaptativo básico de climatización. Nos sirvió para aplicar nuestra arquitectura en la práctica y verificar su funcionamiento. Sirve cómo implementación referencia para otras soluciones autoadaptativas.
 
 Finalmente, cerraremos el trabajo con una descripción del proceso de \textbf{despliegue del sistema y pruebas} (capítulo \ref{chap:despliegue}). Para validar nuestra arquitectura realizamos distintos tipos de pruebas de funcionalidad y rendimiento. En base a los resultados, presentamos cambios que podrían hacerse sobre nuestra propuesta arquitectónica. A continuación, presentamos las conclusiones  generales (capítulo \ref{chap:conclusiones}). Se presentarán también las vertientes por las que se podría continuar ampliando el trabajo en un futuro.
 
