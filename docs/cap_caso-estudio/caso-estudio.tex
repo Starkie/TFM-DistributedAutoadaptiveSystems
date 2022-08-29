@@ -5,11 +5,11 @@ Para validar la arquitectura definida, decidimos implementar un pequeño sistema
 
 \section{Análisis}
 
-\textcolor{red}{Imagen habitacion termometro aireacondicionado}
+\textcolor{red}{Imagen habitación termómetro aire acondicionado}
 
-El primer paso fue capturar los requisitos del sistema a implementar. Cómo hemos comentado, queremos desarrollar un sistema de climatización. Este sistema regulará la temperatura de una habitación mediante el uso de un \textbf{aparato de aire acondicionado}. Este ofrece \textbf{tres modos de funcionamiento}: un modo para calentar la estancia, otro para enfriarla, y un estado neutral (apagado). Además, cuenta con un \textbf{termómetro} interno que nos reporta la temperatura periódicamente.
+El primer paso fue capturar los requisitos del sistema a implementar. Cómo se ha comentado, queremos desarrollar un sistema de climatización. Este sistema regulará la temperatura de una habitación mediante el uso de un \textbf{aparato de aire acondicionado}. Este ofrece \textbf{tres modos de funcionamiento}: un modo para calentar la estancia, otro para enfriarla, y un estado neutral (apagado). Además, cuenta con un \textbf{termómetro} interno que nos reporta la temperatura periódicamente.
 
-Para poder climatizar la habitación, necesitamos que el usuario defina su temperatura objetivo: la \textbf{temperatura de confort}. Cambios en la temperatura de la estancia deberán activar o desactivar el aparato para alcanzarla. Es importante evitar que el aire acondicionado se encienda y se apague constantemente cuando esta se alcance o sobrepase. Por ello, usaremos unas \textbf{temperaturas umbrales}. Por ejemplo, $\pm 4$ºc la temperatura de confort.
+Para poder climatizar la habitación, necesitamos que el usuario defina su temperatura objetivo: la \textbf{temperatura de confort}. Cambios en la temperatura de la estancia deberán activar o desactivar el aparato para alcanzarla. Es importante evitar que el aire acondicionado se encienda y se apague constantemente cuando esta se alcance o sobrepase. Por ello, usaremos unas \textbf{temperaturas umbrales}. Por ejemplo, $\pm 4$ºc respecto a la temperatura de confort.
 
 \section{Diseño}
 
@@ -80,9 +80,9 @@ También podemos deducir cuáles son nuestras propiedades de adaptación:
 
 \subsection{Monitores:}
 
-Necesitamos los monitores que capturarán los datos de las sondas. Estos deberán procesar las mediciones, agregarlas y filtrarlas. Así detectaremos si hubiera errores de medición, datos obsoletos, etc. De esta forma, evitaremos que se lleve a cabo adaptaciones incorrectas.
+Se necesita definir los monitores que capturarán los datos de las sondas. Estos deberán procesar las mediciones, agregarlas y filtrarlas. De esta forma, detectaremos si hubiera errores de medición, datos obsoletos, etc. Así se evitará que se lleve a cabo adaptaciones incorrectas.
 
-Tomemos el monitor de las temperaturas \texttt{climatisation.monitor.temperature}. Este valida que la nueva medida de temperatura esté a menos de 5ºc de diferencia; o haya más de un minuto de diferencia entre ellas. Como en el ejemplo trabajamos con un aire acondicionado ficticio, le hemos establecido un margen de error grande. Si no cumple una de estas condiciones, la descartaremos. Así evitamos que el aire acondicionado se active o desactive por un error de medición.
+Tomemos el monitor de las temperaturas \texttt{climatisation.monitor.temperature}. Este valida que la nueva medida de temperatura esté a menos de 5ºc de diferencia; o haya más de un minuto de diferencia entre ellas. Como en el ejemplo se trabajó con un aire acondicionado ficticio, se estableció un margen de error grande. Si no cumple una de estas condiciones, será descartada. Así evitamos que el aire acondicionado se active o desactive por un error de medición.
 
 \begin{longtable}{|p{3cm} p{10.9cm}|}
     \hline
@@ -111,7 +111,7 @@ Tomemos el monitor de las temperaturas \texttt{climatisation.monitor.temperature
 \subsection{Reglas de adaptación}
 \label{sec:caso-estudio-diseño-reglas}
 
-Las reglas de adaptación de nuestro sistema deberán activar o desactivar el aire acondicionado en base a la temperatura actual. Por ejemplo, si la temperatura es inferior al umbral de frío, el aparato se enciende en modo calefacción. Las reglas se ubicarán en el servicio \texttt{Climatisation.Rules.Service}. Se dispararán cuando cambie uno de sus parámetros.
+Las reglas de adaptación del sistema deberán activar o desactivar el aire acondicionado en base a la temperatura actual. Por ejemplo, si la temperatura es inferior al umbral de frío, el aparato se enciende en modo calefacción. Las reglas se ubicarán en el servicio \texttt{Climatisation.Rules.Service}. Se dispararán cuando cambie uno de sus parámetros.
 
 En la tabla \ref{tab:adaption-rules-climatisation} especificamos las cuatro reglas necesarias. Como comentamos en el capítulo anterior, en el prototipo implementado del bucle MAPE-K nos limitamos a implementar las adaptaciones de tipo \foreign{english}{set parameter}. Por tanto, no definiremos ninguna regla con adaptaciones de despliegue o de \foreign{english}{binding}.
 
@@ -179,7 +179,7 @@ Los efectores que expondrá el aire acondicionado para cambiar su modo de funcio
 
 \section{Implementación}
 
-En esta sección describiremos la implementación del sistema de climatización. Para funcionar como un elemento autónomo, tendremos que emplear los servicios del bucle MAPE-K distribuido y otros cuatro nuevos. Por un lado estará el recurso manejado, el aire acondicionado. Y por el otro, tendremos los servicios de infraestructura necesarios para operar con el bucle. Estos son el monitor, el servicio de reglas y el servicio de efectores.
+En esta sección describiremos la implementación del sistema de climatización. Para funcionar como un elemento autónomo, tendremos que emplear los servicios del bucle MAPE-K distribuido y otros cuatro nuevos. Por un lado, estará el recurso manejado, el aire acondicionado. Y por el otro, tendremos los servicios de infraestructura necesarios para operar con el bucle. Estos son el monitor, el servicio de reglas y el servicio de efectores.
 
 Para su implementación, hemos empleado las mismas tecnologías descritas en el capítulo \ref{chap:implementación}: microservicios \texttt{ASP.NET}, comunicación mediante APIs REST basadas en HTTP y \foreign{english}{brokers} de mensajería \texttt{RabbitMQ}. A continuación, describiremos cada uno:
 
@@ -201,7 +201,7 @@ El servicio también ofrece \foreign{english}{endpoints} para actualizar la conf
 
 \subsection{Reglas}
 
-En cuanto al servicio de reglas, este contiene las cuatro definidas en el apartado \ref{sec:caso-estudio-diseño-reglas}. Las reglas activan o desactivan el aire acondicionado en base a la temperatura de la estancia. Se han implementado siguiendo la estructura descrita en el apartado \ref{sec:implementacion-modulo-reglas}. Todas ellas heredan de las clase abstracta \texttt{AdaptionRuleBase}. Deben implementar los métodos para evaluar la condición y ejecutar su acción. También tendrán que declarar las propiedades de adaptación de las que dependen para suscribirse a sus cambios.
+En cuanto al servicio de reglas, este contiene las cuatro definidas en el apartado \ref{sec:caso-estudio-diseño-reglas}. Las reglas activan o desactivan el aire acondicionado en base a la temperatura de la estancia. Se han implementado siguiendo la estructura descrita en el apartado \ref{sec:implementacion-modulo-reglas}. Todas ellas heredan de la clase abstracta \texttt{AdaptionRuleBase}. Deben implementar los métodos para evaluar la condición y ejecutar su acción. También tendrán que declarar las propiedades de adaptación de las que dependen para suscribirse a sus cambios.
 
 Para describirlas tomaremos como ejemplo la regla \texttt{Disable Air Conditioner When Cooling And Target Temperature Reached Adaption Rule}. Esta desactiva el aparato cuando está activo el modo enfriamiento y se ha alcanzado la temperatura de confort. A lo largo de la memoria ya hemos mostrado algunos fragmentos de su código.
 

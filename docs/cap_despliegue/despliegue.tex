@@ -5,7 +5,7 @@ En este capítulo describiremos cómo se preparó el despliegue del sistema. Int
 
 \section{Despliegue}
 
-Debido a la gran cantidad de microservicios que componen la solución, desde muy temprano fue necesario definir un plan de despliegue. Su número iba en aumento y era muy complicado gestionarlos a mano. Para ello, optamos entonces por empaquetarlos en contenedores de \texttt{Docker}\footnote{Página oficial: \url{https://www.docker.com/}}. Gracias a esto podíamos iniciarlos y pararlos fácilmente. Además que nos aporta una serie de ventajas interesantes: ejecución aislada de los procesos, gestión más fácil de las dependencias, entre otras. \cite{newmanBuildingMicroservicesDesigning2021,delatorreNETMicroservicesArchitecture2021}
+Debido a la gran cantidad de microservicios que componen la solución, desde muy temprano fue necesario definir un plan de despliegue. Su número iba en aumento y era muy complicado gestionarlos a mano. Para ello, optamos entonces por empaquetarlos en contenedores de \texttt{Docker}\footnote{Página oficial: \url{https://www.docker.com/}}. Gracias a esto podíamos iniciarlos y pararlos fácilmente. Además, nos aporta una serie de ventajas interesantes: ejecución aislada de los procesos, gestión más fácil de las dependencias, entre otras. \cite{newmanBuildingMicroservicesDesigning2021,delatorreNETMicroservicesArchitecture2021}
 
 \begin{wrapfigure}{r}{0.23\linewidth}
   \vspace{-25pt}
@@ -275,7 +275,7 @@ Respecto al otro sospechoso, la etapa de monitorización, no ha influido en el t
 
 Una vez realizadas todas estas pruebas, contamos con información suficiente para proponer algunas mejoras a nuestra arquitectura. Estarán orientadas principalmente para solventar el punto de congestión causado por el servicio de reglas. Podrán guiar la refactorización del bucle MAPE-K \foreign{english}{Lite} original.
 
-La más sencilla sería \textbf{replicar el servicio} de reglas. Podríamos añadir más instancias que se repartan la carga de procesamiento. Esto no sería más que un parche que no soluciona ninguno de los problemas de raíz. Simplemente aplazaríamos un poco el punto de saturación. Además que podría derivar en errores sutiles como adaptaciones incorrectas por el procesamiento en paralelo de estas.
+La más sencilla sería \textbf{replicar el servicio} de reglas. Podríamos añadir más instancias que se repartan la carga de procesamiento. Esto no sería más que un parche que no soluciona ninguno de los problemas de raíz. Simplemente aplazaríamos un poco el punto de saturación. Además, podría derivar en errores sutiles como adaptaciones incorrectas por el procesamiento en paralelo de estas.
 
 Otra alternativa más adecuada consistiría en \textbf{agrupar en un mismo servicio estos componentes tan acoplados}. Por ejemplo, que el módulo de análisis se despliegue como parte del servicio de reglas. Así, la comunicación sería interproceso en lugar de hacer peticiones a través de la red. Esto volvería nuestros servicios más independientes y funcionarán más parecido a los servicios plug \& play que describimos en la sección \ref{sec:por-que-microservicios} - \nameref{sec:por-que-microservicios} En nuestro prototipo este cambio puede aplicarse sin problemas, pero será necesario estudiar si es factible en el bucle real.
 
