@@ -16,13 +16,13 @@ En este capítulo haremos una breve introducción a la plataforma y las herramie
 
 Comenzaremos describiendo la extensión para el IDE Eclipse. Tomando una aproximación de \textbf{desarrollo dirigido por modelos} (o \foreign{english}{model driven development}, MDD), esta herramienta permite diseñar soluciones autoadaptativas. Las soluciones están compuestas por especificaciones de servicios \textbf{\foreign{english}{adaptive ready}} (ARS). \cite{fonsServiciosAdaptivereadyPara2021}
 
-Los servicios \foreign{english}{adaptive ready} se limitarán a implementar la funcionalidad. Estos delegan en un bucle de control externo la responsabilidad de gestionar las adaptaciones. Para ello ofrecen una serie de interfaces, las sondas y efectores, que permiten recibir comandos desde el bucle. En la figura \ref{fig:adaptive-ready-services} mostramos un esquema del servicio y de cómo el bucle orquesta la solución.
+Los servicios \foreign{english}{adaptive ready} implementan la funcionalidad y delegan en un bucle de control externo la responsabilidad de gestionar las adaptaciones. Para ello ofrecen una serie de interfaces, las sondas y efectores, que permiten recibir comandos desde el bucle. En la figura \ref{fig:adaptive-ready-services} se muestra un esquema del servicio y de cómo el bucle orquesta la solución.
 
-La plataforma ofrece una serie de generadores de código. A partir de los modelos podemos generar todo el código de infraestructura de las interfaces de adaptación. Para integrarlas en nuestros servicios, deberemos importarlas e implementar la lógica asociada a los comandos. Dependiendo del tipo de despliegue por el que optemos, pueden generarse para microservicios, módulos OSGi\footnote{Página oficial: \url{https://www.osgi.org}.}, entre otros.
+La plataforma ofrece una serie de generadores de código. A partir de los modelos es posible generar todo el código de infraestructura de las interfaces de adaptación. Para integrarlas en los servicios, el desarrollador deberá importarlas e implementar la lógica asociada a los comandos. Dependiendo del tipo de despliegue por el que optemos, pueden generarse para microservicios, módulos OSGi\footnote{Página oficial: \url{https://www.osgi.org}.}, entre otros.
 
 \pagebreak
 
-Para operar estas soluciones, la plataforma ofrece distintas implementaciones de bucles de control. Dependen también del modelo de despliegue que elijamos. Disponemos de soluciones para gestionar microservicios sobre la plataforma Kubernetes\cite{fonsServiciosAdaptivereadyPara2021}, otros que permiten operar componentes OSGi\footnote{Página oficial: \url{https://www.osgi.org}.}, etc. Para este trabajo nos centraremos en una versión reducida del bucle de control para microservicios: MAPE-K \foreign{english}{Lite}.
+Para operar estas soluciones, la plataforma ofrece distintas implementaciones de bucles de control. Cuál emplear dependerá del modelo de despliegue de la aplicación. Disponemos de soluciones para gestionar microservicios sobre la plataforma Kubernetes\cite{fonsServiciosAdaptivereadyPara2021}, otros que permiten operar componentes OSGi\footnote{Página oficial: \url{https://www.osgi.org}.}, etc. En este trabajo nos centraremos en una versión reducida del bucle de control para microservicios: MAPE-K \foreign{english}{Lite}.
 
 \begin{figure}[htb]
   \centering
@@ -35,9 +35,9 @@ Para operar estas soluciones, la plataforma ofrece distintas implementaciones de
 
 \section{Bucle de control MAPE-K \foreign{english}{Lite}}
 
-El bucle de control MAPE-K \foreign{english}{Lite} de FAdA nos permite gestionar soluciones autoadaptativas basadas en microservicios. Es una versión reducida del bucle presentado en \cite{fonsServiciosAdaptivereadyPara2021}. Sigue la arquitectura MAPE-K descrita en la sección \ref{sec:bucles-mapek}. En su implementación actual, se despliega como un servicio monolítico al nivel de la solución autoadaptativa. Todos sus componentes, tanto del bucle como los del recurso manejado (monitores, reglas..), se ejecutan dentro del mismo proceso.
+El bucle de control MAPE-K \foreign{english}{Lite} de FAdA nos permite gestionar soluciones autoadaptativas basadas en microservicios. Es una versión reducida del bucle presentado en \cite{fonsServiciosAdaptivereadyPara2021}. Sigue la arquitectura MAPE-K descrita en la sección \ref{sec:bucles-mapek}. En su implementación actual, se despliega como un servicio monolítico al nivel de la solución autoadaptativa. Todos sus componentes, tanto del bucle como los del recurso manejado (monitores, reglas...), se ejecutan dentro del mismo proceso.
 
-El bucle de control es genérico. No está acoplado a un dominio o solución concreta. Además pueden hacer uso de él varios sistemas. El proceso acepta como entradas las mediciones de las sondas y emite comandos dirigidos a los efectores del recurso manejado. En nuestro caso, los \foreign{english}{touchpoints} de los servicios adaptive ready. En la figura \ref{fig:bucle-mapek3} mostramos un modelo que detalla el flujo de control e información dentro de sus etapas.
+El bucle de control es genérico. No está acoplado a un dominio o solución concreta. Además, pueden hacer uso de él varios sistemas a la vez. El proceso acepta como entradas las mediciones de las sondas y emite comandos dirigidos a los efectores del recurso manejado. En nuestro caso, los \foreign{english}{touchpoints} de los servicios \foreign{english}{adaptive ready}. En la figura \ref{fig:bucle-mapek3} mostramos un modelo que detalla el flujo de control e información dentro de sus etapas.
 
 \begin{figure}[htb]
   \centering
@@ -48,7 +48,7 @@ El bucle de control es genérico. No está acoplado a un dominio o solución con
 
 \subsection{Estructura del bucle}
 
-En la sección \ref{sec:estructura-mape-k} ya describimos la estructura de un bucle MAPE-K típico. Como vemos ver en la figura \ref{fig:bucle-mapek3}, este no difiere mucho en su implementación. Sigue el mismo proceso de monitorización, análisis, planificación y ejecución. Para implementarlas cuenta con los mismos componentes: sondas, monitores, módulo de análisis, planificador, ejecutor y efectores. Pero sí que hay una faceta en la que queremos hacer hincapié: el uso de reglas de adaptación en la etapa de análisis.
+En la sección \ref{sec:estructura-mape-k} ya describimos la estructura de un bucle MAPE-K típico. Como se puede ver en la figura \ref{fig:bucle-mapek3}, este no difiere mucho en su implementación. Sigue la misma secuencia de monitorización, análisis, planificación y ejecución. Para implementarlas cuenta también con los mismos componentes: sondas, monitores, módulo de análisis, planificador, ejecutor y efectores. Pero sí que hay una faceta en la que queremos hacer hincapié: el uso de reglas de adaptación en la etapa de análisis.
 
 \subsubsection{Módulo de análisis y reglas de adaptación}
 
@@ -56,7 +56,7 @@ El módulo de análisis del bucle de control se ha implementado mediante un conj
 
 Las reglas pueden ser generales o especificas a un recurso manejado concreto. Se dividen en dos componentes: la condición y la propuesta de cambio. La \textbf{condición} es una función que determina si es necesario ejecutar la acción. Se define a partir de las propiedades de adaptación del conocimiento. Esta se evaluará en tiempo de ejecución cuando se produzca un cambio en la configuración o se obtenga nueva información del entorno.
 
-Por otro lado, la \textbf{propuesta de cambio} describe cuál debería ser la siguiente configuración del sistema: qué componentes deben estar o no presentes, qué conexiones entre ellos deben existir y sus parámetros de configuración. Las reglas enviarán esta propuesta al planificador. El planificador analizará el estado actual y pautará qué \textbf{acciones} son necesarias para alcanzar el estado deseado.
+Por otro lado, la \textbf{propuesta de cambio} describe cuál debería ser la siguiente configuración del sistema: qué componentes deben estar o no presentes, qué conexiones entre ellos deben existir y sus parámetros de configuración. Las reglas enviarán esta propuesta al planificador. El planificador analizará el estado actual y pautará qué \textbf{acciones} son necesarias para alcanzar el estado deseado. Sobre los componentes y conexiones que no se especifique nada se mantendrán como estaban.
 
 \subsubsection{Operadores arquitectónicos}
 
@@ -85,7 +85,7 @@ En la figura \ref{fig:adaptaciones-microservicios} mostramos un ejemplo de los e
 
 \subsubsection{Ejemplo de regla de adaptación}
 
-Para presentar una regla de adaptación, nos adelantaremos un poco y tomaremos de ejemplo una de las definidas en el caso de estudio (capítulo \ref{chap:caso_estudio}). Esta regla pertenece a un sistema de climatización encargado de regular la temperatura de una habitación. Este cuenta con un termómetro (la sonda) y un sistema de aire acondicionado (el recurso manejado). Además el recurso cuenta con una serie de efectores que permiten cambiar el modo de funcionamiento: enfriar, calentar o apagado.
+Para presentar una regla de adaptación, nos adelantaremos un poco y tomaremos de ejemplo una de las definidas en el caso de estudio (capítulo \ref{chap:caso_estudio}). Esta regla pertenece a un sistema de climatización encargado de regular la temperatura de una habitación. Este cuenta con un termómetro (la sonda) y un sistema de aire acondicionado (el recurso manejado). Además, el recurso cuenta con una serie de efectores que permiten cambiar el modo de funcionamiento: enfriar, calentar o apagado.
 
 Esta regla en concreto se encarga de activar el modo refrigeración. Para ello, en su condición comprueba que la temperatura supere un umbral definido por el usuario; y que no esté enfriando ya la estancia. De cumplirse, se especifica que en la siguiente configuración del sistema deberá estar presente el componente de aire acondicionado. Este debe deberá tener activo el modo de enfriamiento.
 
@@ -104,4 +104,4 @@ Para especificar las reglas usaremos la notación SAS. \cite{fonsEspecificacionS
   \label{tab:adaption-rules-example}
 \end{longtable}
 
-El planificador del sistema recibirá esta propuesta de cambio y tendrá que determinar qué acciones son necesarias para alcanzarlo. Por ejemplo, si el componente del aire acondicionado estuviera activo, solo se pautaría la acción para cambiar el parámetro \texttt{Mode} para que tenga el valor \texttt{Cooling}.
+El planificador del sistema recibirá esta propuesta de cambio y tendrá que determinar qué acciones son necesarias para alcanzarlo. Por ejemplo, si el componente del aire acondicionado estuviera activo, sólo se pautaría la acción para cambiar el parámetro \texttt{Mode} para que tenga el valor \texttt{Cooling}.

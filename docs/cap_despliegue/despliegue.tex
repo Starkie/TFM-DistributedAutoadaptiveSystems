@@ -62,7 +62,7 @@ Para poder capturar y explotar estas señales, necesitaremos construir nuestra p
   \includegraphics[scale=0.5]{cap_despliegue/images/opentelemetry-logo}
 \end{wrapfigure}
 
-Para capturar la telemetría, empleamos el estándar \textbf{OpenTelemetry}\footnote{Página oficial: \url{https://opentelemetry.io/}}. Se trata de un proyecto desarrollado por la Cloud Native Computing Foundation (CNCF). Tiene el objetivo de definir un mecanismo estándar para recopilar y transmitir datos de telemetría. Para ello, ofrece un conjunto de librerias que nos permite instrumentar nuestras aplicaciones. Podremos enviar estos datos a cualquier plataforma que ofrezca extensiones compatibles.
+Para capturar la telemetría, empleamos el estándar \textbf{OpenTelemetry}\footnote{Página oficial: \url{https://opentelemetry.io/}}. Se trata de un proyecto desarrollado por la Cloud Native Computing Foundation (CNCF). Tiene el objetivo de definir un mecanismo estándar para recopilar y transmitir datos de telemetría. Para ello, ofrece un conjunto de librerías que nos permite instrumentar nuestras aplicaciones. Podremos enviar estos datos a cualquier plataforma que ofrezca extensiones compatibles.
 
 Con estas herramientas hemos instrumentado todos nuestros servicios. Nuestra plataforma de observabilidad tiene la siguiente estructura (figura \ref{fig:observability-telemetry-collection}):
 
@@ -281,7 +281,7 @@ Otra alternativa más adecuada consistiría en \textbf{agrupar en un mismo servi
 
 Por otro lado, no podemos hacer lo mismo con el componente de conocimiento. Aunque el módulo de análisis presenta mismo grado de acoplamiento, este debe mantenerse como un servicio independiente. Otras etapas del bucle necesitan acceder también a él: los monitores, el planificador, etc. En su lugar, podríamos intentar optimizar la comunicación y \textbf{reducir el número de peticiones}. En las reglas de adaptación se solicitaban distintas propiedades de adaptación con peticiones individuales. Estas podrían agruparse en una sola petición que recupere toda la información necesaria.
 
-Actualizamos nuestra propuesta arquitectónica con las dos últimas sugerencias. Esta podría quedar como en la figura \ref{fig:arquitectura-final}. El módulo de monitorización y el de análisis se desplegarían con los monitores y las reglas respectivamente. Estos podrían publicarse como librerias para que los otros proyectos las consuman.
+Actualizamos nuestra propuesta arquitectónica con las dos últimas sugerencias. Esta podría quedar como en la figura \ref{fig:arquitectura-final}. El módulo de monitorización y el de análisis se desplegarían con los monitores y las reglas respectivamente. Estos podrían publicarse como librerías para que los otros proyectos las consuman.
 
 Respecto al módulo de planificación y los planificadores de la solución, dependerá de cómo sea su implementación en el bucle de adaptación real. A priori, parecen muy similares a los servicios de reglas de adaptación. En ese caso, podría estudiarse también su despliegue conjunto con cada servicio de planificación. Finalmente, el módulo de ejecución iría ''por libre''. Como los ejecutores no realizan peticiones síncronas, podrían desplegarse por separado. No están acoplados entre si.
 
