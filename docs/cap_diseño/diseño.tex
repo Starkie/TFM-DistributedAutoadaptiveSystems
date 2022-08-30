@@ -53,6 +53,8 @@ Para elegir los mecanismos de comunicación, investigamos algunos de los estilos
 
 Este estilo organiza sus elementos en jerarquías o capas. Un componente se ubicará en un nivel determinado en base a su nivel de abstracción respecto al entorno de ejecución. En las capas inferiores se encuentran aquellos más externos, los más ''acoplados al mundo real''. Por ejemplo, las interfaces de usuario estarían en esta capa. Por otro lado, en las capas superiores se encuentran los servicios con mayor abstracción. Este sería el caso de las reglas de negocio de un programa. No hay ninguna restricción en cuanto al número de capas, podemos contar con cuantas sea necesario.
 
+\pagebreak
+
 En cuanto a la comunicación, un componente solo puede contactar con sus vecinos inmediatos (en una capa superior o inferior). Limitando su contacto con otras capas limitamos su alcance y su conocimiento sobre el resto del sistema. Así evitamos que se acople al resto de componentes más de lo necesario. Además, dentro de un mismo nivel no pueden contactar entre ellos. Según la dirección de la comunicación, se emplean mecanismos distintos (figura \ref{fig:C2-arch-example}):
 
 \begin{itemize}
@@ -81,7 +83,7 @@ Basándonos en este estilo definimos las capas de nuestro sistema. Esto nos perm
 
 \end{itemize}
 
-Habiendo definido esta jerarquía, vimos ciertas similitudes con arquitecturas \foreign{english}{domain driven}, como \foreign{english}{Clean Architecture}. \cite{martinChapter22Clean2018a} En ella, el sistema se organiza en base a una \textbf{regla de dependencia}: <<\emph{la dependencia entre los componentes solo puede apuntar hacia dentro, hacia políticas de alto nivel}>>. Es decir, la arquitectura se organiza en \textbf{capas concéntricas}. En el centro se encuentra el dominio, con el mayor nivel de abstracción. Este no tiene dependencias con ninguna capa exterior. Por otro lado, cada capa más externa muestra dependencia sólo con la capa a la que envuelve. Sólo puede comunicarse con componentes dentro de esta.
+Habiendo definido esta jerarquía, vimos ciertas similitudes con arquitecturas \foreign{english}{domain driven}, como \foreign{english}{Clean Architecture}. \cite{martinChapter22Clean2018a} En ella, el sistema se organiza en base a una \textbf{regla de dependencia}: <<\emph{la dependencia entre los componentes solo puede apuntar hacia dentro, hacia políticas de alto nivel}>>. Es decir, la arquitectura se organiza en \textbf{capas concéntricas}. En el centro se encuentra el dominio, con el mayor nivel de abstracción. Este no tiene dependencias con ninguna capa exterior. Por otro lado, cada capa más externa requiere de componentes de la capa a la que envuelve.
 
 Basándonos en la descripción anterior, optamos por representar nuestra arquitectura como \foreign{english}{knowledge driven}. \cite{taylorSoftwareArchitectureFoundations2009} Nuestra capa central será la del conocimiento (amarilla). A partir de ahí, cada nivel superior dependería de aquella a la que envuelve: el bucle al conocimiento (rojo), la solución al bucle (verde), y la del recurso manejado a la solución (azul). En la figura \ref{fig:clean-mapek-architecture} mostramos el resultado. Las flechas negras representan las peticiones; y las moradas, las notificaciones.
 
@@ -309,10 +311,10 @@ Ahora describiremos qué protocolo elegimos para cada mecanismo de comunicación
 Comenzamos investigando el diseño de las peticiones síncronas. Tomemos por ejemplo la comunicación entre el servicio de monitorización (\foreign{english}{monitoring service}) y el servicio de conocimiento (\foreign{english}{knowledge service}). Recordemos que el conocimiento almacena todas las propiedades de adaptación. El resto de los servicios del nivel del bucle necesitan consultarlas y actualizarlas durante su funcionamiento. En la figura \ref{fig:monitor-knowledge-initial} representamos inicialmente ambos componentes y un conector, sin especificar de qué tipo será.
 
 % TODO: Centrar
-\begin{wrapfigure}{r}{0.38\linewidth}
+\begin{wrapfigure}{r}{0.37\linewidth}
   \centering
-  \vspace{10pt}
-  \includegraphics[scale=0.5]{cap_diseño/images/Monitor-Knowledge-Initial-Connector}
+  \vspace{23pt}
+  \includegraphics[scale=0.55]{cap_diseño/images/Monitor-Knowledge-Initial-Connector}
   \caption{Representación inicial del conector entre el servicio de monitorización y el de conocimiento. De momento no indica más que la necesidad de comunicación.}
   \label{fig:monitor-knowledge-initial}
   \vspace{2pt}
@@ -449,7 +451,7 @@ Una vez definida la interfaz que expondrá el servicio de conocimiento, nos qued
 
 \begin{wrapfigure}{r}{0.3\linewidth}
   \vspace{5pt}
-  \includegraphics[scale=0.32]{cap_diseño/images/openapi-logo}
+  \includegraphics[scale=0.30]{cap_diseño/images/openapi-logo}
   \centering
   \vspace{5pt}
 \end{wrapfigure}
@@ -483,7 +485,7 @@ El conector, delimitado por una línea discontinua roja, está compuesto por dos
 % TODO: Centrar
 \begin{wrapfigure}{l}{0.34\linewidth}
   \centering
-  \includegraphics[scale=0.54]{cap_diseño/images/Knowledge-Analysis-Initial-Notification-Connector}
+  \includegraphics[scale=0.55]{cap_diseño/images/Knowledge-Analysis-Initial-Notification-Connector}
   \caption{Representación inicial del conector entre el servicio de conocimiento y el de análisis.}
   \label{fig:knowledge-analysis-notification-initial-connector}
   \vspace{-10pt}
@@ -583,7 +585,7 @@ El \foreign{english}{broker}, que conoce todos los suscriptores, lo añadirá en
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[scale=0.60]{cap_diseño/images/Knowledge-Analysis-Connector}
+  \includegraphics[scale=0.6]{cap_diseño/images/Knowledge-Analysis-Connector}
   \caption{Arquitectura del conector para notificaciones mediante un \foreign{english}{broker} de mensajería.}
   \label{fig:knowledge-analyisis-connector-architecture}
 \end{figure}

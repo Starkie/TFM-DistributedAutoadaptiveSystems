@@ -9,7 +9,7 @@ El primer paso fue capturar los requisitos del sistema a implementar. Cómo se h
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[scale=0.23]{cap_caso-estudio/images/aire-acondicionado}
+  \includegraphics[scale=0.20]{cap_caso-estudio/images/aire-acondicionado}
   \caption[Diagrama básico del sistema de climatización. Aparecen los componentes principales: el aire acondicionado y el termómetro.]{Diagrama básico del sistema de climatización. Aparecen los componentes principales: el aire acondicionado y el termómetro. \footnotemark}
   \label{fig:caso-estudio-diagrama}
 \end{figure}
@@ -64,6 +64,8 @@ También podemos deducir cuáles son nuestras propiedades de adaptación:
     \textbf{Descripción:} & La temperatura de confort definida por el usuario. El sistema deberá adaptarse para alcanzarla.  \\
     \textbf{Tipo de dato:} & \texttt{float} \\
     \hline
+    \pagebreak
+    \hline
     \textbf{Propiedad:} & \texttt{cold-temperature-threshold}  \\
     \textbf{Descripción:} & La temperatura umbral de frío (en ºc). Si la temperatura baja por debajo de este umbral, deberá calentarse la habitación. \\
     \textbf{Tipo de dato:} & \texttt{float} \\
@@ -96,7 +98,7 @@ Tomemos el monitor de las temperaturas \texttt{climatisation.monitor.temperature
 
     \textbf{Monitor:} & \texttt{climatisation.monitor.temperature}  \\
     \textbf{Descripción:} & Recibe los reportes de temperatura de los termómetros. También filtra estos datos para detectar casos donde se sospecha un error de lectura. \\
-    \textbf{Actualiza \linebreak propiedades \linebreak de adaptación:} & \linebreak \texttt{temperature} \\
+    \textbf{Actualiza \linebreak propiedades:} & \linebreak \texttt{temperature} \\
     \multirow{3}*{\textbf{Acciones:}}
         & \linebreak \textbf{SI} $|$\texttt{new-temperature} $-$ \texttt{temperature}$| \le 5.0$ \\
         & \textbf{O} \texttt{request.DateTime} $-$ \texttt{previousMeasurement.DateTime} $>$ 60s \\
@@ -105,7 +107,10 @@ Tomemos el monitor de las temperaturas \texttt{climatisation.monitor.temperature
 
     \textbf{Monitor:} & \texttt{climatisation.monitor.configuration}  \\
     \textbf{Descripción:} & Recibe la configuración del aire acondicionado y la registra en el \texttt{knowledge}. \\
-    \textbf{Actualiza \linebreak propiedades \linebreak de adaptación:} & \linebreak \ttfamily\selectfont airconditioner.is-deployed, airconditioner-mode, target-temperature, cold-temperature-threshold, hot-temperature-threshold \\
+    \textbf{Actualiza \linebreak propiedades:} & \linebreak \ttfamily\selectfont airconditioner.is-deployed, airconditioner-mode, target-temperature, cold-temperature-threshold, hot-temperature-threshold \\
+
+    \pagebreak
+
     \multirow{2}*{\textbf{Acciones:}}
         & \linebreak \textbf{SI} \texttt{property} $\neq$ \texttt{new-value} \\
         & \textbf{ACTUALIZA-KNOWLEDGE} \texttt{property} $=$ \texttt{new-value} \\
@@ -121,8 +126,6 @@ Tomemos el monitor de las temperaturas \texttt{climatisation.monitor.temperature
 Las reglas de adaptación del sistema deberán activar o desactivar el aire acondicionado en base a la temperatura actual. Por ejemplo, si la temperatura es inferior al umbral de frío, el aparato se enciende en modo calefacción. Las reglas se ubicarán en el servicio \texttt{Climatisation.Rules.Service}. Se dispararán cuando cambie uno de sus parámetros.
 
 En la tabla \ref{tab:adaption-rules-climatisation} especificamos las cuatro reglas necesarias. Como comentamos en el capítulo anterior, en el prototipo implementado del bucle MAPE-K nos limitamos a implementar las adaptaciones de tipo \foreign{english}{set parameter}. Por tanto, no definiremos ninguna regla con adaptaciones de despliegue o de \foreign{english}{binding}.
-
-\pagebreak
 
 \begin{longtable}{|r p{12.8cm}|}
     \hline
@@ -143,11 +146,10 @@ En la tabla \ref{tab:adaption-rules-climatisation} especificamos las cuatro regl
     \textbf{Regla:} & \emph{EnableAirConditionerCoolingModeWhenTemperatureThresholdExceeded}  \\
     \textbf{Descripción:} & Activa el aire acondicionado en modo enfriar cuando la temperatura sea superior al umbral de calor.  \\
     \textbf{Condición:} & \emph{airconditioner-mode} $\neq$ \emph{Cooling} \textbf{AND} \emph{temperature} $\ge$ \emph{hot-temperature-threshold}  \\
+    \pagebreak
     \textbf{Cuerpo:} &  \\
     & \includegraphics[scale=0.75]{cap_caso-estudio/images/adaption-loop-rule-cooling} \\
     \hline
-
-    \pagebreak
 
     \textbf{Regla:} & \emph{DisableAirConditionerWhenCoolingAndTargetTemperatureReachedAdaptionRule}  \\
     \textbf{Descripción:} & Apaga el aire acondicionado cuando el modo enfiar está activo y se ha alcanzado la temperatura de confort.  \\
@@ -210,13 +212,13 @@ El servicio también ofrece \foreign{english}{endpoints} para actualizar la conf
 
 En cuanto al servicio de reglas, este contiene las cuatro definidas en el apartado \ref{sec:caso-estudio-diseño-reglas}. Las reglas activan o desactivan el aire acondicionado en base a la temperatura de la estancia. Se han implementado siguiendo la estructura descrita en el apartado \ref{sec:implementacion-modulo-reglas}. Todas ellas heredan de la clase abstracta \texttt{AdaptionRuleBase}. Deben implementar los métodos para evaluar la condición y ejecutar su acción. También tendrán que declarar las propiedades de adaptación de las que dependen para suscribirse a sus cambios.
 
+\pagebreak
+
 Para describirlas tomaremos como ejemplo la regla \texttt{Disable Air Conditioner When Cooling And Target Temperature Reached Adaption Rule}. Esta desactiva el aparato cuando está activo el modo enfriamiento y se ha alcanzado la temperatura de confort. A lo largo de la memoria ya hemos mostrado algunos fragmentos de su código.
 
 La regla describe las propiedades o configuraciones de las que depende mediante atributos. Son los parámetros que requiere para evaluar su condición. Tomemos por ejemplo el fragmento \ref{ls:adaption-rule-dependencies}. Observamos que declara tres dependencias: \texttt{airconditioner-mode}, \texttt{temperature} y \texttt{hot-temperature-threshold}.
 
 En cuanto a la implementación, ya habíamos discutido anteriormente su método \texttt{Execute} en el fragmento \ref{ls:change-request-builder}. Solo nos queda exponer la implementación de referencia del método \texttt{Evaluate}. En el fragmento \ref{ls:adaption-rule-evaluate-condition} podemos ver la condición. Observamos que en las líneas 3-5, 12-15 y 17-20 se obtienen las propiedades de adaptación o claves de configuración desde el servicio de análisis. En base a ellas, en las líneas 22-23 se evalúa.
-
-\pagebreak
 
 \begin{lstlisting}[caption={Implementación de referencia del método \texttt{Evaluate}. La regla obtiene del conocimiento el estado actual del sistema y determina si debe ejecutarse.\protect\footnotemark},captionpos=b, label=ls:adaption-rule-evaluate-condition]
 protected override async Task<bool> Evaluate()

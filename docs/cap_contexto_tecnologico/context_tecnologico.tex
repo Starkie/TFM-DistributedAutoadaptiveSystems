@@ -40,9 +40,9 @@ Para este trabajo, nos interesaban especialmente los elementos. Concretamente lo
 
 El primer tipo de elemento a tratar son los componentes. Según \cite{taylorSoftwareArchitectureFoundations2009}, los \textbf{componentes} son <<\emph{elementos arquitectónicos que encapsulan un subconjunto de la funcionalidad y/o de los datos del sistema}>>. Dependiendo de las características de nuestro sistema (y del nivel de abstracción que usemos) pueden tomar distintas formas: objetos, módulos dentro un mismo proceso, servicios distribuidos, etc.
 
-\begin{wrapfigure}{r}{0.40\linewidth}
-  \centering
-  \includegraphics[scale=0.8]{cap_contexto_tecnologico/images/componente-ejemplo}
+\begin{wrapfigure}{r}{0.35\linewidth}
+  \vspace{-0.5cm}
+  \includegraphics[scale=0.83]{cap_contexto_tecnologico/images/componente-ejemplo}
   \caption{El servicio de monitorización representado como un componente. Ofrece una interfaz (\emph{IMonitoringService}) y depende de otra para funcionar (\emph{IKnowledgeService}).}
   \label{fig:componenteEjemplo}
 \end{wrapfigure}
@@ -102,6 +102,8 @@ Para implementar las capacidades de adaptación se recurre a la teoría de contr
 
   \item \textbf{Analizar}: Basándose en la información considerada de interés, la etapa de análisis debe identificar \textbf{síntomas}: indicadores de una situación que requiera de nuestra atención. Puede ser mediante heurísticas predefinidas, análisis estadístico u otros métodos. Podrían ser ''uso de CPU elevado'', ''número elevado de mensajes encolados en un sistema de mensajería'', etc.
 
+  \pagebreak
+
   \item \textbf{Decidir}: A partir de los síntomas, el bucle debe determinar si es necesario tomar alguna acción correctiva. Podría detectarse que no se están cumpliendo los objetivos, o que puede optimizarse la configuración actual. Para ello, se \textbf{planifica} qué acciones deben llevarse a cabo para que el sistema se adapte y alcance una configuración deseable. Por ejemplo, si hay muchos mensajes encolados, se solicitaría iniciar otra instancia del servicio que los consuma y procese en paralelo.
 
   \item \textbf{Actuar}: Si se ha planificado alguna acción, se intentará \textbf{ejecutarla} en esta etapa final. Mediante \textbf{efectores} en el sistema, el bucle es capaz de modificar su configuración. Dependiendo del éxito de la ejecución, la adaptación se completa o no. Finalizada esta etapa, se vuelve a recopilar información e inicia de nuevo el proceso.
@@ -139,7 +141,7 @@ En la figura \ref{fig:autonomic-element} mostramos una representación de un ele
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=2]{cap_contexto_tecnologico/images/autonomic-element}
+  \includegraphics[scale=1.8]{cap_contexto_tecnologico/images/autonomic-element}
   \caption[Representación de un elemento autónomo. Distinguimos el recurso manejado y el manejador autónomo. El manejador es un bucle MAPE-K (\emph{Monitor}, \emph{Analysis}, \emph{Planification}, \emph{Execution} y \emph{Knowledge})]{Representación de un elemento autónomo. Distinguimos el recurso manejado y el manejador autónomo. El manejador es un bucle MAPE-K. Basada en imagen de \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}.}
   \label{fig:autonomic-element}
 \end{figure}
