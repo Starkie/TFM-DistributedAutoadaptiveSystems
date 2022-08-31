@@ -76,7 +76,7 @@ Fijémonos por ejemplo en la figura \ref{fig:componentesYConectorEjemplo}. En el
 
 \section{Computación autónoma y bucles de control}
 
-Según \cite{ibmArchitecturalBlueprintAutonomic2006}, la \textbf{computación autónoma} tiene como objetivo dotar a los sistemas de \textbf{autonomía} en su operación. Es decir, capacidades para gestionarse a si mismos. Estas capacidades les permitirán adaptarse a los cambios en su entorno de ejecución. Mediante la autonomía, buscamos una reducción en el coste de operación y hacer más manejable la complejidad de los sistemas.
+Según \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}, la \textbf{computación autónoma} tiene como objetivo dotar a los sistemas de \textbf{autonomía} en su operación. Es decir, capacidades para gestionarse a si mismos. Estas capacidades les permitirán adaptarse a los cambios en su entorno de ejecución. Mediante la autonomía, buscamos una reducción en el coste de operación y hacer más manejable la complejidad de los sistemas.
 
 El sistema decide si es necesario ejecutar adaptaciones en base a directivas de alto nivel, los \textbf{objetivos}. Un operario humano define estas metas que debe mantener o alcanzar durante su ejecución. A partir de las políticas y la información del entorno, puede intuir que es necesario reconfigurarse para cumplirlas.
 
@@ -113,7 +113,7 @@ Para implementar las capacidades de adaptación se recurre a la teoría de contr
 
 En la ingeniería de \emph{software}, los bucles de control suelen implementarse de dos formas distintas: \textbf{implícitos} o \textbf{explícitos}. La más habitual es la primera: se encuentran implícitos en el código de las aplicaciones. \cite{brunEngineeringSelfAdaptiveSystems2009} No son componentes externos dedicados. Esto dificulta su implementación y mantenimiento ya que están entrelazados con la funcionalidad.
 
-Por otro lado, aproximaciones como las de \cite{ibmArchitecturalBlueprintAutonomic2006} o \cite{garlanIncreasingSystemDependability2003} optan por la segunda: bucles como componentes externos. Esto permite \textbf{separar la funcionalidad de las capacidades de adaptación}. Al dividirse estas responsabilidades, se puede reducir la complejidad de la implementación. En este trabajo nos centraremos en esta segunda variante.
+Por otro lado, aproximaciones como las de \cite{ibmcorporationArchitecturalBlueprintAutonomic2006} o \cite{garlanIncreasingSystemDependability2003} optan por la segunda: bucles como componentes externos. Esto permite \textbf{separar la funcionalidad de las capacidades de adaptación}. Al dividirse estas responsabilidades, se puede reducir la complejidad de la implementación. En este trabajo nos centraremos en esta segunda variante.
 
 En el caso de los bucles externos, pueden categorizarse además en base al \textbf{nivel} en el que operan. \cite{mendoncaGeneralityVsReusability2018} Esto determinará el nivel de abstracción que tienen sobre el sistema que controlan, afectando a su reusabilidad en otras arquitecturas. De menor a mayor nivel de abstracción (y de reusabilidad) tenemos: nivel del sistema, mixto e infraestructura.
 
@@ -126,7 +126,7 @@ En cuanto a aplicaciones prácticas, podemos encontrarlos en gran variedad de co
 \section{Arquitecturas para sistemas autónomos: Bucles MAPE-K}
 \label{sec:bucles-mapek}
 
-Un estilo arquitectónico muy representativo es el basado en bucles MAPE-K \cite{ibmArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021} propuesto por IBM. Se trata de una referencia arquitectónica para desarrollar sistemas distribuidos autónomos. Nace con el objetivo hacer más manejable la complejidad de estos sistemas; y reducir sus costes de operación, requiriendo de la mínima intervención humana.
+Un estilo arquitectónico muy representativo es el basado en bucles MAPE-K \cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021} propuesto por IBM. Se trata de una referencia arquitectónica para desarrollar sistemas distribuidos autónomos. Nace con el objetivo hacer más manejable la complejidad de estos sistemas; y reducir sus costes de operación, requiriendo de la mínima intervención humana.
 
 Sus componentes principales son los \textbf{elementos autónomos}. Cada uno de los elementos del sistema es capaz de gestionarse y colaborar con el resto para alcanzar los objetivos. Podría considerarse como una arquitectura basada en agentes. \cite{savaglioAgentbasedInternetThings2020} A su vez, estos componentes pueden dividirse en dos partes: un recurso manejado y un manejador autónomo.
 
@@ -137,12 +137,12 @@ El bucle es de tipo externo, ya que es un componente distinto al que implementa 
 \subsection{Estructura del bucle MAPE-K}
 \label{sec:estructura-mape-k}
 
-En la figura \ref{fig:autonomic-element} mostramos una representación de un elemento autónomo. Pueden distinguirse las dos partes principales: el manejador y el recurso. El primero contacta con el recurso a través de sus sensores y efectores. Pueden apreciarse los componentes que conforman el bucle y que se describen a continuación: \cite{ibmArchitecturalBlueprintAutonomic2006}
+En la figura \ref{fig:autonomic-element} mostramos una representación de un elemento autónomo. Pueden distinguirse las dos partes principales: el manejador y el recurso. El primero contacta con el recurso a través de sus sensores y efectores. Pueden apreciarse los componentes que conforman el bucle y que se describen a continuación: \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}
 
 \begin{figure}[h]
   \centering
   \includegraphics[scale=1.8]{cap_contexto_tecnologico/images/autonomic-element}
-  \caption[Representación de un elemento autónomo. Distinguimos el recurso manejado y el manejador autónomo. El manejador es un bucle MAPE-K (\emph{Monitor}, \emph{Analysis}, \emph{Planification}, \emph{Execution} y \emph{Knowledge})]{Representación de un elemento autónomo. Distinguimos el recurso manejado y el manejador autónomo. El manejador es un bucle MAPE-K. Basada en imagen de \cite{ibmArchitecturalBlueprintAutonomic2006}.}
+  \caption[Representación de un elemento autónomo. Distinguimos el recurso manejado y el manejador autónomo. El manejador es un bucle MAPE-K (\emph{Monitor}, \emph{Analysis}, \emph{Planification}, \emph{Execution} y \emph{Knowledge})]{Representación de un elemento autónomo. Distinguimos el recurso manejado y el manejador autónomo. El manejador es un bucle MAPE-K. Basada en imagen de \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}.}
   \label{fig:autonomic-element}
 \end{figure}
 
@@ -195,7 +195,7 @@ En el caso del servicio web, la acción correspondiente sería desplegar o elimi
 
 \subsection{Sistemas distribuidos basados en elementos autónomos}
 
-Si nos fijamos en la figura \ref{fig:autonomic-element}, veremos que en la parte superior del elemento autónomo figuran sondas y efectores. Esto indica que pueden actuar también como recursos manejados, reportando mediciones y ofreciendo efectores para manipularlo. Permite colocar un manejador autónomo que actúe como \textbf{orquestador}. \cite{ibmArchitecturalBlueprintAutonomic2006}
+Si nos fijamos en la figura \ref{fig:autonomic-element}, veremos que en la parte superior del elemento autónomo figuran sondas y efectores. Esto indica que pueden actuar también como recursos manejados, reportando mediciones y ofreciendo efectores para manipularlo. Permite colocar un manejador autónomo que actúe como \textbf{orquestador}. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}
 
 Los orquestadores gestionan uno o más elementos autónomos, responsabilizándose de tareas de más alto nivel. Facilitan también la cooperación entre sus elementos manejados. Por ejemplo, si nuestro elemento autonómico fuera un servidor web, el orquestador podría encargarse de gestionar varios servidores web distintos. Podría actuar como balanceador de carga o en otros aspectos.
 
@@ -208,6 +208,6 @@ La arquitectura final tendría el siguiente aspecto, mostrado en la figura \ref{
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=0.5]{cap_contexto_tecnologico/images/mape-k-architecture}
-  \caption[Arquitectura de un sistema autoadaptativo basado en MAPE-K.]{Arquitectura de un sistema autoadaptativo basado en MAPE-K. Imagen obtenida de \cite{ibmArchitecturalBlueprintAutonomic2006}.}
+  \caption[Arquitectura de un sistema autoadaptativo basado en MAPE-K.]{Arquitectura de un sistema autoadaptativo basado en MAPE-K. Imagen obtenida de \cite{ibmcorporationArchitecturalBlueprintAutonomic2006}.}
   \label{fig:autonomic-system}
 \end{figure}
