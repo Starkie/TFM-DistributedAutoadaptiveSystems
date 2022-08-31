@@ -1,20 +1,15 @@
 \chapter{Conclusiones}
 \label{chap:conclusiones}
 
-En este capítulo se realiza una retrospectiva del desarrollo del trabajo y presentaremos algunas conclusiones sobre el mismo. Por ejemplo, el grado de realización de los objetivos marcados o la descripción de vertientes todavía abiertas.
+En este capítulo se realiza una retrospectiva del desarrollo del trabajo y presentaremos algunas conclusiones sobre el mismo. Se tratará el cumplimiento de los objetivos marcados y la descripción de vertientes todavía abiertas para trabajos futuros.
 
-Al inicio del trabajo se presentaron una serie de objetivos que se quería alcanzar.
+\section{Objetivos alcanzados}
 
+Al inicio del trabajo presentamos cuáles fueron nuestros objetivos de partida. El principal era rediseñar la arquitectura propuesta por FAdA para las soluciones autoadaptativas. Queríamos adaptarla para que pueda desplegarse como microservicios en la nube. A lo largo de la memoria, hemos presentado el proceso de diseño, implementación y validación que se siguió para alcanzar la propuesta final. Consideramos entonces que se ha alcanzado satisfactoriamente.
 
-Para el desarrollo del trabajo nos planteamos los siguientes objetivos:
+Otro de ellos, era definir directrices para el desarrollo de los componentes de una solución autoadaptativa. En las secciones de diseño (capítulo \ref{chap:diseño}) e implementación (capítulo \ref{chap:implementación}) hemos descrito implementaciones de referencia para todos los componentes de la arquitectura. Por ejemplo, se ha pautado cómo podrían implementarse los servicios de reglas de adaptación. Esta podrá ser de gran ayuda a la hora de trasladar nuestro diseño al bucle de adaptación real.
 
-\begin{enumerate}
-  \item Diseñar una arquitectura para soluciones autoadaptativas preparadas para desplegarse nativamente como microservicios en la nube. Esto implica determinar los componentes en los que dividiremos la funcionalidad del bucle y los mecanismos de comunicación para conectarlos.
-
-  \item Definir directrices para la implementación de los diferentes componentes adaptativos específicos de una solución: monitores, sondas, efectores\dots
-
-  \item Desarrollar un caso práctico para demostrar la viabilidad y aplicabilidad de nuestra propuesta.
-\end{enumerate}
+Además, todos estos conceptos se han puesto a prueba mediante un caso de estudio: el sistema de climatización. Este ha servido de ejemplo sobre cómo desarrollar aplicaciones autoadaptativas que exploten la nueva infraestructura. Finalmente, hemos verificado mediante distintas pruebas su correcto funcionamiento. Esto nos ha permitido encontrar deficiencias en nuestra arquitectura y la posibilidad de proponer refinamientos sobre la misma. Así, se ha podido demostrar su viabilidad para su aplicación en un futuro.
 
 \section{Relación con asignaturas cursadas}
 
@@ -31,8 +26,10 @@ El trabajo desarrollado tiene relación con varias asignaturas cursadas durante 
 
 \section{Trabajos futuros}
 
-En cuanto a trabajos futuros, el más evidente es aplicar la refactorización sobre el bucle MAPE-K \foreign{english}{Lite} de FaDA. Aunque el prototipo pretendía ser lo más fiel al sistema original, es posible que surjan nuevas dificultades no contempladas. Deberá definirse una estrategia para atacarla e ir implementándola gradualmente. Para ello, podrán aprovecharse las interfaces definidas de los servicios y sus especificaciones en lenguajes estándares como OpenAPI. Mediante la generación de código, tanto de clientes como de servidores, se podrá reducir el tiempo y esfuerzo necesarios para la implementación. abo.
+En cuanto a trabajos futuros, el más evidente es \textbf{aplicar la refactorización} sobre el bucle MAPE-K \foreign{english}{Lite} de FaDA. Aunque el prototipo pretendía ser lo más fiel al sistema original, es posible que surjan nuevas dificultades no contempladas. Deberá definirse una estrategia para implementándola gradualmente. Para ello, podrán aprovecharse las interfaces definidas de los servicios y sus especificaciones en lenguajes estándares como OpenAPI. Mediante la generación de código, tanto de clientes como de servidores, se podrá reducir el tiempo y esfuerzo necesarios para la implementación.
 
-Todavía quedan algunas vertientes abiertas que se podrían explorar. Entre ellas, la implementación de \foreign{english}{multitenancy} (multicliente). \cite{aljahdaliMultitenancyCloudComputing2014} Es decir, permitir que varias soluciones autoadaptativas empleen la misma infraestructura del bucle; pero de forma segregada, sin poder interferir entre ellas o acceder a los datos de otras. Se excluyó de este trabajo para reducir el alcance del proyecto. Para implementarla, se debería desarrollar mecanismos de autenticación y autorización, que permitan identificar a cada aplicación y limitar sus permisos. Además deberá estudiarse cómo proteger el acceso a la información de los distintos clientes.
+La refactorización podría incluir también el desarrollo de plantillas para la \textbf{generación de los microservicios}. Así, se modelarían los distintos componentes de una solución autoadaptativa y se generaría todo el código de infraestructura. Sólo restaría implementar el código específico para el caso de uso.
 
-Por otro lado, se podrían investigar más maneras de explotar la telemetría recogida por la plataforma de observabilidad. Por ejemplo, para informar al proceso del bucle MAPE-K. De esta forma, se podrían extraer propiedades de adaptación y ampliar nuestro conocimiento del estado del sistema. En base a estas, se podrían definir nuevas reglas que nos permitan adaptar nuestro sistema a distintas situaciones. Un caso interesante sería analizar las métricas de peticiones concurrentes para desplegar nuevas instancias de los servicios.
+Respecto a la arquitectura, todavía quedan algunas vertientes abiertas que se podrían explorar. Entre ellas, la implementación de \textbf{\foreign{english}{multitenancy}} (multicliente). \cite{aljahdaliMultitenancyCloudComputing2014} Es decir, permitir que varias soluciones autoadaptativas empleen la misma infraestructura del bucle; pero de forma segregada, sin poder interferir entre ellas o acceder a los datos de otras. Se excluyó de este trabajo para reducir el alcance del proyecto. Para implementarla, se debería desarrollar mecanismos de autenticación y autorización, que permitan identificar a cada aplicación y limitar sus permisos. Además deberá estudiarse cómo proteger el acceso a la información de los distintos clientes.
+
+Por otro lado, se podrían investigar más maneras de \textbf{explotar la telemetría} recogida por la plataforma de observabilidad. Por ejemplo, para informar al proceso del bucle MAPE-K. De esta forma, se podrían extraer propiedades de adaptación y ampliar nuestro conocimiento del estado del sistema. En base a estas, se podrían definir nuevas reglas que nos permitan adaptar nuestro sistema a distintas situaciones. Un caso interesante sería analizar las métricas de peticiones concurrentes para desplegar nuevas instancias de los servicios.
