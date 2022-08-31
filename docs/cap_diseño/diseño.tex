@@ -22,7 +22,7 @@ Optar por un estilo arquitectónico determinado tiene un precio. Conlleva una se
 
 A nivel de diseño, esto afectará a la \textbf{comunicación entre servicios}. Como ya no se ejecutan dentro del mismo proceso, deberán comunicarse a través de la red. Más adelante veremos que esta no es infalible. \cite{jausovecFallaciesDistributedSystems2020} Pueden ocurrir retrasos para entregar los mensajes o directamente fallar la conexión. Por tanto, necesitaremos plantear bien cómo y cuándo deberán contactar entre ellos. Lo ideal es que sean lo más independientes posible, ya que cada dependencia es un potencial punto de fallo.
 
-Otros aspectos que se verán afectados serán la \textbf{operación y el despliegue del sistema}. Para su correcto funcionamiento tendremos que monitorizar y gestionar cada una de sus piezas. Como una sola petición puede desencadenar llamadas a otros servicios, requeriremos de soluciones de monitorización y \foreign{english}{logging} más avanzadas. \cite{parkerProblemDistributedTracing2020} Sin una buena solución de \textbf{observabilidad} puede ser muy difícil de depurar los errores o analizar su impacto.
+Otros aspectos que se verán afectados serán la \textbf{operación y el despliegue del sistema}. Para su correcto funcionamiento tendremos que monitorizar y gestionar cada una de sus piezas. Como una sola petición puede desencadenar llamadas a otros servicios, requeriremos de soluciones de monitorización y \foreign{english}{logging} más avanzadas. \cite{parkerDistributedTracingPractice2020} Sin una buena solución de \textbf{observabilidad} puede ser muy difícil de depurar los errores o analizar su impacto.
 
 \section{Distribución de los componentes}
 
