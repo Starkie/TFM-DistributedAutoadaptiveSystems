@@ -381,8 +381,8 @@
 \newcommand{\APPENDIX}{\appendix
              \phantomsection
              \addtocontents{toc}{\protect\noindent\protect\hrulefill\protect\par}
-             \ifnum\value{appendix}=1 \addtocontents{toc}{\protect\appendixname\protect\par}
-                    \else\addtocontents{toc}{\protect\appendicesname\protect\par}\fi}
+             \ifnum\value{appendix}=1 \addtocontents{toc}{\protect\textbf{\appendixname}\protect\par}
+                    \else\addtocontents{toc}{\protect\textbf{\appendicesname}\protect\par}\fi}
 
 \newcommand{\m@ketitle}{%
 \begin{titlepage}
