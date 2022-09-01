@@ -46,7 +46,6 @@ Haciendo uso de las librerías de OpenAPI, generamos la especificación a partir
 
 Podemos apreciar que en la ruta \emph{/Property/\{propertyName\}} está disponible una operación de tipo \emph{GET}. Esta acepta determinados parámetros y describe unas posibles respuestas. También aparece una referencia a otro esquema (línea 25), que representa la estructura de la respuesta en ese caso concreto. También aparecen los comentarios opcionales que indicamos en el \textcolor{red}{fragmento} \ref{ls:csharp-get}. Encontramos grandes similitudes con la especificación presentada en la tabla \ref{tab:especificacion-get-property}.
 
-%% TODO: ¿Eliminar?
 \textcolor{red}{Los convenios de los generadores de código de OpenAPI pueden no ser de nuestro agrado. Por ejemplo, pueden resultar muy verbosos o puede resultar muy pesado trabajar con DTOs directamente. Por suerte, tenemos varias alternativas para solucionarlo: Modificar las plantillas de generación de código. Al ser de código abierto, podríamos modificar las existentes o crear nuestras propias plantillas con nuestros propios convenios.}
 
 \textcolor{red}{Otra opción, más fácil de implementar, es desarrollar código por encima del API Client generado. Es el caso del servicio de Análisis. Como trabajar con DTOs directamente se hacía muy pesado (fragmento \ref{ls:analysis-api-client-original}), optamos por implementar un \foreign{english}{builder} de peticiones. Esto nos permitia configurar la petición de una forma más descriptiva para el usuario (fragmento \ref{ls:analysis-api-cliente-request-builder}):}
