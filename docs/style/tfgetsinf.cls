@@ -352,12 +352,19 @@
 % Índexs
 %%%%%%%%%
 
-\newcommand{\makeindexes}{\cleardoublepage\tableofcontents
-                          \iflistfigures\listoffigures\fi
-                          \iflisttables\listoftables\fi
-                          \iflistquadres\listofquadres\fi
-                          \iflistlistings\lstlistoflistings\cleardoublepage\fi
-                          \addtocontents{toc}{\protect\noindent\protect\hrulefill\protect\par}}
+\newcommand{\makeindexes}{
+                              \cleardoublepage
+                              \tableofcontents
+                              \iflistfigures\clearpage\listoffigures\fi
+                              \iflisttables\clearpage\listoftables\fi
+                              % Relax clear page: https://tex.stackexchange.com/questions/187943/no-page-break-for-listoffigures-with-scrreprt
+                              \let\LaTeXStandardClearpage\clearpage
+                              \let\clearpage\relax  % Do nothing when a \clearpage command appears
+                              \iflistquadres\listofquadres\fi
+                              \iflistlistings\lstlistoflistings\cleardoublepage\fi
+                              \addtocontents{toc}{\protect\noindent\protect\hrulefill\protect\par}
+                              \let\clearpage\LaTeXStandardClearpage  % Return to the old definition
+                         }
 
 \setlength{\cftaftertoctitleskip}{\baselineskip}
 \setlength{\cftafterloftitleskip}{\baselineskip}
