@@ -332,7 +332,7 @@ protected override async Task Execute()
 
 El servicio de análisis recibirá la petición y la redirigirá al planificador mediante una petición asíncrona. Su implementación es muy similar a la de las notificaciones, explicada en detalle en el apartado anterior. La mayor diferencia radica en la cardinalidad de la comunicación: en lugar de publicarlo en un \foreign{english}{exchange}, el mensaje se publicará directamente en la cola de trabajo. Sólo lo debería procesará un servicio.
 
-Como la comunicación es tan similar, únicamente cambiará la implementación del publicador. La mayor diferencia se puede apreciar en el fragmento \ref{ls:request-publisher}. Allí, vemos que el mensaje se enruta directamente a la cola \texttt{PlanningServiceQueue} (línea 15). También cambiarán las interfaces que deban implementar los componentes. En este caso \texttt{IRequestPublisher} en lugar de \texttt{IIntegrationEventPublisher} (línea 2).
+Como la comunicación es tan similar, únicamente cambiará la implementación del publicador. La mayor diferencia se puede apreciar en el fragmento \ref{ls:request-publisher}. Allí, vemos que el mensaje se enruta directamente a la cola \texttt{PlanningServiceQueue} (línea 15). También cambiarán las interfaces que deban implementar los componentes. En este caso usaremos \texttt{IRequestPublisher} en lugar de \texttt{IIntegrationEventPublisher} (línea 2).
 
 \begin{lstlisting}[caption={Las peticiones asíncronas se publican a una cola determinada.\protect\footnotemark},captionpos=b, label=ls:request-publisher]
 public class SystemConfigurationChangeRequestPublisher
