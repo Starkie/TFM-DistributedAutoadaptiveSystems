@@ -176,7 +176,10 @@ Su especificación OpenAPI puede encontrarse \href{https://github.com/Starkie/TF
 \begin{longtable}{|m{2cm}|m{2.3cm}|m{10cm}|b{0.85cm}|b{2.75cm}|}
   \hline
 
-  \textbf{Nombre} & \multicolumn{2}{|b{0.37\linewidth}|}{\emph{SystemConfigurationChangeRequest}} & \textbf{Cola} & \emph{AdaptionLoop.Planification.Requests}  \\
+  \textbf{Peticion} & \multicolumn{4}{|b{0.7\linewidth}|}{\emph{SystemConfigurationChangeRequest}} \\
+  \hline
+
+  \textbf{\emph{Cola}} & \multicolumn{4}{|b{0.7\linewidth}|}{\emph{AdaptionLoop.Planification.Requests}} \\
   \hline
 
   \textbf{Descripción} & \multicolumn{4}{|b{0.82\linewidth}|}{Petición que representa una propuesta de cambio de la configuración del sistema.} \\
@@ -210,11 +213,136 @@ Su especificación OpenAPI puede encontrarse \href{https://github.com/Starkie/TF
 
 \subsubsection{Peticiones asíncronas}
 
-\textcolor{red}{TODO: RELLENAR}
+\newsavebox\executechangeplanrequestbox
+\begin{lrbox}{\executechangeplanrequestbox}
+  \begin{minipage}[t]{2in}
+    \begin{verbatim}
+{
+  "Timestamp": "2022-06-19T16:38:30.6092751Z",
+  "Symptoms":[
+    {
+      "Name": "temperature-lesser-than-cold-threshold",
+      "Value": "true"
+    }
+  ],
+  "ChangePlan":  [
+    {
+      "ServiceName": "Climatisation.AirConditioner.Service",
+      "Type": "SetParameter",
+      "PropertyName": "Mode",
+      "PropertyValue": "Heating"
+    }
+  ]
+}
+        \end{verbatim}
+  \end{minipage}
+\end{lrbox}
+
+\begin{longtable}{|m{2cm}|m{2.3cm}|m{10cm}|b{0.85cm}|b{2.75cm}|}
+  \hline
+
+  \textbf{Peticion} & \multicolumn{4}{|b{0.7\linewidth}|}{\emph{ExecuteChangePlanRequest}} \\
+  \hline
+
+  \textbf{\emph{Cola}} & \multicolumn{4}{|b{0.7\linewidth}|}{\emph{AdaptionLoop.Execution.Requests}} \\
+  \hline
+
+  \textbf{Descripción} & \multicolumn{4}{|b{0.82\linewidth}|}{Petición para ejecutar el plan de cambio creado por el planificador.} \\
+  \hline
+
+  \textbf{Propiedades}
+    & \emph{Timestamp} & \multicolumn{3}{|m{0.67\linewidth}|}{Fecha y hora en la que se generó el plan de cambio.} \\
+    \cline{2-5}
+    & \emph{Symptoms} & \multicolumn{3}{|m{0.67\linewidth}|}{Colección de síntomas que lo han desencadenado.} \\
+    \cline{2-5}
+    & \emph{ChangePlan} & \multicolumn{3}{|m{0.67\linewidth}|}{Colección de acciones de adaptación que deben ejecutarse para completar la adaptación.
+    Dependiendo del tipo de acción, tendrá una estructura similar a:
+    \begin{itemize}
+      \item \textbf{\emph{ServiceName}}: Identificador del servicio afectado.
+      \item \textbf{\emph{Type}}: Indica el tipo de acción de adaptación. Puede ser: \emph{Deploy}, \emph{Undeploy}, \emph{SetParameter}, \emph{Bind}, \emph{Unbind}.
+      \item \textbf{\emph{TargetService}}: (\emph{BindingAction}) Servicio con el que establecer una conexión.
+      \item \textbf{\emph{PropertyName}}: (\emph{SetParameterAction}) Nombre de la propiedad a actualizar.
+      \item \textbf{\emph{PropertyValue}}: (\emph{SetParameterAction}) Valor a asignar a la propiedad.
+    \end{itemize}} \\
+  \hline
+
+  \textbf{Ejemplo} & \multicolumn{4}{|b{0.82\linewidth}|}{Petición de ejecución de plan de cambio que contiene una acción de adaptación. Esta cambia el modo de un aire acondicionado a modo calefacción (\emph{heating}). Los síntomas indican que fue desencadenada porque la temperatura era menor que un umbral determinado:\linebreak
+  \usebox\executechangeplanrequestbox} \\
+
+  \hline
+
+  \caption{Especificación de la petición asíncrona que expone el ejecutor.}
+\end{longtable}
 
 \subsubsection{Notificaciones}
 
-\textcolor{red}{TODO: RELLENAR}
+\newsavebox\executenotificationbox
+\begin{lrbox}{\executenotificationbox}
+  \begin{minipage}[t]{2in}
+    \begin{verbatim}
+{
+  "ServiceName": "Climatisation.AirConditioner.Service",
+  "Timestamp": "2022-06-19T16:38:30.6092751Z",
+  "Symptoms":[
+    {
+      "Name": "temperature-lesser-than-cold-threshold",
+      "Value": "true"
+    }
+  ],
+  "Actions":  [
+    {
+      "ServiceName": "Climatisation.AirConditioner.Service",
+      "Type": "SetParameter",
+      "PropertyName": "Mode",
+      "PropertyValue": "Heating"
+    }
+  ]
+}
+        \end{verbatim}
+  \end{minipage}
+\end{lrbox}
+
+\begin{longtable}{|m{2.3cm}|p{3cm}|p{2.6cm}|b{1.5cm}|b{1cm}|}
+  \hline
+
+  \textbf{Evento} & \multicolumn{4}{|b{0.7\linewidth}|}{\emph{ExecutionRequestedIntegrationEvent}} \\
+  \hline
+
+  \textbf{\emph{Exchange}} & \multicolumn{4}{|b{0.7\linewidth}|}{\emph{AdaptionLoop.Execute}}  \\
+  \hline
+
+  \textbf{Tema} & \multicolumn{4}{|b{0.7\linewidth}|}{Nombre del servicio afectado. Ej: \emph{Climatisation.AirConditioner}} \\
+  \hline
+
+  \textbf{Descripción} & \multicolumn{4}{|b{0.6\linewidth}|}{Evento de integración que notifica sobre la solicitud de ejecución de acciones de adaptación para un servicio determinado. Se publica como notificación porque no sabemos cuantos ejecutores tendrá un determinado servicio.} \\
+  \hline
+
+  \textbf{Propiedades}
+        & \emph{ServiceName} & \multicolumn{3}{|b{0.6\linewidth}|}{Nombre del servicio afectado.} \\
+
+        \cline{2-5}
+
+        & \emph{Timestamp} & \multicolumn{3}{|b{0.6\linewidth}|}{Fecha y hora en la que se solicitó la ejecución.} \\
+
+        \cline{2-5}
+
+        & \emph{Symptoms} & \multicolumn{3}{|b{0.6\linewidth}|}{Conjunto de síntomas que han desencadenado la adaptación.} \\
+
+        \cline{2-5}
+
+        & \emph{Actions} & \multicolumn{3}{|b{0.6\linewidth}|}{Conjunto de acciones de adaptación a ejecutar.} \\
+
+        \cline{2-5}
+
+  \hline
+
+  \textbf{Ejemplo} & \multicolumn{4}{|b{0.7\linewidth}|}{Evento que notifica de la solicitud de ejecución de una acción de adaptación sobre el servicio \emph{Climatisation.AirConditioner}. Esta solicita que se cambie el parámetro \emph{Mode} a \emph{Heating}:\linebreak
+  \usebox\executenotificationbox} \\
+
+  \hline
+
+  \caption{Especificación de las notificaciones que publica el servicio ejecución.}
+\end{longtable}
 
 \section{Sistema de climatización}
 
@@ -244,7 +372,7 @@ Su especificación OpenAPI puede encontrarse \href{https://github.com/Starkie/TF
 
 \pagebreak
 
-\section{Anexo: Docker compose}
+\chapter{Docker compose}
 
 En el fragmento \ref{ls:docker-compose-example} mostramos la declaración de la configuración de un servicio. En las líneas 4
 
