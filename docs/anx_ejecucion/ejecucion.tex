@@ -5,9 +5,9 @@ En este anexo se describirán las instrucciones para desplegar y operar el proto
 
 \section{Requisitos}
 
-Para poder ejecutar el prototipo tenemos los siguientes requisitos. Todos ellos son compatibles con las principales plataformas (Windows, Linux y Mac).
+Para poder ejecutarlo existen los siguientes requisitos. Todos los programas y lenguajes requeridos son compatibles con las principales plataformas (Windows, Linux y Mac).
 
-\begin{itemize}
+\begin{itemize}[itemsep=1pt]
   \item SDK de .NET v6.0 o superior\footnote{.NET SDK: \url{https://dotnet.microsoft.com/en-us/download/dotnet/6.0}}.
   \item Docker Compose v2.0 o superior \footnote{Docker compose: \url{https://docs.docker.com/compose/install/}}.
   \item Powershell v5 o Powershell Core\footnote{\url{https://docs.microsoft.com/es-es/powershell/scripting/install/install-other-linux?view=powershell-7.2\#install-as-a-net-global-tool}} (para ejecutar el \foreign{english}{script} de compilación).
@@ -31,22 +31,57 @@ Para compilar y ejecutar la solución contamos con un \foreign{english}{script} 
   \item Crear los contenedores de Docker y levantar la solución con Docker Compose.
 \end{enumerate}
 
-Para ejecutarlo haremos 'pwsh build.ps1'. Si todo ha ido bien, veremos en la consola:
+Para ejecutarlo, usaremos la instrucción \texttt{pwsh build.ps1}. Si todo ha ido bien, veremos en la consola lo siguiente:
 
-fragmento de docker compose.
+\begin{verbatim}
+Container publish-prometheus-1                    Started         3.4s
+Container publish-climatisation_monitor-1         Started         1.7s
+Container publish-monitoring-1                    Started         2.9s
+Container publish-loki-1                          Started         3.4s
+Container publish-jaeger-1                        Started         2.5s
+Container publish-climatisation_airconditioner-1  Started         1.5s
+Container publish-grafana-1                       Started         1.9s
+Container publish-rabbitmq-1                      Started         1.7s
+Container publish-planning-1                      Started         3.8s
+Container publish-climatisation_effectors-1       Started         4.2s
+Container publish-climatisation_rules-1           Started         4.3s
+Container publish-execute-1                       Started         4.2s
+Container publish-knowledge-1                     Started         3.5s
+Container publish-analysis-1                      Started         4.1s
+\end{verbatim}
 
-En caso de querer parar la ejecución tendremos que acceder a la carpeta \texttt{src/AutoAdaptativeSystem/publish} y ejecutar el comando \texttt{docker-compose down -f docker-compose.yml}.
-
+En cambio, si quisiéramos parar su ejecución, tendremos que acceder a la carpeta \texttt{src}/{AutoAdaptativeSystem}/{publish} y ejecutar el comando \texttt{docker-compose down -f docker-compose.yml}. Este borrará todas las redes y contenedores que se hayan creado durante el despliegue.
 
 \subsection{Servicios disponibles}
 
-Servicios disponibles: (para más info, ver el fichero docker-compose.yml)
-grafana: localhost:3000
+A continuación, se describen algunos de los \foreign{english}{endpoints} más interesantes para interactuar con el sistema (tabla \ref{tab:anx_servicios}). Para consultar la lista completa, puede accederse al fichero \texttt{docker-compose.yml}.
+
+\begin{longtable}{|m{2.3cm}|m{4.6cm}|m{7cm}|}
+  \hline
+
+  \textbf{Servicio} & \textbf{\foreign{english}{Endpoint}} & \textbf{Descripción} \\
+  \hline
+
+  Grafana & \url{htttp://localhost:3000} & Acceso a los paneles de monitorización. \\
+  \hline
+
+  Climatisation AirConditioner & \url{htttp://localhost:11001/swagger} & Permite manipular el aire acondicionado y su temperatura actual. \\
+  \hline
+
+  Knowledge & \url{htttp://localhost:5001/swagger} & Permite consultar y manipular las propiedades de adaptación. \\
+  \hline
+  \caption{Lista de \foreign{english}{endpoints} de interés.}
+  \label{tab:anx_servicios}
+\end{longtable}
 
 \section{Paneles de monitorización en Grafana}
 
 En la dirección \url{htttp://localhost:3000/d/N0ZSfeUnz/adaptionloop?orgId=1&refresh=10s} tendremos disponible el panel de monitorización del bucle de adaptación.Podremos interactuar con él de diversas manears. Para más información, acceder a la documentación de grafana.
 
-Añadir foto del panel de monitorización.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale=0.2]{cap_despliegue/images/Grafana-panel-monitorizacion}
+  \caption{Panel de monitorización \texttt{AdaptionLoop}.}
+\end{figure}
 
 Si queremos hacer cambios y persistirlos, tendremos que exportar el panel y guardar su contenido en el fichero
