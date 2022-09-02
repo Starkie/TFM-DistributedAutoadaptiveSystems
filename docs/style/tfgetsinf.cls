@@ -331,6 +331,8 @@
 
 \newenvironment{Foreign}[1]{\begin{quote}\itshape\selectlanguage{#1}}{\end{quote}}
 
+\usepackage{enumitem}
+
 %%%%%%%%
 % Resums
 %%%%%%%%

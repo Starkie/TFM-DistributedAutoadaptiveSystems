@@ -29,6 +29,8 @@ Su especificación OpenAPI puede encontrarse \href{https://github.com/Starkie/TF
   \caption{\foreign{english}{Endponts} HTTP que expone el servicio de conocimiento.}
 \end{figure}
 
+\pagebreak
+
 \subsubsection{Notificaciones}
 
 \newsavebox\configurationchangedeventbox
@@ -66,9 +68,6 @@ Su especificación OpenAPI puede encontrarse \href{https://github.com/Starkie/TF
   \usebox\propertychangedeventbox} \\
 
   \hline
-
-  \pagebreak
-
   \hline
 
   \textbf{Evento} & \multicolumn{4}{|b{0.7\linewidth}|}{\emph{ConfigurationChangedIntegrationEvent}} \\
@@ -111,8 +110,6 @@ Su especificación OpenAPI puede encontrarse \href{https://github.com/Starkie/TF
   \includegraphics[scale=0.45]{anx_apis/images/apis-analysis}
   \caption{\foreign{english}{Endponts} HTTP que expone el servicio de análisis.}
 \end{figure}
-
-\pagebreak
 
 \subsubsection{Notificaciones}
 
@@ -190,10 +187,8 @@ Su especificación OpenAPI puede encontrarse \href{https://github.com/Starkie/TF
     \cline{2-5}
     & \emph{Symptoms} & \multicolumn{3}{|m{0.67\linewidth}|}{Colección de síntomas que la han desencadenado.} \\
     \cline{2-5}
-    & \emph{Configuration Requests} & \multicolumn{3}{|m{0.67\linewidth}|}{Colección peticiones de configuración de la propuesta de cambio.
-
-    Cada una de estas está compuesta por:
-    \begin{itemize}
+    & \emph{Configuration Requests} & \multicolumn{3}{|m{0.67\linewidth}|}{Colección peticiones de configuración de la propuesta de cambio. Cada una de estas está compuesta por:
+    \begin{itemize}[noitemsep]
       \item \textbf{\emph{ServiceName}}: Identificador del servicio cuya configuración queremos cambiar.
       \item \textbf{\emph{IsDeployed}}: Indica si el servicio debe estar desplegado o no en la siguiente configuración.
       \item \textbf{\emph{Bindings}}: Colección de conexiones que indican a qué otros servicios debe estar conectado (o no) en la siguiente configuración.
@@ -273,6 +268,8 @@ Su especificación OpenAPI puede encontrarse \href{https://github.com/Starkie/TF
 
   \caption{Especificación de la petición asíncrona que expone el ejecutor.}
 \end{longtable}
+
+\pagebreak
 
 \subsubsection{Notificaciones}
 
@@ -369,8 +366,6 @@ Su especificación OpenAPI puede encontrarse \href{https://github.com/Starkie/TF
   \includegraphics[scale=0.45]{anx_apis/images/apis-room-monitor}
   \caption{\foreign{english}{Endponts} HTTP que expone el servicio del monitor del sistema de climatización.}
 \end{figure}
-
-\pagebreak
 
 \chapter{Docker compose}
 
