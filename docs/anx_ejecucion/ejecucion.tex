@@ -1,0 +1,52 @@
+\chapter{Instrucciones de ejecución}
+\label{anx:ejecucion}
+
+En este anexo se describirán las instrucciones para desplegar y operar el prototipo. El código se encuentra en un repositorio público\footnote{Página del repositorio: \url{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/tree/main/src/AutoAdaptativeSystem}}. Para seguir estas instrucciones, deberemos clonarlo con \texttt{git} o descargarlo como un fichero zip.
+
+\section{Requisitos}
+
+Para poder ejecutar el prototipo tenemos los siguientes requisitos. Todos ellos son compatibles con las principales plataformas (Windows, Linux y Mac).
+
+\begin{itemize}
+  \item SDK de .NET v6.0 o superior\footnote{.NET SDK: \url{https://dotnet.microsoft.com/en-us/download/dotnet/6.0}}.
+  \item Docker Compose v2.0 o superior \footnote{Docker compose: \url{https://docs.docker.com/compose/install/}}.
+  \item Powershell v5 o Powershell Core\footnote{\url{https://docs.microsoft.com/es-es/powershell/scripting/install/install-other-linux?view=powershell-7.2\#install-as-a-net-global-tool}} (para ejecutar el \foreign{english}{script} de compilación).
+  \item Python 3.7 o superior\footnote{Python 3.10: \url{https://www.python.org/downloads/release/python-3106/}} (para generar los API clients).
+\end{itemize}
+
+\section{Generar API Clients}
+
+Si se hiciera algún cambio sobre los \foreign{english}{endpoints} que exponen los servicios, tendremos que regenerar los API Clients. Para ello, contamos con un \foreign{english}{script} escrito en Python. Este compila todos los proyectos, genera las especificaciones OpenAPI y, a partir de ellas, genera los clientes.
+
+El \foreign{english}{script} se encuentra en la ruta \texttt{src/AutoAdaptativeSystem/GenerateApiClient.py}. Para ejecutarlo, basta con invocarlo con Python: \texttt{python3 GenerateApiClient.py}. Para que funcione correctamente, todos los proyectos deben encontrarse en un estado compilable.
+
+Si hubiera algún cambio incompatible que haga fallar la compilación, tendremos que corregirlo antes de poder continuar. Por ejemplo, acceder al servicio que falla y solucionar los errores. Hecho esto, podremos ejecutar de nuevo el \foreign{english}{script}. Tendremos que hacer esto hasta que se generen todos los clientes correctamente.
+
+\section{Despliegue}
+
+Para compilar y ejecutar la solución contamos con un \foreign{english}{script} de Powershell. Este se encuentra en la ruta \texttt{src/AutoAdaptativeSystem/build.ps1}. Se encarga de:
+\begin{enumerate}
+  \item Compilar todos los proyectos de la solución.
+  \item Publicar todos los proyectos a una carpeta común.
+  \item Crear los contenedores de Docker y levantar la solución con Docker Compose.
+\end{enumerate}
+
+Para ejecutarlo haremos 'pwsh build.ps1'. Si todo ha ido bien, veremos en la consola:
+
+fragmento de docker compose.
+
+En caso de querer parar la ejecución tendremos que acceder a la carpeta \texttt{src/AutoAdaptativeSystem/publish} y ejecutar el comando \texttt{docker-compose down -f docker-compose.yml}.
+
+
+\subsection{Servicios disponibles}
+
+Servicios disponibles: (para más info, ver el fichero docker-compose.yml)
+grafana: localhost:3000
+
+\section{Paneles de monitorización en Grafana}
+
+En la dirección \url{htttp://localhost:3000/d/N0ZSfeUnz/adaptionloop?orgId=1&refresh=10s} tendremos disponible el panel de monitorización del bucle de adaptación.Podremos interactuar con él de diversas manears. Para más información, acceder a la documentación de grafana.
+
+Añadir foto del panel de monitorización.
+
+Si queremos hacer cambios y persistirlos, tendremos que exportar el panel y guardar su contenido en el fichero
