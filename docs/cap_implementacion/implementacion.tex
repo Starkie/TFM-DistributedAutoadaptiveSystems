@@ -68,7 +68,7 @@ Se puede comprobar que el método cuenta con una serie de comentarios (líneas \
   }
 \end{lstlisting}
 
-\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/1db95346290cb55edbfd5efb717785bcd06def79/src/AutoAdaptativeSystem/AdaptionLoop/Knowledge/Controllers/PropertyController.cs\#L44-L77}{aquí}.}
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/AdaptionLoop/Knowledge/Controllers/PropertyController.cs\#L44-L77}{aquí}.}
 
 Para generar la especificación empleamos la librería \emph{Swashbuckle.AspNetCore}\footnote{Página oficial: \url{https://github.com/domaindrivendev/Swashbuckle.AspNetCore}}. Esta es capaz de extraerla de un servicio ASP.NET existente. En el fragmento \ref{ls:openapi-get}, se muestra cómo se describe el \foreign{english}{endpoint} en este estándar. Podemos confirmar que se han incluido los comentarios y atributos que documentaban en el código. Por ejemplo, figuran los parámetros, las respuestas y sus códigos HTTP, etc. Es destacable la similitud que presenta con la especificación de la tabla \ref{tab:especificacion-get-property}.
 
@@ -110,7 +110,7 @@ Para generar la especificación empleamos la librería \emph{Swashbuckle.AspNetC
   }
 \end{lstlisting}
 
-\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/1db95346290cb55edbfd5efb717785bcd06def79/src/AutoAdaptativeSystem/AdaptionLoop/Knowledge/Knowledge.Service-OpenAPISpec.json\#L108-L187}{aquí}.}
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/AdaptionLoop/Knowledge/Knowledge.Service-OpenAPISpec.json\#L108-L187}{aquí}.}
 
 A partir de la especificación, esta librería añade al servicio una interfaz de usuario. Esta es accesible a través del \foreign{english}{endpoint} \texttt{/swagger}. Allí, se nos servirá una página web con el listado de todas las operaciones que ofrece el servicio (figura \ref{fig:swagger-knowledge-ui}). De cada una nos muestra su documentación, sus parámetros, etc. Incluso permite ejecutarlas. Así, puede ser de ayuda a los desarrolladores que necesiten trabajar con esta API.
 
@@ -170,7 +170,7 @@ private async Task SetProperty(SetPropertyDTO propertyDto)
 
 \end{lstlisting}
 
-\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/1db95346290cb55edbfd5efb717785bcd06def79/src/AutoAdaptativeSystem/AdaptionLoop/Knowledge/Controllers/PropertyController.cs\#L106-L119}{aquí}.}
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/AdaptionLoop/Knowledge/Controllers/PropertyController.cs\#L106-L119}{aquí}.}
 
 El mediador determina que el componente publicador es el destinatario de este evento y lo invoca. Para detectarlo, se basa en las interfaces que implementa (línea 2 del fragmento \ref{ls:knowledge-property-changed-publisher}). Este componente publica el evento en el bus de mensajería (línea 15). Rebus, en base a la configuración del servicio, lo enviará a nuestra instancia de \texttt{RabbitMQ}. Todos los suscriptores de este evento recibirán el mensaje en su cola.
 
@@ -196,7 +196,7 @@ public class PropertyChangedIntegrationEventPublisher
 }
 \end{lstlisting}
 
-\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/1db95346290cb55edbfd5efb717785bcd06def79/src/AutoAdaptativeSystem/AdaptionLoop/Knowledge/EventHandlers/PropertyChangedIntegrationEventPublisher.cs}{aquí}.}
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/AdaptionLoop/Knowledge/EventHandlers/PropertyChangedIntegrationEventPublisher.cs}{aquí}.}
 
 Finalmente, en el servicio de análisis, se encuentra el componente consumidor (fragmento \ref{ls:analysis-property-changed-consumer}). \texttt{Rebus} obtiene el evento de la cola de mensajería y se lo transmite. Este lo recibe y lo propaga internamente en el servicio (línea 20). Todos los \foreign{english}{handlers} del evento lo recibirán y podrán tratarlo. En este caso, las reglas de adaptación.
 
@@ -218,7 +218,7 @@ public class PropertyChangedIntegrationEventConsumer
 }
 \end{lstlisting}
 
-\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/1db95346290cb55edbfd5efb717785bcd06def79/src/AutoAdaptativeSystem/AdaptionLoop/Analysis/Application/Properties/Events/PropertyChangedIntegrationEventConsumer.cs}{aquí}.}
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/AdaptionLoop/Analysis/Application/Properties/Events/PropertyChangedIntegrationEventConsumer.cs}{aquí}.}
 
 \subsection{Componentes: Servicio de análisis y módulos de reglas}
 
@@ -268,7 +268,7 @@ public abstract class AdaptionRuleBase
 }
 \end{lstlisting}
 
-\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/1db95346290cb55edbfd5efb717785bcd06def79/src/AutoAdaptativeSystem/Climatisation/Rules/EventHandlers/Rules/AdaptionRuleBase.cs}{aquí}.}
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/Climatisation/Rules/EventHandlers/Rules/AdaptionRuleBase.cs}{aquí}.}
 
 Las reglas deben indicar de qué propiedades o claves de configuración dependen. Para ello, hemos implementado una serie de atributos que decoran sus clases. En el fragmento \ref{ls:adaption-rule-dependencies} mostramos un ejemplo. En la línea 1 tenemos el atributo que describe las dependencias con la propiedad de adaptación \texttt{Temperature}. Por otro lado, en las líneas 2-5 tenemos la declaración de dependencias con dos claves de configuración del servicio \texttt{Climatisation.AirConditioner}: \texttt{TargetTemperature} y \texttt{Mode}.
 
@@ -285,7 +285,7 @@ public class DisableAirConditionerWhenCoolingAndTargetTemperatureAchievedAdaptio
 }
 \end{lstlisting}
 
-\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/1db95346290cb55edbfd5efb717785bcd06def79/src/AutoAdaptativeSystem/Climatisation/Rules/EventHandlers/Rules/DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule.cs\#L14-L19}{aquí}.}
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/Climatisation/Rules/EventHandlers/Rules/DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule.cs\#L14-L19}{aquí}.}
 
 En base a los atributos, el servicio se suscribirá a los \foreign{english}{topics} de las notificaciones que emite el módulo de análisis. Para leerlos emplearemos la \textbf{reflexión}: analizaremos el ensamblado buscando las reglas y obtendremos los valores de sus atributos. Se le pasarán a \texttt{Rebus}, que gestionará la suscripción con \texttt{RabbitMQ}.
 
@@ -327,7 +327,7 @@ protected override async Task Execute()
 }
 \end{lstlisting}
 
-\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/1db95346290cb55edbfd5efb717785bcd06def79/src/AutoAdaptativeSystem/Climatisation/Rules/EventHandlers/Rules/DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule.cs\#L74-L88}{aquí}.}
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/Climatisation/Rules/EventHandlers/Rules/DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule.cs\#L74-L88}{aquí}.}
 
 El servicio de análisis recibirá la petición y la redirigirá al planificador mediante una petición asíncrona. Su implementación es muy similar a la de las notificaciones, explicada en detalle en el apartado anterior. La mayor diferencia radica en la cardinalidad de la comunicación: en lugar de publicarlo en un \foreign{english}{exchange}, el mensaje se publicará directamente en la cola de trabajo. Sólo lo debería procesará un servicio.
 
@@ -356,7 +356,7 @@ public class SystemConfigurationChangeRequestPublisher
 }
 \end{lstlisting}
 
-\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/1db95346290cb55edbfd5efb717785bcd06def79/src/AutoAdaptativeSystem/AdaptionLoop/Analysis/Application/SystemConfiguration/Requests/SystemConfigurationChangeRequestIntegrationEventPublisher.cs}{aquí}.}
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/AdaptionLoop/Analysis/Application/SystemConfiguration/Requests/SystemConfigurationChangeRequestIntegrationEventPublisher.cs}{aquí}.}
 
 \subsection{Componentes: Servicio de planificación}
 
