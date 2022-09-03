@@ -129,7 +129,7 @@ visualizaciones de métricas de interés. Por ejemplo, el valor de la
 temperatura o el tiempo medio de adaptación.
 
 ![Panel de monitorización
-`AdaptionLoop`.](../docs/cap_despliegue/images/Grafana-panel-monitorizacion.png)
+`AdaptionLoop`.](../docs/dissertation/cap_despliegue/images/Grafana-panel-monitorizacion.png)
 
 Podemos también explorar las fuentes de datos o ampliarlo con nuevas
 visualizaciones[^6]. Si queremos hacer cambios y persistirlos para
