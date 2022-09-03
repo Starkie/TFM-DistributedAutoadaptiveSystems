@@ -1,0 +1,298 @@
+\chapter{Despliegue y pruebas}
+\label{chap:despliegue}
+
+En este capítulo describiremos cómo se preparó el despliegue del sistema y las pruebas realizadas. Introduciremos el concepto de observabilidad, que nos permitirá conocer su estado en todo momento. Detallaremos cómo capturamos las métricas de los servicios y distintas maneras de explotarlas. Finalmente, describiremos una serie de pruebas que realizamos para verificar su funcionamiento y el de la arquitectura.
+
+\section{Despliegue}
+
+Debido a la gran cantidad de microservicios que componen la solución fue necesario definir un plan de despliegue. Su número iba en aumento y era muy complicado gestionarlos a mano. Para ello, optamos entonces por empaquetarlos en contenedores de \texttt{Docker}\footnote{Página oficial: \url{https://www.docker.com/}}. Gracias a esto podíamos iniciarlos y pararlos fácilmente. Además, nos aporta una serie de ventajas interesantes: ejecución aislada de los procesos, mejor gestión de las dependencias, entre otras. \cite{newmanBuildingMicroservicesDesigning2021,delatorreNETMicroservicesArchitecture2021}
+
+\begin{wrapfigure}{r}{0.23\linewidth}
+  \vspace{-25pt}
+  \centering
+  \includegraphics[scale=0.95]{cap_despliegue/images/docker-compose-logo}
+  \vspace{-15pt}
+\end{wrapfigure}
+
+Para orquestar el despliegue de la solución optamos por \texttt{Docker Compose}\footnote{Página oficial: \url{https://docs.docker.com/compose/}}. Nos permitió declarar la configuración del despliegue de nuestros servicios. Esto incluye los parámetros de ejecución, número de instancias, políticas de reinicio, etc. Aunque el bucle MAPE-K \foreign{english}{Lite} original corre sobre Kubernetes, no necesitábamos un orquestador muy sofisticado. Nuestro plan era ejecutar la solución en un único \foreign{english}{host}.
+
+\texttt{Docker Compose} también nos permite declarar las dependencias entre servicios. Esto fue clave para el despliegue del contenedor de \texttt{RabbitMQ}. Debido a que el protocolo requiere de una conexión permanente al bus\cite{johanssonPartRabbitMQBest2019}, todos los servicios que dependen de él deben desplegarse después. Por ello, declaramos una dependencia con este servicio y definimos una política de reintentos.
+
+\subsection{Observabilidad y telemetría}
+
+Un punto en el que conviene hacer hincapié es en la telemetría. Debido a que estamos tratando con un sistema distribuido, es complicado conocer su estado global en un momento determinado. Especialmente en este caso, en el que participan más de diez microservicios distintos. Si necesitáramos depurar y diagnosticar el comportamiento del sistema, es muy difícil trazar el impacto de una petición concreta.
+
+Por defecto, solo contábamos con los \emph{logs} (registros), que mostramos en la figura \ref{fig:console-logs}. Aparecen intercalados en una única ventana los de todos los servicios y peticiones concurrentes. Aunque nos pueden resultar utilidad, es una aproximación ineficiente. Incluyen demasiada información y es difícil de procesar para una persona. Además, según aumente el número de peticiones, aumentará también el número de registros y se volverá más difícil de interpretar.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=1.35]{cap_despliegue/images/console-logs}
+  \caption{Extracto de \emph{logs} de una ejecución habitual.}
+  \label{fig:console-logs}
+\end{figure}
+
+En el ámbito de los sistemas distribuidos requerimos de soluciones de monitorización y \foreign{english}{logging} más avanzadas. \cite{newmanBuildingMicroservicesDesigning2021} Nuestros servicios tendrán que recopilar y reportar datos de su funcionamiento, lo que se conoce como \textbf{telemetría}. Esto requerirá de \textbf{instrumentar} nuestros sistemas con distintas herramientas o \textbf{sondas}. Es exactamente lo mismo que hacemos en la etapa de monitorización del bucle MAPE-K.
+
+Para explotar estos datos recurrimos a técnicas de \textbf{observabilidad}. Según \cite{parkerDistributedTracingPractice2020}, la observabilidad <<\emph{no es sólo un método para monitorizar sistemas en producción, sino también para ser capaces de entender su comportamiento usando un número relativamente bajo de señales}>>. Con \textbf{señales} se refiere a las distintas fuentes de información de telemetría de las que dispongamos.
+
+La observabilidad ayuda a detectar \textbf{fluctuaciones en el funcionamiento} del sistema. Estas puedes ser errores, ralentizaciones, caídas de servicios, etc. También nos permite \textbf{explicar sus causas} a partir de las señales. De los servicios podemos capturar tres tipos de señales distintos. Todas ellas son complementarias, ya que reflejan el funcionamiento desde distintas perspectivas. Son conocidas como \textbf{los tres pilares de la observabilidad}:
+
+\begin{itemize}
+  \item \textbf{\foreign{english}{Logs}}: Se trata de eventos de la aplicación que se registran durante su funcionamiento. Pueden ser simples cadenas de texto o estructuras de datos más complejas. En el segundo caso, se trata de registros enriquecidos con propiedades que les dotan de más contexto. Es el mecanismo de telemetría que ofrece más detalle del funcionamiento de un servicio concreto. También es el más usado.
+
+  \item \textbf{Métricas}: Son datos agregados que nos permiten conocer el estado global de nuestros servicios. \cite{opentelemetryOpenTelemetryDocumentation2022} Se calculan a partir de mediciones de parámetros del servicio en un momento determinado. Por ejemplo, del número de peticiones recibidas, su duración, etc. Normalmente se representan cómo series temporales: peticiones por segundo, duración media de las peticiones, etc.
+
+  \item \textbf{Trazas distribuidas}: Se trata del mecanismo más novedoso. Es una forma de registrar el recorrido que hace una petición a través de los distintos microservicios que componen nuestro sistema. Nos permite ver cómo participa cada uno de ellos en la operación y qué impacto tiene en el rendimiento. \cite{parkerDistributedTracingPractice2020}
+
+  Para registrar una traza, le asignaremos a la petición un identificador único que se propagará con cada subpetición. Están compuestas por \foreign{english}{spans}, operaciones que se realizan dentro de la petición. Cada uno puede tener otras suboperaciones anidadas. \cite{opentelemetryOpenTelemetryDocumentation2022}
+\end{itemize}
+
+Para explotar estos datos, necesitaremos entonces poder hacer consultas sobre ellos. Pongamos por ejemplo que se ha detectado un aumento considerable en la métrica de la duración media de las peticiones. A partir de la fecha y hora de este suceso, deberíamos poder recuperar la información necesaria para responder qué ha pasado. Ya sean \foreign{english}{logs}, trazas u otras métricas relacionadas.
+
+Con este fin surgen las \textbf{plataformas de observabilidad}. Se trata de conjuntos de servicios que capturan, procesan y almacenan los datos de telemetría para su posterior consulta. \cite{zorrillacastroNETCoreApps2021} También contamos con servicios que nos permiten visualizar y consultar de forma conjunta toda esta información. Por ejemplo, mediante \foreign{english}{dashboards} o paneles.
+
+\subsubsection{Plataforma de observabilidad}
+
+Para poder capturar y explotar estas señales, necesitaremos construir nuestra propia plataforma de observabilidad. Para este trabajo hemos optado por una combinación de cuatro servicios. \texttt{Grafana Loki} para capturar los \foreign{english}{logs}. \texttt{Prometheus} para capturar las métricas. \texttt{Jaeger} para capturar las trazas distribuidas. Y \texttt{Grafana} para visualizar y consultar todos los datos.
+
+\begin{wrapfigure}{r}{0.15\linewidth}
+  \vspace{-10pt}
+  \hspace{10pt}
+  \centering
+  \includegraphics[scale=0.5]{cap_despliegue/images/opentelemetry-logo}
+\end{wrapfigure}
+
+Para capturar la telemetría, empleamos el estándar \textbf{OpenTelemetry}\footnote{Página oficial: \url{https://opentelemetry.io/}}. Se trata de un proyecto desarrollado por la Cloud Native Computing Foundation (CNCF). Tiene el objetivo de definir un mecanismo estándar para recopilar y transmitir datos de telemetría. Para ello, ofrece un conjunto de librerías que nos permiten instrumentar nuestras aplicaciones. Podremos enviar estos datos a cualquier plataforma que ofrezca extensiones compatibles.
+
+Con estas herramientas hemos instrumentado todos nuestros servicios. Nuestra plataforma de observabilidad tiene la siguiente estructura (figura \ref{fig:observability-telemetry-collection}):
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale=0.25]{cap_despliegue/images/observability-telemetry-collection}
+  \caption{Estructura de nuestra plataforma de observabilidad}
+  \label{fig:observability-telemetry-collection}
+\end{figure}
+
+\pagebreak
+
+\subsubsection{Grafana Loki: \foreign{english}{Logs}}
+
+\begin{wrapfigure}{r}{0.10\linewidth}
+  \vspace{-7pt}
+  \hspace{-10pt}
+  \centering
+  \includegraphics[scale=0.85]{cap_despliegue/images/Loki}
+\end{wrapfigure}
+
+\texttt{Loki}\footnote{Página oficial: \url{https://grafana.com/oss/loki/}} es un agregador de \foreign{english}{logs} estructurados desarrollado por Grafana Labs. Todos los servicios se los enviarán y este los almacenará de forma centralizada. Para facilitar las consultas, Loki indexa todos los registros en base a etiquetas (\foreign{english}{labels}), metadatos especificados por el usuario. Por ejemplo, el nivel (información, \foreign{english}{warning}...) o el nombre del servicio que los emite.
+
+Nuestros servicios emiten los \foreign{english}{logs} siguiendo el mismo convenio. Estos deben incluir la fecha del evento y su nivel de severidad. También incluirán propiedades que indiquen el nombre del emisor y el del entorno en el que se encuentra. Además, queremos correlacionar \foreign{english}{logs} de distintos servicios que se originen de una misma petición. Para ello los etiquetaremos con un identificador único: el identificador de la traza (\texttt{traceId}). En la figura \ref{fig:loki-ejemplo-logs} mostramos un ejemplo de toda la información registrada.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5]{cap_despliegue/images/Ejemplo-log}
+  \caption{Ejemplo de la estructura de un registro.}
+  \label{fig:loki-ejemplo-logs}
+\end{figure}
+
+\subsubsection{Prometheus: Métricas}
+
+\begin{wrapfigure}{r}{0.10\linewidth}
+  \vspace{-12pt}
+  \centering
+  \includegraphics[scale=0.025]{cap_despliegue/images/prometheus-logo}
+\end{wrapfigure}
+
+\texttt{Prometheus}\footnote{Página oficial: \url{https://prometheus.io/}} es una herramienta de monitorización y alertas desarrollada originalmente por SoundCloud. Nos permite capturar mediciones de parámetros de nuestros servicios. Estas serán procesadas y almacenadas como series temporales. Sobre ellas, podremos hacer distintos tipos de análisis, consultas y visualizaciones.
+
+Por defecto, ASP.NET captura algunas métricas que Prometheus puede exponer. También nos permite definir las nuestras propias. Estas pueden ser de distintos tipos. Los más habituales son los \textbf{contadores} e \textbf{indicadores}. \cite{parkerDistributedTracingPractice2020} Los primeros aumentan su valor cada vez que ocurre un evento determinado. Por ejemplo, el número de peticiones recibidas. Por otro lado, los indicadores representan un valor en un momento determinado. Por ejemplo, el número de usuarios activos actualmente.
+
+Para importar los datos, el servidor de Prometheus ejecutará periódicamente consultas HTTP sobre un \foreign{english}{endpoint} estándar: \texttt{GET /metrics}. Nuestros servicios instrumentados expondrán sus métricas y mediciones allí. En la figura \ref{fig:prometheus-ejemplo-metricas} tenemos un ejemplo. Muestra las métricas por defecto y algunas definidas por nosotros, como un contador de peticiones de configuraciones.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[scale=1.65]{cap_despliegue/images/Prometheus-Metricas-Ejemplo}
+  \caption{Ejemplo de las métricas que expone el \foreign{english}{endpoint} de Prometheus en el servicio de conocimiento.}
+  \label{fig:prometheus-ejemplo-metricas}
+\end{figure}
+
+\subsubsection{Jaeger: Trazas distribuidas}
+
+\begin{wrapfigure}{r}{0.15\linewidth}
+  \vspace{-20pt}
+  \includegraphics[scale=0.12]{cap_despliegue/images/jaeger-logo-x}
+  \vspace{-20pt}
+\end{wrapfigure}
+
+Jaeger\footnote{Página oficial: \url{https://www.jaegertracing.io}} es un sistema para la captura de trazas distribuidas. Fue desarrollado originalmente por Uber Technologies. Todos los servicios instrumentados enviarán allí los fragmentos correspondientes a las actividades en las que participan (los \foreign{english}{spans}). A partir de ellas y el identificador común de la traza, es capaz de reconstruir la traza completa de la petición.
+
+Gracias a las trazas distribuidas, podemos ver todas las actividades que desencadenó una petición concreta. Podemos ver sus nombres, su duración e incluso las subactividades en las que derivan. En nuestro caso, mostramos en la figura \ref{fig:jaeger-traza-distribuida} un fragmento de la traza del reporte de una medición de temperatura. Vemos que esta inicia con la actividad de reporte y que acaba desencadenando actividades en seis servicios distintos.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[scale=0.35]{cap_despliegue/images/jaeger-traza-distribuida}
+  \caption{Ejemplo de una traza distribuida de Jaeger. Representa las actividades que desencadena el reporte de una medición de temperatura.}
+  \label{fig:jaeger-traza-distribuida}
+\end{figure}
+
+A partir de las trazas, Jaeger también es capaz de inferir la arquitectura de nuestra aplicación. En la figura \ref{fig:jaeger-arquitectura-inferida} mostramos la arquitectura inferida de nuestro sistema de climatización. Podemos comprobar que la implementación respeta la jerarquía de los microservicios definida en este trabajo. Aunque, este diagrama no muestra el mecanismo de comunicación usado entre cada uno.
+
+\begin{figure}[htb]
+  \hspace{1.25cm}
+  \includegraphics[scale=0.3]{cap_despliegue/images/Jaeger-arquitectura-climatizacion}
+  \caption{Arquitectura inferida por Jaeger de nuestro sistema de climatización a partir de las trazas capturadas.}
+  \label{fig:jaeger-arquitectura-inferida}
+\end{figure}
+
+\subsubsection{Grafana: Visualización}
+
+\begin{wrapfigure}{r}{0.15\linewidth}
+  \vspace{-20pt}
+  \includegraphics[scale=0.10]{cap_despliegue/images/Grafana_logo}
+  \vspace{-20pt}
+\end{wrapfigure}
+
+La última pieza del puzle de observabilidad es Grafana. Desarrollado también por Grafana Labs, es una herramienta para la monitorización y visualización de datos. Gracias a su sistema de \foreign{english}{plugins}, es compatible con una gran variedad de fuentes de información: bases de datos, servicios web, servicios de métricas, etc.
+
+Nos permite \textbf{explorar los datos} a través de consultas sobre las fuentes de información. Todas ellas se hacen usando los mecanismos ofrecidos por cada plataforma. Este sería el caso de Prometheus, donde podemos usar su lenguaje de consultas \texttt{PromQL}. Con él, podremos consultar y visualizar métricas. Esto nos permitirá explotar al máximo las capacidades de cada una.
+
+Incluso, podemos ir más allá y \textbf{definir relaciones entre datos de fuentes distintas}. Retrocedamos a la figura \ref{fig:loki-ejemplo-logs}, que representa los \foreign{english}{logs} de Loki. Si nos fijamos, en el campo \texttt{TracerId} aparece un enlace a Jaeger. Al hacer clic en él, se desplegará en un panel lateral la traza de la petición a la que pertenece el registro. Todo esto nos será de gran ayuda a la hora de \textbf{investigar} los motivos de las fluctuaciones en el funcionamiento.
+
+También se pueden aprovechar las consultas de las fuentes de datos para crear \textbf{paneles de monitorización}. Esto nos permitirá agregar en solo lugar a los \foreign{english}{logs}, las métricas y las trazas. A partir de ellos podemos crear todo tipo de visualizaciones útiles. Por ejemplo, del estado de las peticiones concurrentes, del número de errores, etc. En la figura \ref{fig:grafana-panel-monitorizacion} enseñamos nuestro panel de monitorización. Este nos muestra parámetros como la temperatura actual de la habitación (gráfica superior izquierda), un listado de las adaptaciones ejecutadas (panel de \foreign{english}{logs} bajo las temperaturas) o información técnica de los servicios (consumo de RAM, tiempo de CPU...). En la siguiente sección las explicaremos en más detalle.
+
+\begin{landscape}
+
+  \begin{figure}[htb]
+    \centering
+    \includegraphics[scale=0.37]{cap_despliegue/images/Grafana-panel-monitorizacion}
+    \caption{Panel de monitorización para la solución autoadaptativa de climatización.}
+    \label{fig:grafana-panel-monitorizacion}
+  \end{figure}
+
+\end{landscape}
+
+
+\section{Pruebas}
+
+Finalmente, llegó el momento de poner a prueba el sistema. Se quiso determinar si la arquitectura diseñada era viable o requería de algún refinamiento. Recordemos que el objetivo es aplicarla en el bucle MAPE-K \foreign{english}{Lite} original mediante una refactorización. Con esto en mente, diseñamos distintas pruebas para verificar su funcionamiento. Nos resultó de gran ayuda nuestra plataforma de observabilidad, que nos permitió investigar distintas áreas de la solución.
+
+Las primeras pruebas que ejecutamos fueron las relacionadas con el funcionamiento del sistema de climatización. Hasta que este no se estabilizará, no podíamos emitir ningún juicio sobre la arquitectura. En estos test verificamos que, a partir de las mediciones de temperatura, debe ser capaz de completar el proceso de adaptación. Esto implica que todas las etapas del bucle MAPE-K se ejecutan correctamente.
+
+Completadas estas pruebas pasamos a verificar, ahora sí, aspectos de la arquitectura. Gracias a la telemetría que capturamos, pudimos responder a distintas preguntas sobre ella. Por ejemplo, si es correcta la división funcional que hemos elegido o si los mecanismos de comunicación son los adecuados. En base a las respuestas, pautamos una serie de correcciones que se podrían aplicar.
+
+\subsection{Pruebas sobre el sistema de climatización}
+
+\begin{wrapfigure}{r}{0.38\linewidth}
+  \vspace{-15pt}
+  \centering
+  \includegraphics[scale=0.50]{cap_despliegue/images/pruebas-logs-error}
+  \caption{Niveles de los \foreign{english}{logs} registrados durante la inicialización del sistema.}
+  \label{fig:pruebas-logs-inicializacion}
+  \vspace{-15pt}
+\end{wrapfigure}
+
+La primera prueba del sistema de climatización consistió en comprobar su \textbf{correcto despliegue}. Para ello, verificamos que después de este, todos los servicios estén operativos. También analizamos los \foreign{english}{logs} en busca de registros de error. Detectamos que durante la inicialización aparecen algunos (primera barra en la figura \ref{fig:pruebas-logs-inicializacion}). Una vez que se completa, el sistema se estabiliza y estos errores desaparecen (resto de barras). Todos provenían de servicios que dependen del \foreign{english}{broker} de mensajería (figura \ref{fig:prueba-logs-error-rabbitmq}). Como deben establecer una conexión con él durante el arranque, si no ha completado su despliegue todavía, fallarán.
+
+Según el desarrollador de Rebus, estos errores podrían solucionarse implementado un \textbf{servicio en segundo plano que gestione la conexión}.\footnote{\url{https://github.com/rebus-org/Rebus.ServiceProvider\#delayed-start-of-the-bus}} De esta forma, el servicio no fallará durante el arranque e intentará periódicamente conectarse con RabbitMQ. Debido a restricciones de tiempo, en lugar de implementarlo así, optamos por definir una estrategia de reintentos en el fichero de Docker Compose. Así, los afectados se reiniciarán hasta que puedan establecer la conexión correctamente.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[scale=0.45]{cap_despliegue/images/Logs-fallo-RabbitMQ}
+  \caption{Ejemplo de registro relacionado con el fallo al contactar con RabbitMQ durante el arranque.}
+  \label{fig:prueba-logs-error-rabbitmq}
+\end{figure}
+
+A continuación, procedimos a realizar \textbf{pruebas sobre la funcionalidad}. En estas, nos centramos en verificar que el sistema \textbf{regula correctamente la temperatura} de la habitación. Recordemos que el servicio de aire acondicionado cuenta con un termómetro simulado. Cada 15 segundos, este reporta una medición de temperatura ficticia al monitor de climatización. Esta variará dependiendo del modo activo del aire acondicionado. En base a la medición, el bucle evaluará las reglas y pautará adaptaciones si lo considera necesario.
+
+Se comprobó entonces que se aplican las cuatro reglas definidas en la tabla \ref{tab:adaption-rules-climatisation}. Todas ellas activan o desactivan un modo del aire acondicionado cuando la temperatura alcanza un determinado umbral. Por ejemplo, si es muy alta, se debería activar el modo de refrigeración. Cuando se alcance la temperatura de confort, otra regla lo apagará.
+
+Contamos con varias formas de verificarlo. La primera de ellas es mediante la visualización de la temperatura de nuestro panel de monitorización. En la figura \ref{fig:pruebas-temperatura} mostramos la aplicación de las cuatro reglas. Cuando se alcanza uno de los umbrales (las líneas horizontales), el aire acondicionado se activa o desactiva según corresponda.
+
+\begin{figure}[h]
+  \hspace{-1.2cm}
+  \includegraphics[scale=0.42]{cap_despliegue/images/pruebas-temperatura-calentar}
+  \includegraphics[scale=0.42]{cap_despliegue/images/pruebas-temperatura-enfriar}
+  \caption{Gráficas extraídas de Grafana que muestran el funcionamiento de las adaptaciones. Izq.: Encender y apagar la calefacción. Der.: Encender y apagar la refrigeración.}
+  \label{fig:pruebas-temperatura}
+\end{figure}
+
+Otras visualizaciones que pueden ser de utilidad son los \foreign{english}{logs} de los ejecutores de la solución. En el panel de monitorización incluimos aquellos que registran las adaptaciones (figura \ref{fig:prueba-logs-adaptaciones}). En base a ellos podemos determinar que efectivamente se están pautando las adaptaciones correspondientes. Se intenta cambiar el parámetro \texttt{Mode} a \texttt{Cooling} u \texttt{Off} según corresponda. Para verificar que realmente se está siguiendo el flujo esperado, podemos consultar la traza asociada al registro. En la figura \ref{fig:prueba-logs-adaptaciones} mostramos su identificador resaltado.
+
+\begin{figure}[htb]
+  \hspace{-0.9cm}
+  \includegraphics[scale=1.85]{cap_despliegue/images/Pruebas-logs-adaptaciones}
+  \caption{\foreign{english}{Logs} de los ejecutores de la solución que confirman las adaptaciones pautadas.}
+  \label{fig:prueba-logs-adaptaciones}
+\end{figure}
+
+\pagebreak
+
+\subsection{Verificación de la arquitectura}
+
+Una vez confirmado el correcto funcionamiento del sistema, pudimos verificar distintos aspectos de la arquitectura. Nos centramos especialmente en la comunicación entre servicios. Gracias a ella, podríamos determinar si era apropiada la división funcional en microservicios que definimos. También nos permitió estudiar el comportamiento de los mecanismos de comunicación elegidos.
+
+Se recurrió en primer lugar a la arquitectura inferida por Jaeger. Recuperamos para ello la figura \ref{fig:jaeger-arquitectura-inferida}. Esta describe el resultado de trazar 10 reportes de mediciones de temperatura. De ellas, 8 pasaron el filtro del monitor, y solo 1 ha provocado la adaptación del sistema. Muestra todos los microservicios que intervinieron y el número de mensajes enviados entre cada uno.
+
+Nuestra primera comprobación fue respecto a la jerarquía de componentes y la dirección de la comunicación. Verificamos que la estructura de este diagrama coincide con la de nuestro diseño (figura \ref{fig:arquitectura-sistema}). Ningún microservicio aparece conectado con otro no contemplado. También coincide la dirección de las comunicaciones entre ellos.
+
+La siguiente prueba fue sobre el número de mensajes. Si existe un intercambio elevado de mensajes entre dos o más servicios, se puede considerar que son muy ''habladores'' (\foreign{english}{chatty} en inglés). Esto puede ser un indicador de que están muy acoplados. \cite{singjaiPatternsDerivingAPIs2021} De ser así, pueden convertirse en \textbf{puntos de congestión} o \textbf{impedir que el dependiente funcione} correctamente si falla el otro. Detectamos dos casos así en el diagrama y los presentamos en la figura \ref{fig:pruebas-congestion}. En verde, aparecen marcadas las conexiones entre los monitores con el servicio de monitorización. Por otro lado, en rojo marcamos las reglas y el servicio de análisis. Como veremos a continuación, son casos muy similares.
+
+\begin{figure}[htb]
+  \hspace{1.25cm}
+  \includegraphics[scale=0.3]{cap_despliegue/images/Pruebas-congestion}
+  \caption{Puntos de congestión visibles en la arquitectura inferida por Jaeger. Marcados en verde y en rojo.}
+  \label{fig:pruebas-congestion}
+\end{figure}
+
+El más evidente es el del microservicio de reglas. Realiza 85 peticiones síncronas al módulo de análisis. Este último, a su vez, redirige 84 de ellas al servicio de conocimiento. La faltante podemos asumir que es una petición de cambio de configuración de sistema, resultado de la ejecución de una regla. Presenta entonces muestras muy claras de acoplamiento. En la sección \ref{sec:implementacion-modulo-reglas}, ya comentamos que el módulo de análisis actuaría como intermediario entre todas las comunicaciones con las capas inferiores.
+
+\pagebreak
+
+El siguiente paso fue comprobar el impacto de esta dependencia mediante \textbf{pruebas de carga}. Queríamos ver cómo se comportaba el sistema en casos extremos. Para ello, se usó la librería \texttt{NBomber}\footnote{Página oficial: \url{https://github.com/PragmaticFlow/NBomber}.} e implementamos una prueba sencilla. Durante un minuto, saturará el sistema enviando mediciones falsas de temperatura al monitor. Esto provocará que el bucle esté constantemente ejecutando adaptaciones. Mediremos su impacto mediante el \textbf{tiempo medio de adaptación}. Esta métrica representa el intervalo que transcurre desde que se reporta la medición hasta que se aplica y confirma una adaptación. Lo calcularemos a partir de la duración de las trazas distribuidas.
+
+En la figura \ref{fig:pruebas-carga} presentamos el resultado. A la izquierda aparece nuestro marco de referencia. Fue tomada con la carga habitual del sistema, recibiendo una medición de temperatura cada 15 segundos. Presenta un tiempo medio de 73ms, con picos cercanos a los 150ms. A la derecha se muestra el resultado de una carga extrema: en el espacio de un minuto se enviaron 2312 mediciones. Esto provocó que el tiempo medio aumente hasta los 3.02s, con picos superado los 15s. Tras repetidas ejecuciones confirmamos que los resultados eran muy similares. Confirmamos así nuestras sospechas de la existencia de un punto de congestión.
+
+\begin{figure}[h]
+  \hspace{-1.2cm}
+  \includegraphics[scale=0.42]{cap_despliegue/images/pruebas-carga-baseline}
+  \includegraphics[scale=0.42]{cap_despliegue/images/pruebas-carga-extremo}
+  \caption{Comparación del tiempo medio de adaptación según el nivel de carga del sistema. Izq.: Carga habitual Der.: Carga extrema}
+  \label{fig:pruebas-carga}
+\end{figure}
+
+Para confirmar dónde se encuentra, acudimos a las trazas. Analizamos varias peticiones del pico de tiempo medio. En la figura \ref{fig:prueba-carga-traza} mostramos una de ellas con una duración de 16.39s. La mayor parte de este tiempo se encuentra en el intervalo (0.042s - 16.04s), en el que no se ejecuta ninguna actividad. La notificación de cambio de la propiedad temperatura está encolada, a la espera de que el servicio de reglas la procese. Esto confirmó que \textbf{se satura y ralentiza el proceso de adaptación}.
+
+\begin{figure}[htb]
+  \hspace{-0.2cm}
+  \includegraphics[scale=0.45]{cap_despliegue/images/pruebas-carga-traza}
+  \caption{Traza distribuida de una adaptación cuando el sistema se encuentra bajo carga extrema.}
+  \label{fig:prueba-carga-traza}
+\end{figure}
+
+Respecto al otro sospechoso, la etapa de monitorización, la carga extrema no ha influido en el tiempo medio de adaptación. No hay apenas procesamiento entre que se recibe la medición y esta se descarta o almacena en el conocimiento. Aun así, también presenta un grado de acoplamiento considerable con el servicio de monitorización. En la siguiente sección describiremos algunas propuestas de mejora para nuestro diseño.
+
+\section{Propuestas de mejora}
+
+Una vez realizadas todas estas pruebas, se contó con información suficiente para proponer algunas mejoras a nuestra arquitectura. Estarán orientadas principalmente para solventar el punto de congestión causado por el servicio de reglas. Estas podrán guiar la refactorización del bucle MAPE-K \foreign{english}{Lite} original.
+
+La más sencilla sería \textbf{replicar el servicio} de reglas. Podríamos añadir más instancias que se repartan la carga de procesamiento. Esto no sería más que un parche que no soluciona ninguno de los problemas de raíz. Simplemente aplazaríamos un poco el punto de saturación. Además, podría derivar en errores sutiles como adaptaciones incorrectas por el procesamiento en paralelo de estas.
+
+Otra alternativa más adecuada consistiría en \textbf{agrupar en un mismo servicio estos componentes tan acoplados}. Por ejemplo, que el módulo de análisis se despliegue como parte de cada servicio de reglas. Así, la comunicación sería interproceso en lugar de hacer peticiones a través de la red. Esto volvería nuestros servicios más independientes y funcionarán como los servicios \foreign{english}{plug \& play} que se describieron en la sección \ref{sec:por-que-microservicios} - \nameref{sec:por-que-microservicios} En nuestro prototipo este cambio puede aplicarse sin problemas, pero será necesario estudiar si es factible en el bucle real.
+
+Por otro lado, no podemos hacer lo mismo con el componente de conocimiento. Aunque el módulo de análisis presenta el mismo grado de acoplamiento, este debe mantenerse como un servicio independiente. Otras etapas del bucle necesitan acceder también a él: los monitores, el planificador, etc. En su lugar, podríamos intentar optimizar la comunicación y \textbf{reducir el número de peticiones}. En las reglas de adaptación se solicitaban distintas propiedades con peticiones individuales. Estas podrían agruparse en una sola que recupere toda la información necesaria.
+
+Actualizamos nuestra propuesta arquitectónica con las dos últimas sugerencias. Esta podría quedar como en la figura \ref{fig:arquitectura-final}. El módulo de monitorización y el de análisis se desplegarían con los monitores y las reglas respectivamente. Estos podrían publicarse como librerías para que los otros proyectos las consuman.
+
+Respecto al módulo de planificación y los planificadores de la solución, dependerá de cómo sea su implementación en el bucle de adaptación real. A priori, parecen muy similares a los servicios de reglas. En ese caso, podría estudiarse también su despliegue conjunto con cada servicio de planificación. Finalmente, el módulo de ejecución iría ''por libre''. Como los ejecutores no realizan peticiones síncronas, podrían desplegarse por separado. No están acoplados entre sí.
+
+\begin{landscape}
+
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[scale=0.74]{cap_despliegue/images/arquitectura-final}
+    \caption{Propuesta arquitectónica final del bucle MAPE-K distribuido.}
+    \label{fig:arquitectura-final}
+  \end{figure}
+
+\end{landscape}
+

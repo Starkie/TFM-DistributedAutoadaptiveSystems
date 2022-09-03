@@ -108,9 +108,14 @@ services:
         JAEGER_PORT: "6831"
     environment:
       ASPNETCORE_ENVIRONMENT: "Production"
+    # Para desplegar réplicas usamos:
+    # deploy:
+    #   replicas: 5
     depends_on:
       - rabbitmq
     ports:
+      # Usando el puerto 0 delegamos en el sistema para que nos asigne un puerto del host.
+      # - "0:80"
       - "9001:80"
     networks:
       - knowledge-network
@@ -202,6 +207,8 @@ services:
       - "9411:9411"
     environment:
       COLLECTOR_ZIPKIN_HOST_PORT: 9411
+      METRICS_STORAGE_TYPE: "prometheus"
+      PROMETHEUS_SERVER_URL: "http://prometheus:9090"
     networks:
       - knowledge-network
       - adaption-loop-network

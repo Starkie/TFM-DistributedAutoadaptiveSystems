@@ -5,49 +5,40 @@
 \chapter{Introducción}
 \label{chap:introduccion}
 
-\textcolor{red}{La revolución digital \emph{citation needed} ha permeado en todos los aspectos de nuestras vidas. En nuestro día a día usamos una gran variedad de aplicaciones: redes sociales, aplicaciones de ofimática, comercios en línea\dots. A su vez, gracias a las posibilidades que ofrecen los avances en las tecnologías, cada vez ofrecen distintas funcionalidades y están en constante evolución. \emph{citation needed} Esto deriva en mayor complejidad de estos programas. \emph{citation needed}}
+La revolución digital\footnote{\url{https://es.wikipedia.org/wiki/Revoluci\%C3\%B3n_Digital}} ha permeado en todos los aspectos de nuestras vidas. En nuestro día a día usamos una gran variedad de aplicaciones informáticas: redes sociales, ofimática, comercios electrónicos\dots Muchas de ellas se encuentran alojadas en la red, en servidores externos. Se trata de las aplicaciones web.
 
-\textcolor{red}{Las aplicaciones están en constante evolución. Hay muchas partes móviles}
+Para estas, uno de sus requisitos clave es la \textbf{disponibilidad}. \cite{birmanAddingHighAvailability2004} Nuestros servicios deben estar en funcionamiento en todo momento para atender a nuestros usuarios. Tomemos por ejemplo el caso de una tienda \foreign{english}{on-line}. La plataforma debe estar disponible el mayor tiempo posible. Si surgiera una incidencia y se degrada la capacidad de atender a clientes, o directamente no podemos atender a ninguno, perderemos ingresos.
 
-\textcolor{red}{Tambien el internet de las cosas \emph{citation needed}}
+Para detectar y solucionar estas incidencias, no es efectivo depender de operarios humanos. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006} Es muy costoso tener a alguien pendiente de la aplicación las veinticuatro horas del día. Sería preferible que nuestro sistema sea capaz de \textbf{adaptarse automáticamente} a las distintas situaciones que surjan durante su operación. Recurrir al operario humano debería ser el último recurso.
 
-\textcolor{red}{Uno de los requisitos claves es la disponibilidad: nuestros servicios deben estar en funcionamiento en todo momento para atender a nuestros usuarios. Tomemos por ejemplo el caso de una tienda \foreign{english}{on-line}. Necesitamos asegurar que esté disponible el mayor tiempo posible. Si surgiera una incidencia y se degrada la capacidad de atender a clientes, o directamente no podemos atender a ninguno, perderemos ingresos.}
+En el ámbito de la computación autónoma (\foreign{english}{autonomic computing}) encontramos el concepto de \textbf{sistemas autoadaptativos}. Son aquellos capaces de ajustar su comportamiento en tiempo de ejecución en base a su estado y el del entorno para alcanzar sus objetivos de operación. \cite{ibmcorporationArchitecturalBlueprintAutonomic2006} Esto es posible mediante el uso de \textbf{bucles de control}. \cite{brunEngineeringSelfAdaptiveSystems2009} Gracias a ellos, podremos preparar nuestros sistemas para adaptarse a entornos cambiantes, resolver conflictos operacionales e incluso a optimizarse dinámicamente.
 
-\textcolor{red}{Debido a esto querremos que nuestro sistema sea capaz de adaptarse a picos de demanda, aumentando su capacidad de cómputo cuando tengamos mayor afluencia de clientes. Por ejemplo, en temporadas de rebajas como \emph{black friday}. Operar sistemas capaces de escalar, deriva en sistemas complejos. Como no es viable tener a operarios pendientes del estado del sistema para llevar a cabo estas adaptaciones. Deben hacerse automáticamente.}
-
-\textcolor{red}{En el ámbito de la computación autónoma encontramos el concepto de sistemas \textbf{autoadaptativos}: aquellos capaces de ajustar su propio comportamiento en base a cambios en su entorno de operación. Se caracteriza por dotarlos con capacidades para razonar sobre su estado de operación y su entorno. En base a estos parámetros, el sistema puede intuir que debe reconfigurarse para cumplir con los objetivos que tiene marcados. Para ello, en base a una serie de estrategias predefinidas, es capaz de elegir su siguiente configuración. \cite{garlanIncreasingSystemDependability2003}. Esto conlleva mover a tiempo de ejecución las decisiones de arquitectura y funcionalidad. Con ello, buscamos permitir un comportamiento dinámico del sistema. \cite{brunEngineeringSelfAdaptiveSystems2009}.}
+Siguiendo con el ejemplo de la tienda on-line, un tipo de adaptación posible sería adaptarse a los picos de demanda. Cuando tengamos mayor afluencia de clientes, debe ser capaz de aumentar su capacidad de cómputo. En cambio, cuando la afluencia baje, deberá ser capaz de reducirla.
 
 \section{Motivación}
 
-En este trabajo se quiere abordar la división de un servicio monolítico y adaptarlo para su funcionamiento en entornos en la nube. Para ello, se quiere extraer su funcionalidad en distintos microservicios. Es decir, se quiere \textbf{cambiar la topología} de la solución. Se trata de un cambio importante en la arquitectura de la solución.
+En este trabajo se quiere explorar el diseño de soluciones autoadaptativas que estén preparadas para desplegarse en la nube. Para ello, se tomó como punto de partida la infraestructura FaDA\footnote{Página oficial: \url{http://fada.tatami.webs.upv.es/}} (desarrollada por el grupo PROS/Tatami\footnote{Página oficial: \url{http://www.pros.webs.upv.es/}} del instituto VRAIN/UPV\footnote{Página oficial: \url{https://vrain.upv.es/}}). Esta propone una estrategia para la ingeniería de sistemas autoadaptativos usando bucles de control MAPE-K\cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}.
 
-En concreto, se trata de un servicio que implementa un bucle de control MAPE-K \cite{ibmcorporationArchitecturalBlueprintAutonomic2006, fonsServiciosAdaptivereadyPara2021}, una para la implementación de sistemas autónomos propuesta inicialmente por IBM. El bucle se encarga de gestionar un \textbf{recurso manejado} en base a unas \textbf{políticas} definidas por el administrador del sistema. Las políticas
-
-%% TODO: ¿Multi-tennant? ¿Solución inicial muy acoplada y ad-hoc a una solución concreta? Se quiere independizar del programa.
-
-\textcolor{red}{La idea es separar cada una de sus etapas en microservicios individuales. De esta forma, podemos desarrollarlas de forma independiente entre ellas, replicarlas para mejorar su escalabilidad, o sustituirlas por }implementaciones distintas, etc.
-
-Para desarrollar el trabajo, propusimos el siguiente plan:
-\begin{itemize}
-  \item Cada etapa del bucle será un microservicio distinto. Extraeremos cuatro microservicios distintos: Planificador, Analizador,
-\end{itemize}
-
-\textcolor{red}{Por tanto, los conectores elegidos para comunicar los microservicios han sido más centrados en comunicar con las APIs públicas que expone cada uno.}
-
------------------------------------------------------------------
-
-\section{Motivación}
-
-????? ????????????? ????????????? ????????????? ????????????? ?????????????
+Actualmente, el bucle de control de FaDA está implementado como un servicio monolítico. Todos sus componentes operan dentro del mismo proceso, incluidos los específicos para sistemas manejados (sondas, monitores\dots). Se trata por tanto de una implementación muy rígida. En caso de querer modificar algún componente, hay que redesplegarlo entero. Por ello, se buscó \textbf{dividir su funcionalidad en microservicios}. Es decir, cambiar la topología de la solución. Así se lograría independizar los componentes y su despliegue. Además, facilitaría escalar horizontalmente la capacidad del sistema en base a la carga.
 
 \section{Objetivos}
 
-????? ????????????? ????????????? ????????????? ????????????? ?????????????
+Para el desarrollo del trabajo nos planteamos los siguientes objetivos:
+
+\begin{enumerate}
+  \item Rediseñar la arquitectura para soluciones autoadaptativas existente y prepararla para desplegarse como microservicios en la nube. Esto implica determinar los componentes en los que dividiremos la funcionalidad del bucle y los mecanismos de comunicación para conectarlos.
+
+  \item Definir directrices para la implementación de los diferentes componentes adaptativos específicos de una solución: sondas, monitores, efectores\dots
+
+  \item Desarrollar un caso práctico para demostrar la viabilidad y aplicabilidad de nuestra propuesta.
+\end{enumerate}
 
 \section{Estructura de la memoria}
 
-????? ????????????? ????????????? ????????????? ????????????? ?????????????
+El trabajo se divide en cuatro grandes secciones. La primera de ellas es el \textbf{marco teórico}. En el capítulo \ref{chap:contexto_tecnologico} se presentan algunos conceptos de la computación autónoma y los bucles de control. Se describirá la arquitectura MAPE-K, en la que se basa el trabajo. También definiremos algunos conceptos de arquitecturas de \foreign{english}{software} que nos serán de interés.
 
-%\section{Notes bibliografiques} %%%%% Opcional
+La segunda parte de este trabajo trata sobre la \textbf{migración del sistema existente} a una arquitectura basada en microservicios. Para ello, se introducirá el sistema actual: el bucle MAPE-K \foreign{english}{Lite} de FaDA (capítulo \ref{chap:sistema_original}). A continuación, en el capítulo \ref{chap:diseño} presentamos nuestra propuesta arquitectónica. Se describirá los distintos componentes que la conforman y los mecanismos de comunicación para conectarlos. Finalmente, en el capítulo \ref{chap:implementación}, detallaremos paso a paso nuestra implementación.
 
-%????? ????????????? ????????????? ????????????? ????????????? ?????????????
+La tercera sección del trabajo detalla el \textbf{proceso de validación} de la arquitectura. Esta comienza con una descripción del caso de estudio (capítulo \ref{chap:caso_estudio}). En él, se desarrolla un sistema autoadaptativo básico de climatización. Este permitió aplicar la propuesta arquitectónica en la práctica y sirve como implementación de referencia para otras soluciones autoadaptativas. A continuación, encontraremos el proceso de despliegue del sistema y pruebas (capítulo \ref{chap:despliegue}). Para validar la arquitectura realizamos distintos tipos de pruebas de funcionalidad y rendimiento. En base a los resultados, presentamos sugerencias sobre cómo podría mejorarse la propuesta arquitectónica.
+
+Finalmente, cerraremos con unas \textbf{conclusiones} generales (capítulo \ref{chap:conclusiones}). Se reflexionará sobre el trabajo realizado y el grado de cumplimiento de los objetivos. También se presentarán las vertientes por las que se podría continuar ampliando el trabajo en un futuro. Adicionalmente, contamos con \textbf{anexos} complementarios que describen otros aspectos del sistema. El primero de ellos es una especificación de las APIs de comunicación expuestas por los servicios (anexo \ref{anx:apis}). El otro, describe cómo desplegar y operar el prototipo desarrollado (anexo \ref{anx:ejecucion}).

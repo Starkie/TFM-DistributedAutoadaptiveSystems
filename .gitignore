@@ -372,6 +372,7 @@ MigrationBackup/
 *.ilg
 *.ind
 *.lof
+*.lol
 *.lot
 *.maf
 *.mtc

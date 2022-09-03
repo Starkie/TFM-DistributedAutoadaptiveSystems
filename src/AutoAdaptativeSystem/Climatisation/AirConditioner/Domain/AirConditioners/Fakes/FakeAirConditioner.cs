@@ -33,6 +33,11 @@ public class FakeAirConditioner : AirConditioner
         _increaseTemperatureWhenDisabled = increaseTemperature;
     }
 
+    public void SetTemperature(Temperature temperature)
+    {
+        _thermometer.SetTemperature(temperature);
+    }
+
     private Temperature UpdateTemperature(Temperature temperature, AirConditioningMode currentMode)
     {
         var newValue = currentMode switch

@@ -1,9 +1,37 @@
 \chapter{Conclusiones}
 \label{chap:conclusiones}
 
-\section{Trabajos futuros}
+En este capítulo se realiza una retrospectiva del desarrollo del trabajo y presentaremos algunas conclusiones sobre el mismo. Se tratará el cumplimiento de los objetivos marcados y la descripción de vertientes todavía abiertas para trabajos futuros.
+
+\section{Objetivos alcanzados}
+
+Al inicio del trabajo presentamos cuáles fueron nuestros objetivos de partida. El principal era rediseñar la arquitectura propuesta por FAdA para las soluciones autoadaptativas. Queríamos prepararla para que pueda desplegarse como microservicios en la nube. A lo largo de la memoria, hemos presentado el proceso de diseño, implementación y validación que se siguió para alcanzar la propuesta final.
+
+Otro de ellos, era definir directrices para el desarrollo de los componentes de una solución autoadaptativa. En las secciones de diseño (capítulo \ref{chap:diseño}) e implementación (capítulo \ref{chap:implementación}) hemos descrito implementaciones de referencia para todos los componentes de la arquitectura. Por ejemplo, se ha pautado cómo podrían desarrollarse los servicios de reglas de adaptación. Esta podrá ser de gran ayuda a la hora de trasladar nuestro diseño al bucle de adaptación real.
+
+Además, todos estos conceptos se han puesto a prueba mediante un caso de estudio: el sistema de climatización. Este ha servido de ejemplo sobre el desarrollo de aplicaciones autoadaptativas sobre la nueva infraestructura. Finalmente, hemos verificado mediante distintas pruebas su correcto funcionamiento. Esto nos ha permitido encontrar deficiencias en nuestra arquitectura y la posibilidad de proponer refinamientos sobre la misma. Así, se ha podido demostrar su viabilidad para su aplicación en un futuro.
+
+Consideramos entonces que se han alcanzado todos estos objetivos. Sólo resta realizar la refactorización del bucle MAPE-K \foreign{english}{Lite} de FAdA, el sistema original. Durante esta, es posible que se detecten nuevos requisitos y surjan nuevos desafíos. Deberá ampliarse entonces nuestra propuesta y refinarla aún más.
+
+\section{Relación con asignaturas cursadas}
+
+El trabajo desarrollado tiene relación con varias asignaturas cursadas durante el máster. Entre ellas, podemos destacar:
 
 \begin{itemize}
-  \item Implementar mecanismos de autenticación y dar soporte a multitenancy.
-  \item  Aprovechar las métricas de prometheus para definir reglas que guíen las adaptaciones.
+  \item \textbf{Diseño de Sistemas Ubicuos y Adaptativos} (SUA): Es la asignatura que más relación guarda con el trabajo. En ella se tratan la computación autónoma y los sistemas autoadaptativos. Mediante el desarrollo de un prototipo de coche autónomo, se presentó el bucle MAPE-K y sus distintas fases.
+
+  \item \textbf{Internet de los Servicios (IoS) y de las Cosas (IoT)} (ISC): En esta asignatura se presentan conceptos relacionados con los servicios web. Se introducen patrones de diseño como las APIs REST y arquitecturas adaptadas a entornos \foreign{english}{cloud}. Además, el campo del internet de las cosas se beneficia también de los sistemas autoadaptativos. \cite{savaglioAgentbasedInternetThings2020}
+
+  \item \textbf{\foreign{english}{Data Science}} (DAS) y \textbf{Extracción de información desde la red social} (ERS): En ambas asignaturas se trata la extracción de conocimiento a partir de los datos. Mediante técnicas de obtención, procesamiento y visualización, podemos interpretarlos y ''contar una historia'' con ellos. Ambas tuvieron una gran influencia en el desarrollo de la plataforma de observabilidad y las visualizaciones implementadas (capitulo \ref{chap:despliegue}).
+
 \end{itemize}
+
+\section{Trabajos futuros}
+
+En cuanto a trabajos futuros, el más evidente es \textbf{aplicar la refactorización} sobre el bucle MAPE-K \foreign{english}{Lite} de FaDA. Aunque el prototipo pretendía ser lo más fiel al sistema original, es posible que surjan nuevas dificultades no contempladas. Deberá definirse una estrategia para implementándola gradualmente. Para ello, podrán aprovecharse las interfaces definidas de los servicios y sus especificaciones en lenguajes estándares como OpenAPI. Mediante la generación de código, tanto de clientes como de servidores, se podrá reducir el tiempo y esfuerzo necesarios para la implementación.
+
+La refactorización podría incluir también el desarrollo de plantillas para la \textbf{generación de los microservicios}. Así, se modelarían los distintos componentes de una solución autoadaptativa y se generaría todo el código de infraestructura. Sólo restaría implementar el código específico para el caso de uso.
+
+Respecto a la arquitectura, todavía quedan algunas vertientes abiertas que se podrían explorar. Entre ellas, la implementación de \textbf{\foreign{english}{multitenancy}} (multicliente). \cite{aljahdaliMultitenancyCloudComputing2014} Es decir, permitir que varias soluciones autoadaptativas empleen la misma infraestructura del bucle; pero de forma segregada, sin poder interferir entre ellas o acceder a los datos de otras. Se excluyó de este trabajo para reducir el alcance del proyecto. Para implementarla, se debería desarrollar mecanismos de autenticación y autorización, que permitan identificar a cada aplicación y limitar sus permisos. Además, deberá estudiarse cómo proteger el acceso a la información de los distintos clientes.
+
+Por otro lado, se podrían investigar más maneras de \textbf{explotar la telemetría} recogida por la plataforma de observabilidad. Por ejemplo, para informar al proceso del bucle MAPE-K. De esta forma, se podrían extraer propiedades de adaptación y ampliar nuestro conocimiento del estado del sistema. En base a estas, se podrían definir nuevas reglas que nos permitan adaptar nuestro sistema a distintas situaciones. Un caso interesante sería analizar las métricas de peticiones concurrentes para desplegar nuevas instancias de los servicios.

@@ -1,70 +1,159 @@
-
 \chapter{Implementación}
 \label{chap:implementación}
 
-Una vez descrito el diseño del sistema, llegamos a la etapa de implementación. Uno de los objetivos del trabajo era verificar que la arquitectura elegida era viable. Para ello, optamos por implementar un sistema autoadaptativo muy básico. Tanto el diseño como la implementación se desarrollaron de forma incremental. Gracias a esto, el diseño fue evolucionando según detectábamos nuevas necesidades o problemas que no resolvía nuestra arquitectura.
+Uno de los objetivos de este trabajo era verificar que la nueva arquitectura fuera viable. La mejor forma de hacerlo es aplicarla en la práctica. En un primer momento consideramos refactorizar el bucle MAPE-K \foreign{english}{Lite} para realizar estas pruebas. Pero, debido a su complejidad y las restricciones de tiempo, optamos por implementar una versión reducida del mismo.
 
-En este capitulo describiremos la implementación de los microservicios del nivel de conocimiento de conocimiento y del bucle. Dejaremos para más adelante, en el capitulo \ref{chap:caso_estudio}, la descripción de la implementación del nivel de solución y sistema manejado. En este capitulo ofrecemos una vista más concreta de la implementación, y las tecnologías empleadas. En el otro describiremos cómo encaja todo a nivel general y veremos cómo opera.
+Este prototipo se desarrolló a partir de la especificación del sistema existente. Esto nos permitió definir las nuevas APIs de comunicación e implementar la funcionalidad básica. Gracias a él, pudimos evolucionar el diseño según detectábamos nuevas necesidades o problemas que no resolvía nuestra arquitectura. Cuando llegue el momento de la refactorización del bucle original, podremos emplear las APIs desarrolladas.
 
-La implementación se llevo a cabo en 4 hitos distintos, cada uno correspondiente a una etapa distinta del bucle:
+En este capítulo nos centraremos en la implementación de los microservicios del nivel del bucle y del conocimiento. Dejaremos para más adelante, en el capítulo \ref{chap:caso_estudio} - \nameref{chap:caso_estudio}, la descripción de la implementación del recurso manejado. En este capítulo nos centraremos más en la implementación y en las tecnologías empleadas. En el otro, describiremos mediante un caso de estudio cómo encajan los componentes y cómo opera el sistema completo.
 
-\begin{itemize}
-  \item \textbf{Hito 1 - Servicio de monitorización y conocimiento}
-  \item \textbf{Hito 2 - Servicio de análisis y reglas}
-  \item \textbf{Hito 3 - Planificador}
-  \item \textbf{Hito 4 - Ejecutor y efectores}
-\end{itemize}
+La implementación se llevó a cabo en 4 hitos distintos:
 
 \section{Servicio de monitorización y conocimiento}
 
-En esta primera etapa desarrollamos el proceso de monitorización. Este abarca desde que la sonda realiza sus mediciones hasta que se graban en el conocimiento. Esto implicó implementar varios componentes: las sondas y monitores del caso de estudio (capitulo \ref{chap:caso_estudio}), el componente de monitorización del bucle MAPE-K y la base de conocimiento.
+En esta primera etapa se desarrolló el proceso de monitorización. Este abarca desde que una sonda realiza sus mediciones hasta que se graban en el conocimiento. Esto implicó implementar varios componentes: las sondas y monitores del caso de estudio (capítulo \ref{chap:caso_estudio}), el componente de monitorización del bucle MAPE-K y la base de conocimiento (figura \ref{fig:hito-1-monitorizacion}).
 
-%% TODO: dotnet logo?
-Para su desarrollo se optó por el lenguaje C\# y el \foreign{english}{framework} ASP.NET\footnote{Página oficial: \url{https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core}}. Este \emph{framework} es específico para implementar servidores web de la plataforma .NET de Microsoft. Lo elegimos porque ya contábamos con experiencia de desarrollo en esta plataforma. Además de que soporta los principales sistemas operativos (Windows, Linux y Mac).
+\begin{wrapfigure}{r}{0.16\linewidth}
+  \vspace{-15pt}
+  \includegraphics[scale=0.145]{cap_implementacion/images/dotnet-logo}
+  \centering
+\end{wrapfigure}
+
+Para su desarrollo se optó por el lenguaje C\# y el \foreign{english}{framework} ASP.NET\footnote{Página oficial: \url{https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core}}. Este \emph{framework} es específico para implementar servidores web. Forma parte de la plataforma .NET de Microsoft. Lo elegimos por nuestra experiencia de desarrollo en ella. Además de que soporta los principales sistemas operativos (Windows, Linux y Mac).
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale=0.5]{cap_implementacion/images/hito-1-monitorizacion}
+  \caption{Componentes desarrollados durante el primer hito: Sondas, monitores, el módulo de monitorización y el conocimiento.}
+  \label{fig:hito-1-monitorizacion}
+\end{figure}
 
 \subsection{Peticiones síncronas}
 
-En este hito también se prototiparon los conectores para peticiones síncronas. Aquellos servicios que las soporten expondrán \foreign{english}{endpoints} HTTP. Por ejemplo, el servicio de conocimiento expone aquellos que permiten recuperar o modificar propiedades de adaptación.  En el fragmento \ref{ls:csharp-get} ya mostramos un ejemplo de su implementación.
+En este hito se prototiparon las peticiones síncronas (flechas negras de la figura \ref{fig:hito-1-monitorizacion}). Los servicios que las implementan exponen APIs REST mediante \foreign{english}{endpoints} HTTP. Por ejemplo, el servicio de conocimiento expone operaciones que permiten recuperar o modificar propiedades de adaptación. Nos centraremos en la primera, ya descrita en la tabla \ref{tab:especificacion-get-property}.
 
-Gracias al uso de la librería \emph{Swashbuckle.AspNetCore}\footnote{Página oficial: \url{https://github.com/domaindrivendev/Swashbuckle.AspNetCore}}, pudimos generar su especificación en el estándar OpenAPI. Esto nos aportó dos cosas: una interfaz de usuario para interactuar con la API y la posibilidad de generar el API client.
+En el fragmento \ref{ls:csharp-get} mostramos su implementación. Podemos observar que se trata de un método llamado \emph{GetProperty}. Su lógica es sencilla: busca en un diccionario la propiedad cuyo nombre recibe por parámetro. Si la encuentra, devuelve su valor con un código HTTP (\texttt{200 OK}). En caso contrario, sólo devuelve un código de error que describe el motivo de fallo: formato de la petición incorrecto (\texttt{400 - Bad Request}) o que no se ha encontrado la propiedad (\texttt{404 - Not Found}).
 
-Hablemos primero sobre la interfaz de usuario. La librería añade a nuestro servicio el \foreign{english}{endpoint} \texttt{/swagger}. Accediendo a esta ruta, se nos servirá una interfaz con un listado de todas las operaciones que ofrece la API (figura \ref{fig:swagger-knowledge-ui}). De cada petición nos muestra su documentación (la que añadimos en el código) y sus parámetros. Incluso nos permite ejecutarlas. De esta forma, los usuarios pueden investigar qué ofrece la API y hacer pruebas.
+Se puede comprobar que el método cuenta con una serie de comentarios (líneas \texttt{1-8}) y atributos (\texttt{10-12}). En conjunto estos conforman su documentación. Describen qué hace el método, sus parámetros de entrada y posibles respuestas. OpenAPI puede aprovecharlos para generar una especificación más completa. Resulta entonces muy recomendable incluirlos.
+
+\begin{lstlisting}[ caption={Implementación del método \texttt{GetProperty} decorado para generar la especificación OpenAPI.\protect\footnotemark},captionpos=b, label=ls:csharp-get]
+  /// <summary>
+  ///    Gets a property given its name.
+  /// </summary>
+  /// <param name="propertyName"> The name of the property to find. </param>
+  /// <returns> An IActionResult with result of the query. </returns>
+  /// <response code="200"> The property was found. Returns the value of the property. </response>
+  /// <response code="404"> The property was not found. </response>
+  /// <response code="400"> There was an error with the provided arguments. </response>
+  [HttpGet("{propertyName}")]
+  [ProducesResponseType(typeof(PropertyDTO), StatusCodes.Status200OK)]
+  [ProducesResponseType(StatusCodes.Status404NotFound)]
+  [ProducesResponseType(StatusCodes.Status400BadRequest)]
+  public IActionResult GetProperty([FromRoute]string propertyName)
+  {
+      if (string.IsNullOrEmpty(propertyName))
+      {
+          return BadRequest();
+      }
+
+      bool propertyFound =
+          properties.TryGetValue(propertyName, out PropertyDTO property);
+
+      if (!propertyFound)
+      {
+          return NotFound();
+      }
+
+      return Ok(property);
+  }
+\end{lstlisting}
+
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/AdaptionLoop/Knowledge/Controllers/PropertyController.cs\#L44-L77}{aquí}.}
+
+Para generar la especificación empleamos la librería \emph{Swashbuckle.AspNetCore}\footnote{Página oficial: \url{https://github.com/domaindrivendev/Swashbuckle.AspNetCore}}. Esta es capaz de extraerla de un servicio ASP.NET existente. En el fragmento \ref{ls:openapi-get}, se muestra cómo se describe el \foreign{english}{endpoint} en este estándar. Podemos confirmar que se han incluido los comentarios y atributos que documentaban en el código. Por ejemplo, figuran los parámetros, las respuestas y sus códigos HTTP, etc. Es destacable la similitud que presenta con la especificación de la tabla \ref{tab:especificacion-get-property}.
+
+\begin{lstlisting}[style=json,caption={Especificación OpenAPI del método para obtener una propiedad del conocimiento (\lstinline{GetProperty}). \protect\footnotemark},captionpos=b, label=ls:openapi-get]
+"paths": {
+  "/Property/{propertyName}": {
+    "get": {
+      "tags": [
+        "Property"
+      ],
+      "summary": "Gets a property given its name.",
+      "parameters": [{
+          "name": "propertyName",
+          "in": "path",
+          "description": "The name of the property to find.",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The property was found. Returns the value of the property.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PropertyDTO"
+              }
+            }
+          }
+        },
+        "404": { "description": "The property was not found.", },
+        "400": {
+          "description": "There was an error with the provided arguments.",
+        }
+      }
+    }
+  }
+\end{lstlisting}
+
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/AdaptionLoop/Knowledge/Knowledge.Service-OpenAPISpec.json\#L108-L187}{aquí}.}
+
+A partir de la especificación, esta librería añade al servicio una interfaz de usuario. Esta es accesible a través del \foreign{english}{endpoint} \texttt{/swagger}. Allí, se nos servirá una página web con el listado de todas las operaciones que ofrece el servicio (figura \ref{fig:swagger-knowledge-ui}). De cada una nos muestra su documentación, sus parámetros, etc. Incluso permite ejecutarlas. Así, puede ser de ayuda a los desarrolladores que necesiten trabajar con esta API.
 
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=1.5]{cap_implementacion/images/swagger-knowledge-ui}
-  \caption{Interfaz de usuario ofrecida por Swagger para el servicio de conocimiento. Se genera a partir de las especificación OpenAPI.}
+  \caption{Interfaz de usuario ofrecida por Swagger para el servicio de conocimiento. Se genera a partir de la especificación OpenAPI.}
   \label{fig:swagger-knowledge-ui}
 \end{figure}
 
-Por otro lado, también nos permite generar el API Client. Como comentamos en la sección \ref{chap:OpenAPI} de OpenAPI, tenemos gran variedad de generadores de código a nuestra disposición. Nosotros optamos por la librería \texttt{OpenAPI.Generator}\footnote{Página del proyecto: \url{https://github.com/OpenAPITools/openapi-generator}}. En concreto, el generador de código de \verb|C#|. Usándolo pudimos generar una librería que permite contactar con nuestro servicio, sin necesidad de implementar mucho código. Por ejemplo, el componente de monitorización del bucle contacta a través de un API Client generado.
+Por otro lado, también se pudo generar el API \foreign{english}{client}. Como comentamos en la sección \ref{chap:OpenAPI} - \nameref{chap:OpenAPI}, tenemos gran variedad de generadores de código a nuestra disposición. Nosotros optamos por la librería \texttt{OpenAPI.Generator}\footnote{Página del proyecto: \url{https://github.com/OpenAPITools/openapi-generator}}. En concreto, por un generador de código de \verb|C#|. Usándolo, pudimos obtener una librería que permite contactar con el servicio, sin necesidad de implementar mucho código. Por ejemplo, el componente de monitorización del bucle contacta con el conocimiento a través de un API \foreign{english}{client}.
+
+Además, podremos utilizar estas herramientas durante la refactorización del bucle MAPE-K original. Aunque este está desarrollado en Java, podremos generar el código a partir de la especificación de nuestra implementación. Tanto de los clientes como los servidores. Esto ayudará a agilizar enormemente el proceso de desarrollo.
 
 \subsection{Componentes: Módulos de monitorización y conocimiento}
 
-El módulo del conocimiento es un servicio muy sencillo. Ofrece operaciones de lectura y escritura sobre las propiedades de adaptación y las claves de configuración de servicios manejados. Para el prototipo estas se almacenan en diccionarios en memoria. Cuando el servicio se reinicie, los valores se perderán.
+Los componentes implementados en este hito son muy sencillos. Simplemente validan las mediciones de las sondas y extraen de ellas las propiedades de adaptación. Ya hemos hablado de la implementación del servicio de conocimiento. Este ofrece simplemente operaciones de lectura y escritura sobre las propiedades de adaptación y las claves de configuración de los recursos manejados.
 
-Por encima de este, tenemos el servicio de monitorización. En nuestra implementación, actúa como intermediario entre los monitores de la solución y el conocimiento. También se trata de un servicio sencillo. Ofrece operaciones útiles para los monitores de la solución: lectura de propiedades del conocimiento y otras para que los monitores reporten sus mediciones. De esta forma, los monitores de solución podrán informarse a partir del conocimiento para determinar si una medición es válida o no.
-
-\textcolor{red}{¿Añadir ejemplos de código? ¿Describir los componentes implementados? ¿Debería unificarse con el capítulo de implementación del caso de estudio?}
+Por encima de este, tenemos al servicio de monitorización. En nuestra implementación, actúa como intermediario entre los monitores de la solución y el conocimiento. Ofrece \foreign{english}{endpoints} útiles para los monitores, como puede ser reportar sus mediciones o la lectura del conocimiento. De esta forma, los monitores de solución podrán informarse para determinar si una medición es válida o no. Para conectar todos estos servicios se emplearon las peticiones síncronas, que describiremos anteriormente.
 
 \section{Servicio de análisis y reglas}
 \label{sec:implementacion-modulo-reglas}
 
-En el segundo hito, acordamos implementar la evaluación de reglas de adaptación. Esto requería de implementar el servicio de análisis del bucle MAPE-K y los servicios de reglas de la solución. En este hito empezamos a plantearnos el diseño de las comunicaciones ascendentes: las notificaciones. Con ellas, evitaríamos que se los componentes se acoplaran a la capa superior.
+La siguiente etapa que desarrollamos fue la evaluación de las reglas de adaptación. Esta requería implementar el servicio de análisis del bucle MAPE-K y los servicios de reglas de la solución. También necesitamos el mecanismo de las comunicaciones ascendentes: las notificaciones. Con ellas evitamos que los componentes se acoplaran a los de la capa superior.
 
 \subsection{Notificaciones}
 
-%% TODO: Logo RabbitMQ?
-Comenzaremos describiendo el desarrollo de las notificaciones. Como ya se describió en la sección \ref{sec:notificaciones}, este componente se implementó mediante un \foreign{english}{broker} de mensajería. Elegimos \texttt{RabbitMQ}\footnote{Página oficial: \url{https://www.rabbitmq.com/}}, uno ''sencillo'' y ampliamente utilizado. \cite{newmanBuildingMicroservicesDesigning2021} Con él pudimos  implementar los dos patrones de comunicación que necesitamos: las notificaciones y las peticiones asíncronas.
+\begin{wrapfigure}{r}{0.13\linewidth}
+  \vspace{-10pt}
+  \includegraphics[scale=0.09]{cap_implementacion/images/rabbitmq}
+  \centering
+  \vspace{-10pt}
+\end{wrapfigure}
 
-Para implementar nuestro conector, utilizamos una librería llamada \texttt{Rebus}\footnote{Página oficial: \url{https://github.com/rebus-org/Rebus}}. Esta nos permite interactuar con un bus, abstrayéndonos de la tecnología concreta utilizada para la comunicación. Así, podríamos cambiar de tecnología de transporte en cualquier momento por otra que se ajuste más a nuestros requisitos.
+Comenzaremos describiendo el desarrollo de las notificaciones (flechas moradas de la figura \ref{fig:hito-2-analisis}). Como ya se describió en la sección \ref{sec:notificaciones}, este mecanismo se implementó mediante un \foreign{english}{broker} de mensajería. Se elegió \texttt{RabbitMQ}\footnote{Página oficial: \url{https://www.rabbitmq.com/}} para el proyecto, un \foreign{english}{broker} sencillo y ampliamente utilizado. \cite{newmanBuildingMicroservicesDesigning2021}
 
-Finalmente, para desacoplar la funcionalidad de de la publicación y consumición de mensajes del bus, empleamos \texttt{MediatR}\footnote{Página oficial: \url{https://github.com/jbogard/MediatR}}. Esta librería implementa el patrón mediador. Nos permite propagar mensajes dentro de un proceso. En nuestro caso, los eventos. Ni el emisor ni el receptor requieren tener referencias del otro. Es similar a un \foreign{english}{broker} de mensajería, pero funcionando interproceso.
+Para implementar los publicadores y consumidores de nuestro conector, utilizamos una librería llamada \texttt{Rebus}\footnote{Página oficial: \url{https://github.com/rebus-org/Rebus}}. Esta nos permitía interactuar con el bus abstrayéndonos de su tecnología concreta. Así, podríamos cambiar de tecnología de transporte en cualquier momento sin tener que modificar nuestros servicios.
 
-Ahora nos centraremos en la comunicación entre el módulo de conocimiento y el servicio de análisis. Una vez se confirma la escritura de una propiedad o configuración en el conocimiento, este debe notificar a los servicios en la capa superior. Para ello, comienza propagando internamente un \textbf{evento de integración} (línea 11 del fragmento \ref{ls:knowledge-set-property}) mediante el mediador.
+Finalmente, para desacoplar la funcionalidad del servicio de la publicación y consumición de mensajes del bus, empleamos \texttt{MediatR}\footnote{Página oficial: \url{https://github.com/jbogard/MediatR}}. Esta librería implementa el patrón mediador\footnote{Patrón mediador: \url{https://refactoring.guru/design-patterns/mediator}}. Permite propagar mensajes dentro de un mismo proceso, sin necesidad de que el emisor ni el receptor se referencien. Para ello, se definen uno o más manejadores (\foreign{english}{handlers}) que capturan y procesan el mensaje. En el caso de las notificaciones propagaremos eventos de integración.
 
+Para describir la implementación nos centraremos en la comunicación entre el módulo de conocimiento y el servicio de análisis. Una vez se confirma la escritura de una propiedad de adaptación en el conocimiento, este debe notificar a los servicios en la capa superior. Para ello, comienza propagando internamente un \textbf{evento de integración} usando el mediador (línea 11 del fragmento \ref{ls:knowledge-set-property}).
 
-\begin{lstlisting}[language={[Sharp]C},caption={Implementación del método que asigna valor a una propiedad. Muestra un ejemplo de propagación interna de eventos de integración.},captionpos=b, label=ls:knowledge-set-property]
+\begin{lstlisting}[caption={Implementación del método que asigna valor a una propiedad. Muestra un ejemplo de propagación interna de eventos de integración.\protect\footnotemark},captionpos=b, label=ls:knowledge-set-property]
 private async Task SetProperty(SetPropertyDTO propertyDto)
 {
     var newValue = new()
@@ -81,9 +170,11 @@ private async Task SetProperty(SetPropertyDTO propertyDto)
 
 \end{lstlisting}
 
-El mediador determinará que nuestro componente publicador es el destinatario de este evento. Lo hace en base a las interfaces que implementa (linea 2 del fragmento \ref{ls:knowledge-property-changed-publisher}). Este componente publica el evento en el bus de mensajería (línea 15). Rebus, en base a la configuración del servicio, lo enviará a nuestra instancia de \texttt{RabbitMQ} y lo publicará en el \foreign{english}{exchange} correspondiente. Todos los suscriptores ubicados en la capa superior lo recibirán en su cola.
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/AdaptionLoop/Knowledge/Controllers/PropertyController.cs\#L106-L119}{aquí}.}
 
-\begin{lstlisting}[language={[Sharp]C},caption={El publicador de eventos captura el evento de integración y lo publica en el bus.},captionpos=b, label=ls:knowledge-property-changed-publisher]
+El mediador determina que el componente publicador es el destinatario de este evento y lo invoca. Para detectarlo, se basa en las interfaces que implementa (línea 2 del fragmento \ref{ls:knowledge-property-changed-publisher}). Este componente publica el evento en el bus de mensajería (línea 15). Rebus, en base a la configuración del servicio, lo enviará a nuestra instancia de \texttt{RabbitMQ}. Todos los suscriptores de este evento recibirán el mensaje en su cola.
+
+\begin{lstlisting}[caption={El publicador de eventos captura el evento de integración y lo publica en el bus.\protect\footnotemark},captionpos=b, label=ls:knowledge-property-changed-publisher]
 public class PropertyChangedIntegrationEventPublisher
   : IIntegrationEventPublisher<PropertyChangedIntegrationEvent>
 {
@@ -105,9 +196,11 @@ public class PropertyChangedIntegrationEventPublisher
 }
 \end{lstlisting}
 
-Finalmente, en el servicio de análisis, tenemos el componente consumidor (fragmento \ref{ls:analysis-property-changed-consumer}). \texttt{Rebus} obtendrá el evento de la cola de mensajería y se lo pasará a nuestro consumidor. Este lo recibirá y lo propagará internamente en el servicio (línea 20). Todos los manejadores (\foreign{english}{handlers}) del evento lo recibirán y podrán tratarlo.
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/AdaptionLoop/Knowledge/EventHandlers/PropertyChangedIntegrationEventPublisher.cs}{aquí}.}
 
-\begin{lstlisting}[language={[Sharp]C},caption={El consumidor recibe el evento de integración del bus y lo propaga internamente. Todos los manejadores de este evento lo recibirán.},captionpos=b, label=ls:analysis-property-changed-consumer]
+Finalmente, en el servicio de análisis, se encuentra el componente consumidor (fragmento \ref{ls:analysis-property-changed-consumer}). \texttt{Rebus} obtiene el evento de la cola de mensajería y se lo transmite. Este lo recibe y lo propaga internamente en el servicio (línea 20). Todos los \foreign{english}{handlers} del evento lo recibirán y podrán tratarlo. En este caso, las reglas de adaptación.
+
+\begin{lstlisting}[caption={El consumidor recibe el evento de integración del bus y lo propaga internamente. Todos los \foreign{english}{handlers} de este evento lo recibirán.\protect\footnotemark},captionpos=b, label=ls:analysis-property-changed-consumer]
 public class PropertyChangedIntegrationEventConsumer
   : IIntegrationEventConsumer<PropertyChangedIntegrationEvent>
 {
@@ -125,25 +218,33 @@ public class PropertyChangedIntegrationEventConsumer
 }
 \end{lstlisting}
 
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/AdaptionLoop/Analysis/Application/Properties/Events/PropertyChangedIntegrationEventConsumer.cs}{aquí}.}
+
 \subsection{Componentes: Servicio de análisis y módulos de reglas}
 
-En cuanto a la implementación del módulo de análisis, este realmente no cuenta tampoco con mucha lógica. Participa como intermediario entre el conocimiento y los servicios de reglas. Como hemos visto, recibe los eventos de cambios en las propiedades y los propaga a la capa superior. Ofrece operaciones de solo lecturas de propiedades y configuración del conocimiento. Así, limitamos las escrituras por parte de las reglas.
+En este hito se desarrollaron los servicios de análisis y de los módulos de reglas (figura \ref{fig:hito-2-analisis}). En cuanto al del módulo de análisis, este realmente no cuenta con mucha lógica. Participa como intermediario entre el conocimiento y los servicios de reglas. Como hemos visto, recibe los eventos de cambios en las propiedades y los propaga a la capa superior. Ofrece operaciones de solo lectura del conocimiento. Así, impedimos las escrituras por parte de las reglas.
 
-Se podría considerar que este servicio ha quedado anémico \textcolor{red}{referencia}. En trabajos posteriores, este servicio podría ampliarse añadiendo autenticación y autorización. Así, se podría evitar que servicios no autorizados accedan a sus operaciones o soliciten adaptaciones maliciosas.
+\begin{wrapfigure}{l}{0.3\linewidth}
+  \vspace{-20pt}
+  \centering
+  \includegraphics[scale=0.6]{cap_implementacion/images/hito-2-analisis}
+\caption{Segundo hito: reglas de adaptación y módulo de análisis.}
+  \label{fig:hito-2-analisis}
+  \vspace{-10pt}
+\end{wrapfigure}
 
-Respecto a los módulos de reglas, ofrecemos una implementación de referencia. Aunque, como estos se encuentran en nivel de la solución, el desarrollador es libre de elegir si seguirla u optar por otra distinta.
+Más tarde nos dimos cuenta que se podría considerar como un servicio ''anémico''\footnote{Similar a los objetos anémicos, sin apenas lógica: \url{https://www.martinfowler.com/bliki/AnemicDomainModel.html}}. \cite{singjaiPatternsDerivingAPIs2021} No tiene apenas lógica propia. Cuando se realice la refactorización del bucle original, se podría evaluar si tiene sentido mantener esta división. Si no es así, debería desplegarse como una librería que consuman todos los servicios de reglas de adaptación. En trabajos posteriores, este servicio podría ampliarse añadiendo autenticación y autorización. Así, se podría evitar que servicios no autorizados accedan a sus operaciones o soliciten adaptaciones maliciosas.
 
-En el fragmento \ref{ls:adaption-rule-base} mostramos la clase base de las reglas de adaptación. Vemos que está suscrita a los eventos de integración de cambio de propiedad de adaptación y cambio en la configuración del sistema (lineas 2-3). Cuando el consumidor capture uno de ellos, lo propagará internamente. Todas las reglas afectadas lo capturarán.
+Respecto a los módulos de reglas, a continuación ofrecemos una implementación de referencia. En el fragmento \ref{ls:adaption-rule-base} mostramos la clase base de las reglas de adaptación. Se desarrolló siguiendo el patrón plantilla (o \foreign{english}{template})\footnote{\url{https://refactoring.guru/design-patterns/template-method}}. Define un método que evalúa la condición de la regla (\texttt{EvaluateCondition}) y, si esta se cumple, la ejecuta (\texttt{Execute}). Aquellas reglas que hereden de esta deberán de implementar ambos métodos.
 
-Esta clase base se desarrolló siguiendo el patrón plantilla (o \foreign{english}{template})\footnote{\url{https://refactoring.guru/design-patterns/template-method}}. Define un método que evalúa la condición de la regla (\texttt{EvaluateCondition}) y, si esta se cumple, la ejecuta (\texttt{Execute}). Aquellas reglas que hereden de esta deberán de implementar ambos métodos.
+Vemos además que está suscrita a los eventos de integración de cambio de propiedad de adaptación y cambio en la configuración del sistema (líneas 2-3). Cuando el consumidor reciba uno de ellos, lo propagará internamente. Todas las reglas afectadas lo capturarán y se evaluarán.
 
-\begin{lstlisting}[language={[Sharp]C},caption={Clase base para implementar reglas de adaptación. Se evalúa la condición, y si esta se cumple, se ejecuta.},captionpos=b, label=ls:adaption-rule-base]
+\begin{lstlisting}[caption={Clase base para implementar reglas de adaptación. Se evalúa la condición, y si esta se cumple, se ejecuta. \protect\footnotemark},captionpos=b, label=ls:adaption-rule-base]
 public abstract class AdaptionRuleBase
     : IIntegrationEventHandler<PropertyChangedIntegrationEvent>,
       IIntegrationEventHandler<ConfigurationChangedIntegrationEvent>
 {
     // ..
-
     private async Task Handle()
     {
         try
@@ -164,16 +265,14 @@ public abstract class AdaptionRuleBase
     protected abstract Task<bool> EvaluateCondition();
 
     protected abstract Task Execute();
-
-    // ..
 }
 \end{lstlisting}
 
-En cuanto a las suscripciones, las herederas deberán indicar de qué propiedades o claves de configuración dependen. En base a ellas, deberemos suscribirnos a los temas de las notificaciones que emite el módulo de análisis. Para ello, hemos implementado una serie de atributos que permiten declarar estas dependencias. Con ellos, decoraremos las clases
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/Climatisation/Rules/EventHandlers/Rules/AdaptionRuleBase.cs}{aquí}.}
 
-En el fragmento \ref{ls:adaption-rule-dependencies} mostramos un ejemplo. En la línea 1 tenemos el atributo que describe las dependencias con la propiedad de adaptación \texttt{Temperature}. Por otro lado, en las líneas 2-5 tenemos la declaración de dependencias con dos claves de configuración del servicio \texttt{Climatisation.AirConditioner}: \texttt{TargetTemperature} y \texttt{Mode}.
+Las reglas deben indicar de qué propiedades o claves de configuración dependen. Para ello, hemos implementado una serie de atributos que decoran sus clases. En el fragmento \ref{ls:adaption-rule-dependencies} mostramos un ejemplo. En la línea 1 tenemos el atributo que describe las dependencias con la propiedad de adaptación \texttt{Temperature}. Por otro lado, en las líneas 2-5 tenemos la declaración de dependencias con dos claves de configuración del servicio \texttt{Climatisation.AirConditioner}: \texttt{TargetTemperature} y \texttt{Mode}.
 
-\begin{lstlisting}[language={[Sharp]C},caption={Las reglas declaran sus dependencias sobre propiedades de adaptación usando atributos. Estos se utilizarán para las suscripciones a los temas de los eventos.},captionpos=b, label=ls:adaption-rule-dependencies]
+\begin{lstlisting}[caption={Las reglas declaran sus dependencias sobre propiedades de adaptación usando atributos. Estos se utilizarán para las suscripciones a los temas de los eventos.\protect\footnotemark},captionpos=b, label=ls:adaption-rule-dependencies]
 [RuleKnowledgePropertyDependency(ClimatisationConstants.Property.Temperature)]
 [RuleServiceConfigurationDependency(
     ClimatisationAirConditionerConstants.AppName,
@@ -186,44 +285,30 @@ public class DisableAirConditionerWhenCoolingAndTargetTemperatureAchievedAdaptio
 }
 \end{lstlisting}
 
-Para que el servicio se suscriba a las notificaciones emplearemos la \textbf{reflexión}: analizaremos el ensamblado buscando todas las reglas y obtendremos los valores de sus atributos. En base a ellos, nos suscribiremos a los \foreign{english}{topics} en el \foreign{english}{broker} de mensajería.
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/Climatisation/Rules/EventHandlers/Rules/DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule.cs\#L14-L19}{aquí}.}
 
-\begin{lstlisting}[language={[Sharp]C},caption={Para suscribirnos a los \foreign{english}{topics} de las notificaciones obtenemos las dependencias de las reglas mediante reflexión.},captionpos=b, label=ls:rules-registration]
-public static IServiceCollection AddAdaptionLoopAnalysisServices(
-  this IServiceCollection services,
-  IConfiguration configuration,
-  Assembly rulesAssembly)
-{
-    // ...
+En base a los atributos, el servicio se suscribirá a los \foreign{english}{topics} de las notificaciones que emite el módulo de análisis. Para leerlos emplearemos la \textbf{reflexión}: analizaremos el ensamblado buscando las reglas y obtendremos los valores de sus atributos. Se le pasarán a \texttt{Rebus}, que gestionará la suscripción con \texttt{RabbitMQ}.
 
-    services.AddBus(
-        configuration,
-        rulesAssembly,
-        registerSubscriptions: async bus =>
-        {
-            var subscriptions = GetRulesBusTopicNames(rulesAssembly);
+\section{Servicio de planificación y peticiones de cambio}
 
-            foreach (var subscription in subscriptions)
-            {
-                await bus.Advanced.Topics.Subscribe(subscription);
-            }
-        });
+En el tercer hito se implementaron las peticiones de cambio en la configuración del sistema. Este proceso comienza con la ejecución del cuerpo de las reglas y acaba con la generación de un \textbf{plan de cambio}. Esto requirió del desarrollo de un nuevo servicio: el planificador (figura \ref{fig:hito-3-planificador}). En este hito también surgió la necesidad de las peticiones asíncronas, el tercer protocolo de comunicación.
 
-    return services;
-}
-\end{lstlisting}
-
-\section{Planificador}
-
-En el tercer hito implementamos las peticiones de cambio de las reglas y el servicio de planificación. Aquí surge también la necesidad del tercer patrón de comunicación: las peticiones asíncronas.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale=0.50]{cap_implementacion/images/hito-3-planificador}
+  \caption{Componente desarrollado durante el tercer hito: Planificador.}
+  \label{fig:hito-3-planificador}
+\end{figure}
 
 \subsection{Peticiones asíncronas}
 
-Continuando con las reglas de adaptación, llega el turno de describir su ejecución. Esta tiene lugar una vez se evalúa la condición y se estima que es necesaria una acción correctiva. En el cuerpo de la regla se describe la acción como una serie de cambios a la configuración del sistema. Para implementar el método, requerimos de un mecanismo para solicitar los cambios.
+Las peticiones asíncronas son el tercer mecanismo de comunicación de nuestra arquitectura (flecha naranja en la figura \ref{fig:hito-3-planificador}). Estas permiten interactuar a los servicios que pertenecen a una misma capa. Para describir su implementación tomaremos de ejemplo las peticiones de cambio de las reglas de adaptación.
 
-Las reglas comunicarán la solicitud al módulo de análisis mediante una petición síncrona. En el fragmento \ref{ls:change-request-builder} mostramos un ejemplo. Usando su API Client, implementamos un \foreign{english}{builder}\footnote{Patrón \foreign{english}{builder}: \url{https://refactoring.guru/design-patterns/builder}} para simplificar la creación de solicitudes de cambio. En este ejemplo, indicamos cuál debería ser la siguiente configuración para el servicio \texttt{Climatisation AirConditioner Service} (líneas 7-14). Deberá estar activo (lineas 7-10) y su propiedad \texttt{Mode} con el valor \texttt{Cooling} (lineas 11-13). En esta petición se incluye también el síntoma que desencadena el cambio (línea 6).
+Cuando la regla evalúa su condición y estima que es necesaria una acción correctiva, se ejecuta su método \texttt{Execute}. Este método envía una petición que describe cuál debería ser el siguiente estado del recurso manejado. Por ejemplo, qué componentes deben estar presentes o no, qué conexiones deben existir, etc.
 
-\begin{lstlisting}[language={[Sharp]C},caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.},captionpos=b, label=ls:change-request-builder]
+Las reglas comunicarán esta solicitud al módulo de análisis mediante una petición síncrona. Para simplificar el proceso, desarrollamos un \foreign{english}{builder}\footnote{Patrón \foreign{english}{builder}: \url{https://refactoring.guru/design-patterns/builder}} de peticiones por encima de su API \foreign{english}{client}. En el fragmento \ref{ls:change-request-builder} mostramos un ejemplo. Allí se indica cuál debería ser la siguiente configuración para el servicio \texttt{Climatisation AirConditioner Service} (líneas 7-14). Deberá estar activo (línea 10) y su propiedad \texttt{Mode} deberá tener el valor \texttt{Cooling} (líneas 11-13). También se incluye el síntoma que desencadena el cambio (línea 6).
+
+\begin{lstlisting}[caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.\protect\footnotemark},captionpos=b, label=ls:change-request-builder]
 protected override async Task Execute()
 {
   await _systemService.RequestConfigurationChange(changeRequest =>
@@ -242,11 +327,13 @@ protected override async Task Execute()
 }
 \end{lstlisting}
 
-El servicio de análisis recibirá la petición y la redirigirá al planificador. Lo hará mediante una petición asíncrona. Su implementación es muy similar a la de las notificaciones, explicada en detalle en el apartado anterior. La mayor diferencia radica en la cardinalidad de la comunicación: el mensaje se publicará directamente en la cola de trabajo, en lugar de publicarlo en un exchange. Es decir, como mucho lo procesará un solo servicio.
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/Climatisation/Rules/EventHandlers/Rules/DisableAirConditionerWhenCoolingModeEnabledAndTargetTemperatureAchievedRule.cs\#L74-L88}{aquí}.}
 
-Esto implica que sólo cambiará la implementación del publicador. En la línea 14 del fragmento \ref{ls:request-publisher} vemos que el mensaje se enruta directamente a la cola \texttt{PlanningServiceQueue}. El resto de la implementación será muy similar. Solo cambiará las interfaces que debamos implementar para cada tipo de componente (\texttt{IRequestConsumer} en lugar de \texttt{IIntegrationEventConsumer}, etc.).
+El servicio de análisis recibirá la petición y la redirigirá al planificador mediante una petición asíncrona. Su implementación es muy similar a la de las notificaciones, explicada en detalle en el apartado anterior. La mayor diferencia radica en la cardinalidad de la comunicación: en lugar de publicarlo en un \foreign{english}{exchange}, el mensaje se publicará directamente en la cola de trabajo. Sólo lo debería procesará un servicio.
 
-\begin{lstlisting}[language={[Sharp]C},caption={Las peticiones asíncronas se publican a una cola determinada.},captionpos=b, label=ls:request-publisher]
+Como la comunicación es tan similar, únicamente cambiará la implementación del publicador. La mayor diferencia se puede apreciar en el fragmento \ref{ls:request-publisher}. Allí, vemos que el mensaje se enruta directamente a la cola \texttt{PlanningServiceQueue} (línea 15). También cambiarán las interfaces que deban implementar los componentes. En este caso usaremos \texttt{IRequestPublisher} en lugar de \texttt{IIntegrationEventPublisher} (línea 2).
+
+\begin{lstlisting}[caption={Las peticiones asíncronas se publican a una cola determinada.\protect\footnotemark},captionpos=b, label=ls:request-publisher]
 public class SystemConfigurationChangeRequestPublisher
   : IRequestPublisher<SystemConfigurationChangeRequest>
   where TRequest : Request
@@ -269,15 +356,15 @@ public class SystemConfigurationChangeRequestPublisher
 }
 \end{lstlisting}
 
+\footnotetext{Código disponible \href{https://github.com/Starkie/TFM-DistributedAutoadaptiveSystems/blob/3300a2e54ce0fe82701d53c3d3cb6cbcd64141be/src/AutoAdaptativeSystem/AdaptionLoop/Analysis/Application/SystemConfiguration/Requests/SystemConfigurationChangeRequestIntegrationEventPublisher.cs}{aquí}.}
+
 \subsection{Componentes: Servicio de planificación}
 
-El planificador recibirá esta petición de cambio y deberá elaborar un \textbf{plan de adaptación}. Para ello, verificará que la solicitud es viable. En nuestro prototipo, para reducir el alcance del proyecto, nos limitamos a comprobar que la configuración sea distinta a la actual. Añadirá al plan las \textbf{acciones de adaptación} requeridas para alcanzar el estado deseado. Si el sistema ya estuviera en ese estado, el plan de cambio se queda vacío y no se propaga.
-
-Ya comentamos que los operadores arquitectónicos con los que operaremos serán del ámbito de los microservicios: activar servicio, eliminar servicio, vincular servicios, desvincularlos y cambiar su configuración.
+El planificador consumirá esta petición de cambio y deberá elaborar un \textbf{plan de adaptación}. Para ello, deberá determinar qué acciones son necesarias para alcanzar el estado deseado. Lo comparará con el estado actual, almacenado en el conocimiento, y añadirá al plan las \textbf{acciones de adaptación} requeridas. Si el sistema ya estuviera en ese estado, el plan de cambio se quedará vacío y no se propagará.
 
 Por ejemplo, en el fragmento \ref{ls:adaption-change-plan} encontramos un plan de adaptación para la regla descrita en la sección anterior. Solo contiene una acción de adaptación: cambiar el valor de la propiedad \texttt{Mode} a \texttt{Cooling}. Como el servicio de aire acondicionado ya estaba en funcionamiento, no se ha incluido una acción para desplegarlo.
 
-\begin{lstlisting}[language=python,caption={Plan de adaptación generado para la regla anterior. Solo contiene una acción de adaptación: cambiar la configuración \texttt{Mode} del servicio \texttt{AirConditioner}.},captionpos=b, label=ls:adaption-change-plan]
+\begin{lstlisting}[style=json,caption={Plan de adaptación generado para la regla anterior. Solo contiene una acción de adaptación: cambiar la configuración \texttt{Mode} del servicio \texttt{AirConditioner}.},captionpos=b, label=ls:adaption-change-plan]
 {
   "ChangePlan": {
     "Timestamp": "2022-07-09T09:53:01.1868834Z",
@@ -301,16 +388,26 @@ Por ejemplo, en el fragmento \ref{ls:adaption-change-plan} encontramos un plan d
 }
 \end{lstlisting}
 
-\section{Ejecutor y efectores}
+Para reducir el alcance del proyecto, no validaremos la viabilidad del plan de adaptación. Se descartó implementar los planificadores específicos de la solución.  Sólo contaremos con la estrategia por defecto: validar que el plan contenga al menos una acción.
 
-En el hito final implementamos el módulo ejecutor y los efectores. Cerramos así el ciclo del bucle de adaptación. El ejecutor recibe el plan de adaptación del planificador. A partir de este, deberá distribuir las acciones de adaptación que contiene entre los servicios de efectores.
+\section{Servicio de ejecución y efectores}
 
-Para transmitirle el plan de adaptación del planificador al ejecutor, volvemos a recurrir a las peticiones asíncronas. El plan de adaptación que se le pasa como evento de integración es el que ya mostramos en el fragmento \ref{ls:adaption-change-plan}.
 
-Una vez captura la petición, el ejecutor deberá determinar qué servicios debe cambiar y manipular sus efectores. En nuestra implementación de referencia, simplemente agrupamos las acciones por el nombre del servicio afectado. Publicaremos cada grupo como notificaciones individuales, usando el nombre del servicio como tema.
+En el hito final desarrollamos la ejecución del plan de adaptación. Cerramos así el ciclo del bucle de adaptación. Esto requirió del módulo ejecutor, los ejecutores de la solución y los efectores del recurso manejado (figura \ref{fig:hito-4-ejecutor}).
 
-Los servicios de efectores del recurso manejado las capturarán. Estos servicios procesan las acciones asignadas. Si contienen el efector correspondiente, la ejecutarán. Dependiendo del tipo de acción, el efector hará una acción u otra: desplegar un servicio, o eliminarlo, cambiar la configuración, etc.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale=0.55]{cap_implementacion/images/hito-4-ejecutor}
+  \caption{Componentes desarrollados durante el cuarto hito: Módulo de ejecución, ejecutores y efectores.}
+  \label{fig:hito-4-ejecutor}
+\end{figure}
 
-En cuanto a la comunicación con el sistema, este caso es un tanto especial. El mecanismo dependerá del sistema manejado; de si tenemos control sobre su implementación. Si no es así, tendremos que adaptarnos a aquellos que ofrezca el recurso (HTTP, mensajería...).
+\subsection{Componentes: Servicio de ejecución, ejecutores y efectores}
 
-Continuando con nuestro ejemplo del modo del aire acondicionado, el sistema modificaría la configuración del mismo. Una vez se confime el cambio, si se ha llevado a cabo, se ejecutará actualizará su valor en la base de conocimiento. Dependerá de si el sistema es capaz de hacerlo o debe recaer la responsabilidad en el efector.
+El servicio de ejecución recibe el plan de adaptación del planificador mediante una petición asíncrona. Para ejecutarlo, deberá agrupar las acciones por el servicio afectado y distribuirlas entre los distintos ejecutores de la solución. Para transmitirlas, enviará cada grupo de acciones mediante una notificación. Pueden existir varios ejecutores en una misma solución y no deberíamos acoplarnos a ellos. El evento enviado es muy similar al que ya mostramos en el fragmento \ref{ls:adaption-change-plan}.
+
+Cuando un ejecutor capture esta notificación, procesará las acciones asignadas. Este componente será el encargado de traducir las acciones de adaptación a manipulaciones de efectores del recurso manejado. Dependiendo del tipo de acción, el efector hará una acción u otra: desplegar un servicio, o eliminarlo, cambiar la configuración, etc. Para reducir el alcance del proyecto, sólo implementamos las adaptaciones de tipo \foreign{english}{set parameter}.
+
+En cuanto a la comunicación con el efector, este caso es un tanto especial. El mecanismo dependerá del sistema manejado; de si tenemos control sobre su implementación. Si no es así, tendremos que adaptarnos a aquellos protocolos que ofrezca el recurso (HTTP, mensajería...).
+
+Continuando con el ejemplo del aire acondicionado, el ejecutor recibiría la notificación con las acciones a ejecutar. En este caso, cambiar el modo de funcionamiento a enfriar. Para ello, enviará la acción al efector y se ejecutará. Una vez se confirme el cambio, una sonda lo detectará y notificará a su monitor. Se seguirá el mismo proceso que con las demás mediciones para guardarlo en la base de conocimiento.

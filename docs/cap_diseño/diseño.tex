@@ -1,64 +1,66 @@
 \chapter{Diseño de la solución}
 \label{chap:diseño}
 
-Como comentamos en el capítulo \ref{chap:introduccion}, el objetivo del trabajo es transformar un servicio monolítico en un sistema distribuido basado en microservicios. Se trata de un cambio arquitectónico importante. Queremos por tanto diseñar una estrategia ingenieril para llevar a a cabo la migración; teniendo en cuenta las particularidades del sistema.
+En este capítulo describiremos la estrategia que seguimos para refactorizar el bucle MAPE-K \foreign{english}{Lite}. Como comentamos en la introducción, nuestro objetivo era adaptarlo a entornos \foreign{english}{cloud}. Esto implica transformarlo de un servicio monolítico a un sistema distribuido basado en microservicios. Se trata de un cambio arquitectónico importante. Por ello, queríamos seguir una estrategia ingenieril que tenga en cuenta las particularidades del sistema.
 
-El servicio en cuestión implementa un \textbf{bucle de control MAPE-K}\cite{ibmcorporationArchitecturalBlueprintAutonomic2006,fonsServiciosAdaptivereadyPara2021}, que ya describimos en la sección \ref{sec:bucles-mapek}. Por suerte, partimos de un sistema cuyos componentes presentan una división funcional clara (cada etapa del bucle). Nos facilitará definir las fronteras de nuestros servicios.
+Comenzaremos justificando la elección de este estilo arquitectónico y describiendo los beneficios que esperábamos obtener. A continuación, detallaremos nuestro diseño y explicaremos cómo se dividió la funcionalidad del bucle en microservicios. Después, presentaremos algunos de los mecanismos de comunicación más populares y comentaremos cuáles elegimos para conectar nuestros componentes. Finalmente, presentaremos la estructura final de nuestra arquitectura.
 
-Debido a esto, el foco de este capítulo pasará a los \textbf{conectores de \emph{software}}. Necesitamos establecer qué estrategias de comunicación utilizaremos para comunicar los servicios.
+\section{¿Por qué usar microservicios?}
+\label{sec:por-que-microservicios}
 
-\textcolor{red}{Buscar libros de descomposición de monolitos en microservicios.}
+Una de las decisiones clave que tomamos durante el desarrollo de este trabajo fue elegir el estilo arquitectónico a emplear. Dado que queremos adaptar el bucle de control a entornos en la nube, será imprescindible que esté preparado para ellos. Optamos por las \textbf{arquitecturas basadas en microservicios} porque son uno de los pilares de las aplicaciones \foreign{english}{cloud native}. \cite{gannonCloudNativeApplications2017} Gracias a este estilo, obteníamos una serie de beneficios que consideramos vitales para extender el bucle MAPE-K.
+
+El más evidente fue poder \textbf{independizar la implementación} de los servicios. Si fuera necesario, podríamos emplear tecnologías distintas para cada uno. Distintas plataformas o lenguajes de programación que nos permitan ofrecer la funcionalidad requerida. Incluso podríamos contar con implementaciones alternativas de algunos componentes. Estos podrían ofrecer diferentes estrategias de la misma funcionalidad: distintos planificadores, módulos de análisis, etc.
+
+También vimos muy importante el desarrollar \textbf{servicios \foreign{english}{plug \& play}}. Al añadir o eliminar componentes podríamos cambiar las capacidades de adaptación del sistema en tiempo de ejecución. Sin necesidad de pararlo en ningún momento. Por ejemplo, al desplegar un nuevo conjunto de reglas de adaptación se dotaría al bucle de capacidades para gestionar otros aspectos de los recursos.
+
+Por otro lado, facilitaría \textbf{escalar la capacidad computacional} de cada servicio de forma independiente. Si uno en concreto estuviera recibiendo más peticiones que los demás, podemos limitarnos a desplegar una nueva instancia de este componente. No sería necesario desplegar el bucle completo. Esto nos permitirá aprovechar mejor los recursos disponibles.
+
+Finalmente, nos ayudaría a desacoplar el bucle de los componentes específicos para gestionar una solución autoadaptativa determinada. Así, en un futuro, podríamos aprovechar la misma infraestructura para manejar varias soluciones simultáneamente. Esto se conoce como multicliente o \textbf{\foreign{english}{multi-tennancy}}. Como tiene importantes implicaciones a nivel de seguridad y gestión de los datos de los distintos clientes \cite{aljahdaliMultitenancyCloudComputing2014}, en este trabajo no profundizaremos más allá de separar los componentes.
+
+Optar por un estilo arquitectónico determinado tiene un precio. Conlleva una serie de desventajas que no podremos ignorar. Aun así, se consideró que los beneficios las compensaban. Entre ellas, la más importante es un \textbf{aumento en la complejidad} del sistema. \cite{newmanBuildingMicroservicesDesigning2021} Pasamos de trabajar con un solo servicio monolítico a tener que gestionar varios más pequeños.
+
+A nivel de diseño, esto afectará a la \textbf{comunicación entre servicios}. Como ya no se ejecutan dentro del mismo proceso, deberán comunicarse a través de la red. Más adelante veremos que esta no es infalible. \cite{jausovecFallaciesDistributedSystems2020} Pueden ocurrir retrasos para entregar los mensajes o directamente fallar la conexión. Por tanto, necesitaremos plantear bien cómo y cuándo deberán contactar entre ellos. Lo ideal es que sean lo más independientes posible, ya que cada dependencia es un potencial punto de fallo.
+
+Otros aspectos que se verán afectados serán la \textbf{operación y el despliegue del sistema}. Para su correcto funcionamiento tendremos que monitorizar y gestionar cada una de sus piezas. Como una sola petición puede desencadenar llamadas a otros servicios, requeriremos de soluciones de monitorización y \foreign{english}{logging} más avanzadas. \cite{parkerDistributedTracingPractice2020} Sin una buena solución de \textbf{observabilidad} puede ser muy difícil de depurar los errores o analizar su impacto.
 
 \section{Distribución de los componentes}
 
-El primer paso fue identificar los componentes que compondrían nuestra arquitectura. Por suerte, partíamos de un sistema existente, con una arquitectura bien definida y documentada. Conocíamos el rol de cada uno de sus componentes y sus requisitos. Asi que el primer problema al que nos enfrentamos estaba relacionado con la distribución de los servicios. ¿Cómo definimos las fronteras entre cada uno de ellos? ¿Qué componentes debe abarcar cada microservicio?
+Una vez elegido el estilo arquitectónico, el siguiente paso fue identificar qué servicios compondrían nuestra arquitectura. Por suerte, partíamos de un sistema existente bien documentado. Conocíamos el rol de cada uno de sus elementos y sus requisitos. Nos quedaba entonces determinar cómo agrupar estos elementos en servicios. ¿Cómo definimos las fronteras entre cada uno de ellos? ¿Qué componentes debe abarcar cada microservicio?
 
-En la figura \ref{fig:bucle-mapek2} presentamos otra vista de la arquitectura actual del bucle. Una de las decisiones que tomamos muy temprano en el diseño fue separar cada etapa del bucle en su propio servicio. Esto nos aportaba varios beneficios:
+Para ello nos guiamos por unas pautas para dividir aplicaciones monolíticas. \cite{newmanBuildingMicroservicesDesigning2021} Los servicios que definamos deben presentar \textbf{alta cohesión} en su funcionalidad. Es decir, siempre que sea posible debemos agrupar los componentes relacionados en un mismo servicio. De lo contrario, acabarían muy acoplados entre sí. No serían realmente independientes y necesitarían comunicarse constantemente. En caso de que uno de ellos falle, el resto no podría operar con normalidad.
 
-\begin{figure}[htb]
-  \centering
-  \includegraphics[scale=1.15]{cap_introduccion/images/bucle-mape-k}
-  \caption[Arquitectura de un Bucle MAPE-K. El flujo de información y de control entre las etapas del bucle están representados con flechas.]{Arquitectura de un Bucle MAPE-K. El flujo de información y de control entre las etapas del bucle están representados con flechas. Obtenida de \cite{fonsEspecificacionSistemasAutoadaptativos2021}}
-  \label{fig:bucle-mapek2}
-\end{figure}
+Por este motivo, una de las primeras decisiones que tomamos fue \textbf{separar cada etapa del bucle a su propio servicio}. Entre ellas existe una división funcional bien definida y pueden operar con cierta independencia. Además, como el conocimiento es compartido entre todas las etapas, también tendría su propio microservicio. Esto nos reportaría los beneficios que comentamos en la sección anterior como las implementaciones independientes y la posibilidad de escalar su capacidad de cómputo individualmente.
 
-El más evidente es que nos permitía independizar la implementación de cada etapa. Si fuera necesario, podríamos emplear distintas tecnologías para cada una. Incluso podríamos ofrecer implementaciones alternativas de algunos componentes. Estos podrían ofrecer distintas estrategias de la misma funcionalidad, como podrían ser distintos planificadores. \textcolor{red}{TODO: cita sam newman}
+La siguiente división que consideramos fue \textbf{separar del bucle de control los componentes específicos de las soluciones manejadas}. Se trata de los monitores, reglas y demás elementos que conocen el dominio de la solución. Actualmente se despliegan en el mismo proceso que el bucle. En caso de querer cambiar alguno, tendríamos que redesplegarlo entero. Extrayéndolos a servicios independientes, el bucle se volverá agnóstico a las soluciones manejadas. En tiempo de ejecución podremos añadir o eliminar estos componentes, sin que afecte a su funcionamiento.
 
-Por otro lado, también nos permitirá escalar cada etapa de forma independiente. Si por ejemplo el servicio de análisis estuviera recibiendo más peticiones que las demás, no sería necesario instanciar el bucle completo. En su lugar, podemos limitarnos a desplegar solo una nueva instancia del componente afectado.
-
-\textcolor{red}{Detectamos otra posible división de funcionalidad:} actualmente, el bucle está muy acoplado al dominio de sus recursos manejados. Todo corre bajo el mismo proceso: el bucle, los monitores, sus reglas de adaptación y demás elementos específicos de la solución. Ese proceso solo podrá manejar aquellos sistemas cuyos módulos tenga cargados.
-
-Decidimos entonces desacoplarlos. Separar cada etapa del bucle MAPE-K de los elementos específicos de cada solución. Así, tendremos cada etapa como un microservicio agnóstico a una solución concreta; y por otro lado, estarán los servicios específicos para cada solución, con conocimiento del dominio del recurso manejado: monitores, reglas de adaptación, efectores\dots
-
-Podremos entonces aprovechar la misma infraestructura para manejar varios sistemas simultáneamente (\emph{multi-tennancy}). \textcolor{red}{ampliar + cita}
-
-En cuanto al despliegue, mantendremos el bucle a nivel de sistema, \cite{mendoncaGeneralityVsReusability2018} como funcionaba hasta ahora. Esto significa que se desplegará conjuntamente con los microservicios del recurso manejado. En la figura \ref{fig:mape-k-microservices} mostramos los microservicios que componen nuestra arquitectura.
+En la figura \ref{fig:mape-k-microservices} mostramos la arquitectura resultante de estas divisiones de funcionalidad. \textbf{Cada elemento es un tipo distinto de microservicio}. Las sondas y los efectores son un caso especial. Podrán desarrollarse como microservicios o como elementos empotrados en el recurso manejado. Dependerá de si tenemos control o no sobre la implementación del recurso.
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.25]{cap_diseño/images/mape-k-microservices}
-  \caption{Diagrama con los componentes que forman nuestra arquitectura distribuida}
+  \includegraphics[scale=0.5]{cap_diseño/images/componentes-segunda-division}
+  \caption{Diagrama con los microservicios que conforman nuestra arquitectura distribuida.}
   \label{fig:mape-k-microservices}
 \end{figure}
 
-\textcolor{red}{Figura \ref{fig:mape-k-microservices}: Borrar los servicios específicos de planificador y ejecutor. Agrupar los servicios para poder aumentar zoom y hacerlo más legible. Añadir línea de divisón entre la capa del bucle y el dominio del recurso manejado.}
-
 \section{Conectando los servicios}
 
-El siguiente problema al que nos enfrentamos está relacionado con la comunicación: si dividimos estos componentes en microservicios, ¿cómo deberían comunicarse? Hay que tener en cuenta que estos pueden estar desplegados y replicados en distintas máquinas. No podemos asumir que están en el mismo \foreign{english}{host}.
+El siguiente problema al que nos enfrentamos está relacionado con la comunicación. Si dividimos estos componentes en microservicios, ¿cómo deberían comunicarse? Hay que tener en cuenta que estos pueden estar desplegados y replicados en distintas máquinas. No podemos asumir que están en el mismo \foreign{english}{host}.
 
-Aprovechando la separación entre bucle de control y el dominio del recurso, investigamos arquitecturas existentes. Nos decantamos por \textbf{arquitecturas de servicios jerarquizados}. Queríamos explotar esta separación para mantener al bucle aislado del dominio de la solución. Dimos con el estilo arquitectónico C2 (\emph {components and connectors})\cite{taylorComponentMessagebasedArchitectural1996a, UCISoftwareArchitecture}, en el que nos hemos inspirado.
+Para elegir los mecanismos de comunicación, investigamos algunos de los estilos arquitectónicos existentes. Finalmente, nos decantamos por las \textbf{arquitecturas de servicios jerarquizados}. Estas nos permitían explotar la separación entre el bucle de control y los recursos manejados. En concreto, nos inspiramos en el estilo arquitectónico C2 (\emph {components and connectors})\cite{taylorComponentMessagebasedArchitectural1996a, UCISoftwareArchitecture}.
 
 \subsection{Jerarquías de microservicios: Arquitectura C2 y arquitectura limpia}
 
-Este estilo organiza sus componentes en jerarquías o capas: cada servicio se encuentra en un nivel determinado, según su nivel de abstracción respecto al entorno de ejecución. En las capas inferiores, se encuentran los servicios más externos, más ''acoplados''. Por ejemplo, aquellos servicios que requieran de acceder al sistema de ficheros, estarían en esta capa. Por otro lado, en las capas superiores se encuentran los servicios en niveles de abstracción superior, que dependen lo mínimo. \textcolor{red}{Buscar ejemplo representativo}
+Este estilo organiza sus elementos en jerarquías o capas. Un componente se ubicará en un nivel determinado en base a su nivel de abstracción respecto al entorno de ejecución. En las capas inferiores se encuentran aquellos más externos, los más ''acoplados al mundo real''. Por ejemplo, las interfaces de usuario estarían en esta capa. Por otro lado, en las capas superiores se encuentran los servicios con mayor abstracción. Este sería el caso de las reglas de negocio de un programa. No hay ninguna restricción en cuanto al número de capas, podemos contar con cuantas sea necesario.
 
-En cuanto a la comunicación, un componente solo debe contactar con sus vecinos inmediatos (en una capa superior o inferior). Esto evita que el servicio pueda contactar con otras capas, limitando su alcance y su conocimiento sobre el resto del sistema. Además, dentro de un mismo nivel no pueden contactar entre ellos. Según la dirección de la comunicación, se emplean mecanismos distintos (figura \ref{fig:C2-arch-example}):
+\pagebreak
+
+En cuanto a la comunicación, un componente solo puede contactar con sus vecinos inmediatos (en una capa superior o inferior). Limitando su contacto con otras capas limitamos su alcance y su conocimiento sobre el resto del sistema. Así evitamos que se acople al resto de componentes más de lo necesario. Además, dentro de un mismo nivel no pueden contactar entre ellos. Según la dirección de la comunicación, se emplean mecanismos distintos (figura \ref{fig:C2-arch-example}):
 
 \begin{itemize}
-  \item \textbf{Peticiones} (\emph{requests}): Se trata de solicitudes a un servicio concreto para que ejecute una acción. Un componente se comunica directamente con un vecino en una capa superior. La petición viaja de ''abajo a arriba'' en cuanto al nivel de abstracción. Por ejemplo, una petición de un cliente a un servicio web podría estar en esta categoría.
+  \item \textbf{Peticiones} (\emph{requests}): Se trata de solicitudes a un servicio concreto para que ejecute una acción. Un componente se comunica con un vecino en una capa superior. La petición viaja de ''abajo a arriba'' en cuanto al nivel de abstracción. Por ejemplo, una petición de un usuario a la interfaz gráfica entraría en esta categoría.
 
-  \item \textbf{Notificaciones}: Un componente de más arriba en la jerarquía (más interno) envía un mensaje hacia abajo, sin especificar un receptor. Todos los servicios que estén por debajo lo recibirán y decidirán si tratarlo o no. Esto evita que nuestro servicio se acople a aquellos más concretos. Se puede emplear para comunicar eventos de interés al resto de servicios. Un ejemplo sería notificar al resto de servicios sobre la creación de un nuevo usuario.
+  \item \textbf{Notificaciones}: Un componente envía un mensaje hacia abajo en la jerarquía, sin especificar un receptor. Todos los servicios que estén por debajo lo recibirán y decidirán si tratarlo o no. Esto evita que nuestro componente se acople a ellos. Se puede emplear para comunicar eventos que puedan ser de interés al resto. Un ejemplo sería notificar al resto de servicios sobre la creación de un nuevo usuario.
 \end{itemize}
 
 \begin{figure}[htb]
@@ -68,82 +70,86 @@ En cuanto a la comunicación, un componente solo debe contactar con sus vecinos 
   \label{fig:C2-arch-example}
 \end{figure}
 
-Basándonos en este estilo, definimos las capas de nuestro sistema. Esto nos permitió organizar los microservicios en jerarquías, lo que nos ayudaría a definir las reglas de nuestra arquitectura. Distinguimos cuatro niveles, de menor a mayor nivel de abstracción:
+Basándonos en este estilo definimos las capas de nuestro sistema. Esto nos permitió organizar los microservicios en jerarquías, lo que nos ayudaría a definir las reglas de nuestra arquitectura. Distinguimos cuatro niveles, de menor a mayor nivel de abstracción:
 
 \begin{itemize}
-  \item \textbf{Nivel del recurso manejado}: En este nivel se encuentra el recurso manejado. Este implementa las sondas y efectores, los elementos que nos permiten interactuar con él. Hacen de intermediarios entre este y el resto del bucle, para reducir su acoplamiento.
+  \item \textbf{Nivel del recurso manejado}: En este nivel se encuentra el recurso manejado. También se encuentran los elementos que nos permiten interactuar con él: las sondas y efectores. Hacen de intermediarios entre el recurso y el resto del bucle.
 
-  \item \textbf{Nivel de solución}: En esta capa se encuentran componentes del bucle específicos para una solución concreta: monitores, reglas de adaptación, etc. No los incluimos en el mismo nivel que las sondas y efectores porque están a un nivel de abstracción distinto. Estos elementos guardan dependencia con el propio bucle de control.
+  \item \textbf{Nivel de solución}: En esta capa se encuentran los componentes del bucle específicos para una solución autoadaptativa: monitores, reglas de adaptación, etc. No los incluimos en el mismo nivel que las sondas y efectores porque deben comunicarse con ellas. Estos elementos mantienen una dependencia con el propio bucle de control.
 
-  \item \textbf{Nivel del bucle}: Aquí se encuentran los servicios de las etapas del bucle: servicio de monitorización, análisis, planificación y ejecución. Esta capa es agnóstica al dominio de los recursos manejados. Además, actúa como intermediario entre los servicios de la solución y el conocimiento. Limitan cómo se accede a él.
+  \item \textbf{Nivel del bucle}: Aquí se encuentran los servicios de las etapas del bucle: monitorización, análisis, planificación y ejecución. Esta capa es agnóstica al dominio de los recursos manejados. Además, actúa como intermediario entre los servicios de la solución y el conocimiento, limitando su acceso. Por ejemplo, ningún servicio salvo los monitores deberían poder modificarlo.
 
-  \item \textbf{Conocimiento}: Es la capa más interna y la base de la arquitectura. No depende de ningún otro componente, por lo que tiene el mayor nivel de abstracción. Todos los componentes del nivel del bucle dependen de ella para funcionar.
+  \item \textbf{Conocimiento}: Es la capa más interna y la base de nuestra arquitectura. No depende de ningún otro componente, por lo que tiene el mayor nivel de abstracción. Todos los componentes del nivel del bucle dependen de ella para funcionar.
 
 \end{itemize}
 
-Habiendo definido esta jerarquía, vimos ciertas similitudes con arquitecturas \foreign{english}{domain driven}, como \foreign{english}{Clean Architecture}. \cite{martinChapter22Clean2018} En ella, el sistema se organiza en base a una \textbf{regla de dependencia}: \emph{''la dependencia entre los componentes solo puede apuntar hacia dentro, hacia políticas de alto nivel''}. Es decir, la arquitectura se organiza en \textbf{capas concéntricas}. En el centro se encuentra el dominio, con el mayor nivel de abstracción. Este no tiene dependencias con ninguna capa exterior. Por otro lado, cada capa más externa tiene dependencias sólo con la capa a la que envuelve. Sólo puede comunicarse con componentes dentro de esta.
+Habiendo definido esta jerarquía, vimos ciertas similitudes con arquitecturas \foreign{english}{domain driven}, como \foreign{english}{Clean Architecture}. \cite{martinChapter22Clean2018a} En ella, el sistema se organiza en base a una \textbf{regla de dependencia}: <<\emph{la dependencia entre los componentes solo puede apuntar hacia dentro, hacia políticas de alto nivel}>>. Es decir, la arquitectura se organiza en \textbf{capas concéntricas}. En el centro se encuentra el dominio, con el mayor nivel de abstracción. Este no tiene dependencias con ninguna capa exterior. Por otro lado, cada capa más externa requiere de componentes de la capa a la que envuelve.
 
-Basándonos en la descripción anterior, nuestra capa central será la del conocimiento. A partir de ahí, cada nivel superior dependería de aquella a la que ''envuelve'': el bucle al conocimiento, la solución al bucle\dots Por tanto, para facilitar su comprensión, optamos por representarla usando los diagramas de \emph{Clean Architecture}. En la figura \ref{fig:clean-mapek-architecture} mostramos el resultado. Las flechas negras representan las peticiones, y las moradas, las notificaciones.
+Basándonos en la descripción anterior, optamos por representar nuestra arquitectura como \foreign{english}{knowledge driven}. \cite{taylorSoftwareArchitectureFoundations2009} Nuestra capa central será la del conocimiento (amarilla). A partir de ahí, cada nivel superior dependería de aquella a la que envuelve: el bucle al conocimiento (rojo), la solución al bucle (verde), y la del recurso manejado a la solución (azul). En la figura \ref{fig:clean-mapek-architecture} mostramos el resultado. Las flechas negras representan las peticiones; y las moradas, las notificaciones.
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.45]{cap_diseño/images/clean-arch-2-MAPEK-style-small}
+  \includegraphics[scale=0.45]{cap_diseño/images/jerarquia-componentes}
   \caption[Representación de nuestra propuesta arquitectónica. Inspirado en Arquitectura Limpia (\emph{Clean Architecture}).]{Representación de nuestra propuesta arquitectónica. Inspirado en Arquitectura Limpia (\emph{Clean Architecture}). \footnotemark }
   \label{fig:clean-mapek-architecture}
 \end{figure}
 
-\footnotetext{Imagen original de arquitectura limpia obtenida de: \url{https://threedots.tech/post/ddd-cqrs-clean-architecture-combined/}}
+\footnotetext{Basada en imagen de arquitectura limpia obtenida de: \url{https://threedots.tech/post/ddd-cqrs-clean-architecture-combined/}}
 
 \subsection{Definiendo los mecanismos de comunicación}
 
-Como comentamos antes, nos inspiramos en los mecanismos de comunicación descritos por C2: las peticiones y notificaciones. Pero, durante nuestra etapa de prototipado, nos dimos cuenta que estos no cubren todas nuestras necesidades. Hay dos casos que no están contemplados: la comunicación del módulo de análisis con el planificador, y la del planificador con el ejecutor. Ambos módulos se encuentran en la misma capa. Y, como dependen del conocimiento para funcionar, no podíamos moverlos a una capa superior para emplear las notificaciones.
+Como comentamos antes, nos inspiramos en los mecanismos de comunicación descritos por C2: las peticiones y notificaciones. Pero, durante nuestra etapa de prototipado, nos dimos cuenta de que estos no cubren todas nuestras necesidades. Hay dos casos que no están contemplados: la comunicación del módulo de análisis con el planificador, y la del planificador con el ejecutor. El problema estaba en que ambos componentes se encuentran en la misma capa. Como dependen del conocimiento para funcionar, no podíamos moverlos a una superior para emplear las notificaciones.
 
-Requeríamos por tanto de un tercer patrón de comunicación. Detectamos que este conector debería ser dirigido: los mensajes van dirigidos a un componente determinado. Además, como los elementos están en el mismo nivel, no queremos que se acoplen entre ellos. Surgió entonces la idea de utilizar las peticiones asíncronas, una combinación de los dos patrones existentes. A continuación lo presentamos junto al resto de patrones de comunicaciones que empleamos:
+Requeríamos entonces de un tercer patrón de comunicación. Detectamos que este debería de ser dirigido: los mensajes van destinados a un tipo de componente específico. Y, como los elementos están en el mismo nivel, no queremos que se acoplen entre ellos. Surgió entonces la idea de utilizar las peticiones asíncronas, una combinación de los dos patrones existentes. Lo presentamos a continuación junto al resto de patrones de comunicaciones que empleamos:
 
 \begin{itemize}
   \item \textbf{Peticiones síncronas}: Comunicaciones síncronas dirigidas a un servicio determinado. Un servicio contacta con otro con una petición o comando, y espera al resultado. Sólo están permitidas desde servicios de una capa más externa a un servicio en la capa interior adyacente.
 
   \item \textbf{Notificaciones}: Comunicaciones asíncronas no dirigidas. El servicio publica un evento que potencialmente recibirán todos los servicios en la capa externa adyacente. El cliente lo envía y continua su ejecución, sin esperar una respuesta.
 
-  \item \textbf{Peticiones asíncronas}: Comunicaciones asíncronas dirigidas a un servicio determinado. Ideal para solicitar peticiones de trabajo asíncronas: se envían y el destinatario lo procesará cuando pueda. El cliente continuará su ejecución, sin esperar respuesta.
-
-  Este mecanismo de comunicación solo está permitido entre elementos del mismo nivel. Para evitar el acoplamiento entre los componentes, deberemos buscar un conector que permita enviar el mensaje sin conocer específicamente al destinatario.
+  \item \textbf{Peticiones asíncronas}: Comunicaciones asíncronas dirigidas a un servicio determinado. Ideal para solicitar peticiones de trabajo asíncronas: se envían y el destinatario lo procesará cuando pueda. El cliente continuará su ejecución, sin esperar respuesta. Este mecanismo de comunicación solo está permitido entre elementos del mismo nivel.
 
 \end{itemize}
 
 \subsection{Conectores}
 
-Una vez determinadas las necesidades de comunicación de nuestro sistema, debemos buscar los conectores adecuados. Seguimos la estrategia descrita en \cite{taylorSoftwareArchitectureFoundations2009} para elegir conectores; y nos basamos en los patrones de comunicación en sistemas distribuidos descritos en \cite{newmanBuildingMicroservicesDesigning2021}.
+Una vez determinados los mecanismos de comunicación, comenzamos la búsqueda de los conectores para implementarlos. Seguimos entonces la estrategia descrita en \cite{taylorSoftwareArchitectureFoundations2009}. Esta consiste en investigar las necesidades de comunicación entre componentes y, a partir de sus requisitos, determinar el \textbf{tipo de conector adecuado}. Sabiendo que hemos optado por una arquitectura distribuida, la elección se simplifica: los servicios pueden estar desplegados en máquinas distintas, por lo que el paso de mensajes será a través de la red.
 
-La estrategia consiste en centrarse en las comunicaciones entre cada par de componentes, y a partir de sus requisitos, determinar el tipo de conector adecuado. Sabiendo que hemos optado por una arquitectura distribuida, la elección de los \textbf{tipos de conectores} se simplifica: los servicios pueden estar desplegados en máquinas distintas, por tanto el paso de mensajes será a través de la red.
+Debido a esto, no recurrimos a la taxonomía que lista \cite{mehtaTaxonomySoftwareConnectors2000}. En su lugar optamos por consultar las estrategias de comunicación habituales para sistemas distribuidos descritas en \cite{newmanBuildingMicroservicesDesigning2021}. Se trata de cuatro mecanismos distintos: Invocación a métodos remotos (\foreign{english}{Remote Procedure Call}), APIs REST, consultas con GraphQL o \foreign{english}{brokers} de mensajería.
 
-Por ello, en lugar de recurrir a la taxonomía que lista \cite{mehtaTaxonomySoftwareConnectors2000}, optamos por consultar las estrategias de comunicación habituales para sistemas distribuidos descritas en \cite{newmanBuildingMicroservicesDesigning2021}. Se trata de cuatro mecanismos distintos: Invocación a métodos remotos (\foreign{english}{Remote Procedure Call}), APIs REST, consultas con GraphQL o \foreign{english}{brokers} de mensajería. Tuvimos que evaluarlos mediante un análisis de \foreign{english}{trade-offs} para determinar las ventajas y desventajas de cada uno.
+Todas estas tecnologías siguen el principio de \textbf{\foreign{english}{smart endpoints and dumb pipes}} (servicios inteligentes y conductos tontos) \cite{lewisMicroservices14}. Se trata de mecanismos de comunicación ligeros, como HTTP, sin mucha lógica asociada para regularla. Se limitan a ser simples conductos que transmiten los mensajes entre servicios. En su lugar, será el emisor será el responsable de gestionarla. Por ejemplo, implementando políticas de reintento o gestionando el enrutamiento de mensajes.
 
-\textcolor{red}{Hablar de smart endpoints, dumb pipes: \url{https://simplicable.com/new/smart-endpoints-and-dumb-pipes}}
+Para elegir los conectores evaluamos las tecnologías mediante un análisis de \foreign{english}{trade-offs}. A continuación, detallamos las ventajas y desventajas que detectamos de cada uno.
 
 \subsubsection{Tipos de conectores}
 
-\textbf{Invocación de métodos remotos} o (\foreign{english}{\textbf{Remote Procedure Call}}): Este patrón se basa en el estilo cliente-servidor. Un servidor expone una serie de funciones que el cliente puede invocar mediante peticiones a través de la red. Estas peticiones incluyen el nombre de la función a ejecutar y sus parámetros. Al finalizar la ejecución, el servidor puede devolver un resultado, si lo hubiera. Existen varios protocolos que implementan este mecanismo como gRPC o SOAP.
+\textbf{Invocación de métodos remotos} o (\foreign{english}{\textbf{Remote Procedure Call}}): Este patrón se basa en el estilo cliente-servidor. Un servidor expone una serie de funciones que el cliente puede invocar mediante peticiones a través de la red. \cite{newmanBuildingMicroservicesDesigning2021} Estas peticiones incluyen el nombre de la función a ejecutar y sus parámetros. Al finalizar la ejecución, el servidor puede devolver un resultado, si lo hubiera. Existen varios protocolos que implementan este mecanismo como gRPC o SOAP.
 
-En la programación orientada a objetos suele emplearse una evolución de RPC: el paradigma de \textbf{objetos distribuidos}. \cite{tanenbaumChapter10Distributed2007} En este caso, el programa cliente puede interactuar con objetos que se encuentran en servidores remotos como si fueran locales. Esta interacción se realiza a través de objetos que actúan como \foreign{english}{proxies}, abstrayendo de la llamada al servidor.
+En la programación orientada a objetos suele emplearse una evolución de RPC: el paradigma de \textbf{objetos distribuidos}. \cite{tanenbaumChapter10Distributed2007} Este permite al programa cliente interactuar con objetos que se encuentran en servidores remotos como si se encontraran localmente. Se implementa mediante objetos que actúan como \foreign{english}{proxies}, abstrayendo al cliente de la llamada al servidor.
 
-Los \foreign{english}{proxies} ofrecen una interfaz para que el cliente invoque sus métodos localmente. Por debajo, estos métodos realizan una llamada al servicio remoto donde se encuentra realmente. El servidor remoto procesa la petición y nos devolverá un resultado. En la figura \ref{fig:rpc-distributedobjects} tenemos un esquema de este mecanismo.
+Los \foreign{english}{proxies} ofrecen una interfaz para que el cliente invoque sus métodos localmente. Por debajo, estos realizan una llamada al servicio remoto donde se encuentra realmente. El servidor remoto procesa la petición y nos devolverá un resultado. En la figura \ref{fig:rpc-distributedobjects} incluimos un diagrama de este mecanismo.
 
 Los \foreign{english}{proxies} o (\foreign{english}{stubs} en la terminología de RPC) suelen generarse a partir de un contrato que define qué operaciones ofrecen los objetos. Por ejemplo: SOAP con WDSL, gRPC; o en el caso de objetos distribuidos, Java RMI.
 
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=1.5]{cap_diseño/images/rpc-distributedobjects}
-  \caption[Funcionamiento del sistema de objetos distribuidos.]{Funcionamiento del sistema de objetos distribuidos. Obtenido de \cite{tanenbaumChapter10Distributed2007}}
+  \caption[Funcionamiento del sistema de objetos distribuidos.]{Funcionamiento del sistema de objetos distribuidos. Obtenido de \cite{tanenbaumChapter10Distributed2007}.}
   \label{fig:rpc-distributedobjects}
 \end{figure}
 
 \begin{itemize}
   \item \textbf{Ventajas}:
   \begin{itemize}
+    \item El servidor puede ofrecer todo tipo de operaciones a sus clientes. No estamos limitados por un estándar.
+
     \item Permite distribuir la carga de procesamiento del sistema. Esto puede ayudar para escalar la aplicación.
 
-    \item Abstrae al cliente de la interacción con un servidor remoto. Le resulta prácticamente indistinguible de un objeto local. Esto facilita la implementación.
+    \item \textbf{Comunicación síncrona}: Es un mecanismo ideal para comunicaciones síncronas. En ellas, el cliente requiere la respuesta del servicio para poder continuar con su procesamiento.
+
+    \item \textbf{Comunicación asíncrona}: Si el cliente no requiere de una respuesta del servidor, puede enviar el mensaje y continuar con su ejecución. Esta estrategia es conocida como \foreign{english}{fire and forget} (disparar y olvidar).
+
+    \item (\emph{Objetos distribuidos}) Se abstrae al cliente de la interacción con un servidor remoto. Esto facilita su implementación. Al estar tipado, es más sencillo construir las peticiones.
 
   \end{itemize}
 
@@ -151,19 +157,21 @@ Los \foreign{english}{proxies} o (\foreign{english}{stubs} en la terminología d
   \begin{itemize}
     \item \textbf{Dirigida}: Necesitamos conocer de antemano la ubicación del servidor al que queremos hacer una petición.
 
-    \item Dificulta la integración con otras aplicaciones. Cada servicio ofrece sus propias funciones. No están estandarizadas.
+    \item Dificulta la integración con otras aplicaciones. Cada servicio ofrecerá sus propias funciones. No están estandarizadas.
 
-    \item El cliente debe actualizarse y recompilarse con cada cambio en el esquema del servidor. Esto puede ser problemático para casos donde tenemos que desplegar una actualización para que nuestros clientes puedan continuar utilizando la aplicación.
+    \item (\emph{Objetos distribuidos}) Tendremos que actualizar el cliente con cada cambio en el esquema del servidor.
 
-    \item Respecto a los objetos distribuidos, no se puede abstraer completamente al cliente de las llamadas a través de la red. Pueden darse errores que no ocurrirían durante una invocación de un método sobre un objeto local. Por ejemplo, que el servidor no esté disponible. \cite{jausovecFallaciesDistributedSystems2020}
+    \item (\emph{Objetos distribuidos}) No se puede abstraer completamente al cliente de las llamadas a través de la red. Pueden darse errores que no ocurrirían durante una invocación de un método sobre un objeto local. Por ejemplo, que el servidor no esté disponible. \cite{jausovecFallaciesDistributedSystems2020}
 
-    \item \textcolor{red}{Si adoptamos sistemas como Java RMI, nuestro sistema se acopla a esa tecnología concreta. \cite{newmanBuildingMicroservicesDesigning2021}. Nos quita flexibilidad en cuanto a qué otras tecnologías podemos emplear en nuestra arquitectura.} ¿A Java o a Java RMI?
+    \item (\emph{Objetos distribuidos}) Sistemas como Java RMI son específicos para una plataforma concreta. n este caso, Java. Perderemos flexibilidad en cuanto a qué otras tecnologías podemos emplear en nuestra arquitectura. \cite{newmanBuildingMicroservicesDesigning2021}
   \end{itemize}
 \end{itemize}
 
-\textbf{\emph{Representational State Transfer} (REST)}: Se basa también en RPC, pero con ciertas restricciones adicionales. \cite{taylorSoftwareArchitectureFoundations2009} Su concepto principal son los \textbf{recursos}: cualquier elemento sobre el que el servicio pueda ofrecernos información; y que pueda tener asociado un identificador único (una URI). \cite{richardsonRESTfulWebServices2007} Por ejemplo, las entidades del dominio que gestiona nuestro servicio podrían ser recursos: usuarios, mediciones de temperaturas\dots
+\textbf{\emph{Representational State Transfer} (REST)}: Este mecanismo está basado en RPC, pero con ciertas restricciones adicionales. \cite{taylorSoftwareArchitectureFoundations2009} Sigue también el modelo cliente-servidor. Su concepto principal son los \textbf{recursos}: cualquier elemento sobre el que el servicio pueda ofrecernos información. Estos deben tener asociados un identificador único (una URI). \cite{richardsonRESTfulWebServices2007} Ejemplos de recursos podrían ser las entidades del dominio que gestiona nuestro servicio: usuarios, publicaciones\dots
 
-Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \dots) las define el protocolo de comunicación sobre el que se implemente. Gracias a esto, la interfaz que pueden exponer los servicios REST es común. Solo cambia el ``esquema de los datos``, los tipos de recursos que sirven a los clientes. Esto facilita enormemente la integración con otros servicios. \cite{nallyRESTVsRPC2018} La implementación más habitual es sobre el protocolo HTTP. Este define métodos estandarizados como \emph{GET} para las lecturas, \emph{PUT} para las actualizaciones, etc.
+Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \dots) las define el protocolo de comunicación sobre el que se implemente. Gracias a esto, la interfaz que ofrecen es \textbf{uniforme}. Solo cambia el ``esquema de los datos``, los tipos de recursos que sirven a los clientes. Esto facilita enormemente la integración con otros servicios. \cite{nallyRESTVsRPC2018} La implementación más habitual es sobre el protocolo HTTP (\foreign{english}{Hypertext Transfer Protocol}). Este define métodos estandarizados como \texttt{GET} para las lecturas, \texttt{PUT} para las actualizaciones, etc.
+
+Otra de las pautas que dicta el estilo es que el servidor no puede mantener el estado de las sesiones de la aplicación (deben ser \textbf{\foreign{english}{stateless}}). Esto significa que cada petición debe poder procesarse de forma independiente. Esto permitirá por un lado que el servidor sea más eficiente, ya que no necesita recordar todos los datos de las sesiones en curso. Por otro lado, si nuestro servicio está replicado, cualquier instancia podrá atender la petición.
 
 \begin{itemize}
   \item \textbf{Ventajas}:
@@ -171,13 +179,11 @@ Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \
   \begin{itemize}
     \item \textbf{\foreign{english}{Stateless}}: El servidor no mantiene el estado de la sesión del cliente. Esto permite que cada petición sea independiente de las demás.
 
-    \item \textbf{Escalable}: Como las sesiones deben ser \foreign{english}{stateless}, podremos replicar nuestro servicio y que distintas instancias puedan atender las peticiones que surjan durante una misma sesión.
+    \item \textbf{Escalable}: Como las sesiones deben ser \foreign{english}{stateless}, podremos replicar nuestro servicio. Las distintas instancias puedan atender las peticiones que surjan durante una misma sesión.
 
-    \item \textbf{API Sencilla}: Los métodos que exponen estos servicios están estandarizados y son sencillos. Un servidor solo debe implementar unos pocos métodos estándar que consumirán los clientes.
+    \item \textbf{API Uniforme}: Los métodos que exponen estos servicios están estandarizados y son sencillos. Un servidor solo debe implementar unos pocos métodos estándar que consumirán los clientes. Esto mejora significativamente la \textbf{interoperabilidad}.
 
-    \item \textbf{Interoperabilidad}: Ampliamente utilizado en servicios de Internet. Es ideal para que clientes externos contacten con nuestro sistema mediante peticiones síncronas. \cite{newmanBuildingMicroservicesDesigning2021}
-
-    \item \textbf{Comunicación síncrona}: Es el mecanismo ideal para comunicaciones síncronas. En ellas, el cliente requiere la respuesta del servicio para poder continuar con su procesamiento. Aunque también podemos dar soporte a comunicaciones \foreign{english}{fire and forget}: el cliente envía un mensaje y no espera ninguna respuesta a su petición.
+    \item \textbf{Comunicación síncrona}: Es un mecanismo ideal para el patrón \foreign{english}{request-response}. En ellas, el cliente requiere la respuesta del servicio para poder continuar con su procesamiento.
 
     \item \textbf{Generación de clientes}: De forma similar a RPC, podemos generar clientes para facilitar la comunicación con APIs REST. Lo explicaremos con más detalle en la sección \ref{chap:OpenAPI} cuando hablemos de OpenAPI.
   \end{itemize}
@@ -189,67 +195,70 @@ Las acciones que podemos ejecutar sobre los recursos (leer, crear, actualizar, \
 
     \item \textbf{Rendimiento}: El rendimiento es peor comparado con mecanismos RPC binarios. El tamaño de un mensaje HTTP serializado en XML o JSON es mayor que si estuviera en un formato binario.
 
-    \item \textbf{API Sencilla}: También es una desventaja. Hay operaciones complejas que pueden ser difíciles de representar con los métodos ofrecidos por el protocolo de comunicación. Pueden requerir más tiempo de diseño, o incluso, ser implementados como métodos RPC (que no siguen REST).
+    \item \textbf{API Uniforme}: Hay operaciones complejas que pueden ser difíciles de representar con los métodos ofrecidos por el protocolo de comunicación. Pueden requerir más tiempo de diseño, o incluso, ser implementados como métodos RPC (que no siguen el estilo REST).
   \end{itemize}
 \end{itemize}
 
-\textbf{GraphQL}\footnote{Página oficial: \url{https://graphql.org/}} \textcolor{red}{AMPLIAR}: Se trata de un protocolo para consultas de datos. Permite a los clientes ejecutar consultas personalizadas sobre los datos de un servidor. No se requiere de lógica específica para ejecutarla. De esta forma, el cliente puede obtener toda la información que necesita. Así se puede reducir el número de peticiones ejecutadas. También evita traerse datos innecesarios.
+\textbf{GraphQL}\footnote{Página oficial: \url{https://graphql.org/}}: Es protocolo de consultas para APIs. Sigue también el estilo cliente - servidor. El servidor expone un \foreign{english}{endpoint} que permite consultar los datos de la aplicación en forma de \textbf{grafo}. Cada \textbf{nodo} tiene asociado un \textbf{esquema de datos}. Este describe sus propiedades y relaciones con otros. Partiendo de un esquema determinado, podemos realizar consultas que naveguen este grafo. También permite el uso de filtros.
+
+Dota de enorme \textbf{flexibilidad} a los clientes. Con una sola consulta son capaces de recuperar toda la información que consideren relevante. Se evita el \textbf{\foreign{english}{over-fetching}}, recuperar datos irrelevantes. \cite{porcelloLearningGraphQLDeclarative2021} Esto ha provocado que empiece a ganar popularidad frente al estilo REST para realizar consultas complejas. \cite{britoRESTVsGraphQL2020} En REST, estamos limitados a los esquemas de datos de las vistas que ofrezca un recurso. No podemos modificarlos mediante consultas. Incluso, es posible que requiramos de varias llamadas distintas a la API para construir la misma respuesta que en GraphQL.
 
 \begin{itemize}
   \item \textbf{Ventajas}:
 
   \begin{itemize}
-    \item \textbf{Ideal para móviles}: Gracias a que reduce la cantidad de llamadas, es ideal para entornos donde queremos optimizar el uso de red.
+    \item \textbf{Consultas más expresivas}: Nos permite definir consultas tan complejas como necesitemos.
 
-    \item \textbf{Rendimiento}: Ofrece un mayor rendimiento comparado con otras alternativas que no ofrezcan un endpoint ya implementado. Y debamos obtener la misma información por composición, haciendo varias llamadas.
+    \item \textbf{Rendimiento}: Es ideal para entornos donde queremos optimizar el uso de red. Esto es gracias a que se reduce la cantidad de llamadas a la API y podemos obtener solo la información relevante.
+
+    \begin{itemize}
+      \item Esto lo hace \textbf{ideal para móviles}.
+    \end{itemize}
+
   \end{itemize}
 
   \item \textbf{Desventajas}:
 
   \begin{itemize}
-    \item \textbf{Solo permite lecturas}: Es un lenguaje de consultas. No tiene comandos que permita escrituras.
+    \item \textbf{Solo permite lecturas}: Es un lenguaje de consultas. No tiene comandos que permitan escrituras.
 
-    \item \textbf{Exponemos datos a la red}: \textcolor{red}{Se expone todos los datos a la red. Toda la información estará accesible para los clientes con permisos para acceder al EP.}
-
-    \item \textbf{Problemas de rendimiento}: El cliente puede hacer consultas muy pesadas que penalicen el rendimiento de la base de datos sobre la que opera nuestro servicio.
+    \item \textbf{Problemas de rendimiento}: Los clientes pueden hacer consultas muy pesadas que penalicen el rendimiento de la base de datos sobre la que opera nuestro servicio.
   \end{itemize}
 \end{itemize}
 
-\textbf{\foreign{english}{Brokers} de mensajería}: Es un mecanismo de \textbf{comunicación asíncrona} muy popular. Sobre todo en arquitecturas basadas en eventos. Contamos con un servicio, el \foreign{english}{broker}, que actúa como intermediario. Gestiona la comunicación entre los servicios del sistema. \cite{newmanBuildingMicroservicesDesigning2021} Existen varias estrategias de comunicación posibles: colas de trabajo, \foreign{english}{publish-suscribe}, híbrida\dots
+\textbf{\foreign{english}{Brokers} de mensajería}: Es un mecanismo de \textbf{comunicación asíncrona} muy popular. En él, contamos con un servicio que actúa como intermediario de la comunicación, el \textbf{\foreign{english}{broker}}. \cite{newmanBuildingMicroservicesDesigning2021} Este nos permite \textbf{desacoplar} a los participantes. \cite{korabUnderstandingMessageBrokers2017} El emisor de un mensaje no necesita conocer detalles de los destinatarios: su dirección, el número de instancias, si están activos en este momento, etc. Sólo necesita conocer el formato del mensaje, las colas o temas asociados; y enviárselo al \foreign{english}{broker}. Este se encargará de enrutarlo.
 
-Tomemos por ejemplo las \textbf{colas de trabajo}. \cite{royChapterMessagePatterns2017} Es una estrategia para implementar comunicaciones asíncronas dirigidas. Nos permiten desacoplar la comunicación entre componentes usando colas de mensajería como intermediarias. Para ello, un servicio, el productor, publica mensajes en la cola. Estos mensajes representan peticiones de trabajo que pueden ser costosas de procesar. Un servicio, el trabajador, estará la escucha de los mensajes que llegan y los irá consumiendo. Estos mensajes se procesan siguiendo un orden FIFO (\foreign{english}{first in, first out}). En la figura \ref{fig:work-queues} mostramos un ejemplo con dos consumidores (C1 y C2) a la escucha de la misma cola.
+Uno de los conceptos más característicos de este estilo son las \textbf{colas de mensajería}. Se trata de colecciones FIFO (\foreign{english}{first in, first out}) donde el \foreign{english}{broker} almacena los mensajes destinados a un servicio \textbf{consumidor}. Cada vez que se añada un mensaje nuevo, el consumidor será notificado. Este podrá ir procesándolos secuencialmente, sin necesidad de saturarse. Las colas nos permiten implementar varias estrategias de comunicación: colas de trabajo, \foreign{english}{publish-suscribe}, híbrida\dots
+
+Tomemos por ejemplo las \textbf{colas de trabajo}. \cite{royChapterMessagePatterns2017} Esta estrategia nos permite implementar comunicaciones asíncronas punto a punto (dirigidas). Es ideal para casos en los que necesitamos que un mensaje llegue sólo una vez a un destinatario determinado. \cite{ibmcorporationWhatAreMessage2020} Por ejemplo, para enviar peticiones de trabajo que pueden ser costosas de procesar. Para enviarlas, el emisor sólo necesita conocer el nombre de la cola de mensajería correspondiente y usar el formato de mensaje apropiado. No requiere conocer ningún otro detalle. En la figura \ref{fig:work-queues} mostramos un ejemplo con un productor (P) que envía el mensaje a una cola con dos consumidores (C1 y C2) a la escucha de esta.
 
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=0.65]{cap_diseño/images/work-queues}
-  \caption[Representación de las colas de trabajo. Ejemplo de comunicación asíncrona dirigida.]{Representación de las colas de trabajo. Ejemplo de comunicación comunicación asíncrona dirigida. \footnotemark }
+  \caption[Representación de las colas de trabajo. Ejemplo de comunicación asíncrona dirigida.]{Representación de las colas de trabajo. Ejemplo de comunicación asíncrona dirigida. \footnotemark }
   \label{fig:work-queues}
 \end{figure}
 
 \footnotetext{Imagen obtenida de: \url{https://www.rabbitmq.com/tutorials/tutorial-two-dotnet.html}}
 
-Otra estrategia posible es \foreign{english}{publish-suscribe}: sirve para implementar comunicación \foreign{english}{multicast}. Se basa en el uso de \textbf{temas} o \textbf{\foreign{english}{topics}}: categorías de mensajes que pueden resultar de interés. Un servicio (el productor) envía un mensaje al \foreign{english}{broker}, indicando que pertenece a un tema determinado. El \foreign{english}{broker} recibe el mensaje y se encarga de reenviarlo a todos los servicios suscritos a este tema en concreto. \cite{rabbitmqPublishSubscribeDocumentation} En la figura \ref{fig:publish-subscribe} tenemos un ejemplo. El mensaje ''A'' llega a todos los servicios suscritos a al tema ''Topic''.
-
-\textcolor{red}{Describir fanout}
-\textcolor{red}{Describir exchanges}
+Otra estrategia que podemos implementar es \textbf{\foreign{english}{publish-suscribe}}. Esta sirve para implementar comunicación \foreign{english}{broadcast}. \cite{royChapterMessagePatterns2017} Se basa en el uso de temas o \textbf{\foreign{english}{topics}}, categorías de mensajes. En base a ellas, los servicios consumidores pueden suscribirse a las que le resulten de interés. Un servicio (el productor) enviará un mensaje al \foreign{english}{broker}, indicando que pertenece a un tema determinado. El \foreign{english}{broker} recibe el mensaje y se encarga de enrutarlo a las colas de todos los consumidores suscritos a él. \cite{rabbitmqPublishSubscribeDocumentation} En la figura \ref{fig:publish-subscribe} tenemos un ejemplo. El mensaje ''A'' llega a todos los servicios suscritos a al tema ''Topic''.
 
 \begin{figure}[htb]
   \centering
   \includegraphics[scale=0.5]{cap_diseño/images/publish_subscribe}
-  \caption[Estrategia \foreign{english}{publish/suscribe}: el \foreign{english}{broker} actúa como intermediario en la comunicación \foreign{english}{multicast}.]{Estrategia \foreign{english}{publish/suscribe}: el \foreign{english}{broker} actúa como intermediario en la comunicación \foreign{english}{multicast}. Imagen obtenida de \footnotemark.}
+  \caption[Estrategia \foreign{english}{publish/suscribe}: el \foreign{english}{broker} actúa como intermediario en la comunicación \foreign{english}{broadcast}.]{Estrategia \foreign{english}{publish/suscribe}: el \foreign{english}{broker} actúa como intermediario en la comunicación \foreign{english}{broadcast}. Imagen obtenida de \footnotemark.}
   \label{fig:publish-subscribe}
 \end{figure}
 
 \footnotetext{Java Messaging Service: \url{https://docs.oracle.com/cd/E19509-01/820-5892/ref_jms/index.html}}
 
-La mayor ventaja de este estilo de comunicación es el \textbf{desacoplamiento} entre los servicios. \cite{korabUnderstandingMessageBrokers2017}
-Ninguno de ellos necesita conocer detalles sobre cómo están desplegado los otros: su dirección, el número de instancias, si están activos en este momento, etc. Para enviar o recibir mensajes solo necesitan conocer su formato, las colas o temas y la dirección del \foreign{english}{broker}.
-
 \begin{itemize}
   \item \textbf{Ventajas}:
 
   \begin{itemize}
-    \item \textbf{Comunicación asíncrona}: El servicio no necesita quedarse a la espera de una respuesta del servidor. Puede procesar otras operaciones hasta que se le notifique del resultado, si lo hubiera.
+    \item \textbf{Comunicación asíncrona}: El servicio no necesita quedarse a la espera de una respuesta del servidor. Puede procesar otras operaciones hasta que se le notifique del resultado, si lo hubiera. Por otro lado, el consumidor puede ir procesándolas a su ritmo.
+
+    \item \textbf{Escalable}: Varias instancias del mismo servicio pueden estar a la escucha de la misma cola. De esta forma, podemos aumentar la capacidad de cómputo de forma transparente a los emisores.
 
     \item \textbf{Desacoplamiento de los servicios}: Ni los productores ni los consumidores necesitan conocer el origen o destino de sus mensajes. Solo su formato, las colas o temas y la dirección del \foreign{english}{broker}.
 
@@ -262,25 +271,27 @@ Ninguno de ellos necesita conocer detalles sobre cómo están desplegado los otr
   \begin{itemize}
     \item \textbf{Requisitos de infraestructura}: Utilizar un \foreign{english}{broker} de mensajería puede incrementar la dificultad de nuestros despliegues. Este puede convertirse en un punto de fallo único. Para operar de forma fiable, estos sistemas requieren de replicación. \cite{newmanBuildingMicroservicesDesigning2021}
 
-    \item \textbf{Envío garantizado de mensajes}: Para poder garantizar el envío de un mensaje, el \foreign{english}{broker} puede recurrir a reenviarlo. Debemos diseñar nuestros sistemas de forma que estos mensajes duplicados sean descartados si ya han sido procesados.
+    \item \textbf{Desacoplamiento de componentes}: Debido al alto nivel de desacoplamiento, puede resultar difícil detectar cuando el consumidor no está recibiendo los mensajes. Por ejemplo, si el emisor los está publicando en una cola equivocada. Los mensajes se acumularían en esta cola errónea y el consumidor real no recibiría nada.
+
+    \item \textbf{Envío garantizado de mensajes}: Si se reintenta el envío del mensaje, es posible que ya lo hayamos consumido. Debemos diseñar nuestros sistemas de forma que estos mensajes duplicados sean descartados si ya han sido procesados.
   \end{itemize}
 \end{itemize}
 
 En la tabla \ref{tab:comparativa-mecanismos-comunicacion} presentamos un resumen de esta comparativa:
 
-\begin{longtable}{|p{4.4cm} | c | c | c | c|}
+\begin{longtable}{|>{\centering}p{0.28\linewidth} | >{\centering}p{0.1\linewidth} | >{\centering}p{0.1\linewidth} | >{\centering}p{0.12\linewidth} | >{\centering\arraybackslash}p{0.25\linewidth} |}
   \hline
   & \textbf{RPC} & \textbf{REST} & \textbf{GraphQL} & \textbf{Broker mensajería} \\
   \hline
-  \textbf{Tipo de comunicación entre componentes} & Dirigida & Dirigida & Dirigida & Dirigida y \foreign{english}{Multicast} \\
+  \textbf{Tipo de comunicación y cardinalidad} & Dirigida (1..1) & Dirigida (1..1) & Dirigida (1..1) & Dirigida (1..1) y \foreign{english}{broadcast} (1..N) \\
   \hline
   \textbf{Acoplamiento entre componentes} & Alto & Medio & Alto & Bajo \\
   \hline
   \textbf{Interoperabilidad} & Baja & Alta & Alta & Alta\footnotemark \\
   \hline
-  \textbf{Comandos de lectura} & Sí & Sí & Sí & Sí\footnotemark \\
+  \textbf{Peticiones de lectura} & Sí & Sí & Sí & Sí\footnotemark \\
   \hline
-  \textbf{Comandos de escritura} & Si & Sí & No & Sí \\
+  \textbf{Peticiones de escritura} & Si & Sí & No & Sí \\
   \hline
   \textbf{Comunicación síncrona} & Sí & Sí & Sí & No \\
   \hline
@@ -297,25 +308,26 @@ Ahora describiremos qué protocolo elegimos para cada mecanismo de comunicación
 
 \subsection{Peticiones síncronas}
 
-Comenzamos investigando las peticiones síncronas. Tomemos por ejemplo la comunicación entre el servicio de monitorización (\foreign{english}{monitoring service}) y el servicio de conocimiento (\foreign{english}{knowledge servic}). Recordemos que el servicio de conocimiento almacena todas las propiedades de adaptación. El resto de servicios del nivel del bucle necesitan consultarlas y actualizarlas durante su funcionamiento. En la figura \ref{fig:monitor-knowledge-initial} representamos inicialmente ambos componentes y un conector, sin especificar de qué tipo será.
+Comenzamos investigando el diseño de las peticiones síncronas. Tomemos por ejemplo la comunicación entre el servicio de monitorización (\foreign{english}{monitoring service}) y el servicio de conocimiento (\foreign{english}{knowledge service}). Recordemos que el conocimiento almacena todas las propiedades de adaptación. El resto de los servicios del nivel del bucle necesitan consultarlas y actualizarlas durante su funcionamiento. En la figura \ref{fig:monitor-knowledge-initial} representamos inicialmente ambos componentes y un conector, sin especificar de qué tipo será.
 
-% TODO: Cambiar por imagen de componentes, que ofrezcan y requieran interfaces.
-\begin{figure}[htb]
+\begin{wrapfigure}{r}{0.37\linewidth}
   \centering
-  \includegraphics{cap_diseño/images/Monitor-Knowledge-Initial-Connector}
-  \caption{Representación inicial de la comunicación entre el servicio de monitorización y el de conocimiento. El conector no indica su tipo todavía.}
+  \vspace{23pt}
+  \includegraphics[scale=0.55]{cap_diseño/images/Monitor-Knowledge-Initial-Connector}
+  \caption{Representación inicial del conector entre el servicio de monitorización y el de conocimiento. De momento no indica más que la necesidad de comunicación.}
   \label{fig:monitor-knowledge-initial}
-\end{figure}
+  \vspace{2pt}
+\end{wrapfigure}
 
-El siguiente paso es identificar qué interacciones debe existir entre ambos componentes. En este caso, el servicio de monitorización debe contactar con el servicio de conocimiento para leer y actualizar el valor de las propiedades. Por tanto, existen operaciones de lectura y escritura de los datos.
+El siguiente paso consiste en identificar qué interacciones debe existir entre ambos componentes. En este caso, el servicio de monitorización debe poder leer y actualizar el valor de las propiedades. Por tanto, existen operaciones de lectura y escritura de los datos.
 
-Entre las cuatro opciones de tipos de conector podemos descartar inmediatamente la opción de GraphQL. Se trata de un conector más orientado a las consultas de datos. En nuestro caso, necesitamos ejecutar también escrituras. Aunque podría ser interesante para consultas más avanzadas, utilizar dos protocolos de comunicación en paralelo aumentaría la complejidad de la arquitectura.
+De entre los cuatro tipos de conectores, pudimos descartar inmediatamente la opción de GraphQL. Se trata de un mecanismo más orientado a las consultas de datos. En nuestro caso, necesitamos ejecutar también escrituras. Aunque podríamos trabajar con dos protocolos de comunicación en paralelo, esto aumentaría la complejidad de la arquitectura. Además, el protocolo está más enfocado en consultas complejas. Como las propiedades se almacenan como pares clave - valor, sin relaciones, no lo consideramos necesario.
 
-También descartamos el \foreign{english}{broker} de mensajería. Como requerimos de lecturas de datos, nos convenía más recurrir al resto de patrones. Para obtener propiedades del conocimiento, resultaba más sencillo de implementar mediante comunicación síncrona.
+También descartamos emplear el \foreign{english}{broker} de mensajería. Como requerimos de lecturas de datos, nos convenía más recurrir a otros patrones. Para obtener propiedades del conocimiento, resultaba más sencillo de implementar mediante comunicación síncrona.
 
-Finalmente, hay que tener en cuenta que una de nuestras prioridades es la \textbf{interoperabilidad}: esta API estará expuesta ''hacia fuera'', a una capa más externa. Por tanto, tendremos clientes que nos contactarán. Potencialmente, de terceros. Prima por tanto la compatibilidad. Descartamos entonces RPC, dado que nos acoplaría a una tecnología concreta y a APIs no estándares.
+Finalmente, teníamos que decidir entre usar REST o RPC. Para tomar la decisión decidimos priorizar la \textbf{interoperabilidad}. Este componente estará expuesto ''hacia fuera'': expondrá su interfaz a la capa superior. Cualquier elemento que se encuentre en ella podrá contactarlo. Potencialmente, estos podrían ser desarrollados por terceros. Para maximizar la compatibilidad, descartamos entonces RPC. Este protocolo nos hubiera acoplado a una tecnología concreta y a APIs no estándares.
 
-Nos terminamos decantando por el conector REST sobre HTTP. Implementamos ambas funciones mediante \foreign{english}{endpoints} HTTP. Su especificación se detalla a continuación en las tablas \ref{tab:especificacion-get-property} y \ref{tab:especificacion-put-property}.
+Nos terminamos decantando entonces por el conector REST. Implementamos ambas funciones de lectura y escritura mediante \foreign{english}{endpoints} HTTP. Su especificación se detalla a continuación en las tablas \ref{tab:especificacion-get-property} y \ref{tab:especificacion-put-property}. En ellas se incluye la operación y la ruta sobre que aplica.
 
 \newsavebox\getpropertyrequestbox
 \begin{lrbox}{\getpropertyrequestbox}
@@ -360,7 +372,7 @@ Response: 200 Ok
 
         \cline{2-4}
 
-        & \textbf{Código 400 (Bad request)} & \multicolumn{2}{|m{0.55\linewidth}|}{La petición está mal formada, no es acuerdo al contrato.}\\
+        & \textbf{Código 400 (Bad request)} & \multicolumn{2}{|m{0.55\linewidth}|}{La petición está mal formada. No concuerda con el contrato.}\\
 
         \cline{2-4}
 
@@ -419,7 +431,7 @@ Response: 204 (No content)
 
         \cline{2-4}
 
-        & \textbf{Código 400 (Bad request)} & \multicolumn{2}{|b{0.55\linewidth}|}{La petición está mal formada, no es acuerdo al contrato.}\\
+        & \textbf{Código 400 (Bad request)} & \multicolumn{2}{|b{0.55\linewidth}|}{La petición está mal formada. No concuerda con el contrato.}\\
   \hline
 
   \textbf{Ejemplo} & \multicolumn{3}{|b{0.7\linewidth}|}{Petición para actualizar la propiedad \emph{currentTemperature} con una medición de un termómetro:
@@ -438,183 +450,54 @@ Una vez definida la interfaz que expondrá el servicio de conocimiento, nos qued
 
 \begin{wrapfigure}{r}{0.3\linewidth}
   \vspace{5pt}
-  \includegraphics[scale=0.32]{cap_diseño/images/openapi-logo}
+  \includegraphics[scale=0.30]{cap_diseño/images/openapi-logo}
   \centering
   \vspace{5pt}
 \end{wrapfigure}
 
-OpenAPI\footnote{Página oficial: \url{https://www.openapis.org/}} es un lenguaje estándar para describir APIs RESTful. Nos permite describir de forma estructurada las operaciones que ofrece un servicio manteniéndose agnóstico a su implementación. Esta descripción ayuda tanto a humanos como a computadoras a descubrir y utilizar las funcionalidades de la API. La OpenAPI Initiative (OAI) dirige el proyecto bajo el manto de la \emph{Linux Foundation}.
+OpenAPI\footnote{Página oficial: \url{https://www.openapis.org/}} es un lenguaje estándar para describir APIs REST. Nos permite especificar de forma estructurada las operaciones que ofrece un servicio, manteniéndose agnóstico a su implementación. Esta descripción ayuda tanto a humanos como a computadoras a descubrir y utilizar las funcionalidades de la API.\cite{openapiinitiativeOpenAPISpecificationV3} La OpenAPI Initiative (OAI) dirige el proyecto bajo el manto de la Linux Foundation.
 
-Un documento OpenAPI describe el funcionamiento de la API y el conjunto de recursos que la componen. Describe las operaciones HTTP que podemos ejecutar sobre estos recursos, incluyendo las estructuras de datos que recibe o envía y los códigos de respuesta. Estos códigos indican al cliente el resultado de la ejecución de la operación. \cite{openapi_initiativeOpenAPISpecificationV3} Más adelante mostraremos un ejemplo, con el \textcolor{red}{fragmento} \ref{ls:openapi-get}.
+Un documento OpenAPI describe el funcionamiento de la API y el conjunto de recursos que la componen. Especifica las operaciones HTTP que se pueden ejecutar sobre estos recursos y las estructuras de datos de entrada o salida. También se incluyen los códigos de respuesta de HTTP: códigos indican al cliente el resultado de la ejecución de la operación. \cite{openapiinitiativeOpenAPISpecificationV3} Más adelante, en el fragmento \ref{ls:openapi-get}, mostraremos un ejemplo de un documento típico.
 
-La especificación puede escribirse manualmente o puede generarse a partir de una implementación existente. Así, podemos desarrollar nuestro servicio en un determinado lenguaje y obtener su descripción en OpenAPI. Además, podemos aprovecharla en varios ámbitos del desarrollo gracias a la variedad de herramientas existentes: generación de documentación, generación de casos de prueba, identificar cambios incompatibles, etc. \cite{westerveldChapterOpenAPIAPI2021}
+La especificación puede escribirse manualmente o puede generarse a partir de una implementación existente. Así, podemos desarrollar primero nuestro servicio en un determinado lenguaje y obtener después su descripción en OpenAPI. Además, se podrá aprovecharla en varios ámbitos del desarrollo gracias a la  \textbf{variedad de herramientas} existentes: generación de documentación, generación de casos de prueba, identificar cambios incompatibles, etc. \cite{westerveldChapterOpenAPIAPI2021}
 
-Uno de los casos de uso más interesantes es la generación de código a partir de la definición. Existen una serie de librerías\footnote{\url{https://github.com/OpenAPITools/openapi-generator}} capaces de generar clientes o servidores conforme a la especificación. Ofrecen soporte a una gran variedad de lenguajes: Java, C\#, JavaScript\dots En el caso del cliente, actúa como un proxy que nos abstrae de la lógica de comunicación con el servidor. Similar a lo descrito en el apartado de RPC.
+Uno de los casos de uso más interesantes es la \textbf{generación de código}. Existen una serie de librerías\footnote{\url{https://github.com/OpenAPITools/openapi-generator}} capaces de generar clientes o servidores conforme a la especificación. Ofrecen soporte a una gran variedad de lenguajes: Java, C\#, JavaScript... En el caso del \textbf{cliente}, actúa como un proxy que nos abstrae de la lógica de comunicación con el servidor. Similar a lo ya descrito en el apartado de RPC.
 
-Para el desarrollo de este trabajo, nos interesaba especialmente debido a las diferencias tecnológicas existentes: el bucle MAPE-K original estaba desarrollado en Java, pero el prototipo se desarrolló con el lenguaje C\# usando el \foreign{english}{framework} ASP.NET Core. Se tomó esta decisión para reducir el tiempo de aprendizaje y centrar los esfuerzos en la definición de la arquitectura del sistema.
+Para el desarrollo de este trabajo, nos interesaba especialmente debido a las posibles diferencias tecnológicas entre microservicios. Cada uno de ellos puede implementarse utilizando distintos lenguajes o librerías dependiendo de la funcionalidad a ofrecer. Gracias a la generación de código, se podría obtener la especificación del servidor y generar los clientes o servidores en cualquiera de los lenguajes soportados.
 
-Gracias a la generación de código, se podría obtener la especificación del prototipo y generar los clientes o servidores en cualquier lenguaje soportado. Java incluido. El bucle MAPE-K original después podría ser refactorizado usando este código autogenerado.
+\subsubsection{Arquitectura del conector}
 
-A continuación explicaremos cómo utilizamos OpenAPI. Para ello, continuaremos con el ejemplo del servicio de conocimiento que hemos descrito a lo largo de esta sección. Nos centraremos en la implementación de la operación para obtener una propiedad del conocimiento, descrita en la tabla \ref{tab:especificacion-get-property}.
+Para terminar, mostramos la estructura del conector que empleamos para implementar las peticiones síncronas. Aparece en la figura \ref{fig:monitor-knowledge-connector-architecture}. Esta muestra como el servicio de monitorización contacta al de conocimiento para asignarle un valor a la propiedad \emph{Temp} (temperatura).
 
-En el \textcolor{red}{fragmento} \ref{ls:csharp-get} podemos observar que se trata de un método C\# llamado \emph{GetProperty}. Su implementación es sencilla: busca en un diccionario la propiedad cuyo nombre se le pasa por parámetro. Si la encuentra, devuelve su valor con un código 200 OK. En caso contrario, devuelve un código de error que describe el motivo (formato de la petición incorrecto o no se ha encontrado la propiedad).
+El conector, delimitado por una línea discontinua roja, está compuesto por dos elementos: una API REST y un cliente. Los otros dos grupos representan los procesos de los servicios de monitorización y conocimiento. El servicio de monitorización se comunica con la API través del API Client. Este se despliega dentro de su proceso actuando como \emph{proxy}. En el capítulo \ref{chap:implementación} - \nameref{chap:implementación} describiremos nuestra propuesta para su implementación.
 
-Aparte de la implementación, podemos comprobar que el método cuenta con una serie de comentarios (líneas 1-8) y atributos (10-12). Esta documentación describe qué hace el método, sus entradas y posibles respuestas. OpenAPI es capaz de utilizarlos para generar una especificación más completa. Por tanto, resulta muy recomendable incluirlos.
-
-\begin{lstlisting}[language={[Sharp]C},caption={Implementación del método GetProperty decorado para generar la especificación OpenAPI.},captionpos=b, label=ls:csharp-get]
-/// <summary>
-///    Gets a property given its name.
-/// </summary>
-/// <param name="propertyName"> The name of the property to find. </param>
-/// <returns> An IActionResult with result of the query. </returns>
-/// <response code="200"> The property was found. Returns the value of the property. </response>
-/// <response code="404"> The property was not found. </response>
-/// <response code="400"> There was an error with the provided arguments. </response>
-[HttpGet("{propertyName}")]
-[ProducesResponseType(typeof(PropertyDTO), StatusCodes.Status200OK)]
-[ProducesResponseType(StatusCodes.Status404NotFound)]
-[ProducesResponseType(StatusCodes.Status400BadRequest)]
-public IActionResult GetProperty([FromRoute]string propertyName)
-{
-    if (string.IsNullOrEmpty(propertyName))
-    {
-        return BadRequest();
-    }
-
-    bool foundProperty = properties.TryGetValue(propertyName, out PropertyDTO property);
-
-    if (!foundProperty)
-    {
-        return NotFound();
-    }
-
-    return Ok(property);
-}
-\end{lstlisting}
-
-Haciendo uso de las librerías de OpenAPI, generamos la especificación a partir del servicio de conocimiento. En el \textcolor{red}{fragmento} \ref{ls:openapi-get}, podemos ver cómo se describe la operación en este estándar:
-
-\begin{lstlisting}[language=python,caption={Especificación OpenAPI del método para obtener una propiedad del conocimiento (\lstinline{GetProperty}).},captionpos=b, label=ls:openapi-get]
-"paths": {
-  "/Property/{propertyName}": {
-    "get": {
-      "tags": [
-        "Property"
-      ],
-      "summary": "Gets a property given its name.",
-      "parameters": [
-        {
-          "name": "propertyName",
-          "in": "path",
-          "description": "The name of the property to find.",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "The property was found. Returns the value of the property.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PropertyDTO"
-              }
-            }
-          }
-        },
-        "404": {
-          "description": "The property was not found.",
-        },
-        "400": {
-          "description": "There was an error with the provided arguments.",
-        }
-      }
-    }
-  }
-\end{lstlisting}
-
-Podemos apreciar que en la ruta \emph{/Property/\{propertyName\}} está disponible una operación de tipo \emph{GET}. Esta acepta determinados parámetros y describe unas posibles respuestas. También aparece una referencia a otro esquema (línea 25), que representa la estructura de la respuesta en ese caso concreto. También aparecen los comentarios opcionales que indicamos en el \textcolor{red}{fragmento} \ref{ls:csharp-get}. Encontramos grandes similitudes con la especificación presentada en la tabla \ref{tab:especificacion-get-property}.
-
-%% TODO: ¿Eliminar?
-\textcolor{red}{Los convenios de los generadores de código de OpenAPI pueden no ser de nuestro agrado. Por ejemplo, pueden resultar muy verbosos o puede resultar muy pesado trabajar con DTOs directamente. Por suerte, tenemos varias alternativas para solucionarlo: Modificar las plantillas de generación de código. Al ser de código abierto, podríamos modificar las existentes o crear nuestras propias plantillas con nuestros propios convenios.}
-
-\textcolor{red}{Otra opción, más fácil de implementar, es desarrollar código por encima del API Client generado. Es el caso del servicio de Análisis. Como trabajar con DTOs directamente se hacía muy pesado (fragmento \ref{ls:analysis-api-client-original}), optamos por implementar un \foreign{english}{builder} de peticiones. Esto nos permitia configurar la petición de una forma más descriptiva para el usuario (fragmento \ref{ls:analysis-api-cliente-request-builder}):}
-
-\begin{lstlisting}[language={[Sharp]C},caption={Implementación de petición original. Trabajar con DTOs era muy verboso.},captionpos=b, label=ls:analysis-api-client-original]
-var changeRequests = new List<ServiceConfigurationDTO>
-{
-  new()
-  {
-    ServiceName = ClimatisationAirConditionerConstants.AppName,
-    IsDeployed = true,
-    ConfigurationProperties = new List<ConfigurationProperty>()
-    {
-      new()
-      {
-          Name = ClimatisationAirConditionerConstants.Configuration.Mode,
-          Value = AirConditioningMode.Cooling.ToString(),
-      },
-    },
-  },
-};
-
-var symptoms = new List<SymptomDTO> { new(SymptomName, "true") };
-
-var systemConfigurationChangeRequest = new SystemConfigurationChangeRequestDTO()
-{
-  ServiceConfiguration = changeRequests,
-  Symptoms = symptoms,
-  Timestamp = DateTime.UtcNow,
-};
-
-await _systemApi.SystemRequestChangePostAsync(
-  systemConfigurationChangeRequest,
-  CancellationToken.None);
-\end{lstlisting}
-
-
-\begin{lstlisting}[language={[Sharp]C},caption={Implementación de la misma petición siguiendo el patrón \emph{builder}.},captionpos=b, label=ls:analysis-api-cliente-request-builder]
-await _systemService.RequestChangeAsync(changeRequest =>
-{
-  changeRequest
-    .ForSymptom(TemperatureGreaterThanHotThreshold)
-    .WithService(ClimatisationAirConditionerConstants.AppName, service =>
-    {
-      service.MustBePresent()
-        .WithParameter(
-          ClimatisationAirConditionerConstants.Configuration.Mode,
-          AirConditioningMode.Cooling.ToString());
-    });
-});
-\end{lstlisting}
-
-Para terminar, mostramos la estructura del conector que emplearemos para implementar las peticiones aparece en la figura \ref{fig:monitor-knowledge-connector-architecture}. La figura muestra como el servicio de monitorización contacta al de conocimiento para asignarle un valor a la propiedad \emph{Temp}.
-
-El conector, delimitado por una línea discontinua roja, está compuesto por dos elementos: una API REST y un cliente. Los otros dos grupos de elementos representan los procesos de los servicios de monitorización y conocimiento. El servicio de monitorización se comunica a con la API través del API Client, que está en su proceso actuando como \emph{proxy}.
-
-%%% TODO: Actualizar la imagen para que aparezca PUT en vez de POST.
-%%% TODO: ¿Darle la vuelta a los servicios? Monitor arriba y Knowledge abajo.
 \begin{figure}[htb]
   \centering
-  \includegraphics[scale=0.64]{cap_diseño/images/Monitor-Knowledge-Connector}
-  \caption{Diseño del conector usando implementación Cliente - Servidor}
+  \includegraphics[scale=0.65]{cap_diseño/images/Monitor-Knowledge-Connector}
+  \caption{Arquitectura del conector de peticiones síncronas.}
   \label{fig:monitor-knowledge-connector-architecture}
 \end{figure}
 
 \subsection{Notificaciones}
 \label{sec:notificaciones}
 
-El siguiente mecanismo de comunicación que tratamos fueron las notificaciones. Recordemos que esta comunicación consiste en transmitir mensajes desde un servicio a todos los que se pertenecen a la capa superior. Es una comunicación de tipo \emph{multicast}. No va dirigida a ningún servicio concreto. Potencialmente, todos podrían recibir el mensaje y decidir si procesarlo o no.
+\begin{wrapfigure}{l}{0.34\linewidth}
+  \centering
+  \includegraphics[scale=0.55]{cap_diseño/images/Knowledge-Analysis-Initial-Notification-Connector}
+  \caption{Representación inicial del conector entre el servicio de conocimiento y el de análisis.}
+  \label{fig:knowledge-analysis-notification-initial-connector}
+  \vspace{-10pt}
+\end{wrapfigure}
 
-Para estudiarla, tomamos como ejemplo la comunicación entre el servicio de conocimiento y los servicios en el nivel del bucle. Cada vez que se modifique una propiedad de adaptación o una clave de configuración, emitirá un evento a la capa superior. Así, por ejemplo, el servicio de análisis sabrá que debe reevaluar las reglas de adaptación.
+El siguiente mecanismo de comunicación que tratamos fueron las notificaciones. Recordemos que es de tipo \textbf{\foreign{english}{broadcast}}: consiste en transmitir mensajes desde un servicio a todos aquellos que pertenecen a la capa superior. Cada uno decidirá si debe procesarlo o no. Sería ideal entonces priorizar el \textbf{desacoplamiento} entre el emisor y los destinatarios.
 
-Buscando el tipo de conector adecuado, empezamos descartando GraphQL. Es un protocolo basado en lecturas. Como el objetivo es enviar información a otros servicios, no nos sirve. Respecto a RPC y REST, tampoco cumplían nuestras necesidades. Tenemos el requisito de bajo acoplamiento contra los servicios de la capa superior. Estos protocolos requerirían de conocer la dirección de todos los servicios para poder contactarlos. O, en su defecto, requeririamos de implementar un intermediario que los tenga registrados.
+Para estudiarla, se tomó como ejemplo la comunicación entre el servicio de conocimiento y los aquellos en el nivel del bucle. Cada vez que se modifique una propiedad de adaptación o una clave de configuración, emitirá una notificación a la capa superior. Así, por ejemplo, el servicio de análisis sabrá que debe evaluar las reglas de adaptación (figura \ref{fig:knowledge-analysis-notification-initial-connector}).
 
-Por tanto, optamos por implementarlo usando un \emph{broker} de mensajería. Concretamente, siguiendo el patrón \emph{publish}-\emph{subscribe}. El servicio de conocimiento publicará el evento a través del \emph{broker} en un \foreign{english}{exchange} determinado. Este evento tendrá como \emph{topic} o tema asociado el nombre de la propiedad. Todos los servicios interesados deberán suscribirse a este. El \emph{broker} añadirá el mensaje en la cola de cada uno de los suscriptores. Así podrán procesarlo cuando puedan, de forma asíncrona.
+A continuación, analizamos qué tipo de conector era el más indicado. Empezamos descartando GraphQL porque es un protocolo basado en lecturas. Como el objetivo es enviar información a otros servicios, no nos servía. Respecto a RPC y REST, tampoco cumplían nuestras necesidades. Estos protocolos requerirían de conocer la dirección de todos los servicios para poder contactarlos. O, en su defecto, requeriríamos de un intermediario que los tenga registrados.
 
-En la tabla \ref{tab:especificacion-property-changed-integrationevent} mostramos la especificación del evento. Podemos apreciar que el mensaje enviado incluye la información mínima indispensable: el nombre de la propiedad que ha cambiado. Tomamos esta decisión porque se trata de una comunicación asíncrona. Desde que se emite el evento hasta que se procesa su valor puede haber cambiado. De esta forma obligamos a las reglas a solicitar el valor de la propiedad en el momento en que se evalúen. Entonces siempre se ejecutaran con la información actualizada.
+Por tanto, optamos por implementarlo usando un \foreign{english}{broker} de mensajería. Concretamente, siguiendo el patrón \textbf{\foreign{english}{publish-subscribe}}. El servicio de conocimiento publicaría el evento a través del \foreign{english}{broker}. Este evento tendrá como \foreign{english}{topic} asociado el nombre de la propiedad que ha cambiado. Así, los servicios de la capa superior podrían decidir si suscribirse o no al tipo de notificación. El \foreign{english}{broker} añadirá el mensaje en las colas de mensajería de cada uno de los suscriptores. Entonces, podrán procesarlo cuando puedan, de forma asíncrona.
+
+En la tabla \ref{tab:especificacion-property-changed-integrationevent} mostramos la especificación del evento. Se puede apreciar que el mensaje enviado incluye la \textbf{información mínima indispensable}: el nombre de la propiedad que ha cambiado. Elegimos esta aproximación porque se trata de una comunicación asíncrona. Desde que se emite el evento hasta que se procesa, el valor de la propiedad puede haber cambiado. De esta forma, obligamos a las reglas a solicitar su valor en el momento en que se evalúen. Siempre se ejecutarán con la información actualizada.
 
 \newsavebox\propertychangedeventbox
 \begin{lrbox}{\propertychangedeventbox}
@@ -655,12 +538,20 @@ En la tabla \ref{tab:especificacion-property-changed-integrationevent} mostramos
 
 \subsubsection{AsyncAPI}
 
-Para describir el evento, investigamos si existía algún estándar equivalente a OpenAPI. Y así es, se llama AsyncAPI\footnote{Página oficial: \url{https://www.asyncapi.com/}}. Por desgracia, se encuentra en fases tempranas de su desarrollo. No ha alcanzado todavía el grado de implantación que tiene su homólogo. Por ejemplo, no cuenta un catálogo muy amplio de generadores de código. Tampoco podemos extraer la especificación a partir de una implementación existente.
+\begin{wrapfigure}{l}{0.25\linewidth}
+  \vspace{15pt}
+  \includegraphics[scale=0.5]{cap_diseño/images/asyncapilogo}
+  \centering
+  \vspace{5pt}
+\end{wrapfigure}
 
-Aun así, lo emplearemos para describir manualmente nuestros eventos en un formato estándar. En el fragmento \ref{ls:asyncapi-propertychanged-integrationevent} presentamos la especificación del mensaje de la tabla \ref{tab:especificacion-property-changed-integrationevent}. Podemos apreciar similitudes con la especificación OpenAPI (por ejemplo, en el fragmento \ref{ls:openapi-get}). Figura la estructura del mensaje y su documentación. La mayor diferencia es la mención del canal (el \foreign{english}{exchange}  en nuestro caso) y el método (\foreign{english}{subscribe}). Esto indica que los consumidores podrán suscribirse a este evento a partir de este canal.
+Para describir el evento, investigamos si existía algún estándar equivalente a OpenAPI. Y así es, se llama AsyncAPI\footnote{Página oficial: \url{https://www.asyncapi.com/}}. Por desgracia, se encuentra en fases tempranas de su desarrollo. No ha alcanzado todavía el grado de madurez e implantación que tiene su homólogo. Por ejemplo, no cuenta un catálogo muy extenso de generadores de código. Tampoco podemos extraer la especificación a partir de una implementación existente.
 
-% TODO: Pintar bien los YAML.
-\begin{lstlisting}[language={C++},caption={Ejemplo del evento de integración \emph{builder}.},captionpos=b, label=ls:asyncapi-propertychanged-integrationevent]
+Aun así, lo emplearemos para describir manualmente nuestros eventos en un formato estándar. En el fragmento \ref{ls:asyncapi-propertychanged-integrationevent} presentamos la especificación del mensaje de la tabla \ref{tab:especificacion-property-changed-integrationevent}. Podemos apreciar similitudes con la especificación OpenAPI (por ejemplo, en el fragmento \ref{ls:openapi-get}). Figuran tanto la estructura del mensaje como su documentación. La mayor diferencia es la mención del canal (el \foreign{english}{exchange}  en nuestro caso) y el método (\foreign{english}{subscribe}). Esto indica que los consumidores podrán suscribirse a este evento a partir de este canal.
+
+\pagebreak
+
+\begin{lstlisting}[style=yaml,caption={Especificación del evento de integración \emph{PropertyChangedIntegrationEvent} en el lenguaje AsyncAPI.},captionpos=b, label=ls:asyncapi-propertychanged-integrationevent]
 asyncapi: 2.4.0
 info:
   title: Knowledge Service
@@ -674,8 +565,8 @@ channels:
 components:
   messages:
     PropertyChangedIntegrationEvent:
-      description: >-
-        Integration event notifying about a change in an adaption property.
+      description:
+        - Integration event notifying about a change in an adaption property.
       payload:
         type: object
         properties:
@@ -684,23 +575,35 @@ components:
             description: The name of the property that changed
 \end{lstlisting}
 
-\subsubsection{Diseño del conector}
+\subsubsection{Arquitectura del conector}
 
-Para implementar este patrón, nuestro conector estará compuesto por tres elementos: un publicador, el \foreign{english}{broker} y un consumidor. Pongamos por ejemplo que el servicio de conocimiento recibe una petición para actualizar una propiedad. Si esta actualización se lleva a cabo, deberá propagar el evento a través del publicador. Este enviará el mensaje al \foreign{english}{broker} a un \foreign{english}{exchange} determinado.
+Para implementar este mecanismo, nuestro conector estará compuesto por tres elementos: un \textbf{publicador}, el \textbf{\foreign{english}{broker}} y un \textbf{consumidor}. Pongamos por ejemplo que el servicio de conocimiento recibe una petición para actualizar una propiedad. Si esta actualización se lleva a cabo, deberá propagar el evento a través del publicador. Este enviará el mensaje al \foreign{english}{broker} a un \foreign{english}{exchange} determinado.
 
-El \foreign{english}{broker}, que conoce todos los suscriptores, lo añadirá en la cola de mensajería de cada uno de ellos. Sus consumidores, desplegados en cada servicio suscriptor, serán notificados del nuevo mensaje. Los procesarán en cuanto puedan. En la \textcolor{red}{figura X} mostramos la estructura de este nuevo conector.
+El \foreign{english}{broker}, que conoce todos los suscriptores, lo añadirá en la cola de mensajería de cada uno de ellos. Sus consumidores, desplegados en cada servicio suscriptor, serán notificados del nuevo mensaje y lo procesarán en cuanto puedan. En la figura \ref{fig:knowledge-analyisis-connector-architecture} mostramos la estructura de este nuevo conector.
 
-\textcolor{red}{TODO: Imagen del conector. Similar a \ref{fig:monitor-knowledge-connector-architecture}}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale=0.6]{cap_diseño/images/Knowledge-Analysis-Connector}
+  \caption{Arquitectura del conector para notificaciones mediante un \foreign{english}{broker} de mensajería.}
+  \label{fig:knowledge-analyisis-connector-architecture}
+\end{figure}
 
 \subsection{Peticiones asíncronas}
 
-El mecanismo de comunicación restante son las \textbf{peticiones asíncronas}. Se trata de peticiones de trabajo que un microservicio le envía a otro distinto. Ambos deberán encontrarse mismo nivel de la jerarquía. Como comentamos, tenemos dos casos en nuestra arquitectura que requieren de este patrón: la comunicación entre el módulo de análisis y el planificador; y aquella entre el planificador y el ejecutor. Nos centraremos en el primero.
+El mecanismo de comunicación restante son las \textbf{peticiones asíncronas}. Se trata de peticiones de trabajo que un microservicio envía a otro o a sí mismo. Es ideal para procesos costosos, que el destinatario podrá procesar de forma asíncrona. Ambos servicios deberán encontrarse en el mismo nivel de la jerarquía. En nuestra arquitectura tenemos dos casos que requieren de este patrón: la comunicación entre el módulo de análisis y el planificador; y aquella entre el planificador y el ejecutor. Nos centraremos en el primero (figura \ref{fig:analyisis-planner-async-request-initial-connector}).
 
-Cuando se evalúan las reglas de adaptación, si alguna de ellas se ejecuta, propone un cambio en la configuración del sistema. Como estos servicios están en una capa superior a la del bucle, se lo transmiten al servicio de análisis mediante una petición síncrona. El módulo de análisis recibirá esta propuesta y la enviará al planificador mediante una petición asíncrona. Podríamos haberla enviado directamente directamente al servicio de planificación, pero preferimos que no se acoplen a un servicio adicional.
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{cap_diseño/images/Analysis-Planner-Initial-Async-Request-Connector}
+  \caption{Representación inicial del conector entre el servicio de análisis y el planificador.}
+  \label{fig:analyisis-planner-async-request-initial-connector}
+\end{figure}
 
-A la hora de escoger el mecanismo de comunicación, el razonamiento fue muy similar al empleado en las notificaciones. Optamos por implementarlas usando un \foreign{english}{broker} de mensajería, pero siguiendo el patrón de colas de trabajo. Los \foreign{english}{workers} cuentan con una cola de mensajería específica para las peticiones de trabajo. El publicador la conoce y, a través del  \foreign{english}{broker}, envía los mensajes allí. El consumidor los irá recuperando y procesando en cuando esté disponible.
+Cuando se evalúan las reglas de adaptación, si alguna de ellas se ejecuta, propone un cambio en la configuración del sistema. Como estos servicios están en una capa superior a la del bucle, se lo transmiten al servicio de análisis mediante una petición síncrona. El módulo de análisis recibirá esta propuesta y se la enviará al planificador mediante una petición asíncrona. Podríamos haberla enviado directamente al servicio de planificación, pero preferimos que no se acoplen a un servicio adicional.
 
-En la tabla \ref{tab:especificacion-system-configuration-change-request-box} presentamos la especificación de la petición asíncrona para solicitar un cambio de configuración de sistema. Vemos que es muy similar a \ref{tab:especificacion-property-changed-integrationevent}. La principal diferencia es que esta incluye mucha más información que el evento. Esto es debido a que tiene más en común con una petición síncrona. El consumidor recibirá todos los parámetros que necesita para ejecutar la petición. Aun así, en el momento de ejecución, deberá verificar que algunos de estos parámetros no hayan cambiado.
+A la hora de escoger el tipo de conector, el razonamiento fue muy similar al empleado en las notificaciones. Optamos por implementarlas usando un \foreign{english}{broker} de mensajería. En este caso, empleando el patrón de \textbf{colas de trabajo}. Los \textbf{\foreign{english}{workers}} o trabajadores cuentan con una \textbf{cola de mensajería específica para las peticiones de trabajo}. El publicador la conoce y, a través del \foreign{english}{broker}, envía los mensajes directamente a ella. Los trabajadores los irán recuperando y procesando en cuanto puedan.
+
+En la tabla \ref{tab:especificacion-system-configuration-change-request} presentamos la especificación de la petición asíncrona para solicitar un cambio de configuración en el sistema. Vemos que es muy similar a \ref{tab:especificacion-property-changed-integrationevent}. La principal diferencia es que esta incluye mucha más información que el evento. Esto es debido a que tiene más en común con una petición síncrona. El planificador recibirá todos los parámetros que necesita para ejecutar la petición. Aun así, en el momento de ejecución deberá verificar con el conocimiento que algunos de estos no hayan cambiado.
 
 \newsavebox\systemconfigurationchangerequestbox
 \begin{lrbox}{\systemconfigurationchangerequestbox}
@@ -762,16 +665,38 @@ En la tabla \ref{tab:especificacion-system-configuration-change-request-box} pre
 
   \hline
 
-  \caption{Especificación de las peticiones de cambio de configuración del sistema.}
-  \label{tab:especificacion-system-configuration-change-request-box}
+  \caption{Especificación de una petición de cambio de configuración del sistema.}
+  \label{tab:especificacion-system-configuration-change-request}
 \end{longtable}
 
-Respecto a la especificación con AsyncAPI, las peticiones asíncronas no están soportadas todavía. A fecha de la redacción, el grupo se encuentra estudiando cómo implementarlas. \footnotetext{Discusión disponible en: \url{https://github.com/asyncapi/spec/pull/594}}. Su inclusión está propuesta para la versión 3.0.0 de la especificación. Como mencionamos anteriormente, el estándar todavía se encuentra en fases iniciales de su desarrollo.
+\subsubsection{AsyncAPI}
 
-\subsubsection{Diseño del conector}
+Respecto a la especificación con AsyncAPI, las peticiones asíncronas no están soportadas todavía. A fecha de la redacción, el grupo se encuentra estudiando cómo implementarlas\footnote{Discusión disponible en: \url{https://github.com/asyncapi/spec/pull/594}}. Como mencionamos anteriormente, el estándar todavía se encuentra en desarrollo. Su inclusión está propuesta para la versión \texttt{3.0.0} de la especificación.
 
-En cuanto a sus componentes, el conector seguiría la siguiente arquitectura: \textcolor{red}{dibujo de arquitectura. La arquitectura del conector es muy similar a la de las notificaciones: un publicador, un broker y un consumidor.}
+\subsubsection{Arquitectura del conector}
 
-\section{Diseño final}
+La arquitectura de este mecanismo es muy similar a la de las notificaciones. Está compuesta también por tres elementos: un \textbf{publicador}, el \textbf{\foreign{english}{broker}} y un \textbf{consumidor}. Pongamos por ejemplo que el servicio de análisis recibe una petición síncrona para cambiar el estado del sistema. Este servicio deberá traducirla a una petición asíncrona y enviarla a través del publicador. A su vez, este enviará el mensaje al \foreign{english}{broker} dirigido a una cola determinada.
 
-Añadir diagrama con el diseño final, mostrando el diseño de los componentes con todos los conectores.
+El \foreign{english}{broker} simplemente lo añadirá a la cola especificada. Las instancias del planificador serán notificadas del nuevo mensaje y una de ellas lo procesará en cuanto puedan. En la figura \ref{fig:async-request-connector-architecture} mostramos la estructura de este último conector.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale=0.60]{cap_diseño/images/Async-Request-Connector-Architecture}
+  \caption{Arquitectura del conector para peticiones asíncronas mediante un \foreign{english}{broker} de mensajería.}
+  \label{fig:async-request-connector-architecture}
+\end{figure}
+
+\pagebreak
+
+\section{Propuesta arquitectónica}
+
+Una vez definidos los componentes y sus conectores, podemos completar nuestra propuesta arquitectónica (figura \ref{fig:arquitectura-sistema}). En esta propuesta inicial, cada componente individual representa un tipo de microservicio distinto. Un caso aparte son las sondas y efectores, que pueden desplegarse como parte del recuso manejado.
+
+Por otro lado, los conectores entre ellos están representados mediante distintos tipos de flecha. Podemos comprobar que todas las comunicaciones respetan la jerarquía descrita en la figura \ref{fig:clean-mapek-architecture}. Los servicios de un nivel superior contactan con aquellos en la capa inmediatamente inferior mediante peticiones síncronas. Los de una capa inferior, con los de la inmediatamente superior a través de notificaciones. Y, finalmente, los de una misma capa mediante peticiones asíncronas. Las APIs que usarán para comunicarse las describimos en detalle en el anexo \ref{anx:apis} - \nameref{anx:apis}.
+
+\begin{figure}[h!]
+  \hspace{-1cm}
+  \includegraphics[scale=0.5]{cap_diseño/images/arquitectura}
+  \caption{Propuesta arquitectónica inicial del bucle MAPE-K distribuido.}
+  \label{fig:arquitectura-sistema}
+\end{figure}

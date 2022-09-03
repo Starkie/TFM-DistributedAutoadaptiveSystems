@@ -5,7 +5,7 @@
 \newif\iflisttables\listtablesfalse
 \newif\iflistfigures\listfiguresfalse
 \newif\iflistquadres\listquadresfalse
-\newif\iflistalgorithms\listalgorithmsfalse
+\newif\iflistlistings\listlistingsfalse
 
 \DeclareOption{catalan}{\PassOptionsToPackage{english,spanish,main=catalan}{babel}}
 \DeclareOption{spanish}{\PassOptionsToPackage{english,catalan,main=spanish}{babel}}
@@ -14,7 +14,7 @@
 \DeclareOption{listoftables}{\listtablestrue}
 \DeclareOption{listoffigures}{\listfigurestrue}
 \DeclareOption{listofquadres}{\listquadrestrue}
-\DeclareOption{listofalgorithms}{\listalgorithmstrue}
+\DeclareOption{listlistings}{\listlistingstrue}
 
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}}
 \ProcessOptions
@@ -131,6 +131,8 @@
      \renewcommand{\listalgorithmname}{\'Indice de algoritmos}
      \renewcommand{\quadrename}{Cuadro}
      \renewcommand{\listquadrename}{\'Indice de cuadros}
+     \renewcommand{\lstlistingname}{Fragmento}
+     \renewcommand{\lstlistlistingname}{\'Indice de listados de código}
      \renewcommand{\appendicesname}{Ap\'endices}}
 
 \addto\captionsenglish{%
@@ -159,6 +161,7 @@
 \RequirePackage[within=chapter]{newfloat}
 
 \RequirePackage{longtable}
+\RequirePackage{array}
 
 \DeclareFloatingEnvironment[fileext=loa,
      listname=\listalgorithmname,name=\algorithmname]{algorithm}
@@ -182,8 +185,13 @@
 \RequirePackage{fancyvrb}
 \RequirePackage{listings}
 
+% Extraído de: https://tex.stackexchange.com/questions/97474/how-to-add-lstlistoflistings-to-the-table-of-contents/331126#331126
+\renewcommand{\lstlistoflistings}{\begingroup
+     \tocfile{\lstlistlistingname}{lol}
+\endgroup}
+
 \lstset{ %
-	language=C++,					% choose the language of the code
+	language=[Sharp]C,					% choose the language of the code
 	basicstyle=\footnotesize,		% the size of the fonts that are used for the code
 	numbers=left,                   % where to put the line-numbers
 	numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
@@ -202,7 +210,45 @@
 	captionpos=b,           		% sets the caption-position to bottom
 	breaklines=true,        		% sets automatic line breaking
 	breakatwhitespace=false,   		% sets if automatic breaks should only happen at whitespace
-	escapeinside={\%*}{*)}          % if you want to add a comment withi your code
+	escapeinside={\%*}{*)},          % if you want to add a comment withi your code
+     morekeywords={  abstract, event, new, struct,
+                as, explicit, null, switch,
+                base, extern, object, this,
+                bool, false, operator, throw,
+                break, finally, out, true,
+                byte, fixed, override, try,
+                case, float, params, typeof,
+                catch, for, private, uint,
+                char, foreach, protected, ulong,
+                checked, goto, public, unchecked,
+                class, if, readonly, unsafe,
+                const, implicit, ref, ushort,
+                continue, in, return, using,
+                decimal, int, sbyte, virtual,
+                default, interface, sealed, volatile,
+                delegate, internal, short, void,
+                do, is, sizeof, while,
+                double, lock, stackalloc,
+                else, long, static,
+                enum, namespace, string, await, async, var}
+}
+
+% Extraído de https://tex.stackexchange.com/questions/336919/simple-coloring-of-json-attributes
+\lstdefinestyle{json}{
+     string=[s]{"}{"},
+     stringstyle=\color{blue},
+     comment=[l]{:},
+     commentstyle=\color{black},
+}
+
+\lstdefinestyle{yaml}{
+     basicstyle=\color{blue}\footnotesize,
+     rulecolor=\color{black},
+     string=[s]{'}{'},
+     stringstyle=\color{blue},
+     comment=[l]{:},
+     commentstyle=\color{black},
+     morecomment=[l]{-}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -259,6 +305,7 @@
 \RequirePackage{graphicx}
 \RequirePackage{eso-pic}
 
+\RequirePackage{pdflscape}
 
 %%%%%%%%%%%%%%
 %  Navegable - Links
@@ -284,6 +331,8 @@
 
 \newenvironment{Foreign}[1]{\begin{quote}\itshape\selectlanguage{#1}}{\end{quote}}
 
+\usepackage{enumitem}
+
 %%%%%%%%
 % Resums
 %%%%%%%%
@@ -304,12 +353,20 @@
 %%%%%%%%%
 % Índexs
 %%%%%%%%%
-\newcommand{\makeindexes}{\cleardoublepage\tableofcontents\cleardoublepage
-                          \iflistfigures\listoffigures\fi
-                          \iflisttables\listoftables\fi
-                          \iflistquadres\listofquadres\fi
-                          \iflistalgorithms\listofalgorithms\fi
-                          \addtocontents{toc}{\protect\noindent\protect\hrulefill\protect\par}}
+
+\newcommand{\makeindexes}{
+                              \cleardoublepage
+                              \tableofcontents
+                              \iflistfigures\clearpage\listoffigures\fi
+                              \iflisttables\clearpage\listoftables\fi
+                              % Relax clear page: https://tex.stackexchange.com/questions/187943/no-page-break-for-listoffigures-with-scrreprt
+                              \let\LaTeXStandardClearpage\clearpage
+                              \let\clearpage\relax  % Do nothing when a \clearpage command appears
+                              \iflistquadres\listofquadres\fi
+                              \iflistlistings\lstlistoflistings\cleardoublepage\fi
+                              \addtocontents{toc}{\protect\noindent\protect\hrulefill\protect\par}
+                              \let\clearpage\LaTeXStandardClearpage  % Return to the old definition
+                         }
 
 \setlength{\cftaftertoctitleskip}{\baselineskip}
 \setlength{\cftafterloftitleskip}{\baselineskip}
@@ -326,8 +383,8 @@
 \newcommand{\APPENDIX}{\appendix
              \phantomsection
              \addtocontents{toc}{\protect\noindent\protect\hrulefill\protect\par}
-             \ifnum\value{appendix}=1 \addtocontents{toc}{\protect\appendixname\protect\par}
-                    \else\addtocontents{toc}{\protect\appendicesname\protect\par}\fi}
+             \ifnum\value{appendix}=1 \addtocontents{toc}{\protect\textbf{\appendixname}\protect\par}
+                    \else\addtocontents{toc}{\protect\textbf{\appendicesname}\protect\par}\fi}
 
 \newcommand{\m@ketitle}{%
 \begin{titlepage}

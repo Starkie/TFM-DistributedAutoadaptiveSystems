@@ -31,17 +31,17 @@ public class ThermometerBackgroundService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        while (!stoppingToken.IsCancellationRequested)
+        using var scope = _rootServiceProvider.CreateScope();
+
+        ResolveDependencies(scope.ServiceProvider);
+
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(15));
+
+        while (await timer.WaitForNextTickAsync(stoppingToken))
         {
-            using var scope = _rootServiceProvider.CreateScope();
-
-            ResolveDependencies(scope.ServiceProvider);
-
             var temperature = _airConditionerService.GetRoomTemperature();
 
             await ReportMeasurement(temperature, stoppingToken);
-
-            Thread.Sleep(TimeSpan.FromSeconds(15));
         }
     }
 

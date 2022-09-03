@@ -65,9 +65,6 @@ Por si solos, estos componentes independientes no aportan mucho valor. En lugar 
 
 Para que dos o más componentes puedan interactuar, necesitamos definir un mecanismo de comunicación. Recurrimos entonces a los \textbf{conectores}: se trata de elementos arquitectónicos que nos ayudan a definir y razonar sobre la comunicación entre componentes. Representan la transferencia de datos y de control entre ellos. En la figura \ref{fig:componentesYConectorEjemplo} mostramos una representación de la necesidad de comunicación entre dos componentes a través de un conector. No se ha especificado todavía ningún detalle sobre cómo se implementará. Así, podemos estudiar la arquitectura y elegir los mecanismos adecuados para cada interacción del sistema. \cite{taylorSoftwareArchitectureFoundations2009}.
 
-%% TODO: Los conectores son application-independent. No dependen de la funcionalidad de la aplicación.
-%% TODO: Hablar de la cardinalidad de los conectores.
-
 \begin{figure}[h!]
   \centering
   \includegraphics[scale=0.78]{03_arquitectura/images/conector}
@@ -80,7 +77,7 @@ Internamente, los conectores están compuestos por uno o más \textbf{conductos}
 \begin{itemize}
     \item \textbf{Conectores simples}: solo cuentan con un conducto, sin lógica asociada. Son conectores sencillos. Suelen estar ya implementados en los lenguajes de programación. Por ejemplo: una llamada a función en un programa o el sistema de entrada / salida de ficheros.
 
-    \item \textbf{Conectores complejos}: cuentan con uno o más conductos. Se definen por composición a partir de múltiples conectores simples. Además, pueden contar con funcionalidad para manejar el flujo de datos y/o control. Suelen utilizarse importando \emph{frameworks} o librerias. Por ejemplo: un balanceador de carga que redirige peticiones a los nodos.
+    \item \textbf{Conectores complejos}: cuentan con uno o más conductos. Se definen por composición a partir de múltiples conectores simples. Además, pueden contar con funcionalidad para manejar el flujo de datos y/o control. Suelen utilizarse importando \emph{frameworks} o librerías. Por ejemplo: un balanceador de carga que redirige peticiones a los nodos.
 \end{itemize}
 
 Por tanto, cuando hayamos decidido qué dos componentes deben comunicarse, es momento de evaluar cuál es el mecanismo de comunicación más adecuado. Basándonos en nuestros requisitos, la arquitectura ya definida, y los mecanismos de despliegue que queremos usar, elegimos el conector apropiado. Podemos ayudarnos de taxonomías como la de \cite{mehtaTaxonomySoftwareConnectors2000} o encontrar otras fuentes de inspiración.

@@ -16,7 +16,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\relativepath}{"style"}
-\documentclass[11pt,spanish,listoffigures,listoftables,listofalgorithms]{\relativepath/tfgetsinf}
+\documentclass[11pt,spanish,listoffigures,listoftables,listlistings]{\relativepath/tfgetsinf}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                     CODIFICACIO DEL FITXER FONT                             %
@@ -47,7 +47,7 @@
 
 \title{Refactorización de una infraestructura de bucles MAPE-K como microservicios}
 \author{Adriano Vega Llobell}
-\tutor{Joan Josep Fons Cors}
+\tutor{Joan Fons i Cors}
 \curs{2021-2022}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -57,9 +57,9 @@
 % les paraules clau i el resum en els tres idiomes                            %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\keywords{????, ?????????, ????, ?????????????????} % Paraules clau
+\keywords{computació autònoma, arquitectures de microserveis, bucles de control, MAPE-K, computació al núvol} % Paraules clau
          {computación autónoma, arquitecturas de microservicios, bucles de control, MAPE-K, computación en la nube}              % Palabras clave
-         {?????, ????? ?????, ?????????????}        % Key words
+         {autonomic computing, microservice architectures, feedback loops, MAPE-K, cloud computing}        % Key words
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                              INICI DEL DOCUMENT                             %
@@ -72,18 +72,28 @@
 %              RESUMS DEL TFG EN VALENCIA, CASTELLA I ANGLES                  %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{abstract}
-????
+\begin{abstract}[catalan]
+  La Computació Autònoma (\foreign{english}{Autonomic Computing}) promou l'enginyeria, disseny i desenvolupament de sistemes amb capacitats d'autoadaptació, mitjançant l'ús de bucles de control. Estas capacitats confereixen a aquests sistemes la possibilitat d'adaptar-se a entorns canviants, a resoldre conflictes operacionals e incluso a l'optimització dinàmica en temps d'execució. Per altra banda, en l'última dècada, la computació en el \foreign{english}{cloud} i les arquitectures basades en microserveis s'han postulat com un infraestructura molt flexible y dinàmica per a desplegar solucions altament disponibles i eficients. N'hi ha clara tendència a aplicar aquest tipus d'infraestructures, gracies als múltiples beneficis que aporten.
+
+  En aquest treball s'explorarà com dissenyar solucions que, aplicant els conceptes dels bucles de control (AC), estén preparades per a desplegar-se al núvol. Per fer-ho es prendrà com punt de partida la infraestructura FaDA (desenvolupada pel grup PROS/Tatami de l'institut VRAIN/UPV) que proposa una estratègia per fer l'enginyeria de sistemes autoadaptatius fent servir els bucles de control MAPE-K.
+
+  Com resultat d'aquest TFM s'espera obtenir la definició arquitectònica de solucions autoadaptatives (incloent tant el bucle de control MAPE-K com directrius para la implementació dels diferents components adaptatius de la solució) dissenyades per a desplegar-se nativament al com microserveis al núvol. Per últim, s'aplicarà la proposta realitzada al desenvolupament d'un cas pràctic per a demostrar la seua viabilitat y aplicabilitat.
 \end{abstract}
+
 \begin{abstract}[spanish]
-  La Computación Autónoma (\foreign{english}{Autonomic Computing}) promueve la ingeniería, diseño y desarrollo de sistemas con capacidades de auto-adaptación, a través del uso de bucles de control. Estas capacidades le confieren a estos sistemas la posibilidad de adaptarse a entornos cambiantes, a conflictos operacionales e incluso a la optimización dinámica en su ejecución. Por otra parte, en la última década, la computación en el cloud y las arquitecturas basadas en microservicios se han postulado como una infraestructura muy flexible y dinámica para desplegar soluciones altamente disponibles y eficientes. Hay una tendencia clara a aplicar este tipo de infraestructuras, gracias a los múltiples beneficios que aporta.
+  La Computación Autónoma (\foreign{english}{Autonomic Computing}) promueve la ingeniería, diseño y desarrollo de sistemas con capacidades de autoadaptación, a través del uso de bucles de control. Estas capacidades le confieren a estos sistemas la posibilidad de adaptarse a entornos cambiantes, a resolver conflictos operacionales e incluso a la optimización dinámica en su ejecución. Por otra parte, en la última década, la computación en el \foreign{english}{cloud} y las arquitecturas basadas en microservicios se han postulado como una infraestructura muy flexible y dinámica para desplegar soluciones altamente disponibles y eficientes. Hay una tendencia clara a aplicar este tipo de infraestructuras, gracias a los múltiples beneficios que aporta.
 
-  En este trabajo se explorará cómo diseñar soluciones que, aplicando los conceptos de los bucles de control (AC), estén preparadas para desplegarse en la nube. Para ello se tomará como punto de partida la infraestructura FaDA (desarrollada por el grupo PROS/Tatami del instituto VRAIN/UPV) que propone una estrategia para realizar la ingeniería de sistemas auto-adaptativos usando bucles de control MAPE-K.
+  En este trabajo se explorará cómo diseñar soluciones que, aplicando los conceptos de los bucles de control (AC), estén preparadas para desplegarse en la nube. Para ello se tomará como punto de partida la infraestructura FaDA (desarrollada por el grupo PROS/Tatami del instituto VRAIN/UPV) que propone una estrategia para realizar la ingeniería de sistemas autoadaptativos usando bucles de control MAPE-K.
 
-  Como resultado de este TFM se espera obtener la definición arquitectónica de soluciones auto-adaptativas (incluyendo tanto al bucle de control MAPE-K como directrices para la implementación de los diferentes componentes adaptativos de la solución) diseñadas para desplegarse nativamente como microservicios en la nube. Por último, se aplicará la propuesta realizada al desarrollo de un caso práctico para demostrar su viabilidad y aplicabilidad.
+  Como resultado de este TFM se espera obtener la definición arquitectónica de soluciones autoadaptativas (incluyendo tanto al bucle de control MAPE-K como directrices para la implementación de los diferentes componentes adaptativos de la solución) diseñadas para desplegarse nativamente como microservicios en la nube. Por último, se aplicará la propuesta realizada al desarrollo de un caso práctico para demostrar su viabilidad y aplicabilidad.
 \end{abstract}
+
 \begin{abstract}[english]
-????
+  Autonomic Computing promotes the engineering, design, and development of systems with self-adaptive capabilities, using control loops. These capabilities allow those systems to adapt to changing environments, to resolve operational conflicts and even to optimize dynamically at runtime. On the other hand, in the past decade, cloud computing and microservice architectures have been promoted as the basis for dynamic and flexible architectures to deploy highly available and efficient solutions. There is a clear tendency to apply these types of infrastructures, thanks to the many benefits they promote.
+
+  This dissertation will explore how to design solutions that, when applying the concepts of feedback loops (AC), will be ready to be deployed to the cloud. For this, the FaDA infrastructure (developed by the PROS/Tatami group from the VRAIN/UPV institute) will be used as a starting point. It proposes a strategy for the engineering of self-adaptive system using MAPE-K control loops.
+
+  As a result of this dissertation, it is expected to obtain the architectural definition of self-adaptive solutions (including the MAPE-K control loop and guidelines to implement the different adaptive components of the solution) designed to be deployed as microservices in the cloud. Finally, this proposal will be applied to the development of a case study to demonstrate its feasibility and applicability.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -100,13 +110,15 @@
 
 \input{cap_contexto_tecnologico/context_tecnologico}
 
-\input{cap_arquitectura/arquitectura}
+\input{cap_sistema_original/sistema_original}
 
 \input{cap_diseño/diseño}
 
 \input{cap_implementacion/implementacion}
 
 \input{cap_caso-estudio/caso-estudio}
+
+\input{cap_despliegue/despliegue}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                 CONCLUSIONS                                 %
@@ -123,37 +135,14 @@
 \cleardoublepage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                           APÈNDIXS  (Si n'hi ha!)                           %
+%                           APÈNDIXS                            %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \APPENDIX
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                         LA CONFIGURACIO DEL SISTEMA                         %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{anx_apis/apis}
 
-\chapter{Configuració del sistema}
-
-????? ????????????? ????????????? ????????????? ????????????? ?????????????
-
-\section{Fase d'inicialització}
-
-????? ????????????? ????????????? ????????????? ????????????? ?????????????
-
-\section{Identificació de dispositius}
-
-????? ????????????? ????????????? ????????????? ????????????? ?????????????
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                               ALTRES  APÈNDIXS                              %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-\chapter{??? ???????????? ????}
-
-????? ????????????? ????????????? ????????????? ????????????? ?????????????
-
-
+\input{anx_ejecucion/ejecucion}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                              FI DEL DOCUMENT                                %
