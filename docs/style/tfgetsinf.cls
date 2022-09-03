@@ -120,7 +120,7 @@
 
 \addto\captionsspanish{%
      \renewcommand{\titulacioname}{Máster Universitario en Ingeniería y Tecnología de Sistemas Software}
-     \renewcommand{\tfgname}{Trabajo fin de grado}
+     \renewcommand{\tfgname}{Trabajo fin de máster}
      \renewcommand{\authorname}{Autor}
      \renewcommand{\tutorname}{Tutor}
      \renewcommand{\coursename}{Curso}
