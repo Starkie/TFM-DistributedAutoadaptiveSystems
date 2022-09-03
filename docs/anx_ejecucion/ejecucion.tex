@@ -50,7 +50,7 @@ Container publish-knowledge-1                     Started         3.5s
 Container publish-analysis-1                      Started         4.1s
 \end{verbatim}
 
-En cambio, si quisiéramos parar su ejecución, tendremos que acceder a la carpeta \texttt{src}/{AutoAdaptativeSystem}/{publish} y ejecutar el comando \texttt{docker-compose down -f docker-compose.yml}. Este borrará todas las redes y contenedores que se hayan creado durante el despliegue.
+En cambio, si quisiéramos parar su ejecución, tendremos que acceder a la carpeta \texttt{src/AutoAdaptativeSystem/publish} y ejecutar el comando \texttt{docker-compose down}. Este borrará todas las redes y contenedores que se hayan creado durante el despliegue.
 
 \section{Interactuar con el sistema}
 
@@ -78,7 +78,7 @@ A continuación, se describen algunos de los \foreign{english}{endpoints} más i
 
 \subsection{Controlar el aire acondicionado}
 
-Para manipular el funcionamiento del aire acondicionado, podemos acceder a la URL correspondiente en la tabla \ref{tab:anx_servicios}. Nos mostrará una pantalla con la lista de operaciones disponibles, similar a la vista en la figura \ref{fig:apis-eps-aireacondicionado}. Nos interesan especialmente las operaciones de \texttt{FakeAirConditioner}. Con ellas podremos simular situaciones distintas para forzar al sistema a adaptarse.
+Para controlar el funcionamiento del aire acondicionado, podemos acceder a la URL correspondiente de la tabla \ref{tab:anx_servicios}. Nos mostrará una pantalla con la lista de operaciones disponibles, similar a la vista en la figura \ref{fig:apis-eps-aireacondicionado}. Nos interesan especialmente las operaciones de \texttt{FakeAirConditioner}. Con ellas podremos simular situaciones distintas para forzar al sistema a adaptarse.
 
 La primera, nos permite cambiar el comportamiento de la temperatura ficticia cuando el dispositivo esté apagado. Se trata del \foreign{english}{endpoint} \texttt{disabled-mode-configuration / \{shouldIncreaseTemperature\}}. Si se le pasa el valor \texttt{true}, la temperatura aumentará. Esto forzará a ejecutar las adaptaciones para enfriar la habitación. Por otro lado, si se le pasa \texttt{false}, la estancia se enfriará y el aparato tendrá que calentarla.
 
