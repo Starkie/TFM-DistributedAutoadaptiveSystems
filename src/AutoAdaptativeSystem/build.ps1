@@ -53,9 +53,9 @@ $Projects = @(
         ProjectName = "Climatisation.Rules.Service"
     },
     @{
-        Name = "climatisation_effectors"
-        Path = "Climatisation/Effectors"
-        ProjectName = "Climatisation.Effectors.Service"
+        Name = "climatisation_executor"
+        Path = "Climatisation/Executor"
+        ProjectName = "Climatisation.Executor.Service"
     }
 )
 

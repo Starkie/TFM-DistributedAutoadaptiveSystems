@@ -71,12 +71,12 @@ scrape_configs:
           host: localhost
           source: Climatisation.Rules.Service
 
-  - job_name: climatisation_effectors
+  - job_name: climatisation_executor
     static_configs:
-      - targets: ['climatisation_effectors:80']
+      - targets: ['climatisation_executor:80']
         labels:
           host: localhost
-          source: Climatisation.Effectors.Service
+          source: Climatisation.Executor.Service
 
   - job_name: planning
     static_configs:

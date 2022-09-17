@@ -1,9 +1,9 @@
-namespace Climatisation.Effectors.Service.Application.Execution.Events;
+namespace Climatisation.Executor.Service.Application.Execution.Events;
 
 using System.Threading.Tasks;
 using Climatisation.AirConditioner.Contracts;
-using Climatisation.Effectors.Service.Application.AirConditioner.Requests;
-using Climatisation.Effectors.Service.Diagnostics;
+using Climatisation.Executor.Service.Application.AirConditioner.Requests;
+using Climatisation.Executor.Service.Diagnostics;
 using Core.Bus.Handlers;
 using Execute.Contracts.IntegrationEvents;
 using MediatR;
@@ -12,11 +12,11 @@ using Planning.Contracts.IntegrationEvents.AdaptionActions;
 public class ExecutionRequestedIntegrationEventConsumer
     : IIntegrationEventConsumer<ExecutionRequestedIntegrationEvent>
 {
-    private readonly ClimatisationEffectorServiceDiagnostics _diagnostics;
+    private readonly ClimatisationExecutorServiceDiagnostics _diagnostics;
 
     private readonly IMediator _mediator;
 
-    public ExecutionRequestedIntegrationEventConsumer(ClimatisationEffectorServiceDiagnostics diagnostics, IMediator mediator)
+    public ExecutionRequestedIntegrationEventConsumer(ClimatisationExecutorServiceDiagnostics diagnostics, IMediator mediator)
     {
         _diagnostics = diagnostics;
         _mediator = mediator;

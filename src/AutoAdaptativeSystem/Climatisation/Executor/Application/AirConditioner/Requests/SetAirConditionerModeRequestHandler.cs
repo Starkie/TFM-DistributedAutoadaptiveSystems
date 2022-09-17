@@ -1,4 +1,4 @@
-namespace Climatisation.Effectors.Service.Application.AirConditioner.Requests;
+namespace Climatisation.Executor.Service.Application.AirConditioner.Requests;
 
 using Climatisation.AirConditioner.Contracts;
 using Climatisation.AirConditioner.Service.ApiClient.Api;

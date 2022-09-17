@@ -62,7 +62,7 @@ we should see the following output in the console:
     Container publish-grafana-1                       Started         1.9s
     Container publish-rabbitmq-1                      Started         1.7s
     Container publish-planning-1                      Started         3.8s
-    Container publish-climatisation_effectors-1       Started         4.2s
+    Container publish-climatisation_executor-1       Started         4.2s
     Container publish-climatisation_rules-1           Started         4.3s
     Container publish-execute-1                       Started         4.2s
     Container publish-knowledge-1                     Started         3.5s
@@ -181,7 +181,7 @@ ido bien, veremos en la consola lo siguiente:
     Container publish-grafana-1                       Started         1.9s
     Container publish-rabbitmq-1                      Started         1.7s
     Container publish-planning-1                      Started         3.8s
-    Container publish-climatisation_effectors-1       Started         4.2s
+    Container publish-climatisation_executor-1       Started         4.2s
     Container publish-climatisation_rules-1           Started         4.3s
     Container publish-execute-1                       Started         4.2s
     Container publish-knowledge-1                     Started         3.5s

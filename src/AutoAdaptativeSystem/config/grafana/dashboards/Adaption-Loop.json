@@ -262,7 +262,7 @@
             "uid": "4x1ifEU7k"
           },
           "editorMode": "code",
-          "expr": "rate(climatisation_effectors_service_adaptionactions_executed_count[$__rate_interval])",
+          "expr": "rate(climatisation_executor_service_adaptionactions_executed_count[$__rate_interval])",
           "format": "time_series",
           "hide": false,
           "legendFormat": "Execution Rate",

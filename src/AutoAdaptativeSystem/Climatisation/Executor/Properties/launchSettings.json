@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "ClimatisationEffectorsService": {
+    "ClimatisationExecutorService": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,

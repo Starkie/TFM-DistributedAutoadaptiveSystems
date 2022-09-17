@@ -1,4 +1,4 @@
-namespace Climatisation.Effectors.Service.Configurations;
+namespace Climatisation.Executor.Service.Configurations;
 
 public class ClimatisationAirConditionerConfiguration
 {

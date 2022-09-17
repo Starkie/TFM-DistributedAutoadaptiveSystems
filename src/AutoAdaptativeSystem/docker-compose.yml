@@ -162,9 +162,9 @@ services:
       - execute-network
     restart: on-failure:5
 
-  climatisation_effectors:
+  climatisation_executor:
     build:
-      context: ./climatisation_effectors
+      context: ./climatisation_executor
       args:
         ClimatisationAirConditioner_SERVICEURI: "http://climatisation_airconditioner:80"
         BUSCONFIGURATION_SERVICEURI: "amqp://user:password@rabbitmq"

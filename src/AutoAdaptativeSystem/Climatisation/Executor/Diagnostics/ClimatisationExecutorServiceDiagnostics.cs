@@ -1,4 +1,4 @@
-namespace Climatisation.Effectors.Service.Diagnostics;
+namespace Climatisation.Executor.Service.Diagnostics;
 
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Planning.Contracts.IntegrationEvents.AdaptionActions;
 using Prometheus;
 
-public class ClimatisationEffectorServiceDiagnostics
+public class ClimatisationExecutorServiceDiagnostics
 {
     private readonly ActivitySource _activitySource;
 
@@ -27,13 +27,13 @@ public class ClimatisationEffectorServiceDiagnostics
 
     private readonly Counter _executedAdaptionActionsCounter;
 
-    public ClimatisationEffectorServiceDiagnostics(ILoggerFactory loggerFactory)
+    public ClimatisationExecutorServiceDiagnostics(ILoggerFactory loggerFactory)
     {
-        _logger = loggerFactory.CreateLogger(ClimatisationEffectorConstants.AppName);
+        _logger = loggerFactory.CreateLogger(ClimatisationExecutorConstants.AppName);
 
-        _activitySource = new ActivitySource(ClimatisationEffectorConstants.AppName);
+        _activitySource = new ActivitySource(ClimatisationExecutorConstants.AppName);
 
-        _executedAdaptionActionsCounter = Metrics.CreateCounter("climatisation_effectors_service_adaptionactions_executed_count", "The number of adaption actions executed by this service.");
+        _executedAdaptionActionsCounter = Metrics.CreateCounter("climatisation_executor_service_adaptionactions_executed_count", "The number of adaption actions executed by this service.");
     }
 
     public Activity StartExecuteChangePlan()

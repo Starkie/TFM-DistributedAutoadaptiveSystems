@@ -82,7 +82,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Effectors", "Effectors", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.AirConditioner.Service.ApiClient", "Climatisation\AirConditioner\Service\ApiClient\Climatisation.AirConditioner.Service.ApiClient\Climatisation.AirConditioner.Service.ApiClient.csproj", "{1D248AAF-B351-4DAF-B0DD-FD3354A214B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.Effectors.Service", "Climatisation\Effectors\Climatisation.Effectors.Service.csproj", "{F81387EE-E102-434E-9D1A-A7F7D80411D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climatisation.Executor.Service", "Climatisation\Executor\Climatisation.Executor.Service.csproj", "{F81387EE-E102-434E-9D1A-A7F7D80411D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

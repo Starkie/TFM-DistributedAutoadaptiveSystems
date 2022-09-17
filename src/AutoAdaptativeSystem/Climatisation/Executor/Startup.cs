@@ -1,9 +1,9 @@
-namespace Climatisation.Effectors.Service;
+namespace Climatisation.Executor.Service;
 
 using Climatisation.AirConditioner.Contracts;
 using Climatisation.AirConditioner.Service.ApiClient.Api;
-using Climatisation.Effectors.Service.Configurations;
-using Climatisation.Effectors.Service.Diagnostics;
+using Climatisation.Executor.Service.Configurations;
+using Climatisation.Executor.Service.Diagnostics;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,7 +32,7 @@ public class Startup
             "Demonstrates all the existing operations to access and manage the effectors of the AirConditioner Service.",
             "v1");
 
-        services.AddTelemetry(Configuration, ClimatisationEffectorConstants.AppName, "v1.0");
+        services.AddTelemetry(Configuration, ClimatisationExecutorConstants.AppName, "v1.0");
 
         services.AddBus(
             Configuration,
@@ -44,7 +44,7 @@ public class Startup
 
         services.AddMediatR(typeof(Startup).Assembly);
 
-        services.AddSingleton<ClimatisationEffectorServiceDiagnostics>();
+        services.AddSingleton<ClimatisationExecutorServiceDiagnostics>();
 
         services.AddScoped<IAirConditionerApi, AirConditionerApi>(_ =>
         {
@@ -68,7 +68,7 @@ public class Startup
         app.UseMetricServer();
 
         app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{ClimatisationEffectorConstants.AppName} v1"));
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{ClimatisationExecutorConstants.AppName} v1"));
 
         app.UseRouting();
 
