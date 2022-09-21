@@ -1,6 +1,6 @@
-namespace Climatisation.Effectors.Service;
+namespace Climatisation.Executor.Service;
 
-public static class ClimatisationEffectorConstants
+public static class ClimatisationExecutorConstants
 {
     private static readonly string Namespace = typeof(Program).Namespace;
 

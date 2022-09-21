@@ -16,4 +16,4 @@ ENV GRAFANA_LOKI_URI "${GRAFANA_LOKI_URI}"
 ENV JAEGER__HOST "${JAEGER_HOST}"
 ENV JAEGER__PORT "${JAEGER_PORT}"
 
-ENTRYPOINT [ "dotnet", "Climatisation.Effectors.Service.dll" ]
+ENTRYPOINT [ "dotnet", "Climatisation.Executor.Service.dll" ]

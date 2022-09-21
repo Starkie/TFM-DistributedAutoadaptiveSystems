@@ -1,4 +1,4 @@
-namespace Climatisation.Effectors.Service.Application.Execution.Requests;
+namespace Climatisation.Executor.Service.Application.Execution.Requests;
 
 using Execute.Contracts.IntegrationEvents;
 using MediatR;

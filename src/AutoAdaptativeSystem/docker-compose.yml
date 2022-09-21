@@ -20,13 +20,14 @@ services:
     restart: on-failure:5
 
   rabbitmq:
-    image: rabbitmq:3-management
+    build: ./rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=user
       - RABBITMQ_DEFAULT_PASS=password
     ports:
       - "5672:5672"
       - "15672:15672"
+      - "15692:15692"
     networks:
       - knowledge-network
 
@@ -161,9 +162,9 @@ services:
       - execute-network
     restart: on-failure:5
 
-  climatisation_effectors:
+  climatisation_executor:
     build:
-      context: ./climatisation_effectors
+      context: ./climatisation_executor
       args:
         ClimatisationAirConditioner_SERVICEURI: "http://climatisation_airconditioner:80"
         BUSCONFIGURATION_SERVICEURI: "amqp://user:password@rabbitmq"

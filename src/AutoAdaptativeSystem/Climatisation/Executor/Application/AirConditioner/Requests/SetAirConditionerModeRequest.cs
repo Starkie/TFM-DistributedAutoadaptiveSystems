@@ -1,6 +1,6 @@
-namespace Climatisation.Effectors.Service.Application.AirConditioner.Requests;
+namespace Climatisation.Executor.Service.Application.AirConditioner.Requests;
 
-using Climatisation.Effectors.Service.Application.Execution.Requests;
+using Climatisation.Executor.Service.Application.Execution.Requests;
 
 public class SetAirConditionerModeRequest : SetParameterRequest
 {

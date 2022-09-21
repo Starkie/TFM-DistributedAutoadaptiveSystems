@@ -1,4 +1,4 @@
-namespace Climatisation.Effectors.Service;
+namespace Climatisation.Executor.Service;
 
 using System;
 using Microsoft.AspNetCore.Hosting;
@@ -43,7 +43,7 @@ public class Program
         return new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
             .Enrich.WithRebusCorrelationId("CorrelationId")
-            .Enrich.WithProperty("source", ClimatisationEffectorConstants.AppName)
+            .Enrich.WithProperty("source", ClimatisationExecutorConstants.AppName)
             .CreateLogger();
     }
 
