@@ -2,6 +2,8 @@
 
 This is my dissertation for the master's degree in Software Engineering, Formal Methods and Information Systems (MITSS) from the Universidad Politécnica de Valencia (UPV).
 
+Reference: http://hdl.handle.net/10251/188361
+
 ## Abstract:
   Autonomic Computing promotes the engineering, design, and development of systems with self-adaptive capabilities, using control loops. These capabilities allow those systems to adapt to changing environments, to resolve operational conflicts and even to optimize dynamically at runtime. On the other hand, in the past decade, cloud computing and microservice architectures have been promoted as the basis for dynamic and flexible architectures to deploy highly available and efficient solutions. There is a clear tendency to apply these types of infrastructures, thanks to the many benefits they promote.
 
@@ -21,6 +23,8 @@ Currently, the repository is divided in two parts:
 # Refactorización de una infraestructura de bucles MAPE-K como microservicios (ES)
 
 Este es mi trabajo final para el máster en Ingeniería y Tecnología de Sistemas Software de la Universidad Politécnica de Valencia (UPV).
+
+Referencia: http://hdl.handle.net/10251/188361
 
 ## Abstract:
   La Computación Autónoma (_Autonomic Computing_) promueve la ingeniería, diseño y desarrollo de sistemas con capacidades de autoadaptación, a través del uso de bucles de control. Estas capacidades le confieren a estos sistemas la posibilidad de adaptarse a entornos cambiantes, a resolver conflictos operacionales e incluso a la optimización dinámica en su ejecución. Por otra parte, en la última década, la computación en el _cloud_ y las arquitecturas basadas en microservicios se han postulado como una infraestructura muy flexible y dinámica para desplegar soluciones altamente disponibles y eficientes. Hay una tendencia clara a aplicar este tipo de infraestructuras, gracias a los múltiples beneficios que aporta.
